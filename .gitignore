@@ -1,0 +1,17 @@
+target
+*.iml
+build
+.DS_Store
+
+# IntelliJ project files
+*.iml
+*.ipr
+*.iws
+.idea
+
+# eclipse project file
+.settings
+.classpath
+.project
+
+.DS_Store
