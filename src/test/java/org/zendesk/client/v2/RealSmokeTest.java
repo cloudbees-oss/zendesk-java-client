@@ -126,7 +126,8 @@ public class RealSmokeTest {
     @Ignore("Don't spam the production zendesk")
     public void createDeleteTicket() throws Exception {
         createClientWithToken();
-        Ticket t = new Ticket(new Ticket.Requester("Bob McSpam", "bob.mcspam@gmail.com"), "This is a test", new Ticket.Comment("Please ignore this ticket"));
+        assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
+        Ticket t = new Ticket(new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")), "This is a test", new Ticket.Comment("Please ignore this ticket"));
         Ticket ticket = instance.createTicket(t);
         System.out.println(ticket.getId() + " -> " + ticket.getUrl());
         assertThat(ticket.getId(), notNullValue());
