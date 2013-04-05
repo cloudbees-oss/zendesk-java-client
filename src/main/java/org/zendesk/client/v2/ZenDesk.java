@@ -17,6 +17,7 @@ import com.ning.http.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.Audit;
+import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Ticket;
 
 import java.io.Closeable;
@@ -210,6 +211,36 @@ public class ZenDesk implements Closeable {
                         .set("auditId", auditId)), handleStatus()));
     }
 
+    public List<Field> getTicketFields() {
+        return complete(submit(req("GET", cnst("/ticket_fields.json")), handleList(Field.class, "ticket_fields")));
+    }
+
+    public Field getTicketField(int id) {
+        return complete(submit(req("GET", tmpl("/ticket_fields/{id}.json").set("id", id)), handle(Field.class, "ticket_field")));
+    }
+
+    public Field createTicketField(Field field) {
+        return complete(submit(req("POST", cnst("/ticket_fields.json"), JSON, json(
+                Collections.singletonMap("ticket_field", field))), handle(Field.class, "ticket_field")));
+    }
+
+    public Field updateTicketField(Field field) {
+        checkHasId(field);
+        return complete(submit(req("PUT", tmpl("/ticket_fields/{id}.json").set("id", field.getId()), JSON,
+                json(Collections.singletonMap("ticket_field", field))), handle(Field.class, "ticket_field")));
+    }
+
+    public void deleteTicketField(Field field) {
+        checkHasId(field);
+        deleteTicket(field.getId());
+    }
+
+    public void deleteTicketField(int id) {
+        complete(submit(req("DELETE", tmpl("/ticket_fields/{id}.json").set("id", id)), handleStatus()));
+    }
+
+
+
 
     //////////////////////////////////////////////////////////////////////
     // Helper methods
@@ -378,6 +409,12 @@ public class ZenDesk implements Closeable {
     private static void checkHasId(Audit audit) {
         if (audit.getId() == null) {
             throw new IllegalArgumentException("Audit requires id");
+        }
+    }
+
+    private static void checkHasId(Field field) {
+        if (field.getId() == null) {
+            throw new IllegalArgumentException("Field requires id");
         }
     }
 

@@ -1,12 +1,15 @@
 package org.zendesk.client.v2;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.zendesk.client.v2.model.Audit;
-import org.zendesk.client.v2.model.events.Event;
+import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Ticket;
+import org.zendesk.client.v2.model.events.Event;
 
 import java.util.Collections;
 import java.util.Properties;
@@ -15,9 +18,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeThat;
 
 /**
@@ -104,7 +105,7 @@ public class RealSmokeTest {
         for (Ticket t : instance.getTickets(1, 3, 5)) {
             assertThat(t.getSubject(), notNullValue());
             assertThat(t.getId(), is(count));
-            count+= 2;
+            count += 2;
         }
         assertThat(count, is(7));
     }
@@ -115,6 +116,19 @@ public class RealSmokeTest {
         for (Audit a : instance.getTicketAudits(1)) {
             assertThat(a, notNullValue());
             assertThat(a.getEvents(), not(Collections.<Event>emptyList()));
+        }
+    }
+
+    @Test
+    public void getTicketFields() throws Exception {
+        createClientWithToken();
+        int count = 0;
+        for (Field f : instance.getTicketFields()) {
+            assertThat(f, notNullValue());
+            assertThat(f.getId(), notNullValue());
+            assertThat(f.getType(), notNullValue());
+            System.out.println(new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(f));
+            if (++count > 10) break;
         }
     }
 
@@ -141,7 +155,9 @@ public class RealSmokeTest {
     public void createDeleteTicket() throws Exception {
         createClientWithToken();
         assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
-        Ticket t = new Ticket(new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")), "This is a test", new Ticket.Comment("Please ignore this ticket"));
+        Ticket t = new Ticket(
+                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                "This is a test", new Ticket.Comment("Please ignore this ticket"));
         Ticket ticket = instance.createTicket(t);
         System.out.println(ticket.getId() + " -> " + ticket.getUrl());
         assertThat(ticket.getId(), notNullValue());
