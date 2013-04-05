@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.ListenableFuture;
@@ -31,6 +32,7 @@ import java.util.concurrent.ExecutionException;
  * @since 04/04/2013 13:08
  */
 public class ZenDesk implements Closeable {
+    private static final String JSON = "application/json";
     private final boolean closeClient;
     private final AsyncHttpClient client;
     private final Realm realm;
@@ -57,10 +59,13 @@ public class ZenDesk implements Closeable {
             }
             this.realm = null;
         }
-        this.mapper = new ObjectMapper();
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        createMapper();
+        this.mapper = createMapper();
     }
+
+    //////////////////////////////////////////////////////////////////////
+    // Closeable interface methods
+    //////////////////////////////////////////////////////////////////////
 
     public boolean isClosed() {
         return closed || client.isClosed();
@@ -73,64 +78,90 @@ public class ZenDesk implements Closeable {
         closed = true;
     }
 
+    //////////////////////////////////////////////////////////////////////
+    // Action methods
+    //////////////////////////////////////////////////////////////////////
+
     public Ticket getTicket(int id) {
-        return complete(submit(req("GET", "/tickets/" + id + ".json"), handle(Ticket.class, "ticket")));
+        return complete(submit(req("GET", tmpl("/tickets/{id}.json").set("id", id)), handle(Ticket.class,
+                "ticket")));
+    }
+
+    public void deleteTicket(Ticket ticket) {
+        checkTicketId(ticket);
+        deleteTicket(ticket.getId());
     }
 
     public void deleteTicket(int id) {
-        complete(submit(req("DELETE", "/tickets/" + id + ".json"), handleStatus()));
+        complete(submit(req("DELETE", tmpl("/tickets/{id}.json").set("id", id)), handleStatus()));
     }
 
     public Ticket createTicket(Ticket ticket) {
-        try {
-            return complete(submit(jsonReq("POST", "/tickets.json",
-                    mapper.writeValueAsString(Collections.singletonMap("ticket", ticket))),
-                    handle(Ticket.class, "ticket")));
-        } catch (JsonProcessingException e) {
-            throw new ZenDeskException(e.getMessage(), e);
-        }
+        return complete(submit(req("POST", cnst("/tickets.json"),
+                JSON, json(Collections.singletonMap("ticket", ticket))),
+                handle(Ticket.class, "ticket")));
+    }
+
+    public Ticket updateTicket(Ticket ticket) {
+        checkTicketId(ticket);
+        return complete(submit(req("PUT", tmpl("/tickets/{id}.json").set("id", ticket.getId()),
+                JSON, json(Collections.singletonMap("ticket", ticket))),
+                handle(Ticket.class, "ticket")));
+    }
+
+    public void markTicketAsSpam(Ticket ticket) {
+        checkTicketId(ticket);
+        markTicketAsSpam(ticket.getId());
+    }
+
+    public void markTicketAsSpam(int id) {
+        complete(submit(req("PUT", tmpl("/tickets/{id}/mark_as_spam.json").set("id", id)), handleStatus()));
     }
 
     public void deleteTickets(int id, int... ids) {
-        StringBuilder buf = new StringBuilder("/tickets/destroy_many.json?ids=");
-        buf.append(id);
-        for (int i : ids) {
-            buf.append(',');
-            buf.append(i);
-        }
-        complete(submit(req("DELETE", buf.toString()), handleStatus()));
+        complete(submit(req("DELETE", tmpl("/tickets/destroy_many.json{?ids}").set("ids", idArray(id, ids))),
+                handleStatus()));
     }
 
     public Iterable<Ticket> getTickets() {
-        return new PagedIterable<Ticket>("/tickets.json", handleList(Ticket.class, "tickets"));
+        return new PagedIterable<Ticket>(cnst("/tickets.json"), handleList(Ticket.class, "tickets"));
     }
 
     public List<Ticket> getTickets(int id, int... ids) {
-        StringBuilder buf = new StringBuilder("/tickets/show_many.json?ids=");
-        buf.append(id);
-        for (int i : ids) {
-            buf.append(',');
-            buf.append(i);
-        }
-        return complete(submit(req("GET", buf.toString()), handleList(Ticket.class, "tickets")));
+        return complete(submit(req("GET", tmpl("/tickets/show_many.json{?ids}").set("ids", idArray(id, ids))),
+                handleList(Ticket.class, "tickets")));
     }
 
     public Iterable<Ticket> getRecentTickets() {
-        return new PagedIterable<Ticket>("/tickets/recent.json", handleList(Ticket.class, "tickets"));
+        return new PagedIterable<Ticket>(cnst("/tickets/recent.json"), handleList(Ticket.class, "tickets"));
     }
 
     public Iterable<Ticket> getOrganizationTickets(int organizationId) {
-        return new PagedIterable<Ticket>("/organizations/" + organizationId + "/tickets.json",
+        return new PagedIterable<Ticket>(
+                tmpl("/organizations/{organizationId}/tickets.json").set("organizationId", organizationId),
                 handleList(Ticket.class, "tickets"));
     }
 
     public Iterable<Ticket> getUserRequestedTickets(int userId) {
-        return new PagedIterable<Ticket>("/users/" + userId + "/tickets/requested.json",
+        return new PagedIterable<Ticket>(tmpl("/users/{userId}/tickets/requested.json").set("userId", userId),
                 handleList(Ticket.class, "tickets"));
     }
 
     public Iterable<Ticket> getUserCCDTickets(int userId) {
-        return new PagedIterable<Ticket>("/users/" + userId + "/tickets/ccd.json", handleList(Ticket.class, "tickets"));
+        return new PagedIterable<Ticket>(tmpl("/users/{userId}/tickets/ccd.json").set("userId", userId),
+                handleList(Ticket.class, "tickets"));
+    }
+
+    //////////////////////////////////////////////////////////////////////
+    // Helper methods
+    //////////////////////////////////////////////////////////////////////
+
+    private String json(Object object) {
+        try {
+            return mapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new ZenDeskException(e.getMessage(), e);
+        }
     }
 
     private <T> ListenableFuture<T> submit(Request request, AsyncCompletionHandler<T> handler) {
@@ -141,44 +172,34 @@ public class ZenDesk implements Closeable {
         }
     }
 
-    private Request req(String method, String url) {
+    private Request req(String method, Uri template) {
         RequestBuilder builder = new RequestBuilder(method);
         if (realm != null) {
             builder.setRealm(realm);
         }
-        builder.setUrl(this.url + url);
+        builder.setUrl(template.toString());
         return builder.build();
     }
 
-    private Request jsonReq(String method, String url, String body) {
+    private Request req(String method, Uri template, String contentType, String body) {
         RequestBuilder builder = new RequestBuilder(method);
         if (realm != null) {
             builder.setRealm(realm);
         }
-        builder.setUrl(this.url + url);
-        builder.addHeader("Content-type", "application/json");
+        builder.setUrl(template.toString());
+        builder.addHeader("Content-type", contentType);
         builder.setBody(body);
         return builder.build();
     }
 
-    private Request req(String method, String url, int page) {
+    private Request req(String method, Uri template, int page) {
         RequestBuilder builder = new RequestBuilder(method);
         if (realm != null) {
             builder.setRealm(realm);
         }
         builder.addQueryParameter("page", Integer.toString(page));
-        builder.setUrl(this.url + url);
+        builder.setUrl(template.toString());
         return builder.build();
-    }
-
-    private <T> T complete(ListenableFuture<T> future) {
-        try {
-            return future.get();
-        } catch (InterruptedException e) {
-            throw new ZenDeskException(e.getMessage(), e);
-        } catch (ExecutionException e) {
-            throw new ZenDeskException(e.getMessage(), e);
-        }
     }
 
     protected AsyncCompletionHandler<Void> handleStatus() {
@@ -267,17 +288,67 @@ public class ZenDesk implements Closeable {
         };
     }
 
+    private TemplateUri tmpl(String template) {
+        return new TemplateUri(url + template);
+    }
+
+    private Uri cnst(String template) {
+        return new FixedUri(url + template);
+    }
+
+    //////////////////////////////////////////////////////////////////////
+    // Static helper methods
+    //////////////////////////////////////////////////////////////////////
+
+    private static <T> T complete(ListenableFuture<T> future) {
+        try {
+            return future.get();
+        } catch (InterruptedException e) {
+            throw new ZenDeskException(e.getMessage(), e);
+        } catch (ExecutionException e) {
+            throw new ZenDeskException(e.getMessage(), e);
+        }
+    }
+
+    private static void checkTicketId(Ticket ticket) {
+        if (ticket.getId() == null) {
+            throw new IllegalArgumentException("Ticket requires id");
+        }
+    }
+
+    private static List<Integer> idArray(int id, int... ids) {
+        List<Integer> result = new ArrayList<Integer>(ids.length + 1);
+        result.add(id);
+        for (int i : ids) {
+            result.add(i);
+        }
+        return result;
+    }
+
+    public static ObjectMapper createMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+        mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        return mapper;
+    }
+
+    //////////////////////////////////////////////////////////////////////
+    // Helper classes
+    //////////////////////////////////////////////////////////////////////
+
     private class PagedIterable<T> implements Iterable<T> {
 
-        private final String url;
+        private final Uri url;
         private final AsyncCompletionHandler<List<T>> handler;
         private final int initialPage;
 
-        private PagedIterable(String url, AsyncCompletionHandler<List<T>> handler) {
+        private PagedIterable(Uri url, AsyncCompletionHandler<List<T>> handler) {
             this(url, handler, 1);
         }
 
-        private PagedIterable(String url, AsyncCompletionHandler<List<T>> handler, int initialPage) {
+        private PagedIterable(Uri url, AsyncCompletionHandler<List<T>> handler, int initialPage) {
             this.handler = handler;
             this.url = url;
             this.initialPage = initialPage;

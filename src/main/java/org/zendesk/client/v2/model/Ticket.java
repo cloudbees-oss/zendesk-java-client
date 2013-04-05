@@ -16,12 +16,12 @@ public class Ticket {
     private Integer id;
     private String url;
     private String externalId;
-    private String type;
+    private Type type;
     private String subject;
     private String description;
     private Comment comment;
-    private String priority;
-    private String status;
+    private Priority priority;
+    private Status status;
     private String recipient;
     private Requester requester;
     private Integer requesterId;
@@ -183,11 +183,11 @@ public class Ticket {
         this.organizationId = organizationId;
     }
 
-    public String getPriority() {
+    public Priority getPriority() {
         return priority;
     }
 
-    public void setPriority(String priority) {
+    public void setPriority(Priority priority) {
         this.priority = priority;
     }
 
@@ -249,11 +249,11 @@ public class Ticket {
         this.sharingAgreementIds = sharingAgreementIds;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -291,11 +291,11 @@ public class Ticket {
         this.ticketFormId = ticketFormId;
     }
 
-    public String getType() {
+    public Type getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(Type type) {
         this.type = type;
     }
 

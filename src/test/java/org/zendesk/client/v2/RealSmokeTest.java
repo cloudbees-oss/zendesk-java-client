@@ -123,7 +123,7 @@ public class RealSmokeTest {
     }
 
     @Test
-    @Ignore("Don't spam the production zendesk")
+    //@Ignore("Don't spam the production zendesk")
     public void createDeleteTicket() throws Exception {
         createClientWithToken();
         assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
