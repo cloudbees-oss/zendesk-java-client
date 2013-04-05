@@ -16,6 +16,7 @@ import com.ning.http.client.RequestBuilder;
 import com.ning.http.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Ticket;
 
 import java.io.Closeable;
@@ -88,7 +89,7 @@ public class ZenDesk implements Closeable {
     }
 
     public void deleteTicket(Ticket ticket) {
-        checkTicketId(ticket);
+        checkHasId(ticket);
         deleteTicket(ticket.getId());
     }
 
@@ -103,14 +104,14 @@ public class ZenDesk implements Closeable {
     }
 
     public Ticket updateTicket(Ticket ticket) {
-        checkTicketId(ticket);
+        checkHasId(ticket);
         return complete(submit(req("PUT", tmpl("/tickets/{id}.json").set("id", ticket.getId()),
                 JSON, json(Collections.singletonMap("ticket", ticket))),
                 handle(Ticket.class, "ticket")));
     }
 
     public void markTicketAsSpam(Ticket ticket) {
-        checkTicketId(ticket);
+        checkHasId(ticket);
         markTicketAsSpam(ticket.getId());
     }
 
@@ -151,6 +152,64 @@ public class ZenDesk implements Closeable {
         return new PagedIterable<Ticket>(tmpl("/users/{userId}/tickets/ccd.json").set("userId", userId),
                 handleList(Ticket.class, "tickets"));
     }
+
+    public Iterable<Audit> getTicketAudits(Ticket ticket) {
+        checkHasId(ticket);
+        return getTicketAudits(ticket.getId());
+    }
+
+    public Iterable<Audit> getTicketAudits(Integer id) {
+        return new PagedIterable<Audit>(tmpl("/tickets/{ticketId}/audits.json").set("ticketId", id),
+                handleList(Audit.class, "audits"));
+    }
+
+    public Audit getTicketAudit(Ticket ticket, Audit audit) {
+        checkHasId(audit);
+        return getTicketAudit(ticket, audit.getId());
+    }
+
+    public Audit getTicketAudit(Ticket ticket, int id) {
+        checkHasId(ticket);
+        return getTicketAudit(ticket.getId(), id);
+    }
+
+    public Audit getTicketAudit(int ticketId, int auditId) {
+        return complete(submit(req("GET",
+                tmpl("/tickets/{ticketId}/audits/{auditId}.json").set("ticketId", ticketId).set("auditId", auditId)),
+                handle(Audit.class, "audit")));
+    }
+
+    public void trustTicketAudit(Ticket ticket, Audit audit) {
+        checkHasId(audit);
+        trustTicketAudit(ticket, audit.getId());
+    }
+
+    public void trustTicketAudit(Ticket ticket, int id) {
+        checkHasId(ticket);
+        trustTicketAudit(ticket.getId(), id);
+    }
+
+    public void trustTicketAudit(int ticketId, int auditId) {
+        complete(submit(req("PUT", tmpl("/tickets/{ticketId}/audits/{auditId}/trust.json").set("ticketId", ticketId)
+                .set("auditId", auditId)), handleStatus()));
+    }
+
+    public void makePrivateTicketAudit(Ticket ticket, Audit audit) {
+        checkHasId(audit);
+        makePrivateTicketAudit(ticket, audit.getId());
+    }
+
+    public void makePrivateTicketAudit(Ticket ticket, int id) {
+        checkHasId(ticket);
+        makePrivateTicketAudit(ticket.getId(), id);
+    }
+
+    public void makePrivateTicketAudit(int ticketId, int auditId) {
+        complete(submit(req("PUT",
+                tmpl("/tickets/{ticketId}/audits/{auditId}/make_private.json").set("ticketId", ticketId)
+                        .set("auditId", auditId)), handleStatus()));
+    }
+
 
     //////////////////////////////////////////////////////////////////////
     // Helper methods
@@ -310,9 +369,15 @@ public class ZenDesk implements Closeable {
         }
     }
 
-    private static void checkTicketId(Ticket ticket) {
+    private static void checkHasId(Ticket ticket) {
         if (ticket.getId() == null) {
             throw new IllegalArgumentException("Ticket requires id");
+        }
+    }
+
+    private static void checkHasId(Audit audit) {
+        if (audit.getId() == null) {
+            throw new IllegalArgumentException("Audit requires id");
         }
     }
 

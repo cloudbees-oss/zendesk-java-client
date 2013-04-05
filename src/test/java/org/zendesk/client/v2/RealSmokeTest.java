@@ -4,13 +4,18 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.zendesk.client.v2.model.Audit;
+import org.zendesk.client.v2.model.events.Event;
 import org.zendesk.client.v2.model.Ticket;
 
+import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeThat;
@@ -96,12 +101,21 @@ public class RealSmokeTest {
     public void getTicketsById() throws Exception {
         createClientWithToken();
         int count = 1;
-        for (Ticket t : instance.getTickets(1,3,5)) {
+        for (Ticket t : instance.getTickets(1, 3, 5)) {
             assertThat(t.getSubject(), notNullValue());
             assertThat(t.getId(), is(count));
             count+= 2;
         }
         assertThat(count, is(7));
+    }
+
+    @Test
+    public void getTicketAudits() throws Exception {
+        createClientWithToken();
+        for (Audit a : instance.getTicketAudits(1)) {
+            assertThat(a, notNullValue());
+            assertThat(a.getEvents(), not(Collections.<Event>emptyList()));
+        }
     }
 
     @Test
@@ -123,7 +137,7 @@ public class RealSmokeTest {
     }
 
     @Test
-    //@Ignore("Don't spam the production zendesk")
+    @Ignore("Don't spam the production zendesk")
     public void createDeleteTicket() throws Exception {
         createClientWithToken();
         assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());

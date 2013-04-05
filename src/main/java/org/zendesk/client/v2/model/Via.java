@@ -3,12 +3,12 @@ package org.zendesk.client.v2.model;
 import java.util.Map;
 
 /**
-* @author stephenc
-* @since 04/04/2013 17:00
-*/
+ * @author stephenc
+ * @since 04/04/2013 17:00
+ */
 public class Via {
     private String channel;
-    private Map<String,Object> source;
+    private Map<String, Object> source;
 
     public String getChannel() {
         return channel;
