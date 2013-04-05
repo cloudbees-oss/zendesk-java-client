@@ -1,6 +1,7 @@
 package org.zendesk.client.v2.model.events;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.zendesk.client.v2.model.Attachment;
 
 import java.util.List;
 
@@ -13,13 +14,13 @@ public class CommentEvent extends PublicPrivateEvent {
     private String htmlBody;
     private Boolean trusted;
     private Integer authorId;
-    private List<String> attachments;
+    private List<Attachment> attachments;
 
-    public List<String> getAttachments() {
+    public List<Attachment> getAttachments() {
         return attachments;
     }
 
-    public void setAttachments(List<String> attachments) {
+    public void setAttachments(List<Attachment> attachments) {
         this.attachments = attachments;
     }
 

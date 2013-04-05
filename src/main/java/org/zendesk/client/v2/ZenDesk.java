@@ -16,9 +16,11 @@ import com.ning.http.client.RequestBuilder;
 import com.ning.http.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zendesk.client.v2.model.Attachment;
 import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Ticket;
+import org.zendesk.client.v2.model.User;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -216,7 +218,8 @@ public class ZenDesk implements Closeable {
     }
 
     public Field getTicketField(int id) {
-        return complete(submit(req("GET", tmpl("/ticket_fields/{id}.json").set("id", id)), handle(Field.class, "ticket_field")));
+        return complete(submit(req("GET", tmpl("/ticket_fields/{id}.json").set("id", id)), handle(Field.class,
+                "ticket_field")));
     }
 
     public Field createTicketField(Field field) {
@@ -239,8 +242,74 @@ public class ZenDesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/ticket_fields/{id}.json").set("id", id)), handleStatus()));
     }
 
+    public Attachment.Upload createUpload(String fileName, byte[] content) {
+        return createUpload(null, fileName, "application/binary", content);
+    }
 
+    public Attachment.Upload createUpload(String fileName, String contentType, byte[] content) {
+        return createUpload(null, fileName, contentType, content);
+    }
 
+    public Attachment.Upload createUpload(String token, String fileName, String contentType, byte[] content) {
+        TemplateUri uri = tmpl("/uploads.json{?filename}{?token}").set("filename", fileName);
+        if (token != null)
+            uri.set("token", token);
+        return complete(
+                submit(req("POST", uri, contentType,
+                        content), handle(Attachment.Upload.class, "upload")));
+    }
+
+    public void deleteUpload(Attachment.Upload upload) {
+        checkHasToken(upload);
+        deleteUpload(upload.getToken());
+    }
+
+    public void deleteUpload(String token) {
+        complete(submit(req("DELETE", tmpl("/uploads/{token}.json").set("token", token)), handleStatus()));
+    }
+
+    public Attachment getAttachment(Attachment attachment) {
+        checkHasId(attachment);
+        return getAttachment(attachment.getId());
+    }
+
+    public Attachment getAttachment(int id) {
+        return complete(submit(req("GET", tmpl("/attachments/{id}.json").set("id", id)), handle(Attachment.class,
+                "attachment")));
+    }
+
+    public void deleteAttachment(Attachment attachment) {
+        checkHasId(attachment);
+        deleteAttachment(attachment.getId());
+    }
+
+    public void deleteAttachment(int id) {
+        complete(submit(req("DELETE", tmpl("/attachments/{id}.json").set("id", id)), handleStatus()));
+    }
+
+    public Iterable<User> getUsers() {
+        return new PagedIterable<User>(cnst("/users.json"), handleList(User.class, "users"));
+    }
+
+    public Iterable<User> getGroupUsers(int id) {
+        return new PagedIterable<User>(tmpl("/groups/{id}/users.json").set("id", id), handleList(User.class, "users"));
+    }
+
+    public Iterable<User> getOrganizationUsers(int id) {
+        return new PagedIterable<User>(tmpl("/organization/{id}/users.json").set("id", id), handleList(User.class, "users"));
+    }
+
+    public User getUser(int id) {
+        return complete(submit(req("GET", tmpl("/users/{id}.json").set("id", id)), handle(User.class, "user")));
+    }
+
+    public Iterable<User> lookupUserByEmail(String email) {
+        return new PagedIterable<User>(tmpl("/users/search.json{?query}").set("query", email), handleList(User.class, "users"));
+    }
+
+    public Iterable<User> lookupUserByExternalId(String externalId) {
+        return new PagedIterable<User>(tmpl("/users/search.json{?external_id}").set("external_id", externalId), handleList(User.class, "users"));
+    }
 
     //////////////////////////////////////////////////////////////////////
     // Helper methods
@@ -272,6 +341,17 @@ public class ZenDesk implements Closeable {
     }
 
     private Request req(String method, Uri template, String contentType, String body) {
+        RequestBuilder builder = new RequestBuilder(method);
+        if (realm != null) {
+            builder.setRealm(realm);
+        }
+        builder.setUrl(template.toString());
+        builder.addHeader("Content-type", contentType);
+        builder.setBody(body);
+        return builder.build();
+    }
+
+    private Request req(String method, Uri template, String contentType, byte[] body) {
         RequestBuilder builder = new RequestBuilder(method);
         if (realm != null) {
             builder.setRealm(realm);
@@ -344,14 +424,12 @@ public class ZenDesk implements Closeable {
         return new AsyncCompletionHandler<List<T>>() {
             @Override
             public List<T> onCompleted(Response response) throws Exception {
-                logger.debug("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
+                logger.info("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
                         response.getResponseBody());
                 if (response.getStatusCode() / 100 == 2) {
                     List<T> values = new ArrayList<T>();
-                    MappingIterator<T> iterator =
-                            mapper.reader(clazz).readValues(response.getResponseBody());
-                    while (iterator.hasNext()) {
-                        values.add(iterator.next());
+                    for (JsonNode node : mapper.readTree(response.getResponseBodyAsBytes())) {
+                        values.add(mapper.convertValue(node, clazz));
                     }
                     return values;
                 }
@@ -415,6 +493,18 @@ public class ZenDesk implements Closeable {
     private static void checkHasId(Field field) {
         if (field.getId() == null) {
             throw new IllegalArgumentException("Field requires id");
+        }
+    }
+
+    private static void checkHasId(Attachment attachment) {
+        if (attachment.getId() == null) {
+            throw new IllegalArgumentException("Attachment requires id");
+        }
+    }
+
+    private static void checkHasToken(Attachment.Upload upload) {
+        if (upload.getToken() == null) {
+            throw new IllegalArgumentException("Upload requires token");
         }
     }
 
