@@ -2,6 +2,8 @@ package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +39,52 @@ public class User {
     private List<String> tags;
     private Boolean suspended;
     private Attachment photo;
+    private List<Identity> identities;
+    private String remotePhotoUrl;
+
+    public User() {
+    }
+
+    public User(Boolean verified, String name, String email) {
+        this.name = name;
+        this.email = email;
+        this.verified = verified;
+    }
+
+    public User(Boolean verified, String name, List<Identity> identities) {
+        this.verified = verified;
+        this.name = name;
+        this.identities = identities;
+    }
+
+    public User(Boolean verified, String name, Identity... identities) {
+        this.verified = verified;
+        this.name = name;
+        this.identities = new ArrayList<Identity>(Arrays.asList(identities));
+    }
+
+    public User(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    public User(String name, List<Identity> identities) {
+        this.name = name;
+        this.identities = identities;
+    }
+
+    public User(String name, Identity... identities) {
+        this.name = name;
+        this.identities = new ArrayList<Identity>(Arrays.asList(identities));
+    }
+
+    public List<Identity> getIdentities() {
+        return identities;
+    }
+
+    public void setIdentities(List<Identity> identities) {
+        this.identities = identities;
+    }
 
     public Boolean getActive() {
         return active;
@@ -264,7 +312,16 @@ public class User {
         this.verified = verified;
     }
 
-    private enum Role {
+    @JsonProperty("remote_photo_url")
+    public String getRemotePhotoUrl() {
+        return remotePhotoUrl;
+    }
+
+    public void setRemotePhotoUrl(String remotePhotoUrl) {
+        this.remotePhotoUrl = remotePhotoUrl;
+    }
+
+    public static enum Role {
         END_USER("end-user"),
         AGENT("agent"),
         ADMIN("admin");
@@ -281,7 +338,7 @@ public class User {
         }
     }
 
-    private enum TicketRestriction {
+    public static enum TicketRestriction {
         ORGANIZATION,
         GROUPS,
         ASSIGNED,
@@ -290,6 +347,35 @@ public class User {
         @Override
         public String toString() {
             return name().toLowerCase();
+        }
+    }
+
+    public static class Identity {
+        private String type;
+        private String value;
+
+        public Identity() {
+        }
+
+        public Identity(String type, String value) {
+            this.type = type;
+            this.value = value;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
         }
     }
 }

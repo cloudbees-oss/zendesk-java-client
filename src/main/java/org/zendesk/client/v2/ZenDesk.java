@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.ning.http.client.AsyncCompletionHandler;
@@ -25,9 +24,12 @@ import org.zendesk.client.v2.model.User;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
 
@@ -252,8 +254,9 @@ public class ZenDesk implements Closeable {
 
     public Attachment.Upload createUpload(String token, String fileName, String contentType, byte[] content) {
         TemplateUri uri = tmpl("/uploads.json{?filename}{?token}").set("filename", fileName);
-        if (token != null)
+        if (token != null) {
             uri.set("token", token);
+        }
         return complete(
                 submit(req("POST", uri, contentType,
                         content), handle(Attachment.Upload.class, "upload")));
@@ -296,19 +299,74 @@ public class ZenDesk implements Closeable {
     }
 
     public Iterable<User> getOrganizationUsers(int id) {
-        return new PagedIterable<User>(tmpl("/organization/{id}/users.json").set("id", id), handleList(User.class, "users"));
+        return new PagedIterable<User>(tmpl("/organization/{id}/users.json").set("id", id),
+                handleList(User.class, "users"));
     }
 
     public User getUser(int id) {
         return complete(submit(req("GET", tmpl("/users/{id}.json").set("id", id)), handle(User.class, "user")));
     }
 
+    public User createUser(User user) {
+        return complete(submit(req("POST", cnst("/users.json"), JSON, json(
+                Collections.singletonMap("user", user))), handle(User.class, "user")));
+    }
+
+    public List<User> createUsers(User... users) {
+        return createUsers(Arrays.asList(users));
+    }
+
+    public List<User> createUsers(List<User> users) {
+        return complete(submit(req("POST", cnst("/users/create_many.json"), JSON, json(
+                Collections.singletonMap("users", users))), handleList(User.class, "results")));
+    }
+
+    public User updateUser(User user) {
+        checkHasId(user);
+        return complete(submit(req("PUT", tmpl("/users/{id}.json").set("id", user.getId()), JSON, json(
+                Collections.singletonMap("user", user))), handle(User.class, "user")));
+    }
+
+    public void deleteUser(User user) {
+        checkHasId(user);
+        deleteUser(user.getId());
+    }
+
+    public void deleteUser(int id) {
+        complete(submit(req("DELETE", tmpl("/users/{id}.json").set("id", id)), handleStatus()));
+    }
+
     public Iterable<User> lookupUserByEmail(String email) {
-        return new PagedIterable<User>(tmpl("/users/search.json{?query}").set("query", email), handleList(User.class, "users"));
+        return new PagedIterable<User>(tmpl("/users/search.json{?query}").set("query", email),
+                handleList(User.class, "users"));
     }
 
     public Iterable<User> lookupUserByExternalId(String externalId) {
-        return new PagedIterable<User>(tmpl("/users/search.json{?external_id}").set("external_id", externalId), handleList(User.class, "users"));
+        return new PagedIterable<User>(tmpl("/users/search.json{?external_id}").set("external_id", externalId),
+                handleList(User.class, "users"));
+    }
+
+    public User getCurrentUser() {
+        return complete(submit(req("GET", cnst("/users/me.json")), handle(User.class, "user")));
+    }
+
+    public void resetUserPassword(User user, String password) {
+        checkHasId(user);
+        resetUserPassword(user.getId(), password);
+    }
+
+    public void resetUserPassword(int id, String password) {
+        complete(submit(req("POST", tmpl("/users/{id}/password.json").set("id", id), JSON,
+                json(Collections.singletonMap("password", password))), handleStatus()));
+    }
+
+    public void changeUserPassword(User user, String oldPassword, String newPassword) {
+        checkHasId(user);
+        Map<String,String> req = new HashMap<String,String>();
+        req.put("previous_password", oldPassword);
+        req.put("password", newPassword);
+        complete(submit(req("PUT", tmpl("/users/{id}/password.json").set("id", user.getId()), JSON,
+                json(req)), handleStatus()));
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -499,6 +557,12 @@ public class ZenDesk implements Closeable {
     private static void checkHasId(Attachment attachment) {
         if (attachment.getId() == null) {
             throw new IllegalArgumentException("Attachment requires id");
+        }
+    }
+
+    private static void checkHasId(User user) {
+        if (user.getId() == null) {
+            throw new IllegalArgumentException("User requires id");
         }
     }
 
