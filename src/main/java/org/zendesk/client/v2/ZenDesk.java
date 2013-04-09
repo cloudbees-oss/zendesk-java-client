@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.Attachment;
 import org.zendesk.client.v2.model.Audit;
+import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.Ticket;
@@ -425,7 +426,7 @@ public class ZenDesk implements Closeable {
 
     public Identity verifyUserIdentity(int userId, int identityId) {
         return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/verify")
-                .set("userId",userId)
+                .set("userId", userId)
                 .set("identityId", identityId)), handle(Identity.class, "identity")));
     }
 
@@ -441,7 +442,7 @@ public class ZenDesk implements Closeable {
 
     public Identity requestVerifyUserIdentity(int userId, int identityId) {
         return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/request_verification")
-                .set("userId",userId)
+                .set("userId", userId)
                 .set("identityId", identityId)), handle(Identity.class, "identity")));
     }
 
@@ -462,6 +463,79 @@ public class ZenDesk implements Closeable {
         ), handleStatus()));
     }
 
+    public Iterable<org.zendesk.client.v2.model.Request> getRequests() {
+        return new PagedIterable<org.zendesk.client.v2.model.Request>(cnst("/requests.json"),
+                handleList(org.zendesk.client.v2.model.Request.class, "requests"));
+    }
+
+    public Iterable<org.zendesk.client.v2.model.Request> getOpenRequests() {
+        return new PagedIterable<org.zendesk.client.v2.model.Request>(cnst("/requests/open.json"),
+                handleList(org.zendesk.client.v2.model.Request.class, "requests"));
+    }
+
+    public Iterable<org.zendesk.client.v2.model.Request> getSolvedRequests() {
+        return new PagedIterable<org.zendesk.client.v2.model.Request>(cnst("/requests/solved.json"),
+                handleList(org.zendesk.client.v2.model.Request.class, "requests"));
+    }
+
+    public Iterable<org.zendesk.client.v2.model.Request> getCCRequests() {
+        return new PagedIterable<org.zendesk.client.v2.model.Request>(cnst("/requests/ccd.json"),
+                handleList(org.zendesk.client.v2.model.Request.class, "requests"));
+    }
+
+    public Iterable<org.zendesk.client.v2.model.Request> getUserRequests(User user) {
+        checkHasId(user);
+        return getUserRequests(user.getId());
+    }
+
+    public Iterable<org.zendesk.client.v2.model.Request> getUserRequests(int id) {
+        return new PagedIterable<org.zendesk.client.v2.model.Request>(tmpl("/users/{id}/requests.json").set("id", id),
+                handleList(org.zendesk.client.v2.model.Request.class, "requests"));
+    }
+
+    public org.zendesk.client.v2.model.Request getRequest(int id) {
+        return complete(submit(req("GET", tmpl("/requests/{id}.json").set("id", id)),
+                handle(org.zendesk.client.v2.model.Request.class, "request")));
+    }
+
+    public org.zendesk.client.v2.model.Request createRequest(org.zendesk.client.v2.model.Request request) {
+        return complete(submit(req("POST", cnst("/requests.json"),
+                JSON, json(Collections.singletonMap("request", request))),
+                handle(org.zendesk.client.v2.model.Request.class, "request")));
+    }
+    public org.zendesk.client.v2.model.Request updateRequest(org.zendesk.client.v2.model.Request request) {
+        checkHasId(request);
+        return complete(submit(req("PUT", tmpl("/requests/{id}.json").set("id", request.getId()),
+                JSON, json(Collections.singletonMap("request", request))),
+                handle(org.zendesk.client.v2.model.Request.class, "request")));
+    }
+
+    public Iterable<Comment> getRequestComments(org.zendesk.client.v2.model.Request request) {
+        checkHasId(request);
+        return getRequestComments(request.getId());
+    }
+
+    public Iterable<Comment> getRequestComments(int id) {
+        return new PagedIterable<Comment>(tmpl("/requests/{id}/comments.json").set("id", id),
+                handleList(Comment.class, "comments"));
+    }
+
+    public Comment getRequestComment(org.zendesk.client.v2.model.Request request, Comment comment) {
+        checkHasId(comment);
+        return getRequestComment(request, comment.getId());
+    }
+
+    public Comment getRequestComment(org.zendesk.client.v2.model.Request request, int commentId) {
+        checkHasId(request);
+        return getRequestComment(request.getId(), commentId);
+    }
+
+    public Comment getRequestComment(int requestId, int commentId) {
+        return complete(submit(req("GET", tmpl("/requests/{requestId}/comments/{commentId}.json")
+                .set("requestId", requestId)
+                .set("commentId", commentId)),
+                handle(Comment.class, "comment")));
+    }
 
     //////////////////////////////////////////////////////////////////////
     // Helper methods
@@ -636,9 +710,21 @@ public class ZenDesk implements Closeable {
         }
     }
 
+    private static void checkHasId(org.zendesk.client.v2.model.Request request) {
+        if (request.getId() == null) {
+            throw new IllegalArgumentException("Request requires id");
+        }
+    }
+
     private static void checkHasId(Audit audit) {
         if (audit.getId() == null) {
             throw new IllegalArgumentException("Audit requires id");
+        }
+    }
+
+    private static void checkHasId(Comment comment) {
+        if (comment.getId() == null) {
+            throw new IllegalArgumentException("Comment requires id");
         }
     }
 

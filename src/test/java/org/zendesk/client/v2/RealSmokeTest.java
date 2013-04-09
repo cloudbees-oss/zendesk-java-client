@@ -1,14 +1,14 @@
 package org.zendesk.client.v2;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.zendesk.client.v2.model.Audit;
+import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Identity;
+import org.zendesk.client.v2.model.Request;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.events.Event;
@@ -129,7 +129,9 @@ public class RealSmokeTest {
             assertThat(f, notNullValue());
             assertThat(f.getId(), notNullValue());
             assertThat(f.getType(), notNullValue());
-            if (++count > 10) break;
+            if (++count > 10) {
+                break;
+            }
         }
     }
 
@@ -158,7 +160,7 @@ public class RealSmokeTest {
         assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
         Ticket t = new Ticket(
                 new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
-                "This is a test", new Ticket.Comment("Please ignore this ticket"));
+                "This is a test", new Comment("Please ignore this ticket"));
         Ticket ticket = instance.createTicket(t);
         System.out.println(ticket.getId() + " -> " + ticket.getUrl());
         assertThat(ticket.getId(), notNullValue());
@@ -181,7 +183,7 @@ public class RealSmokeTest {
         createClientWithToken();
         String requesterEmail = config.getProperty("requester.email");
         assumeThat("Must have a requester email", requesterEmail, notNullValue());
-        for (User user: instance.lookupUserByEmail(requesterEmail)) {
+        for (User user : instance.lookupUserByEmail(requesterEmail)) {
             assertThat(user.getEmail(), is(requesterEmail));
         }
     }
@@ -189,15 +191,31 @@ public class RealSmokeTest {
     @Test
     public void lookupUserIdentities() throws Exception {
         createClientWithToken();
-        String requesterEmail = config.getProperty("requester.email");
-        assumeThat("Must have a requester email", requesterEmail, notNullValue());
         User user = instance.getCurrentUser();
-        for (Identity i: instance.getUserIdentities(user)) {
+        for (Identity i : instance.getUserIdentities(user)) {
             assertThat(i.getId(), notNullValue());
             Identity j = instance.getUserIdentity(user, i);
             assertThat(j.getId(), is(i.getId()));
             assertThat(j.getType(), is(i.getType()));
             assertThat(j.getValue(), is(i.getValue()));
+        }
+    }
+
+    @Test
+    public void getUserRequests() throws Exception {
+        createClientWithToken();
+        User user = instance.getCurrentUser();
+        int count = 5;
+        for (Request r : instance.getUserRequests(user)) {
+            assertThat(r.getId(), notNullValue());
+            System.out.println(r.getSubject());
+            for (Comment c : instance.getRequestComments(r)) {
+                assertThat(c.getId(), notNullValue());
+                System.out.println("  " + c.getBody());
+            }
+            if (--count < 0) {
+                break;
+            }
         }
     }
 }

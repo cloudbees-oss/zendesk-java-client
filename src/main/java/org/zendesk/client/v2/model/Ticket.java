@@ -3,7 +3,6 @@ package org.zendesk.client.v2.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -12,22 +11,13 @@ import java.util.List;
  * @since 04/04/2013 14:25
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Ticket {
-    private Integer id;
-    private String url;
+public class Ticket extends Request {
     private String externalId;
     private Type type;
-    private String subject;
-    private String description;
-    private Comment comment;
     private Priority priority;
-    private Status status;
     private String recipient;
-    private Requester requester;
-    private Integer requesterId;
     private Integer submitterId;
     private Integer assigneeId;
-    private Integer organizationId;
     private Integer groupId;
     private List<Integer> collaboratorIds;
     private Integer forumTopicId;
@@ -35,14 +25,11 @@ public class Ticket {
     private boolean hasIncidents;
     private Date dueAt;
     private List<String> tags;
-    private Via via;
     private List<CustomFieldValue> customFields;
     private SatisfactionRating satisfactionRating;
     private List<Integer> sharingAgreementIds;
     private List<Integer> followupIds;
     private Integer ticketFormId;
-    private Date createdAt;
-    private Date updatedAt;
 
     public Ticket() {
     }
@@ -77,15 +64,6 @@ public class Ticket {
         this.collaboratorIds = collaboratorIds;
     }
 
-    @JsonProperty("created_at")
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     @JsonProperty("custom_fields")
     public List<CustomFieldValue> getCustomFields() {
         return customFields;
@@ -93,23 +71,6 @@ public class Ticket {
 
     public void setCustomFields(List<CustomFieldValue> customFields) {
         this.customFields = customFields;
-    }
-
-    public Comment getComment() {
-        return comment;
-    }
-
-    public void setComment(Comment comment) {
-        this.comment = comment;
-    }
-
-    @JsonProperty()
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @JsonProperty("due_at")
@@ -166,23 +127,6 @@ public class Ticket {
         this.hasIncidents = hasIncidents;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    @JsonProperty("organization_id")
-    public Integer getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(Integer organizationId) {
-        this.organizationId = organizationId;
-    }
-
     public Priority getPriority() {
         return priority;
     }
@@ -219,18 +163,6 @@ public class Ticket {
         }
     }
 
-    @JsonProperty("requester_id")
-    public Integer getRequesterId() {
-        return requesterId;
-    }
-
-    public void setRequesterId(Integer requesterId) {
-        this.requesterId = requesterId;
-        if (requesterId != null) {
-            this.requester = null;
-        }
-    }
-
     @JsonProperty("satisfaction_rating")
     public SatisfactionRating getSatisfactionRating() {
         return satisfactionRating;
@@ -247,22 +179,6 @@ public class Ticket {
 
     public void setSharingAgreementIds(List<Integer> sharingAgreementIds) {
         this.sharingAgreementIds = sharingAgreementIds;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
     }
 
     @JsonProperty("submitter_id")
@@ -299,31 +215,6 @@ public class Ticket {
         this.type = type;
     }
 
-    @JsonProperty("updated_at")
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public Via getVia() {
-        return via;
-    }
-
-    public void setVia(Via via) {
-        this.via = via;
-    }
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
@@ -358,49 +249,6 @@ public class Ticket {
         sb.append(", updatedAt=").append(updatedAt);
         sb.append('}');
         return sb.toString();
-    }
-
-    public static class Comment {
-        private String body;
-        private List<String> uploads;
-
-        public Comment() {
-        }
-
-        public Comment(String body) {
-            this.body = body;
-        }
-
-        public Comment(String body, String... uploads) {
-            this.body = body;
-            this.uploads = uploads.length == 0 ? null : Arrays.asList(uploads);
-        }
-
-        public String getBody() {
-            return body;
-        }
-
-        public void setBody(String body) {
-            this.body = body;
-        }
-
-        public List<String> getUploads() {
-            return uploads;
-        }
-
-        public void setUploads(List<String> uploads) {
-            this.uploads = uploads;
-        }
-
-        @Override
-        public String toString() {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("Comment");
-            sb.append("{body='").append(body).append('\'');
-            sb.append(", uploads=").append(uploads);
-            sb.append('}');
-            return sb.toString();
-        }
     }
 
     public static class Requester {
