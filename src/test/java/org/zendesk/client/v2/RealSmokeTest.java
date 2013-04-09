@@ -8,6 +8,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Field;
+import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.events.Event;
@@ -182,6 +183,21 @@ public class RealSmokeTest {
         assumeThat("Must have a requester email", requesterEmail, notNullValue());
         for (User user: instance.lookupUserByEmail(requesterEmail)) {
             assertThat(user.getEmail(), is(requesterEmail));
+        }
+    }
+
+    @Test
+    public void lookupUserIdentities() throws Exception {
+        createClientWithToken();
+        String requesterEmail = config.getProperty("requester.email");
+        assumeThat("Must have a requester email", requesterEmail, notNullValue());
+        User user = instance.getCurrentUser();
+        for (Identity i: instance.getUserIdentities(user)) {
+            assertThat(i.getId(), notNullValue());
+            Identity j = instance.getUserIdentity(user, i);
+            assertThat(j.getId(), is(i.getId()));
+            assertThat(j.getType(), is(i.getType()));
+            assertThat(j.getValue(), is(i.getValue()));
         }
     }
 }

@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.Attachment;
 import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Field;
+import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.User;
 
@@ -362,12 +363,105 @@ public class ZenDesk implements Closeable {
 
     public void changeUserPassword(User user, String oldPassword, String newPassword) {
         checkHasId(user);
-        Map<String,String> req = new HashMap<String,String>();
+        Map<String, String> req = new HashMap<String, String>();
         req.put("previous_password", oldPassword);
         req.put("password", newPassword);
         complete(submit(req("PUT", tmpl("/users/{id}/password.json").set("id", user.getId()), JSON,
                 json(req)), handleStatus()));
     }
+
+    public List<Identity> getUserIdentities(User user) {
+        checkHasId(user);
+        return getUserIdentities(user.getId());
+    }
+
+    public List<Identity> getUserIdentities(int userId) {
+        return complete(submit(req("GET", tmpl("/users/{id}/identities.json").set("id", userId)),
+                handleList(Identity.class, "identities")));
+    }
+
+    public Identity getUserIdentity(User user, Identity identity) {
+        checkHasId(identity);
+        return getUserIdentity(user, identity.getId());
+    }
+
+    public Identity getUserIdentity(User user, int identityId) {
+        checkHasId(user);
+        return getUserIdentity(user.getId(), identityId);
+    }
+
+    public Identity getUserIdentity(int userId, int identityId) {
+        return complete(submit(req("GET", tmpl("/users/{userId}/identities/{identityId}.json").set("userId", userId)
+                .set("identityId", identityId)), handle(
+                Identity.class, "identity")));
+    }
+
+    public List<Identity> setUserPrimaryIdentity(User user, Identity identity) {
+        checkHasId(identity);
+        return setUserPrimaryIdentity(user, identity.getId());
+    }
+
+    public List<Identity> setUserPrimaryIdentity(User user, int identityId) {
+        checkHasId(user);
+        return setUserPrimaryIdentity(user.getId(), identityId);
+    }
+
+    public List<Identity> setUserPrimaryIdentity(int userId, int identityId) {
+        return complete(submit(req("PUT",
+                tmpl("/users/{userId}/identities/{identityId}/make_primary").set("userId", userId)
+                        .set("identityId", identityId)),
+                handleList(Identity.class, "identities")));
+    }
+
+    public Identity verifyUserIdentity(User user, Identity identity) {
+        checkHasId(identity);
+        return verifyUserIdentity(user, identity.getId());
+    }
+
+    public Identity verifyUserIdentity(User user, int identityId) {
+        checkHasId(user);
+        return verifyUserIdentity(user.getId(), identityId);
+    }
+
+    public Identity verifyUserIdentity(int userId, int identityId) {
+        return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/verify")
+                .set("userId",userId)
+                .set("identityId", identityId)), handle(Identity.class, "identity")));
+    }
+
+    public Identity requestVerifyUserIdentity(User user, Identity identity) {
+        checkHasId(identity);
+        return requestVerifyUserIdentity(user, identity.getId());
+    }
+
+    public Identity requestVerifyUserIdentity(User user, int identityId) {
+        checkHasId(user);
+        return requestVerifyUserIdentity(user.getId(), identityId);
+    }
+
+    public Identity requestVerifyUserIdentity(int userId, int identityId) {
+        return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/request_verification")
+                .set("userId",userId)
+                .set("identityId", identityId)), handle(Identity.class, "identity")));
+    }
+
+    public void deleteUserIdentity(User user, Identity identity) {
+        checkHasId(identity);
+        deleteUserIdentity(user, identity.getId());
+    }
+
+    public void deleteUserIdentity(User user, int identityId) {
+        checkHasId(user);
+        deleteUserIdentity(user.getId(), identityId);
+    }
+
+    public void deleteUserIdentity(int userId, int identityId) {
+        complete(submit(req("DELETE", tmpl("/users/{userId}/identities/{identityId}.json")
+                .set("userId", userId)
+                .set("identityId", identityId)
+        ), handleStatus()));
+    }
+
 
     //////////////////////////////////////////////////////////////////////
     // Helper methods
@@ -563,6 +657,12 @@ public class ZenDesk implements Closeable {
     private static void checkHasId(User user) {
         if (user.getId() == null) {
             throw new IllegalArgumentException("User requires id");
+        }
+    }
+
+    private static void checkHasId(Identity identity) {
+        if (identity.getId() == null) {
+            throw new IllegalArgumentException("Identity requires id");
         }
     }
 
