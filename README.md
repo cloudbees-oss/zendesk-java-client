@@ -34,7 +34,7 @@ Here is the status of the various API components:
 
 * [Tickets](http://developer.zendesk.com/documentation/rest_api/tickets.html) - DONE
 * [Ticket Audits](http://developer.zendesk.com/documentation/rest_api/ticket_audits.html) - DONE
-* [Incremental Tickets](http://developer.zendesk.com/documentation/rest_api/incremental_tickets.html)
+* [Incremental Tickets](http://developer.zendesk.com/documentation/rest_api/ticket_export.html)
 * [Ticket Fields](http://developer.zendesk.com/documentation/rest_api/ticket_fields.html) - DONE
 * [Ticket Import](http://developer.zendesk.com/documentation/rest_api/ticket_import.html)
 * [Ticket Metrics](http://developer.zendesk.com/documentation/rest_api/ticket_metrics.html)
@@ -43,8 +43,8 @@ Here is the status of the various API components:
 * [Requests](http://developer.zendesk.com/documentation/rest_api/requests.html) - DONE
 * [User Identities](http://developer.zendesk.com/documentation/rest_api/user_identities.html) - DONE
 * [Groups](http://developer.zendesk.com/documentation/rest_api/groups.html)
-* [Group Membership](http://developer.zendesk.com/documentation/rest_api/group_membership.html)
-* [Custom Agent Roles](http://developer.zendesk.com/documentation/rest_api/custom_agent_roles.html)
+* [Group Membership](http://developer.zendesk.com/documentation/rest_api/group_memberships.html)
+* [Custom Agent Roles](http://developer.zendesk.com/documentation/rest_api/custom_roles.html)
 * [Organizations](http://developer.zendesk.com/documentation/rest_api/organizations.html) - DONE (except for related info)
 * [Search](http://developer.zendesk.com/documentation/rest_api/search.html)
 * [Tags](http://developer.zendesk.com/documentation/rest_api/tags.html)
@@ -58,7 +58,7 @@ Here is the status of the various API components:
 * [Account Settings](http://developer.zendesk.com/documentation/rest_api/account_settings.html)
 * [Activity Stream](http://developer.zendesk.com/documentation/rest_api/activity_stream.html)
 * [Attachments](http://developer.zendesk.com/documentation/rest_api/attachments.html) - DONE
-* [Autocompletion](http://developer.zendesk.com/documentation/rest_api/autocompletion.html)
+* [Autocompletion](http://developer.zendesk.com/documentation/rest_api/autocomplete.html)
 * [Automations](http://developer.zendesk.com/documentation/rest_api/automations.html)
 * [Job Statuses](http://developer.zendesk.com/documentation/rest_api/job_statuses.html)
 * [Locales](http://developer.zendesk.com/documentation/rest_api/locales.html)
