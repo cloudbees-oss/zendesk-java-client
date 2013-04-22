@@ -20,6 +20,7 @@ import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Identity;
+import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.User;
 
@@ -503,6 +504,7 @@ public class ZenDesk implements Closeable {
                 JSON, json(Collections.singletonMap("request", request))),
                 handle(org.zendesk.client.v2.model.Request.class, "request")));
     }
+
     public org.zendesk.client.v2.model.Request updateRequest(org.zendesk.client.v2.model.Request request) {
         checkHasId(request);
         return complete(submit(req("PUT", tmpl("/requests/{id}.json").set("id", request.getId()),
@@ -536,6 +538,65 @@ public class ZenDesk implements Closeable {
                 .set("commentId", commentId)),
                 handle(Comment.class, "comment")));
     }
+
+    public Iterable<Organization> getOrganizations() {
+        return new PagedIterable<Organization>(cnst("/organizations.json"),
+                handleList(Organization.class, "organizations"));
+    }
+
+    public Iterable<Organization> getAutoCompleteOrganizations(String name) {
+        if (name == null || name.length() < 2) {
+            throw new IllegalArgumentException("Name must be at least 2 characters long");
+        }
+        return new PagedIterable<Organization>(tmpl("/organizations/autocomplete.json{?name}").set("name", name),
+                handleList(Organization.class, "organizations"));
+    }
+
+    // TODO getOrganizationRelatedInformation
+
+    public Organization getOrganization(int id) {
+        return complete(submit(req("GET", tmpl("/organizations/{id}.json").set("id", id)),
+                handle(Organization.class, "organization")));
+    }
+
+    public Organization createOrganization(Organization organization) {
+        return complete(submit(req("POST", cnst("/organizations.json"), JSON, json(
+                Collections.singletonMap("organization", organization))), handle(Organization.class, "organization")));
+    }
+
+    public List<Organization> createOrganizations(Organization... organizations) {
+        return createOrganizations(Arrays.asList(organizations));
+    }
+
+    public List<Organization> createOrganizations(List<Organization> organizations) {
+        return complete(submit(req("POST", cnst("/organizations/create_many.json"), JSON, json(
+                Collections.singletonMap("organizations", organizations))), handleList(Organization.class, "results")));
+    }
+
+    public Organization updateOrganization(Organization organization) {
+        checkHasId(organization);
+        return complete(submit(req("PUT", tmpl("/organizations/{id}.json").set("id", organization.getId()), JSON, json(
+                Collections.singletonMap("organization", organization))), handle(Organization.class, "organization")));
+    }
+
+    public void deleteOrganization(Organization organization) {
+        checkHasId(organization);
+        deleteOrganization(organization.getId());
+    }
+
+    public void deleteOrganization(int id) {
+        complete(submit(req("DELETE", tmpl("/organizations/{id}.json").set("id", id)), handleStatus()));
+    }
+
+    public Iterable<Organization> lookupOrganizationsByExternalId(String externalId) {
+        if (externalId == null || externalId.length() < 2) {
+            throw new IllegalArgumentException("Name must be at least 2 characters long");
+        }
+        return new PagedIterable<Organization>(tmpl("/organizations/search.json{?external_id}").set("external_id", externalId),
+                handleList(Organization.class, "organizations"));
+    }
+
+
 
     //////////////////////////////////////////////////////////////////////
     // Helper methods
@@ -749,6 +810,12 @@ public class ZenDesk implements Closeable {
     private static void checkHasId(Identity identity) {
         if (identity.getId() == null) {
             throw new IllegalArgumentException("Identity requires id");
+        }
+    }
+
+    private static void checkHasId(Organization organization) {
+        if (organization.getId() == null) {
+            throw new IllegalArgumentException("Organization requires id");
         }
     }
 

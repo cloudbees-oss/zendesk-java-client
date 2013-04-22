@@ -8,6 +8,7 @@ import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Identity;
+import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.Request;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.User;
@@ -218,4 +219,17 @@ public class RealSmokeTest {
             }
         }
     }
+
+    @Test
+    public void getOrganizations() throws Exception {
+        createClientWithToken();
+        int count = 0;
+        for (Organization t : instance.getOrganizations()) {
+            assertThat(t.getName(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
 }
