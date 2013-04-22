@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.Field;
+import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.Request;
@@ -225,6 +226,18 @@ public class RealSmokeTest {
         createClientWithToken();
         int count = 0;
         for (Organization t : instance.getOrganizations()) {
+            assertThat(t.getName(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void getGroups() throws Exception {
+        createClientWithToken();
+        int count = 0;
+        for (Group t : instance.getGroups()) {
             assertThat(t.getName(), notNullValue());
             if (++count > 10) {
                 break;

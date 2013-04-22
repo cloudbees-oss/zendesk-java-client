@@ -19,6 +19,7 @@ import org.zendesk.client.v2.model.Attachment;
 import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.Field;
+import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.Ticket;
@@ -596,7 +597,49 @@ public class ZenDesk implements Closeable {
                 handleList(Organization.class, "organizations"));
     }
 
+    public Iterable<Group> getGroups() {
+        return new PagedIterable<Group>(cnst("/groups.json"),
+                handleList(Group.class, "groups"));
+    }
 
+    public Iterable<Group> getAssignableGroups() {
+        return new PagedIterable<Group>(cnst("/groups/assignable.json"),
+                handleList(Group.class, "groups"));
+    }
+
+    public Group getGroup(int id) {
+        return complete(submit(req("GET", tmpl("/groups/{id}.json").set("id", id)),
+                handle(Group.class, "group")));
+    }
+
+    public Group createGroup(Group group) {
+        return complete(submit(req("POST", cnst("/groups.json"), JSON, json(
+                Collections.singletonMap("group", group))), handle(Group.class, "group")));
+    }
+
+    public List<Group> createGroups(Group... groups) {
+        return createGroups(Arrays.asList(groups));
+    }
+
+    public List<Group> createGroups(List<Group> groups) {
+        return complete(submit(req("POST", cnst("/groups/create_many.json"), JSON, json(
+                Collections.singletonMap("groups", groups))), handleList(Group.class, "results")));
+    }
+
+    public Group updateGroup(Group group) {
+        checkHasId(group);
+        return complete(submit(req("PUT", tmpl("/groups/{id}.json").set("id", group.getId()), JSON, json(
+                Collections.singletonMap("group", group))), handle(Group.class, "group")));
+    }
+
+    public void deleteGroup(Group group) {
+        checkHasId(group);
+        deleteGroup(group.getId());
+    }
+
+    public void deleteGroup(int id) {
+        complete(submit(req("DELETE", tmpl("/groups/{id}.json").set("id", id)), handleStatus()));
+    }
 
     //////////////////////////////////////////////////////////////////////
     // Helper methods
@@ -816,6 +859,12 @@ public class ZenDesk implements Closeable {
     private static void checkHasId(Organization organization) {
         if (organization.getId() == null) {
             throw new IllegalArgumentException("Organization requires id");
+        }
+    }
+
+    private static void checkHasId(Group group) {
+        if (group.getId() == null) {
+            throw new IllegalArgumentException("Group requires id");
         }
     }
 

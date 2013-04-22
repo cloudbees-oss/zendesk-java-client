@@ -32,20 +32,20 @@ Status
 
 Here is the status of the various API components:
 
-* [Tickets](http://developer.zendesk.com/documentation/rest_api/tickets.html) - DONE
-* [Ticket Audits](http://developer.zendesk.com/documentation/rest_api/ticket_audits.html) - DONE
+* [Tickets](http://developer.zendesk.com/documentation/rest_api/tickets.html) ✓
+* [Ticket Audits](http://developer.zendesk.com/documentation/rest_api/ticket_audits.html) ✓
 * [Incremental Tickets](http://developer.zendesk.com/documentation/rest_api/ticket_export.html)
-* [Ticket Fields](http://developer.zendesk.com/documentation/rest_api/ticket_fields.html) - DONE
+* [Ticket Fields](http://developer.zendesk.com/documentation/rest_api/ticket_fields.html) ✓
 * [Ticket Import](http://developer.zendesk.com/documentation/rest_api/ticket_import.html)
 * [Ticket Metrics](http://developer.zendesk.com/documentation/rest_api/ticket_metrics.html)
 * [Views](http://developer.zendesk.com/documentation/rest_api/views.html)
-* [Users](http://developer.zendesk.com/documentation/rest_api/users.html) - DONE
-* [Requests](http://developer.zendesk.com/documentation/rest_api/requests.html) - DONE
-* [User Identities](http://developer.zendesk.com/documentation/rest_api/user_identities.html) - DONE
-* [Groups](http://developer.zendesk.com/documentation/rest_api/groups.html)
+* [Users](http://developer.zendesk.com/documentation/rest_api/users.html) ✓
+* [Requests](http://developer.zendesk.com/documentation/rest_api/requests.html) ✓
+* [User Identities](http://developer.zendesk.com/documentation/rest_api/user_identities.html) ✓
+* [Groups](http://developer.zendesk.com/documentation/rest_api/groups.html) ✓
 * [Group Membership](http://developer.zendesk.com/documentation/rest_api/group_memberships.html)
 * [Custom Agent Roles](http://developer.zendesk.com/documentation/rest_api/custom_roles.html)
-* [Organizations](http://developer.zendesk.com/documentation/rest_api/organizations.html) - DONE (except for related info)
+* [Organizations](http://developer.zendesk.com/documentation/rest_api/organizations.html) ✓ *except for related info*
 * [Search](http://developer.zendesk.com/documentation/rest_api/search.html)
 * [Tags](http://developer.zendesk.com/documentation/rest_api/tags.html)
 * [Forums](http://developer.zendesk.com/documentation/rest_api/forums.html)
@@ -57,14 +57,14 @@ Here is the status of the various API components:
 * [Topic Votes](http://developer.zendesk.com/documentation/rest_api/topic_votes.html)
 * [Account Settings](http://developer.zendesk.com/documentation/rest_api/account_settings.html)
 * [Activity Stream](http://developer.zendesk.com/documentation/rest_api/activity_stream.html)
-* [Attachments](http://developer.zendesk.com/documentation/rest_api/attachments.html) - DONE
+* [Attachments](http://developer.zendesk.com/documentation/rest_api/attachments.html) ✓
 * [Autocompletion](http://developer.zendesk.com/documentation/rest_api/autocomplete.html)
 * [Automations](http://developer.zendesk.com/documentation/rest_api/automations.html)
 * [Job Statuses](http://developer.zendesk.com/documentation/rest_api/job_statuses.html)
 * [Locales](http://developer.zendesk.com/documentation/rest_api/locales.html)
 * [Macros](http://developer.zendesk.com/documentation/rest_api/macros.html)
 * [Restrictions and Responsibilities](http://developer.zendesk.com/documentation/rest_api/restrictions.html)
-* [Satisfaction Ratings](http://developer.zendesk.com/documentation/rest_api/satisfaction_ratings.html) - DONE
+* [Satisfaction Ratings](http://developer.zendesk.com/documentation/rest_api/satisfaction_ratings.html) ✓
 * [Sharing Agreements](http://developer.zendesk.com/documentation/rest_api/sharing_agreements.html)
 * [Suspended Tickets](http://developer.zendesk.com/documentation/rest_api/suspended_tickets.html)
 * [Triggers](http://developer.zendesk.com/documentation/rest_api/triggers.html)
