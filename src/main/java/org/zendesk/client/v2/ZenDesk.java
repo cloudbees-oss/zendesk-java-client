@@ -443,9 +443,9 @@ public class ZenDesk implements Closeable {
     }
 
     public Identity requestVerifyUserIdentity(int userId, int identityId) {
-        return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/request_verification")
+        return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/request_verification.json")
                 .set("userId", userId)
-                .set("identityId", identityId)), handle(Identity.class, "identity")));
+                .set("identityId", identityId), JSON, ""), handle(Identity.class, "identity")));
     }
 
     public void deleteUserIdentity(User user, Identity identity) {
