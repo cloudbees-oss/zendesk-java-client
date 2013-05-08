@@ -465,6 +465,16 @@ public class ZenDesk implements Closeable {
         ), handleStatus()));
     }
 
+    public void createUserIdentity(int userId, Identity identity) {
+        complete(submit(req("POST", tmpl("/users/{userId}/identities.json").set("userId", userId), JSON, json(
+             Collections.singletonMap("identity", identity))), handle(Identity.class, "identity")));
+    }
+
+    public void createUserIdentity(User user, Identity identity) {
+        complete(submit(req("POST", tmpl("/users/{userId}/identities.json").set("userId", user.getId()), JSON, json(
+             Collections.singletonMap("identity", identity))), handle(Identity.class, "identity")));
+    }
+
     public Iterable<org.zendesk.client.v2.model.Request> getRequests() {
         return new PagedIterable<org.zendesk.client.v2.model.Request>(cnst("/requests.json"),
                 handleList(org.zendesk.client.v2.model.Request.class, "requests"));
