@@ -655,6 +655,14 @@ public class ZenDesk implements Closeable {
 
     private <T> ListenableFuture<T> submit(Request request, AsyncCompletionHandler<T> handler) {
         try {
+            if (request.getStringData() != null) {
+                logger.debug("Request {} {}\n{}", request.getMethod(), request.getUrl(), request.getStringData());
+            } else if (request.getByteData() != null) {
+                logger.debug("Request {} {} {} {} bytes", request.getMethod(), request.getUrl(), //
+                    request.getHeaders().getFirstValue("Content-type"), request.getByteData().length);
+            } else {
+                logger.debug("Request {} {}", request.getMethod(), request.getUrl());
+            }
             return client.executeRequest(request, handler);
         } catch (IOException e) {
             throw new ZenDeskException(e.getMessage(), e);
@@ -754,7 +762,7 @@ public class ZenDesk implements Closeable {
         return new AsyncCompletionHandler<List<T>>() {
             @Override
             public List<T> onCompleted(Response response) throws Exception {
-                logger.info("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
+                logger.debug("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
                         response.getResponseBody());
                 if (response.getStatusCode() / 100 == 2) {
                     List<T> values = new ArrayList<T>();
