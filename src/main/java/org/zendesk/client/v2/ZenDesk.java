@@ -820,6 +820,9 @@ public class ZenDesk implements Closeable {
         } catch (InterruptedException e) {
             throw new ZenDeskException(e.getMessage(), e);
         } catch (ExecutionException e) {
+            if (e.getCause() instanceof ZenDeskException) {
+                throw (ZenDeskException) e.getCause();
+            }
             throw new ZenDeskException(e.getMessage(), e);
         }
     }
