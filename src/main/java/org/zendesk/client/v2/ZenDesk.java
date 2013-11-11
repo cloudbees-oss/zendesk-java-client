@@ -411,8 +411,8 @@ public class ZenDesk implements Closeable {
 
     public List<Identity> setUserPrimaryIdentity(int userId, int identityId) {
         return complete(submit(req("PUT",
-                tmpl("/users/{userId}/identities/{identityId}/make_primary").set("userId", userId)
-                        .set("identityId", identityId)),
+                tmpl("/users/{userId}/identities/{identityId}/make_primary.json").set("userId", userId)
+                        .set("identityId", identityId), JSON, ""),
                 handleList(Identity.class, "identities")));
     }
 
@@ -427,9 +427,9 @@ public class ZenDesk implements Closeable {
     }
 
     public Identity verifyUserIdentity(int userId, int identityId) {
-        return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/verify")
+        return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/verify.json")
                 .set("userId", userId)
-                .set("identityId", identityId)), handle(Identity.class, "identity")));
+                .set("identityId", identityId), JSON, ""), handle(Identity.class, "identity")));
     }
 
     public Identity requestVerifyUserIdentity(User user, Identity identity) {
@@ -443,9 +443,9 @@ public class ZenDesk implements Closeable {
     }
 
     public Identity requestVerifyUserIdentity(int userId, int identityId) {
-        return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/request_verification")
+        return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/request_verification.json")
                 .set("userId", userId)
-                .set("identityId", identityId)), handle(Identity.class, "identity")));
+                .set("identityId", identityId), JSON, ""), handle(Identity.class, "identity")));
     }
 
     public void deleteUserIdentity(User user, Identity identity) {
