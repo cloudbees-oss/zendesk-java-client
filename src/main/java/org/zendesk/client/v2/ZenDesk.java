@@ -13,6 +13,7 @@ import com.ning.http.client.Realm;
 import com.ning.http.client.Request;
 import com.ning.http.client.RequestBuilder;
 import com.ning.http.client.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.Attachment;
@@ -665,6 +666,14 @@ public class ZenDesk implements Closeable {
 
     private <T> ListenableFuture<T> submit(Request request, AsyncCompletionHandler<T> handler) {
         try {
+            if (request.getStringData() != null) {
+                logger.debug("Request {} {}\n{}", request.getMethod(), request.getUrl(), request.getStringData());
+            } else if (request.getByteData() != null) {
+                logger.debug("Request {} {} {} {} bytes", request.getMethod(), request.getUrl(), //
+                    request.getHeaders().getFirstValue("Content-type"), request.getByteData().length);
+            } else {
+                logger.debug("Request {} {}", request.getMethod(), request.getUrl());
+            }
             return client.executeRequest(request, handler);
         } catch (IOException e) {
             throw new ZenDeskException(e.getMessage(), e);
@@ -716,12 +725,11 @@ public class ZenDesk implements Closeable {
         return new AsyncCompletionHandler<Void>() {
             @Override
             public Void onCompleted(Response response) throws Exception {
-                logger.debug("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
-                        response.getResponseBody());
-                if (response.getStatusCode() / 100 == 2) {
+                logResponse(response);
+                if (isStatus2xx(response)) {
                     return null;
                 }
-                throw new ZenDeskException(response.getStatusText());
+                throw new ZenDeskResponseException(response);
             }
         };
     }
@@ -730,15 +738,14 @@ public class ZenDesk implements Closeable {
         return new AsyncCompletionHandler<T>() {
             @Override
             public T onCompleted(Response response) throws Exception {
-                logger.debug("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
-                        response.getResponseBody());
-                if (response.getStatusCode() / 100 == 2) {
+                logResponse(response);
+                if (isStatus2xx(response)) {
                     return (T) mapper.reader(clazz).readValue(response.getResponseBodyAsBytes());
                 }
                 if (response.getStatusCode() == 404) {
                     return null;
                 }
-                throw new ZenDeskException(response.getStatusText());
+                throw new ZenDeskResponseException(response);
             }
         };
     }
@@ -747,15 +754,14 @@ public class ZenDesk implements Closeable {
         return new AsyncCompletionHandler<T>() {
             @Override
             public T onCompleted(Response response) throws Exception {
-                logger.debug("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
-                        response.getResponseBody());
-                if (response.getStatusCode() / 100 == 2) {
+                logResponse(response);
+                if (isStatus2xx(response)) {
                     return mapper.convertValue(mapper.readTree(response.getResponseBodyAsBytes()).get(name), clazz);
                 }
                 if (response.getStatusCode() == 404) {
                     return null;
                 }
-                throw new ZenDeskException(response.getStatusText());
+                throw new ZenDeskResponseException(response);
             }
         };
     }
@@ -764,16 +770,15 @@ public class ZenDesk implements Closeable {
         return new AsyncCompletionHandler<List<T>>() {
             @Override
             public List<T> onCompleted(Response response) throws Exception {
-                logger.info("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
-                        response.getResponseBody());
-                if (response.getStatusCode() / 100 == 2) {
+                logResponse(response);
+                if (isStatus2xx(response)) {
                     List<T> values = new ArrayList<T>();
                     for (JsonNode node : mapper.readTree(response.getResponseBodyAsBytes())) {
                         values.add(mapper.convertValue(node, clazz));
                     }
                     return values;
                 }
-                throw new ZenDeskException(response.getStatusText());
+                throw new ZenDeskResponseException(response);
             }
         };
     }
@@ -782,16 +787,15 @@ public class ZenDesk implements Closeable {
         return new AsyncCompletionHandler<List<T>>() {
             @Override
             public List<T> onCompleted(Response response) throws Exception {
-                logger.debug("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
-                        response.getResponseBody());
-                if (response.getStatusCode() / 100 == 2) {
+                logResponse(response);
+                if (isStatus2xx(response)) {
                     List<T> values = new ArrayList<T>();
                     for (JsonNode node : mapper.readTree(response.getResponseBodyAsBytes()).get(name)) {
                         values.add(mapper.convertValue(node, clazz));
                     }
                     return values;
                 }
-                throw new ZenDeskException(response.getStatusText());
+                throw new ZenDeskResponseException(response);
             }
         };
     }
@@ -804,6 +808,18 @@ public class ZenDesk implements Closeable {
         return new FixedUri(url + template);
     }
 
+    private void logResponse(Response response) throws IOException {
+        logger.debug("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
+            response.getResponseBody());
+        if (logger.isTraceEnabled()) {
+            logger.trace("Response headers {}", response.getHeaders());
+        }
+    }
+
+    private boolean isStatus2xx(Response response) {
+        return response.getStatusCode() / 100 == 2;
+    }
+
     //////////////////////////////////////////////////////////////////////
     // Static helper methods
     //////////////////////////////////////////////////////////////////////
@@ -814,6 +830,9 @@ public class ZenDesk implements Closeable {
         } catch (InterruptedException e) {
             throw new ZenDeskException(e.getMessage(), e);
         } catch (ExecutionException e) {
+            if (e.getCause() instanceof ZenDeskException) {
+                throw (ZenDeskException) e.getCause();
+            }
             throw new ZenDeskException(e.getMessage(), e);
         }
     }

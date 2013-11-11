@@ -7,9 +7,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
-* @author stephenc
-* @since 09/04/2013 15:09
-*/
+ * @author stephenc
+ * @since 09/04/2013 15:09
+ */
 public class Comment {
     private Integer id;
     private String body;
@@ -17,6 +17,7 @@ public class Comment {
     private List<String> uploads;
     private List<Attachment> attachments;
     private Date createdAt;
+    private Boolean publicComment;
 
     public Comment() {
     }
@@ -78,6 +79,15 @@ public class Comment {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    @JsonProperty("public")
+    public Boolean isPublic() {
+        return publicComment;
+    }
+
+    public void setPublic(Boolean isPublic) {
+        this.publicComment = isPublic;
     }
 
     @Override
