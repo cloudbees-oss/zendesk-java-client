@@ -28,6 +28,7 @@ import org.zendesk.client.v2.model.User;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,7 +44,7 @@ import java.util.concurrent.ExecutionException;
  * @since 04/04/2013 13:08
  */
 public class ZenDesk implements Closeable {
-    private static final String JSON = "application/json";
+    private static final String JSON = "application/json; charset=UTF-8";
     private final boolean closeClient;
     private final AsyncHttpClient client;
     private final Realm realm;
@@ -690,14 +691,11 @@ public class ZenDesk implements Closeable {
     }
 
     private Request req(String method, Uri template, String contentType, String body) {
-        RequestBuilder builder = new RequestBuilder(method);
-        if (realm != null) {
-            builder.setRealm(realm);
+        try {
+            return req(method, template, contentType, body.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new ZenDeskException(e.getMessage(), e);
         }
-        builder.setUrl(template.toString());
-        builder.addHeader("Content-type", contentType);
-        builder.setBody(body);
-        return builder.build();
     }
 
     private Request req(String method, Uri template, String contentType, byte[] body) {
