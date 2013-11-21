@@ -43,7 +43,7 @@ import java.util.concurrent.ExecutionException;
  * @since 04/04/2013 13:08
  */
 public class ZenDesk implements Closeable {
-    private static final String JSON = "application/json";
+    private static final String JSON = "application/json; charset=UTF-8";
     private final boolean closeClient;
     private final AsyncHttpClient client;
     private final Realm realm;
@@ -656,9 +656,9 @@ public class ZenDesk implements Closeable {
     // Helper methods
     //////////////////////////////////////////////////////////////////////
 
-    private String json(Object object) {
+    private byte[] json(Object object) {
         try {
-            return mapper.writeValueAsString(object);
+            return mapper.writeValueAsBytes(object);
         } catch (JsonProcessingException e) {
             throw new ZenDeskException(e.getMessage(), e);
         }
