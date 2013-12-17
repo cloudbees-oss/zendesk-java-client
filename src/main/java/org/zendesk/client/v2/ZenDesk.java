@@ -28,6 +28,7 @@ import org.zendesk.client.v2.model.User;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,7 +71,6 @@ public class ZenDesk implements Closeable {
             }
             this.realm = null;
         }
-        createMapper();
         this.mapper = createMapper();
     }
 
@@ -690,14 +690,11 @@ public class ZenDesk implements Closeable {
     }
 
     private Request req(String method, Uri template, String contentType, String body) {
-        RequestBuilder builder = new RequestBuilder(method);
-        if (realm != null) {
-            builder.setRealm(realm);
+        try {
+            return req(method, template, contentType, body.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new ZenDeskException(e.getMessage(), e);
         }
-        builder.setUrl(template.toString());
-        builder.addHeader("Content-type", contentType);
-        builder.setBody(body);
-        return builder.build();
     }
 
     private Request req(String method, Uri template, String contentType, byte[] body) {
@@ -707,7 +704,7 @@ public class ZenDesk implements Closeable {
         }
         builder.setUrl(template.toString());
         builder.addHeader("Content-type", contentType);
-        builder.setBody(body);
+        builder.setBody(body).setBodyEncoding("UTF-8");
         return builder.build();
     }
 
@@ -734,6 +731,7 @@ public class ZenDesk implements Closeable {
         };
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> AsyncCompletionHandler<T> handle(final Class<T> clazz) {
         return new AsyncCompletionHandler<T>() {
             @Override
