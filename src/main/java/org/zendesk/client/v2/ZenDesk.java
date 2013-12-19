@@ -28,7 +28,6 @@ import org.zendesk.client.v2.model.User;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -413,7 +412,7 @@ public class ZenDesk implements Closeable {
     public List<Identity> setUserPrimaryIdentity(int userId, int identityId) {
         return complete(submit(req("PUT",
                 tmpl("/users/{userId}/identities/{identityId}/make_primary.json").set("userId", userId)
-                        .set("identityId", identityId), JSON, ""),
+                        .set("identityId", identityId), JSON, null),
                 handleList(Identity.class, "identities")));
     }
 
@@ -430,7 +429,7 @@ public class ZenDesk implements Closeable {
     public Identity verifyUserIdentity(int userId, int identityId) {
         return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/verify.json")
                 .set("userId", userId)
-                .set("identityId", identityId), JSON, ""), handle(Identity.class, "identity")));
+                .set("identityId", identityId), JSON, null), handle(Identity.class, "identity")));
     }
 
     public Identity requestVerifyUserIdentity(User user, Identity identity) {
@@ -446,7 +445,7 @@ public class ZenDesk implements Closeable {
     public Identity requestVerifyUserIdentity(int userId, int identityId) {
         return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/request_verification.json")
                 .set("userId", userId)
-                .set("identityId", identityId), JSON, ""), handle(Identity.class, "identity")));
+                .set("identityId", identityId), JSON, null), handle(Identity.class, "identity")));
     }
 
     public void deleteUserIdentity(User user, Identity identity) {
@@ -689,14 +688,6 @@ public class ZenDesk implements Closeable {
         return builder.build();
     }
 
-    private Request req(String method, Uri template, String contentType, String body) {
-        try {
-            return req(method, template, contentType, body.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new ZenDeskException(e.getMessage(), e);
-        }
-    }
-
     private Request req(String method, Uri template, String contentType, byte[] body) {
         RequestBuilder builder = new RequestBuilder(method);
         if (realm != null) {
@@ -704,7 +695,7 @@ public class ZenDesk implements Closeable {
         }
         builder.setUrl(template.toString());
         builder.addHeader("Content-type", contentType);
-        builder.setBody(body).setBodyEncoding("UTF-8");
+        builder.setBody(body);
         return builder.build();
     }
 
