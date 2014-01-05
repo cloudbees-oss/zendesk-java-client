@@ -208,7 +208,7 @@ public class Field {
         return sb.toString();
     }
 
-    private static class Option {
+    public static class Option {
         private String name;
         private String value;
 
