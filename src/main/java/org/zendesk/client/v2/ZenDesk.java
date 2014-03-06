@@ -43,7 +43,7 @@ import java.util.concurrent.ExecutionException;
  * @since 04/04/2013 13:08
  */
 public class ZenDesk implements Closeable {
-    private static final String JSON = "application/json";
+    private static final String JSON = "application/json; charset=UTF-8";
     private final boolean closeClient;
     private final AsyncHttpClient client;
     private final Realm realm;
@@ -70,7 +70,6 @@ public class ZenDesk implements Closeable {
             }
             this.realm = null;
         }
-        createMapper();
         this.mapper = createMapper();
     }
 
@@ -413,7 +412,7 @@ public class ZenDesk implements Closeable {
     public List<Identity> setUserPrimaryIdentity(int userId, int identityId) {
         return complete(submit(req("PUT",
                 tmpl("/users/{userId}/identities/{identityId}/make_primary.json").set("userId", userId)
-                        .set("identityId", identityId), JSON, ""),
+                        .set("identityId", identityId), JSON, null),
                 handleList(Identity.class, "identities")));
     }
 
@@ -430,7 +429,7 @@ public class ZenDesk implements Closeable {
     public Identity verifyUserIdentity(int userId, int identityId) {
         return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/verify.json")
                 .set("userId", userId)
-                .set("identityId", identityId), JSON, ""), handle(Identity.class, "identity")));
+                .set("identityId", identityId), JSON, null), handle(Identity.class, "identity")));
     }
 
     public Identity requestVerifyUserIdentity(User user, Identity identity) {
@@ -446,7 +445,7 @@ public class ZenDesk implements Closeable {
     public Identity requestVerifyUserIdentity(int userId, int identityId) {
         return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/request_verification.json")
                 .set("userId", userId)
-                .set("identityId", identityId), JSON, ""), handle(Identity.class, "identity")));
+                .set("identityId", identityId), JSON, null), handle(Identity.class, "identity")));
     }
 
     public void deleteUserIdentity(User user, Identity identity) {
@@ -656,9 +655,9 @@ public class ZenDesk implements Closeable {
     // Helper methods
     //////////////////////////////////////////////////////////////////////
 
-    private String json(Object object) {
+    private byte[] json(Object object) {
         try {
-            return mapper.writeValueAsString(object);
+            return mapper.writeValueAsBytes(object);
         } catch (JsonProcessingException e) {
             throw new ZenDeskException(e.getMessage(), e);
         }
@@ -686,17 +685,6 @@ public class ZenDesk implements Closeable {
             builder.setRealm(realm);
         }
         builder.setUrl(template.toString());
-        return builder.build();
-    }
-
-    private Request req(String method, Uri template, String contentType, String body) {
-        RequestBuilder builder = new RequestBuilder(method);
-        if (realm != null) {
-            builder.setRealm(realm);
-        }
-        builder.setUrl(template.toString());
-        builder.addHeader("Content-type", contentType);
-        builder.setBody(body);
         return builder.build();
     }
 
@@ -734,6 +722,7 @@ public class ZenDesk implements Closeable {
         };
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> AsyncCompletionHandler<T> handle(final Class<T> clazz) {
         return new AsyncCompletionHandler<T>() {
             @Override
