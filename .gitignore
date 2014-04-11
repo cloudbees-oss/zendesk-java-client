@@ -15,3 +15,6 @@ build
 .project
 
 .DS_Store
+
+# ignore the file with the credentials
+src/test/resources/zendesk.properties
