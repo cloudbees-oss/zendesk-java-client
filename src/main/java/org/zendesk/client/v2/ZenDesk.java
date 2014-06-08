@@ -96,6 +96,11 @@ public class ZenDesk implements Closeable {
         return complete(submit(req("GET", tmpl("/tickets/{id}.json").set("id", id)), handle(Ticket.class,
                 "ticket")));
     }
+    
+    public List<Ticket> getTicketIncidents(int id) {
+        return complete(submit(req("GET", tmpl("/tickets/{id}/incidents.json").set("id", id)),
+                handleList(Ticket.class, "tickets")));
+    }
 
     public void deleteTicket(Ticket ticket) {
         checkHasId(ticket);
