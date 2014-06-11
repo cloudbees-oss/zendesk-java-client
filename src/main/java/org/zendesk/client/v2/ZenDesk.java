@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
+import org.zendesk.client.v2.model.Status;
 
 /**
  * @author stephenc
@@ -140,6 +141,11 @@ public class ZenDesk implements Closeable {
 
     public Iterable<Ticket> getTickets() {
         return new PagedIterable<Ticket>(cnst("/tickets.json"), handleList(Ticket.class, "tickets"));
+    }
+    
+    public Iterable<Ticket> getTicketsByStatus(Status... ticketStatus) {
+        return new PagedIterable<Ticket>(tmpl("/tickets.json{?status}").set("status", statusArray(ticketStatus)), 
+                handleList(Ticket.class, "tickets"));
     }
 
     public List<Ticket> getTickets(int id, int... ids) {
@@ -902,6 +908,15 @@ public class ZenDesk implements Closeable {
         result.add(id);
         for (int i : ids) {
             result.add(i);
+        }
+        return result;
+    }
+    
+    private static List<String> statusArray(Status... statuses)
+    {
+        List<String> result = new ArrayList<String>(statuses.length);
+        for (Status s : statuses) {
+            result.add(s.toString());
         }
         return result;
     }
