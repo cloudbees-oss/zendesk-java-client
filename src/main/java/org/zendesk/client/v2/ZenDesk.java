@@ -149,7 +149,7 @@ public class ZenDesk implements Closeable {
     }
     
     public Iterable<Ticket> getTicketsFromSearch(String searchTerm) {
-        return new PagedIterable<Ticket>(tmpl("/search.json{?query}").set("query", searchTerm+"+type:ticket"), 
+        return new PagedIterable<Ticket>(tmpl("/search.json{?query}").set("query", searchTerm+"\\+type:ticket"), 
                 handleList(Ticket.class, "results"));
     }
 
