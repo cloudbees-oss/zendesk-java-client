@@ -149,7 +149,7 @@ public class ZenDesk implements Closeable {
     }
     
     public Iterable<Ticket> getTicketsFromSearch(String searchTerm) {
-        return new PagedIterable<Ticket>(tmpl("/search.json{?query}").set("query", searchTerm+"\\+type:ticket"), 
+        return new PagedIterable<Ticket>(tmpl("/search.json{?query}").set("query", searchTerm+"+type:ticket"), 
                 handleList(Ticket.class, "results"));
     }
 
@@ -721,7 +721,7 @@ public class ZenDesk implements Closeable {
             builder.setRealm(realm);
         }
         builder.addQueryParameter("page", Integer.toString(page));
-        builder.setUrl(template.toString());
+        builder.setUrl(template.toString().replace("%2B", "+")); //replace out %2B with + due to API restriction
         return builder.build();
     }
 
