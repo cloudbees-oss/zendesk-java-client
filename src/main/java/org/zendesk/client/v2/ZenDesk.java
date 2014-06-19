@@ -147,6 +147,11 @@ public class ZenDesk implements Closeable {
         return new PagedIterable<Ticket>(tmpl("/tickets.json{?status}").set("status", statusArray(ticketStatus)), 
                 handleList(Ticket.class, "tickets"));
     }
+    
+    public Iterable<Ticket> getTicketsFromSearch(String searchTerm) {
+        return new PagedIterable<Ticket>(tmpl("/search.json{?query}").set("query", searchTerm+"+type:ticket"), 
+                handleList(Ticket.class, "results"));
+    }
 
     public List<Ticket> getTickets(int id, int... ids) {
         return complete(submit(req("GET", tmpl("/tickets/show_many.json{?ids}").set("ids", idArray(id, ids))),
