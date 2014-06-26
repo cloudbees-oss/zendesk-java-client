@@ -9,15 +9,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class
         SatisfactionRatingEvent extends Event {
     private String score;
-    private Integer assigneeId;
+    private Long assigneeId;
     private String body;
 
     @JsonProperty("assignee_id")
-    public Integer getAssigneeId() {
+    public Long getAssigneeId() {
         return assigneeId;
     }
 
-    public void setAssigneeId(Integer assigneeId) {
+    public void setAssigneeId(Long assigneeId) {
         this.assigneeId = assigneeId;
     }
 

@@ -27,13 +27,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 })
 
 public abstract class Event {
-    private Integer id;
+    private Long id;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

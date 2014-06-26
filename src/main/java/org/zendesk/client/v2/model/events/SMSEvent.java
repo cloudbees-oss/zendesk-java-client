@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class SMSEvent extends Event {
     private String body;
     private String phoneNumber;
-    private Integer recipientId;
+    private Long recipientId;
 
     public String getBody() {
         return body;
@@ -29,11 +29,11 @@ public class SMSEvent extends Event {
     }
 
     @JsonProperty("recipient_id")
-    public Integer getRecipientId() {
+    public Long getRecipientId() {
         return recipientId;
     }
 
-    public void setRecipientId(Integer recipientId) {
+    public void setRecipientId(Long recipientId) {
         this.recipientId = recipientId;
     }
 

@@ -10,15 +10,15 @@ import java.util.Map;
  */
 public class FacebookEvent extends Event {
     private Map<String, Object> page;
-    private Integer communication;
+    private Long communication;
     private String ticketVia;
     private String body;
 
-    public Integer getCommunication() {
+    public Long getCommunication() {
         return communication;
     }
 
-    public void setCommunication(Integer communication) {
+    public void setCommunication(Long communication) {
         this.communication = communication;
     }
 

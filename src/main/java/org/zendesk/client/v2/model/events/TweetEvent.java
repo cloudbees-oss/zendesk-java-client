@@ -11,7 +11,7 @@ import java.util.List;
 public class TweetEvent extends Event {
     private Boolean directMessage;
     private String body;
-    private List<Integer> recipients;
+    private List<Long> recipients;
 
     public String getBody() {
         return body;
@@ -30,11 +30,11 @@ public class TweetEvent extends Event {
         this.directMessage = directMessage;
     }
 
-    public List<Integer> getRecipients() {
+    public List<Long> getRecipients() {
         return recipients;
     }
 
-    public void setRecipients(List<Integer> recipients) {
+    public void setRecipients(List<Long> recipients) {
         this.recipients = recipients;
     }
 

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 05/04/2013 11:57
  */
 public class TicketSharingEvent extends Event {
-    private Integer agreementId;
+    private Long agreementId;
     private String action;
 
     public String getAction() {
@@ -19,11 +19,11 @@ public class TicketSharingEvent extends Event {
     }
 
     @JsonProperty("agreement_id")
-    public Integer getAgreementId() {
+    public Long getAgreementId() {
         return agreementId;
     }
 
-    public void setAgreementId(Integer agreementId) {
+    public void setAgreementId(Long agreementId) {
         this.agreementId = agreementId;
     }
 

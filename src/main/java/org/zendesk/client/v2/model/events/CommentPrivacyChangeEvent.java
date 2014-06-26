@@ -7,14 +7,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 05/04/2013 11:55
  */
 public class CommentPrivacyChangeEvent extends PublicPrivateEvent {
-    private Integer commentId;
+    private Long commentId;
 
     @JsonProperty("comment_id")
-    public Integer getCommentId() {
+    public Long getCommentId() {
         return commentId;
     }
 
-    public void setCommentId(Integer commentId) {
+    public void setCommentId(Long commentId) {
         this.commentId = commentId;
     }
 

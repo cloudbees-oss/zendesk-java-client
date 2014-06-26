@@ -9,14 +9,14 @@ import java.util.List;
  * @since 05/04/2013 11:56
  */
 public class CcEvent extends Event {
-    private List<Integer> recipients;
+    private List<Long> recipients;
     private Via via;
 
-    public List<Integer> getRecipients() {
+    public List<Long> getRecipients() {
         return recipients;
     }
 
-    public void setRecipients(List<Integer> recipients) {
+    public void setRecipients(List<Long> recipients) {
         this.recipients = recipients;
     }
 

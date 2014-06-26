@@ -13,7 +13,7 @@ public class CommentEvent extends PublicPrivateEvent {
     private String body;
     private String htmlBody;
     private Boolean trusted;
-    private Integer authorId;
+    private Long authorId;
     private List<Attachment> attachments;
 
     public List<Attachment> getAttachments() {
@@ -25,11 +25,11 @@ public class CommentEvent extends PublicPrivateEvent {
     }
 
     @JsonProperty("author_id")
-    public Integer getAuthorId() {
+    public Long getAuthorId() {
         return authorId;
     }
 
-    public void setAuthorId(Integer authorId) {
+    public void setAuthorId(Long authorId) {
         this.authorId = authorId;
     }
 
