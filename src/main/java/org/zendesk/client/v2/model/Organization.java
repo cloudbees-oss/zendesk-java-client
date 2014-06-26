@@ -9,7 +9,7 @@ import java.util.List;
  * @author stephenc
  * @since 22/04/2013 15:38
  */
-public class Organization {
+public class Organization implements SearchResultEntity {
     private Long id;
     private String externalId;
     private String name;

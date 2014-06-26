@@ -11,7 +11,7 @@ import java.util.List;
  * @since 04/04/2013 14:25
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Ticket extends Request {
+public class Ticket extends Request implements SearchResultEntity {
     private String externalId;
     private Type type;
     private Priority priority;

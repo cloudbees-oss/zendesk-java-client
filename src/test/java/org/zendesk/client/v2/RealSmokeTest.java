@@ -209,6 +209,16 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void searchUserByEmail() throws Exception {
+        createClientWithTokenOrPassword();
+        String requesterEmail = config.getProperty("requester.email");
+        assumeThat("Must have a requester email", requesterEmail, notNullValue());
+        for (User user : instance.getSearchResults(User.class, "requester:"+requesterEmail)) {
+            assertThat(user.getEmail(), is(requesterEmail));
+        }
+    }
+
+    @Test
     public void lookupUserIdentities() throws Exception {
         createClientWithTokenOrPassword();
         User user = instance.getCurrentUser();

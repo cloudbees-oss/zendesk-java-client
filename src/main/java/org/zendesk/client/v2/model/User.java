@@ -11,7 +11,7 @@ import java.util.List;
  * @author stephenc
  * @since 05/04/2013 15:32
  */
-public class User {
+public class User implements SearchResultEntity {
     private Long id;
     private String url;
     private String name;

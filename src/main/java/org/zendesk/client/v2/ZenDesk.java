@@ -23,6 +23,7 @@ import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.Organization;
+import org.zendesk.client.v2.model.SearchResultEntity;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.User;
 
@@ -52,6 +53,18 @@ public class ZenDesk implements Closeable {
     private final ObjectMapper mapper;
     private final Logger logger;
     private boolean closed = false;
+    private static final Map<String, Class<? extends SearchResultEntity>> searchResultTypes = searchResultTypes();
+
+    private static Map<String, Class<? extends SearchResultEntity>> searchResultTypes() {
+        Map<String, Class<? extends SearchResultEntity>> result = new HashMap<String, Class<? extends
+                SearchResultEntity>>();
+        result.put("ticket", Ticket.class);
+        result.put("user", User.class);
+        result.put("group", Group.class);
+        result.put("organization", Organization.class);
+        // result.put("topic", Topic.class) TODO add this when supported
+        return Collections.unmodifiableMap(result);
+    }
 
     private ZenDesk(AsyncHttpClient client, String url, String username, String password) {
         this.logger = LoggerFactory.getLogger(ZenDesk.class);
@@ -667,6 +680,27 @@ public class ZenDesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/groups/{id}.json").set("id", id)), handleStatus()));
     }
 
+    public Iterable<SearchResultEntity> getSearchResults(String query) {
+        return new PagedIterable<SearchResultEntity>(tmpl("/search.json{?query}").set("query", query),
+                handleSearchList("results"));
+    }
+
+    public <T extends SearchResultEntity> Iterable<T> getSearchResults(Class<T> type, String query) {
+        String typeName = null;
+        for (Map.Entry<String,Class<? extends SearchResultEntity>> entry: searchResultTypes.entrySet()) {
+            if (type.equals(entry.getValue())) {
+                typeName = entry.getKey();
+                break;
+            }
+        }
+        if (typeName == null) return Collections.emptyList();
+        return new PagedIterable<T>(tmpl("/search.json{?query}").set("query", query + "+type:" + typeName),
+                handleList(type, "results"));
+    }
+
+    // TODO search with sort order
+    // TODO search with query building API
+
     //////////////////////////////////////////////////////////////////////
     // Helper methods
     //////////////////////////////////////////////////////////////////////
@@ -797,6 +831,26 @@ public class ZenDesk implements Closeable {
                     List<T> values = new ArrayList<T>();
                     for (JsonNode node : mapper.readTree(response.getResponseBodyAsBytes()).get(name)) {
                         values.add(mapper.convertValue(node, clazz));
+                    }
+                    return values;
+                }
+                throw new ZenDeskResponseException(response);
+            }
+        };
+    }
+
+    protected AsyncCompletionHandler<List<SearchResultEntity>> handleSearchList(final String name) {
+        return new AsyncCompletionHandler<List<SearchResultEntity>>() {
+            @Override
+            public List<SearchResultEntity> onCompleted(Response response) throws Exception {
+                logResponse(response);
+                if (isStatus2xx(response)) {
+                    List<SearchResultEntity> values = new ArrayList<SearchResultEntity>();
+                    for (JsonNode node : mapper.readTree(response.getResponseBodyAsBytes()).get(name)) {
+                        Class<? extends SearchResultEntity> clazz = searchResultTypes.get(node.get("result_type"));
+                        if (clazz != null) {
+                        values.add(mapper.convertValue(node, clazz));
+                        }
                     }
                     return values;
                 }
