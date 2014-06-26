@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
+import org.zendesk.client.v2.model.Status;
 
 /**
  * @author stephenc
@@ -96,6 +97,11 @@ public class ZenDesk implements Closeable {
         return complete(submit(req("GET", tmpl("/tickets/{id}.json").set("id", id)), handle(Ticket.class,
                 "ticket")));
     }
+    
+    public List<Ticket> getTicketIncidents(int id) {
+        return complete(submit(req("GET", tmpl("/tickets/{id}/incidents.json").set("id", id)),
+                handleList(Ticket.class, "tickets")));
+    }
 
     public void deleteTicket(Ticket ticket) {
         checkHasId(ticket);
@@ -135,6 +141,16 @@ public class ZenDesk implements Closeable {
 
     public Iterable<Ticket> getTickets() {
         return new PagedIterable<Ticket>(cnst("/tickets.json"), handleList(Ticket.class, "tickets"));
+    }
+    
+    public Iterable<Ticket> getTicketsByStatus(Status... ticketStatus) {
+        return new PagedIterable<Ticket>(tmpl("/tickets.json{?status}").set("status", statusArray(ticketStatus)), 
+                handleList(Ticket.class, "tickets"));
+    }
+    
+    public Iterable<Ticket> getTicketsFromSearch(String searchTerm) {
+        return new PagedIterable<Ticket>(tmpl("/search.json{?query}").set("query", searchTerm+"+type:ticket"), 
+                handleList(Ticket.class, "results"));
     }
 
     public List<Ticket> getTickets(int id, int... ids) {
@@ -705,7 +721,7 @@ public class ZenDesk implements Closeable {
             builder.setRealm(realm);
         }
         builder.addQueryParameter("page", Integer.toString(page));
-        builder.setUrl(template.toString());
+        builder.setUrl(template.toString().replace("%2B", "+")); //replace out %2B with + due to API restriction
         return builder.build();
     }
 
@@ -897,6 +913,15 @@ public class ZenDesk implements Closeable {
         result.add(id);
         for (int i : ids) {
             result.add(i);
+        }
+        return result;
+    }
+    
+    private static List<String> statusArray(Status... statuses)
+    {
+        List<String> result = new ArrayList<String>(statuses.length);
+        for (Status s : statuses) {
+            result.add(s.toString());
         }
         return result;
     }
