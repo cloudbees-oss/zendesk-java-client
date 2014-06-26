@@ -9,7 +9,7 @@ import java.util.Date;
  * @since 22/04/2013 16:27
  */
 public class Group {
-    private Integer id;
+    private Long id;
     private String url;
     private String name;
     private Boolean deleted;
@@ -19,11 +19,11 @@ public class Group {
     public Group() {
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

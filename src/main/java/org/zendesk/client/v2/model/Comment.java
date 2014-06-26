@@ -11,9 +11,9 @@ import java.util.List;
  * @since 09/04/2013 15:09
  */
 public class Comment {
-    private Integer id;
+    private Long id;
     private String body;
-    private Integer authorId;
+    private Long authorId;
     private List<String> uploads;
     private List<Attachment> attachments;
     private Date createdAt;
@@ -56,11 +56,11 @@ public class Comment {
     }
 
     @JsonProperty("author_id")
-    public Integer getAuthorId() {
+    public Long getAuthorId() {
         return authorId;
     }
 
-    public void setAuthorId(Integer authorId) {
+    public void setAuthorId(Long authorId) {
         this.authorId = authorId;
     }
 
@@ -73,11 +73,11 @@ public class Comment {
         this.createdAt = createdAt;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

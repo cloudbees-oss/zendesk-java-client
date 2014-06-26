@@ -9,14 +9,14 @@ import java.util.Date;
  * @since 09/04/2013 15:08
  */
 public class Request {
-    protected Integer id;
+    protected Long id;
     protected String url;
     protected String subject;
     protected String description;
     protected Status status;
     protected Ticket.Requester requester;
-    protected Integer requesterId;
-    protected Integer organizationId;
+    protected Long requesterId;
+    protected Long organizationId;
     protected Via via;
     protected Date createdAt;
     protected Date updatedAt;
@@ -40,29 +40,29 @@ public class Request {
         this.description = description;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
     @JsonProperty("organization_id")
-    public Integer getOrganizationId() {
+    public Long getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(Integer organizationId) {
+    public void setOrganizationId(Long organizationId) {
         this.organizationId = organizationId;
     }
 
     @JsonProperty("requester_id")
-    public Integer getRequesterId() {
+    public Long getRequesterId() {
         return requesterId;
     }
 
-    public void setRequesterId(Integer requesterId) {
+    public void setRequesterId(Long requesterId) {
         this.requesterId = requesterId;
         if (requesterId != null) {
             this.requester = null;

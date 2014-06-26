@@ -9,7 +9,7 @@ import java.util.List;
  * @since 05/04/2013 15:36
  */
 public class Photo {
-    private Integer id;
+    private Long id;
     private String fileName;
     private String contentUrl;
     private String contentType;
@@ -42,11 +42,11 @@ public class Photo {
         this.fileName = fileName;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

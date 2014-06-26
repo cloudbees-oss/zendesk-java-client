@@ -16,20 +16,20 @@ public class Ticket extends Request {
     private Type type;
     private Priority priority;
     private String recipient;
-    private Integer submitterId;
-    private Integer assigneeId;
-    private Integer groupId;
-    private List<Integer> collaboratorIds;
-    private Integer forumTopicId;
-    private Integer problemId;
+    private Long submitterId;
+    private Long assigneeId;
+    private Long groupId;
+    private List<Long> collaboratorIds;
+    private Long forumTopicId;
+    private Long problemId;
     private boolean hasIncidents;
     private Date dueAt;
     private List<String> tags;
     private List<CustomFieldValue> customFields;
     private SatisfactionRating satisfactionRating;
-    private List<Integer> sharingAgreementIds;
-    private List<Integer> followupIds;
-    private Integer ticketFormId;
+    private List<Long> sharingAgreementIds;
+    private List<Long> followupIds;
+    private Long ticketFormId;
 
     public Ticket() {
     }
@@ -40,27 +40,27 @@ public class Ticket extends Request {
         this.comment = comment;
     }
 
-    public Ticket(int requesterId, String subject, Comment comment) {
+    public Ticket(long requesterId, String subject, Comment comment) {
         this.subject = subject;
         this.requesterId = requesterId;
         this.comment = comment;
     }
 
     @JsonProperty("assignee_id")
-    public Integer getAssigneeId() {
+    public Long getAssigneeId() {
         return assigneeId;
     }
 
-    public void setAssigneeId(Integer assigneeId) {
+    public void setAssigneeId(Long assigneeId) {
         this.assigneeId = assigneeId;
     }
 
     @JsonProperty("collaborator_ids")
-    public List<Integer> getCollaboratorIds() {
+    public List<Long> getCollaboratorIds() {
         return collaboratorIds;
     }
 
-    public void setCollaboratorIds(List<Integer> collaboratorIds) {
+    public void setCollaboratorIds(List<Long> collaboratorIds) {
         this.collaboratorIds = collaboratorIds;
     }
 
@@ -92,29 +92,29 @@ public class Ticket extends Request {
     }
 
     @JsonProperty("followup_ids")
-    public List<Integer> getFollowupIds() {
+    public List<Long> getFollowupIds() {
         return followupIds;
     }
 
-    public void setFollowupIds(List<Integer> followupIds) {
+    public void setFollowupIds(List<Long> followupIds) {
         this.followupIds = followupIds;
     }
 
     @JsonProperty("forum_topic_id")
-    public Integer getForumTopicId() {
+    public Long getForumTopicId() {
         return forumTopicId;
     }
 
-    public void setForumTopicId(Integer forumTopicId) {
+    public void setForumTopicId(Long forumTopicId) {
         this.forumTopicId = forumTopicId;
     }
 
     @JsonProperty("group_id")
-    public Integer getGroupId() {
+    public Long getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(Integer groupId) {
+    public void setGroupId(Long groupId) {
         this.groupId = groupId;
     }
 
@@ -136,11 +136,11 @@ public class Ticket extends Request {
     }
 
     @JsonProperty("problem_id")
-    public Integer getProblemId() {
+    public Long getProblemId() {
         return problemId;
     }
 
-    public void setProblemId(Integer problemId) {
+    public void setProblemId(Long problemId) {
         this.problemId = problemId;
     }
 
@@ -173,20 +173,20 @@ public class Ticket extends Request {
     }
 
     @JsonProperty("sharing_agreement_ids")
-    public List<Integer> getSharingAgreementIds() {
+    public List<Long> getSharingAgreementIds() {
         return sharingAgreementIds;
     }
 
-    public void setSharingAgreementIds(List<Integer> sharingAgreementIds) {
+    public void setSharingAgreementIds(List<Long> sharingAgreementIds) {
         this.sharingAgreementIds = sharingAgreementIds;
     }
 
     @JsonProperty("submitter_id")
-    public Integer getSubmitterId() {
+    public Long getSubmitterId() {
         return submitterId;
     }
 
-    public void setSubmitterId(Integer submitterId) {
+    public void setSubmitterId(Long submitterId) {
         this.submitterId = submitterId;
     }
 
@@ -199,11 +199,11 @@ public class Ticket extends Request {
     }
 
     @JsonProperty("ticket_form_id")
-    public Integer getTicketFormId() {
+    public Long getTicketFormId() {
         return ticketFormId;
     }
 
-    public void setTicketFormId(Integer ticketFormId) {
+    public void setTicketFormId(Long ticketFormId) {
         this.ticketFormId = ticketFormId;
     }
 

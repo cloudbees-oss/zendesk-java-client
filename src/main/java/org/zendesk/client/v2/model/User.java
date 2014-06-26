@@ -12,7 +12,7 @@ import java.util.List;
  * @since 05/04/2013 15:32
  */
 public class User {
-    private Integer id;
+    private Long id;
     private String url;
     private String name;
     private String externalId;
@@ -22,7 +22,7 @@ public class User {
     private Boolean active;
     private Boolean verified;
     private Boolean shared;
-    private Integer localeId;
+    private Long localeId;
     private String timeZone;
     private Date lastLoginAt;
     private String email;
@@ -30,9 +30,9 @@ public class User {
     private String signature;
     private String details;
     private String notes;
-    private Integer organizationId;
+    private Long organizationId;
     private Role role;
-    private Integer customRoleId;
+    private Long customRoleId;
     private Boolean moderator;
     private TicketRestriction ticketRestriction;
     private Boolean onlyPrivateComments;
@@ -112,11 +112,11 @@ public class User {
     }
 
     @JsonProperty("custom_role_id")
-    public Integer getCustomRoleId() {
+    public Long getCustomRoleId() {
         return customRoleId;
     }
 
-    public void setCustomRoleId(Integer customRoleId) {
+    public void setCustomRoleId(Long customRoleId) {
         this.customRoleId = customRoleId;
     }
 
@@ -145,11 +145,11 @@ public class User {
         this.externalId = externalId;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -163,11 +163,11 @@ public class User {
     }
 
     @JsonProperty("locale_id")
-    public Integer getLocaleId() {
+    public Long getLocaleId() {
         return localeId;
     }
 
-    public void setLocaleId(Integer localeId) {
+    public void setLocaleId(Long localeId) {
         this.localeId = localeId;
     }
 
@@ -205,11 +205,11 @@ public class User {
     }
 
     @JsonProperty("organization_id")
-    public Integer getOrganizationId() {
+    public Long getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(Integer organizationId) {
+    public void setOrganizationId(Long organizationId) {
         this.organizationId = organizationId;
     }
 

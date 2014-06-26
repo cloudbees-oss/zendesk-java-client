@@ -10,7 +10,7 @@ import java.util.List;
  * @since 22/04/2013 15:38
  */
 public class Organization {
-    private Integer id;
+    private Long id;
     private String externalId;
     private String name;
     private Date createdAt;
@@ -18,7 +18,7 @@ public class Organization {
     private List<String> domainNames;
     private String details;
     private String notes;
-    private Integer groupId;
+    private Long groupId;
     private Boolean sharedTickets;
     private Boolean sharedComments;
     private List<String> tags;
@@ -62,19 +62,19 @@ public class Organization {
     }
 
     @JsonProperty("group_id")
-    public Integer getGroupId() {
+    public Long getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(Integer groupId) {
+    public void setGroupId(Long groupId) {
         this.groupId = groupId;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

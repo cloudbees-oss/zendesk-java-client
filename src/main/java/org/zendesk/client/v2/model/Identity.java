@@ -9,7 +9,7 @@ import java.util.Date;
 * @since 09/04/2013 14:37
 */
 public class Identity {
-    private Integer id;
+    private Long id;
     private String url;
     private Integer userId;
     private String type;
@@ -43,11 +43,11 @@ public class Identity {
         this.value = value;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

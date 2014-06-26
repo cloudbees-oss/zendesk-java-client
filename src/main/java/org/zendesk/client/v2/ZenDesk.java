@@ -93,12 +93,12 @@ public class ZenDesk implements Closeable {
     // Action methods
     //////////////////////////////////////////////////////////////////////
 
-    public Ticket getTicket(int id) {
+    public Ticket getTicket(long id) {
         return complete(submit(req("GET", tmpl("/tickets/{id}.json").set("id", id)), handle(Ticket.class,
                 "ticket")));
     }
     
-    public List<Ticket> getTicketIncidents(int id) {
+    public List<Ticket> getTicketIncidents(long id) {
         return complete(submit(req("GET", tmpl("/tickets/{id}/incidents.json").set("id", id)),
                 handleList(Ticket.class, "tickets")));
     }
@@ -108,7 +108,7 @@ public class ZenDesk implements Closeable {
         deleteTicket(ticket.getId());
     }
 
-    public void deleteTicket(int id) {
+    public void deleteTicket(long id) {
         complete(submit(req("DELETE", tmpl("/tickets/{id}.json").set("id", id)), handleStatus()));
     }
 
@@ -130,11 +130,11 @@ public class ZenDesk implements Closeable {
         markTicketAsSpam(ticket.getId());
     }
 
-    public void markTicketAsSpam(int id) {
+    public void markTicketAsSpam(long id) {
         complete(submit(req("PUT", tmpl("/tickets/{id}/mark_as_spam.json").set("id", id)), handleStatus()));
     }
 
-    public void deleteTickets(int id, int... ids) {
+    public void deleteTickets(long id, long... ids) {
         complete(submit(req("DELETE", tmpl("/tickets/destroy_many.json{?ids}").set("ids", idArray(id, ids))),
                 handleStatus()));
     }
@@ -153,7 +153,7 @@ public class ZenDesk implements Closeable {
                 handleList(Ticket.class, "results"));
     }
 
-    public List<Ticket> getTickets(int id, int... ids) {
+    public List<Ticket> getTickets(long id, long... ids) {
         return complete(submit(req("GET", tmpl("/tickets/show_many.json{?ids}").set("ids", idArray(id, ids))),
                 handleList(Ticket.class, "tickets")));
     }
@@ -162,18 +162,18 @@ public class ZenDesk implements Closeable {
         return new PagedIterable<Ticket>(cnst("/tickets/recent.json"), handleList(Ticket.class, "tickets"));
     }
 
-    public Iterable<Ticket> getOrganizationTickets(int organizationId) {
+    public Iterable<Ticket> getOrganizationTickets(long organizationId) {
         return new PagedIterable<Ticket>(
                 tmpl("/organizations/{organizationId}/tickets.json").set("organizationId", organizationId),
                 handleList(Ticket.class, "tickets"));
     }
 
-    public Iterable<Ticket> getUserRequestedTickets(int userId) {
+    public Iterable<Ticket> getUserRequestedTickets(long userId) {
         return new PagedIterable<Ticket>(tmpl("/users/{userId}/tickets/requested.json").set("userId", userId),
                 handleList(Ticket.class, "tickets"));
     }
 
-    public Iterable<Ticket> getUserCCDTickets(int userId) {
+    public Iterable<Ticket> getUserCCDTickets(long userId) {
         return new PagedIterable<Ticket>(tmpl("/users/{userId}/tickets/ccd.json").set("userId", userId),
                 handleList(Ticket.class, "tickets"));
     }
@@ -183,7 +183,7 @@ public class ZenDesk implements Closeable {
         return getTicketAudits(ticket.getId());
     }
 
-    public Iterable<Audit> getTicketAudits(Integer id) {
+    public Iterable<Audit> getTicketAudits(Long id) {
         return new PagedIterable<Audit>(tmpl("/tickets/{ticketId}/audits.json").set("ticketId", id),
                 handleList(Audit.class, "audits"));
     }
@@ -193,12 +193,12 @@ public class ZenDesk implements Closeable {
         return getTicketAudit(ticket, audit.getId());
     }
 
-    public Audit getTicketAudit(Ticket ticket, int id) {
+    public Audit getTicketAudit(Ticket ticket, long id) {
         checkHasId(ticket);
         return getTicketAudit(ticket.getId(), id);
     }
 
-    public Audit getTicketAudit(int ticketId, int auditId) {
+    public Audit getTicketAudit(long ticketId, long auditId) {
         return complete(submit(req("GET",
                 tmpl("/tickets/{ticketId}/audits/{auditId}.json").set("ticketId", ticketId).set("auditId", auditId)),
                 handle(Audit.class, "audit")));
@@ -209,12 +209,12 @@ public class ZenDesk implements Closeable {
         trustTicketAudit(ticket, audit.getId());
     }
 
-    public void trustTicketAudit(Ticket ticket, int id) {
+    public void trustTicketAudit(Ticket ticket, long id) {
         checkHasId(ticket);
         trustTicketAudit(ticket.getId(), id);
     }
 
-    public void trustTicketAudit(int ticketId, int auditId) {
+    public void trustTicketAudit(long ticketId, long auditId) {
         complete(submit(req("PUT", tmpl("/tickets/{ticketId}/audits/{auditId}/trust.json").set("ticketId", ticketId)
                 .set("auditId", auditId)), handleStatus()));
     }
@@ -224,12 +224,12 @@ public class ZenDesk implements Closeable {
         makePrivateTicketAudit(ticket, audit.getId());
     }
 
-    public void makePrivateTicketAudit(Ticket ticket, int id) {
+    public void makePrivateTicketAudit(Ticket ticket, long id) {
         checkHasId(ticket);
         makePrivateTicketAudit(ticket.getId(), id);
     }
 
-    public void makePrivateTicketAudit(int ticketId, int auditId) {
+    public void makePrivateTicketAudit(long ticketId, long auditId) {
         complete(submit(req("PUT",
                 tmpl("/tickets/{ticketId}/audits/{auditId}/make_private.json").set("ticketId", ticketId)
                         .set("auditId", auditId)), handleStatus()));
@@ -239,7 +239,7 @@ public class ZenDesk implements Closeable {
         return complete(submit(req("GET", cnst("/ticket_fields.json")), handleList(Field.class, "ticket_fields")));
     }
 
-    public Field getTicketField(int id) {
+    public Field getTicketField(long id) {
         return complete(submit(req("GET", tmpl("/ticket_fields/{id}.json").set("id", id)), handle(Field.class,
                 "ticket_field")));
     }
@@ -260,7 +260,7 @@ public class ZenDesk implements Closeable {
         deleteTicket(field.getId());
     }
 
-    public void deleteTicketField(int id) {
+    public void deleteTicketField(long id) {
         complete(submit(req("DELETE", tmpl("/ticket_fields/{id}.json").set("id", id)), handleStatus()));
     }
 
@@ -296,7 +296,7 @@ public class ZenDesk implements Closeable {
         return getAttachment(attachment.getId());
     }
 
-    public Attachment getAttachment(int id) {
+    public Attachment getAttachment(long id) {
         return complete(submit(req("GET", tmpl("/attachments/{id}.json").set("id", id)), handle(Attachment.class,
                 "attachment")));
     }
@@ -306,7 +306,7 @@ public class ZenDesk implements Closeable {
         deleteAttachment(attachment.getId());
     }
 
-    public void deleteAttachment(int id) {
+    public void deleteAttachment(long id) {
         complete(submit(req("DELETE", tmpl("/attachments/{id}.json").set("id", id)), handleStatus()));
     }
 
@@ -314,16 +314,16 @@ public class ZenDesk implements Closeable {
         return new PagedIterable<User>(cnst("/users.json"), handleList(User.class, "users"));
     }
 
-    public Iterable<User> getGroupUsers(int id) {
+    public Iterable<User> getGroupUsers(long id) {
         return new PagedIterable<User>(tmpl("/groups/{id}/users.json").set("id", id), handleList(User.class, "users"));
     }
 
-    public Iterable<User> getOrganizationUsers(int id) {
+    public Iterable<User> getOrganizationUsers(long id) {
         return new PagedIterable<User>(tmpl("/organization/{id}/users.json").set("id", id),
                 handleList(User.class, "users"));
     }
 
-    public User getUser(int id) {
+    public User getUser(long id) {
         return complete(submit(req("GET", tmpl("/users/{id}.json").set("id", id)), handle(User.class, "user")));
     }
 
@@ -352,7 +352,7 @@ public class ZenDesk implements Closeable {
         deleteUser(user.getId());
     }
 
-    public void deleteUser(int id) {
+    public void deleteUser(long id) {
         complete(submit(req("DELETE", tmpl("/users/{id}.json").set("id", id)), handleStatus()));
     }
 
@@ -375,7 +375,7 @@ public class ZenDesk implements Closeable {
         resetUserPassword(user.getId(), password);
     }
 
-    public void resetUserPassword(int id, String password) {
+    public void resetUserPassword(long id, String password) {
         complete(submit(req("POST", tmpl("/users/{id}/password.json").set("id", id), JSON,
                 json(Collections.singletonMap("password", password))), handleStatus()));
     }
@@ -394,7 +394,7 @@ public class ZenDesk implements Closeable {
         return getUserIdentities(user.getId());
     }
 
-    public List<Identity> getUserIdentities(int userId) {
+    public List<Identity> getUserIdentities(long userId) {
         return complete(submit(req("GET", tmpl("/users/{id}/identities.json").set("id", userId)),
                 handleList(Identity.class, "identities")));
     }
@@ -404,12 +404,12 @@ public class ZenDesk implements Closeable {
         return getUserIdentity(user, identity.getId());
     }
 
-    public Identity getUserIdentity(User user, int identityId) {
+    public Identity getUserIdentity(User user, long identityId) {
         checkHasId(user);
         return getUserIdentity(user.getId(), identityId);
     }
 
-    public Identity getUserIdentity(int userId, int identityId) {
+    public Identity getUserIdentity(long userId, long identityId) {
         return complete(submit(req("GET", tmpl("/users/{userId}/identities/{identityId}.json").set("userId", userId)
                 .set("identityId", identityId)), handle(
                 Identity.class, "identity")));
@@ -420,12 +420,12 @@ public class ZenDesk implements Closeable {
         return setUserPrimaryIdentity(user, identity.getId());
     }
 
-    public List<Identity> setUserPrimaryIdentity(User user, int identityId) {
+    public List<Identity> setUserPrimaryIdentity(User user, long identityId) {
         checkHasId(user);
         return setUserPrimaryIdentity(user.getId(), identityId);
     }
 
-    public List<Identity> setUserPrimaryIdentity(int userId, int identityId) {
+    public List<Identity> setUserPrimaryIdentity(long userId, long identityId) {
         return complete(submit(req("PUT",
                 tmpl("/users/{userId}/identities/{identityId}/make_primary.json").set("userId", userId)
                         .set("identityId", identityId), JSON, null),
@@ -437,12 +437,12 @@ public class ZenDesk implements Closeable {
         return verifyUserIdentity(user, identity.getId());
     }
 
-    public Identity verifyUserIdentity(User user, int identityId) {
+    public Identity verifyUserIdentity(User user, long identityId) {
         checkHasId(user);
         return verifyUserIdentity(user.getId(), identityId);
     }
 
-    public Identity verifyUserIdentity(int userId, int identityId) {
+    public Identity verifyUserIdentity(long userId, long identityId) {
         return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/verify.json")
                 .set("userId", userId)
                 .set("identityId", identityId), JSON, null), handle(Identity.class, "identity")));
@@ -453,12 +453,12 @@ public class ZenDesk implements Closeable {
         return requestVerifyUserIdentity(user, identity.getId());
     }
 
-    public Identity requestVerifyUserIdentity(User user, int identityId) {
+    public Identity requestVerifyUserIdentity(User user, long identityId) {
         checkHasId(user);
         return requestVerifyUserIdentity(user.getId(), identityId);
     }
 
-    public Identity requestVerifyUserIdentity(int userId, int identityId) {
+    public Identity requestVerifyUserIdentity(long userId, long identityId) {
         return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}/request_verification.json")
                 .set("userId", userId)
                 .set("identityId", identityId), JSON, null), handle(Identity.class, "identity")));
@@ -469,19 +469,19 @@ public class ZenDesk implements Closeable {
         deleteUserIdentity(user, identity.getId());
     }
 
-    public void deleteUserIdentity(User user, int identityId) {
+    public void deleteUserIdentity(User user, long identityId) {
         checkHasId(user);
         deleteUserIdentity(user.getId(), identityId);
     }
 
-    public void deleteUserIdentity(int userId, int identityId) {
+    public void deleteUserIdentity(long userId, long identityId) {
         complete(submit(req("DELETE", tmpl("/users/{userId}/identities/{identityId}.json")
                 .set("userId", userId)
                 .set("identityId", identityId)
         ), handleStatus()));
     }
 
-    public void createUserIdentity(int userId, Identity identity) {
+    public void createUserIdentity(long userId, Identity identity) {
         complete(submit(req("POST", tmpl("/users/{userId}/identities.json").set("userId", userId), JSON, json(
              Collections.singletonMap("identity", identity))), handle(Identity.class, "identity")));
     }
@@ -516,12 +516,12 @@ public class ZenDesk implements Closeable {
         return getUserRequests(user.getId());
     }
 
-    public Iterable<org.zendesk.client.v2.model.Request> getUserRequests(int id) {
+    public Iterable<org.zendesk.client.v2.model.Request> getUserRequests(long id) {
         return new PagedIterable<org.zendesk.client.v2.model.Request>(tmpl("/users/{id}/requests.json").set("id", id),
                 handleList(org.zendesk.client.v2.model.Request.class, "requests"));
     }
 
-    public org.zendesk.client.v2.model.Request getRequest(int id) {
+    public org.zendesk.client.v2.model.Request getRequest(long id) {
         return complete(submit(req("GET", tmpl("/requests/{id}.json").set("id", id)),
                 handle(org.zendesk.client.v2.model.Request.class, "request")));
     }
@@ -544,7 +544,7 @@ public class ZenDesk implements Closeable {
         return getRequestComments(request.getId());
     }
 
-    public Iterable<Comment> getRequestComments(int id) {
+    public Iterable<Comment> getRequestComments(long id) {
         return new PagedIterable<Comment>(tmpl("/requests/{id}/comments.json").set("id", id),
                 handleList(Comment.class, "comments"));
     }
@@ -554,12 +554,12 @@ public class ZenDesk implements Closeable {
         return getRequestComment(request, comment.getId());
     }
 
-    public Comment getRequestComment(org.zendesk.client.v2.model.Request request, int commentId) {
+    public Comment getRequestComment(org.zendesk.client.v2.model.Request request, long commentId) {
         checkHasId(request);
         return getRequestComment(request.getId(), commentId);
     }
 
-    public Comment getRequestComment(int requestId, int commentId) {
+    public Comment getRequestComment(long requestId, long commentId) {
         return complete(submit(req("GET", tmpl("/requests/{requestId}/comments/{commentId}.json")
                 .set("requestId", requestId)
                 .set("commentId", commentId)),
@@ -581,7 +581,7 @@ public class ZenDesk implements Closeable {
 
     // TODO getOrganizationRelatedInformation
 
-    public Organization getOrganization(int id) {
+    public Organization getOrganization(long id) {
         return complete(submit(req("GET", tmpl("/organizations/{id}.json").set("id", id)),
                 handle(Organization.class, "organization")));
     }
@@ -611,7 +611,7 @@ public class ZenDesk implements Closeable {
         deleteOrganization(organization.getId());
     }
 
-    public void deleteOrganization(int id) {
+    public void deleteOrganization(long id) {
         complete(submit(req("DELETE", tmpl("/organizations/{id}.json").set("id", id)), handleStatus()));
     }
 
@@ -633,7 +633,7 @@ public class ZenDesk implements Closeable {
                 handleList(Group.class, "groups"));
     }
 
-    public Group getGroup(int id) {
+    public Group getGroup(long id) {
         return complete(submit(req("GET", tmpl("/groups/{id}.json").set("id", id)),
                 handle(Group.class, "group")));
     }
@@ -663,7 +663,7 @@ public class ZenDesk implements Closeable {
         deleteGroup(group.getId());
     }
 
-    public void deleteGroup(int id) {
+    public void deleteGroup(long id) {
         complete(submit(req("DELETE", tmpl("/groups/{id}.json").set("id", id)), handleStatus()));
     }
 
@@ -908,10 +908,10 @@ public class ZenDesk implements Closeable {
         }
     }
 
-    private static List<Integer> idArray(int id, int... ids) {
-        List<Integer> result = new ArrayList<Integer>(ids.length + 1);
+    private static List<Long> idArray(long id, long... ids) {
+        List<Long> result = new ArrayList<Long>(ids.length + 1);
         result.add(id);
-        for (int i : ids) {
+        for (long i : ids) {
             result.add(i);
         }
         return result;

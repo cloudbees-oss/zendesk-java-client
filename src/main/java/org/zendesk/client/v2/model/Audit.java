@@ -12,20 +12,20 @@ import java.util.Map;
  * @since 05/04/2013 10:22
  */
 public class Audit {
-    private Integer id;
-    private Integer ticketId;
+    private Long id;
+    private Long ticketId;
     private Map<String, Object> metadata;
     private Via via;
     private Date createdAt;
-    private Integer authorId;
+    private Long authorId;
     private List<Event> events;
 
     @JsonProperty("author_id")
-    public Integer getAuthorId() {
+    public Long getAuthorId() {
         return authorId;
     }
 
-    public void setAuthorId(Integer authorId) {
+    public void setAuthorId(Long authorId) {
         this.authorId = authorId;
     }
 
@@ -46,11 +46,11 @@ public class Audit {
         this.events = events;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -63,11 +63,11 @@ public class Audit {
     }
 
     @JsonProperty("ticket_id")
-    public Integer getTicketId() {
+    public Long getTicketId() {
         return ticketId;
     }
 
-    public void setTicketId(Integer ticketId) {
+    public void setTicketId(Long ticketId) {
         this.ticketId = ticketId;
     }
 

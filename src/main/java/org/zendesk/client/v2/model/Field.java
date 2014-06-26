@@ -10,7 +10,7 @@ import java.util.List;
  * @since 05/04/2013 12:03
  */
 public class Field {
-    private Integer id;
+    private Long id;
     private String url;
     private String type;
     private String title;
@@ -81,11 +81,11 @@ public class Field {
         this.editableInPortal = editableInPortal;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

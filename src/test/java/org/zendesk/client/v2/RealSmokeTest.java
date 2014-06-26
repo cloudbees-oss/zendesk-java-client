@@ -52,6 +52,11 @@ public class RealSmokeTest {
         assumeThat("We have a password", config.getProperty("password"), notNullValue());
     }
 
+    public void assumeHaveTokenOrPassword() {
+        assumeThat("We have a username", config.getProperty("username"), notNullValue());
+        assumeThat("We have a token or password", config.getProperty("token") != null || config.getProperty("password") != null, is(true));
+    }
+
     @After
     public void closeClient() {
         if (instance != null) {
@@ -70,15 +75,28 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void createClientWithTokenOrPassword() throws Exception {
+        assumeHaveTokenOrPassword();
+        final ZenDesk.Builder builder = new ZenDesk.Builder(config.getProperty("url"))
+                .setUsername(config.getProperty("username"));
+        if (config.getProperty("token") != null) {
+            builder.setToken(config.getProperty("token"));
+        } else if (config.getProperty("password") != null) {
+            builder.setPassword(config.getProperty("password"));
+        }
+        instance = builder.build();
+    }
+
+    @Test
     public void getTicket() throws Exception {
-        createClientWithToken();
+        createClientWithTokenOrPassword();
         Ticket ticket = instance.getTicket(1);
         assertThat(ticket, notNullValue());
     }
 
     @Test
     public void getTicketsPagesRequests() throws Exception {
-        createClientWithToken();
+        createClientWithTokenOrPassword();
         int count = 0;
         for (Ticket t : instance.getTickets()) {
             assertThat(t.getSubject(), notNullValue());
@@ -91,7 +109,7 @@ public class RealSmokeTest {
 
     @Test
     public void getRecentTickets() throws Exception {
-        createClientWithToken();
+        createClientWithTokenOrPassword();
         int count = 0;
         for (Ticket t : instance.getRecentTickets()) {
             assertThat(t.getSubject(), notNullValue());
@@ -104,20 +122,20 @@ public class RealSmokeTest {
 
     @Test
     public void getTicketsById() throws Exception {
-        createClientWithToken();
-        int count = 1;
+        createClientWithTokenOrPassword();
+        long count = 1;
         for (Ticket t : instance.getTickets(1, 3, 5)) {
             assertThat(t.getSubject(), notNullValue());
             assertThat(t.getId(), is(count));
             count += 2;
         }
-        assertThat(count, is(7));
+        assertThat(count, is(7L));
     }
 
     @Test
     public void getTicketAudits() throws Exception {
-        createClientWithToken();
-        for (Audit a : instance.getTicketAudits(1)) {
+        createClientWithTokenOrPassword();
+        for (Audit a : instance.getTicketAudits(1L)) {
             assertThat(a, notNullValue());
             assertThat(a.getEvents(), not(Collections.<Event>emptyList()));
         }
@@ -125,7 +143,7 @@ public class RealSmokeTest {
 
     @Test
     public void getTicketFields() throws Exception {
-        createClientWithToken();
+        createClientWithTokenOrPassword();
         int count = 0;
         for (Field f : instance.getTicketFields()) {
             assertThat(f, notNullValue());
@@ -158,7 +176,7 @@ public class RealSmokeTest {
     @Test
     @Ignore("Don't spam the production zendesk")
     public void createDeleteTicket() throws Exception {
-        createClientWithToken();
+        createClientWithTokenOrPassword();
         assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
         Ticket t = new Ticket(
                 new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
@@ -182,7 +200,7 @@ public class RealSmokeTest {
 
     @Test
     public void lookupUserByEmail() throws Exception {
-        createClientWithToken();
+        createClientWithTokenOrPassword();
         String requesterEmail = config.getProperty("requester.email");
         assumeThat("Must have a requester email", requesterEmail, notNullValue());
         for (User user : instance.lookupUserByEmail(requesterEmail)) {
@@ -192,7 +210,7 @@ public class RealSmokeTest {
 
     @Test
     public void lookupUserIdentities() throws Exception {
-        createClientWithToken();
+        createClientWithTokenOrPassword();
         User user = instance.getCurrentUser();
         for (Identity i : instance.getUserIdentities(user)) {
             assertThat(i.getId(), notNullValue());
@@ -205,7 +223,7 @@ public class RealSmokeTest {
 
     @Test
     public void getUserRequests() throws Exception {
-        createClientWithToken();
+        createClientWithTokenOrPassword();
         User user = instance.getCurrentUser();
         int count = 5;
         for (Request r : instance.getUserRequests(user)) {
@@ -223,7 +241,7 @@ public class RealSmokeTest {
 
     @Test
     public void getOrganizations() throws Exception {
-        createClientWithToken();
+        createClientWithTokenOrPassword();
         int count = 0;
         for (Organization t : instance.getOrganizations()) {
             assertThat(t.getName(), notNullValue());
@@ -235,7 +253,7 @@ public class RealSmokeTest {
 
     @Test
     public void getGroups() throws Exception {
-        createClientWithToken();
+        createClientWithTokenOrPassword();
         int count = 0;
         for (Group t : instance.getGroups()) {
             assertThat(t.getName(), notNullValue());

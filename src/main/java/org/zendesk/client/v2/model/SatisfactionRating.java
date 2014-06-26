@@ -11,23 +11,23 @@ import java.util.Date;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SatisfactionRating {
-    private Integer id;
+    private Long id;
     private String url;
-    private Integer assigneeId;
-    private Integer groupId;
-    private Integer requesterId;
-    private Integer ticketId;
+    private Long assigneeId;
+    private Long groupId;
+    private Long requesterId;
+    private Long ticketId;
     private String score;
     private Date createdAt;
     private Date updatedAt;
     private String comment;
 
     @JsonProperty("assignee_id")
-    public Integer getAssigneeId() {
+    public Long getAssigneeId() {
         return assigneeId;
     }
 
-    public void setAssigneeId(Integer assigneeId) {
+    public void setAssigneeId(Long assigneeId) {
         this.assigneeId = assigneeId;
     }
 
@@ -49,28 +49,28 @@ public class SatisfactionRating {
     }
 
     @JsonProperty("group_id")
-    public Integer getGroupId() {
+    public Long getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(Integer groupId) {
+    public void setGroupId(Long groupId) {
         this.groupId = groupId;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
     @JsonProperty("requester_id")
-    public Integer getRequesterId() {
+    public Long getRequesterId() {
         return requesterId;
     }
 
-    public void setRequesterId(Integer requesterId) {
+    public void setRequesterId(Long requesterId) {
         this.requesterId = requesterId;
     }
 
@@ -83,11 +83,11 @@ public class SatisfactionRating {
     }
 
     @JsonProperty("ticket_id")
-    public Integer getTicketId() {
+    public Long getTicketId() {
         return ticketId;
     }
 
-    public void setTicketId(Integer ticketId) {
+    public void setTicketId(Long ticketId) {
         this.ticketId = ticketId;
     }
 
