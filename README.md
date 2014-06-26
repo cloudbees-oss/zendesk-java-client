@@ -68,3 +68,10 @@ Here is the status of the various API components:
 * [Sharing Agreements](http://developer.zendesk.com/documentation/rest_api/sharing_agreements.html)
 * [Suspended Tickets](http://developer.zendesk.com/documentation/rest_api/suspended_tickets.html)
 * [Triggers](http://developer.zendesk.com/documentation/rest_api/triggers.html)
+
+History
+-------
+
+* 0.0.x - Initial release series
+
+* 0.1.x - Switched from `Integer` as the id type to `Long` due to reports of overflow
