@@ -44,7 +44,7 @@ import org.zendesk.client.v2.model.Status;
  * @author stephenc
  * @since 04/04/2013 13:08
  */
-public class Zendesk_ implements Closeable {
+public class Zendesk implements Closeable {
     private static final String JSON = "application/json; charset=UTF-8";
     private final boolean closeClient;
     private final AsyncHttpClient client;
@@ -66,8 +66,8 @@ public class Zendesk_ implements Closeable {
         return Collections.unmodifiableMap(result);
     }
 
-    private Zendesk_(AsyncHttpClient client, String url, String username, String password) {
-        this.logger = LoggerFactory.getLogger(Zendesk_.class);
+    private Zendesk(AsyncHttpClient client, String url, String username, String password) {
+        this.logger = LoggerFactory.getLogger(Zendesk.class);
         this.closeClient = client == null;
         this.client = client == null ? new AsyncHttpClient() : client;
         this.url = url.endsWith("/") ? url + "api/v2" : url + "/api/v2";
@@ -709,7 +709,7 @@ public class Zendesk_ implements Closeable {
         try {
             return mapper.writeValueAsBytes(object);
         } catch (JsonProcessingException e) {
-            throw new Zendesk_Exception(e.getMessage(), e);
+            throw new ZendeskException(e.getMessage(), e);
         }
     }
 
@@ -725,7 +725,7 @@ public class Zendesk_ implements Closeable {
             }
             return client.executeRequest(request, handler);
         } catch (IOException e) {
-            throw new Zendesk_Exception(e.getMessage(), e);
+            throw new ZendeskException(e.getMessage(), e);
         }
     }
 
@@ -767,7 +767,7 @@ public class Zendesk_ implements Closeable {
                 if (isStatus2xx(response)) {
                     return null;
                 }
-                throw new Zendesk_ResponseException(response);
+                throw new ZendeskResponseException(response);
             }
         };
     }
@@ -784,7 +784,7 @@ public class Zendesk_ implements Closeable {
                 if (response.getStatusCode() == 404) {
                     return null;
                 }
-                throw new Zendesk_ResponseException(response);
+                throw new ZendeskResponseException(response);
             }
         };
     }
@@ -800,7 +800,7 @@ public class Zendesk_ implements Closeable {
                 if (response.getStatusCode() == 404) {
                     return null;
                 }
-                throw new Zendesk_ResponseException(response);
+                throw new ZendeskResponseException(response);
             }
         };
     }
@@ -817,7 +817,7 @@ public class Zendesk_ implements Closeable {
                     }
                     return values;
                 }
-                throw new Zendesk_ResponseException(response);
+                throw new ZendeskResponseException(response);
             }
         };
     }
@@ -834,7 +834,7 @@ public class Zendesk_ implements Closeable {
                     }
                     return values;
                 }
-                throw new Zendesk_ResponseException(response);
+                throw new ZendeskResponseException(response);
             }
         };
     }
@@ -854,7 +854,7 @@ public class Zendesk_ implements Closeable {
                     }
                     return values;
                 }
-                throw new Zendesk_ResponseException(response);
+                throw new ZendeskResponseException(response);
             }
         };
     }
@@ -887,12 +887,12 @@ public class Zendesk_ implements Closeable {
         try {
             return future.get();
         } catch (InterruptedException e) {
-            throw new Zendesk_Exception(e.getMessage(), e);
+            throw new ZendeskException(e.getMessage(), e);
         } catch (ExecutionException e) {
-            if (e.getCause() instanceof Zendesk_Exception) {
-                throw (Zendesk_Exception) e.getCause();
+            if (e.getCause() instanceof ZendeskException) {
+                throw (ZendeskException) e.getCause();
             }
-            throw new Zendesk_Exception(e.getMessage(), e);
+            throw new ZendeskException(e.getMessage(), e);
         }
     }
 
@@ -1092,11 +1092,11 @@ public class Zendesk_ implements Closeable {
             return this;
         }
 
-        public Zendesk_ build() {
+        public Zendesk build() {
             if (token == null) {
-                return new Zendesk_(client, url, username, password);
+                return new Zendesk(client, url, username, password);
             }
-            return new Zendesk_(client, url, username + "/token", token);
+            return new Zendesk(client, url, username + "/token", token);
         }
     }
 }
