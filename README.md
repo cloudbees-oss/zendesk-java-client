@@ -1,7 +1,7 @@
 Zendesk Java Client
 ===================
 
-This is a Zendesk client implementation written in Java using AsyncHttpClient and Jackson.
+This is a [Zendesk][zd] client implementation written in Java using AsyncHttpClient and Jackson.
 
 Using the API
 -------------
@@ -75,3 +75,7 @@ History
 * 0.0.x - Initial release series
 
 * 0.1.x - Switched from `Integer` as the id type to `Long` due to reports of overflow
+
+* 0.2.x - At request of [Zendesk][zd], renamed `ZenDesk` to `Zendesk`
+
+  [zd]: http://zendesk.com
