@@ -33,7 +33,7 @@ public class RealSmokeTest {
 
     private static Properties config;
 
-    private ZenDesk instance;
+    private Zendesk_ instance;
 
     @BeforeClass
     public static void loadConfig() {
@@ -68,7 +68,7 @@ public class RealSmokeTest {
     @Test
     public void createClientWithToken() throws Exception {
         assumeHaveToken();
-        instance = new ZenDesk.Builder(config.getProperty("url"))
+        instance = new Zendesk_.Builder(config.getProperty("url"))
                 .setUsername(config.getProperty("username"))
                 .setToken(config.getProperty("token"))
                 .build();
@@ -77,7 +77,7 @@ public class RealSmokeTest {
     @Test
     public void createClientWithTokenOrPassword() throws Exception {
         assumeHaveTokenOrPassword();
-        final ZenDesk.Builder builder = new ZenDesk.Builder(config.getProperty("url"))
+        final Zendesk_.Builder builder = new Zendesk_.Builder(config.getProperty("url"))
                 .setUsername(config.getProperty("username"));
         if (config.getProperty("token") != null) {
             builder.setToken(config.getProperty("token"));
@@ -158,7 +158,7 @@ public class RealSmokeTest {
     @Test
     public void createClientWithPassword() throws Exception {
         assumeHavePassword();
-        instance = new ZenDesk.Builder(config.getProperty("url"))
+        instance = new Zendesk_.Builder(config.getProperty("url"))
                 .setUsername(config.getProperty("username"))
                 .setPassword(config.getProperty("password"))
                 .build();
@@ -169,7 +169,7 @@ public class RealSmokeTest {
 
     @Test
     public void createAnonymousClient() {
-        instance = new ZenDesk.Builder(config.getProperty("url"))
+        instance = new Zendesk_.Builder(config.getProperty("url"))
                 .build();
     }
 

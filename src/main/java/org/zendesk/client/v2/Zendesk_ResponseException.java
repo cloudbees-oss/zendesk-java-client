@@ -5,18 +5,18 @@ import java.io.IOException;
 import com.ning.http.client.Response;
 
 /**
- * {@link ZenDeskException} specialisation for HTTP non-2xx responses
+ * {@link Zendesk_Exception} specialisation for HTTP non-2xx responses
  */
-public class ZenDeskResponseException extends ZenDeskException {
+public class Zendesk_ResponseException extends Zendesk_Exception {
     private int statusCode;
     private String statusText;
     private String body;
 
-    public ZenDeskResponseException(Response resp) throws IOException {
+    public Zendesk_ResponseException(Response resp) throws IOException {
 	this(resp.getStatusCode(), resp.getStatusText(), resp.getResponseBody());
     }
     
-    public ZenDeskResponseException(int statusCode, String statusText, String body) {
+    public Zendesk_ResponseException(int statusCode, String statusText, String body) {
         super(statusText);
         this.statusCode = statusCode;
         this.statusText = statusText;

@@ -1,11 +1,9 @@
 package org.zendesk.client.v2.model;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.Test;
-import org.zendesk.client.v2.ZenDesk;
+import org.zendesk.client.v2.Zendesk_;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -17,13 +15,13 @@ import static org.junit.Assert.assertThat;
 public class StatusTest {
     @Test
     public void serializeAsLowercase() throws Exception {
-        ObjectMapper mapper = ZenDesk.createMapper();
+        ObjectMapper mapper = Zendesk_.createMapper();
         assertThat(mapper.writeValueAsString(Status.PENDING), is("\"" + Status.PENDING.name().toLowerCase() + "\""));
     }
 
     @Test
     public void deserializeFromLowercase() throws Exception {
-        ObjectMapper mapper = ZenDesk.createMapper();
+        ObjectMapper mapper = Zendesk_.createMapper();
         ObjectReader reader = mapper.reader(Status.class);
         assertThat(reader.readValue("\"" + Status.PENDING.name().toLowerCase() + "\""), is((Object)Status.PENDING));
     }
