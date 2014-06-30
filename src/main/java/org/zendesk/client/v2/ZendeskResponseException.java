@@ -1,6 +1,7 @@
 package org.zendesk.client.v2;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import com.ning.http.client.Response;
 
@@ -17,7 +18,7 @@ public class ZendeskResponseException extends ZendeskException {
     }
     
     public ZendeskResponseException(int statusCode, String statusText, String body) {
-        super(statusText);
+        super(MessageFormat.format("HTTP/{0}: {1}", statusCode, statusText));
         this.statusCode = statusCode;
         this.statusText = statusText;
         this.body = body;

@@ -11,12 +11,14 @@ import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.Request;
+import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.events.Event;
 
 import java.util.Collections;
 import java.util.Properties;
+import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -54,7 +56,8 @@ public class RealSmokeTest {
 
     public void assumeHaveTokenOrPassword() {
         assumeThat("We have a username", config.getProperty("username"), notNullValue());
-        assumeThat("We have a token or password", config.getProperty("token") != null || config.getProperty("password") != null, is(true));
+        assumeThat("We have a token or password", config.getProperty("token") != null || config.getProperty("password") != null, is(
+                true));
     }
 
     @After
@@ -124,12 +127,12 @@ public class RealSmokeTest {
     public void getTicketsById() throws Exception {
         createClientWithTokenOrPassword();
         long count = 1;
-        for (Ticket t : instance.getTickets(1, 3, 5)) {
+        for (Ticket t : instance.getTickets(1, 6, 11)) {
             assertThat(t.getSubject(), notNullValue());
             assertThat(t.getId(), is(count));
-            count += 2;
+            count += 5;
         }
-        assertThat(count, is(7L));
+        assertThat(count, is(16L));
     }
 
     @Test
@@ -174,7 +177,7 @@ public class RealSmokeTest {
     }
 
     @Test
-    @Ignore("Don't spam the production zendesk")
+    @Ignore("Don't spam zendesk")
     public void createDeleteTicket() throws Exception {
         createClientWithTokenOrPassword();
         assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
@@ -196,6 +199,33 @@ public class RealSmokeTest {
         assertThat(ticket.getRequesterId(), notNullValue());
         assertThat(ticket.getDescription(), is(t.getComment().getBody()));
         assertThat(instance.getTicket(ticket.getId()), nullValue());
+    }
+
+    @Test
+    @Ignore("Don't spam zendesk")
+    public void createSolveTickets() throws Exception {
+        createClientWithTokenOrPassword();
+        assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
+        Ticket ticket;
+        do {
+            Ticket t = new Ticket(
+                    new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                    "This is a test " + UUID.randomUUID().toString(), new Comment("Please ignore this ticket"));
+            ticket = instance.createTicket(t);
+            System.out.println(ticket.getId() + " -> " + ticket.getUrl());
+            assertThat(ticket.getId(), notNullValue());
+                Ticket t2 = instance.getTicket(ticket.getId());
+                assertThat(t2, notNullValue());
+                assertThat(t2.getId(), is(ticket.getId()));
+                t2.setAssigneeId(instance.getCurrentUser().getId());
+                t2.setStatus(Status.CLOSED);
+                instance.updateTicket(t2);
+            assertThat(ticket.getSubject(), is(t.getSubject()));
+            assertThat(ticket.getRequester(), nullValue());
+            assertThat(ticket.getRequesterId(), notNullValue());
+            assertThat(ticket.getDescription(), is(t.getComment().getBody()));
+            assertThat(instance.getTicket(ticket.getId()), notNullValue());
+        } while (ticket.getId() < 200L); // seed enough data for the paging tests
     }
 
     @Test
