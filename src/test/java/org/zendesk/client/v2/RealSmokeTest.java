@@ -37,7 +37,7 @@ public class RealSmokeTest {
 
     @BeforeClass
     public static void loadConfig() {
-        config = ZenDeskConfig.load();
+        config = ZendeskConfig.load();
         assumeThat("We have a configuration", config, notNullValue());
         assertThat("Configuration has an url", config.getProperty("url"), notNullValue());
     }

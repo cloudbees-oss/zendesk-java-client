@@ -8,13 +8,13 @@ import java.util.Properties;
  * @author stephenc
  * @since 04/04/2013 13:53
  */
-public final class ZenDeskConfig {
-    private ZenDeskConfig() {
+public final class Zendesk_Config {
+    private Zendesk_Config() {
         throw new IllegalAccessError("utility class");
     }
 
     public static Properties load() {
-        InputStream is = ZenDeskConfig.class.getResourceAsStream("/zendesk.properties");
+        InputStream is = Zendesk_Config.class.getResourceAsStream("/zendesk.properties");
         if (is == null) {
             return null;
         }

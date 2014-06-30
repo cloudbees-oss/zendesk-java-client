@@ -28,7 +28,7 @@
   <version>0.1.1-SNAPSHOT</version>
 
   <name>zendesk-java-client</name>
-  <description>Java client for the ZenDesk API</description>
+  <description>Java client for the Zendesk API</description>
   <url>https://github.com/cloudbees/zendesk-java-client</url>
   <inceptionYear>2013</inceptionYear>
   <licenses>
