@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.ning.http.client.Request;
 import com.ning.http.client.*;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
@@ -708,6 +707,11 @@ public class Zendesk implements Closeable {
                 Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
     }
     
+    public Map getIncrementalTicketsResult(long unixEpochTime) {
+        return complete(submit(req("GET", tmpl("/exports/tickets/sample.json?start_time={time}").set("time", unixEpochTime)),
+                handle(Map.class)));        
+    }    
+    
     public Iterable<SearchResultEntity> getSearchResults(String query) {
         return new PagedIterable<SearchResultEntity>(tmpl("/search.json{?query}").set("query", query),
                 handleSearchList("results"));
@@ -1079,6 +1083,7 @@ public class Zendesk implements Closeable {
 
     }
 
+    
     public static class Builder {
         private AsyncHttpClient client = null;
         private final String url;
