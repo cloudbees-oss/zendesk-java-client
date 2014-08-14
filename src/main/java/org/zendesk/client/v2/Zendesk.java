@@ -684,7 +684,57 @@ public class Zendesk implements Closeable {
     public void deleteGroup(long id) {
         complete(submit(req("DELETE", tmpl("/groups/{id}.json").set("id", id)), handleStatus()));
     }
+        
+    public List<String> addTagToTicket(long id, String ... tags) {
+        return complete(submit(req("PUT", tmpl("/tickets/{id}.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
 
+    public List<String> addTagToTopics(long id, String ... tags) {
+        return complete(submit(req("PUT", tmpl("/topics/{id}.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+
+    public List<String> addTagToOrganisations(long id, String ... tags) {
+        return complete(submit(req("PUT", tmpl("/organizations/{id}.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+
+    public List<String> setTagOnTicket(long id, String ... tags) {
+        return complete(submit(req("POST", tmpl("/tickets/{id}.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+
+    public List<String> setTagOnTopics(long id, String ... tags) {
+        return complete(submit(req("POST", tmpl("/topics/{id}.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+
+    public List<String> setTagOnOrganisations(long id, String ... tags) {
+        return complete(submit(req("POST", tmpl("/organizations/{id}.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+
+        
+    public List<String> removeTagFromTicket(long id, String ... tags) {
+        return complete(submit(req("DELETE", tmpl("/tickets/{id}.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+    
+    public List<String> removeTagFromTopics(long id, String ... tags) {
+        return complete(submit(req("DELETE", tmpl("/topics/{id}.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+    
+    public List<String> removeTagFromOrganisations(long id, String ... tags) {
+        return complete(submit(req("DELETE", tmpl("/organizations/{id}.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+    
+    public List<String> setTag(long id, String tag) {
+        return complete(submit(req("POST", tmpl("/tags/{id}.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tag))), handle(List.class, "tags")));
+    }
     public Iterable<SearchResultEntity> getSearchResults(String query) {
         return new PagedIterable<SearchResultEntity>(tmpl("/search.json{?query}").set("query", query),
                 handleSearchList("results"));
