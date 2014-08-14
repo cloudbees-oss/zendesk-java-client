@@ -708,7 +708,7 @@ public class Zendesk implements Closeable {
     }
     
     public Map getIncrementalTicketsResult(long unixEpochTime) {
-        return complete(submit(req("GET", tmpl("/exports/tickets/sample.json?start_time={time}").set("time", unixEpochTime)),
+        return complete(submit(req("GET", tmpl("/exports/tickets.json?start_time={time}").set("time", unixEpochTime)),
                 handle(Map.class)));        
     }    
     
