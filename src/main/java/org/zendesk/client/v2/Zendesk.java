@@ -41,10 +41,6 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
 import org.zendesk.client.v2.model.Status;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author stephenc
