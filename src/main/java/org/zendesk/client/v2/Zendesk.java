@@ -6,39 +6,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.ning.http.client.AsyncCompletionHandler;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.ListenableFuture;
-import com.ning.http.client.Realm;
 import com.ning.http.client.Request;
-import com.ning.http.client.RequestBuilder;
-import com.ning.http.client.Response;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.zendesk.client.v2.model.Attachment;
-import org.zendesk.client.v2.model.Audit;
-import org.zendesk.client.v2.model.Comment;
-import org.zendesk.client.v2.model.Field;
-import org.zendesk.client.v2.model.Group;
-import org.zendesk.client.v2.model.Identity;
-import org.zendesk.client.v2.model.Organization;
-import org.zendesk.client.v2.model.SearchResultEntity;
-import org.zendesk.client.v2.model.Ticket;
-import org.zendesk.client.v2.model.User;
-
+import com.ning.http.client.*;
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
-import org.zendesk.client.v2.model.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.zendesk.client.v2.model.*;
 
 /**
  * @author stephenc
@@ -684,7 +660,58 @@ public class Zendesk implements Closeable {
     public void deleteGroup(long id) {
         complete(submit(req("DELETE", tmpl("/groups/{id}.json").set("id", id)), handleStatus()));
     }
+        
+    public List<String> addTagToTicket(long id, String ... tags) {
+        return complete(submit(req("PUT", tmpl("/tickets/{id}/tags.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
 
+    public List<String> addTagToTopics(long id, String ... tags) {
+        return complete(submit(req("PUT", tmpl("/topics/{id}/tags.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+
+    public List<String> addTagToOrganisations(long id, String ... tags) {
+        return complete(submit(req("PUT", tmpl("/organizations/{id}/tags.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+
+    public List<String> setTagOnTicket(long id, String ... tags) {
+        return complete(submit(req("POST", tmpl("/tickets/{id}/tags.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+
+    public List<String> setTagOnTopics(long id, String ... tags) {
+        return complete(submit(req("POST", tmpl("/topics/{id}/tags.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+
+    public List<String> setTagOnOrganisations(long id, String ... tags) {
+        return complete(submit(req("POST", tmpl("/organizations/{id}/tags.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+
+        
+    public List<String> removeTagFromTicket(long id, String ... tags) {
+        return complete(submit(req("DELETE", tmpl("/tickets/{id}/tags.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+    
+    public List<String> removeTagFromTopics(long id, String ... tags) {
+        return complete(submit(req("DELETE", tmpl("/topics/{id}/tags.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+    
+    public List<String> removeTagFromOrganisations(long id, String ... tags) {
+        return complete(submit(req("DELETE", tmpl("/organizations/{id}/tags.json").set("id", id), JSON, json(
+                Collections.singletonMap("tags", tags))), handle(List.class, "tags")));
+    }
+    
+    public Map getIncrementalTicketsResult(long unixEpochTime) {
+        return complete(submit(req("GET", tmpl("/exports/tickets.json?start_time={time}").set("time", unixEpochTime)),
+                handle(Map.class)));        
+    }    
+    
     public Iterable<SearchResultEntity> getSearchResults(String query) {
         return new PagedIterable<SearchResultEntity>(tmpl("/search.json{?query}").set("query", query),
                 handleSearchList("results"));
@@ -1056,6 +1083,7 @@ public class Zendesk implements Closeable {
 
     }
 
+    
     public static class Builder {
         private AsyncHttpClient client = null;
         private final String url;
