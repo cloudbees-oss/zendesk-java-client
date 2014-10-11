@@ -782,7 +782,7 @@ public class Zendesk implements Closeable {
       complete(submit(req("DELETE", tmpl("/forums/{id}.json").set("id", forum.getId())), handleStatus()));
     }
 
-    public Iterable<Topic> Topics() {
+    public Iterable<Topic> getTopics() {
       return new PagedIterable<Topic>(cnst("/topics.json"), handleList(Topic.class, "topics"));
     }
 

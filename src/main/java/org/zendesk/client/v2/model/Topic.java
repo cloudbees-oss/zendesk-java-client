@@ -237,9 +237,20 @@ public class Topic implements SearchResultEntity
 
   public static enum TopicType
   {
-    Articles,
-    Questions,
-    Ideas;
+    ARTICLES("articles"),
+    QUESTIONS("questions"),
+    IDEAS("ideas");
+
+    private final String name;
+
+    private TopicType(String name) {
+      this.name = name;
+    }
+
+    @Override
+    public String toString() {
+      return name;
+    }
   }
 
 }

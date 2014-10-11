@@ -17,8 +17,8 @@ public class Forum
   private Boolean locked;
   private Long unansweredTopics;
   private Long position;
-  private String forumType;
-  private String access;
+  private Topic.TopicType forumType;
+  private Access access;
   private List<String> tags;
   private Date createdAt;
   private Date updatedAt;
@@ -128,22 +128,22 @@ public class Forum
   }
 
   @JsonProperty("forum_type")
-  public String getForumType()
+  public Topic.TopicType getForumType()
   {
     return forumType;
   }
 
-  public void setForumType( final String forumType )
+  public void setForumType( final Topic.TopicType forumType )
   {
     this.forumType = forumType;
   }
 
-  public String getAccess()
+  public Access getAccess()
   {
     return access;
   }
 
-  public void setAccess( final String access )
+  public void setAccess( final Access access )
   {
     this.access = access;
   }
@@ -178,5 +178,23 @@ public class Forum
   public void setUpdatedAt( final Date updatedAt )
   {
     this.updatedAt = updatedAt;
+  }
+
+  public static enum Access
+  {
+    EVERYBODY("everybody"),
+    LOGGED_IN("logged-in users"),
+    AGENTS_ONLY("agents only");
+
+    private final String name;
+
+    private Access(String name) {
+      this.name = name;
+    }
+
+    @Override
+    public String toString() {
+      return name;
+    }
   }
 }
