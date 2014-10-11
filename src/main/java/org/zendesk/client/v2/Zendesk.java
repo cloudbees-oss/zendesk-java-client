@@ -16,16 +16,7 @@ import com.ning.http.client.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zendesk.client.v2.model.Attachment;
-import org.zendesk.client.v2.model.Audit;
-import org.zendesk.client.v2.model.Comment;
-import org.zendesk.client.v2.model.Field;
-import org.zendesk.client.v2.model.Group;
-import org.zendesk.client.v2.model.Identity;
-import org.zendesk.client.v2.model.Organization;
-import org.zendesk.client.v2.model.SearchResultEntity;
-import org.zendesk.client.v2.model.Ticket;
-import org.zendesk.client.v2.model.User;
+import org.zendesk.client.v2.model.*;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -38,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
-import org.zendesk.client.v2.model.Status;
 
 /**
  * @author stephenc
@@ -62,7 +52,7 @@ public class Zendesk implements Closeable {
         result.put("user", User.class);
         result.put("group", Group.class);
         result.put("organization", Organization.class);
-        // result.put("topic", Topic.class) TODO add this when supported
+        result.put("topic", Topic.class);
         return Collections.unmodifiableMap(result);
     }
 
@@ -110,7 +100,7 @@ public class Zendesk implements Closeable {
         return complete(submit(req("GET", tmpl("/tickets/{id}.json").set("id", id)), handle(Ticket.class,
                 "ticket")));
     }
-    
+
     public List<Ticket> getTicketIncidents(long id) {
         return complete(submit(req("GET", tmpl("/tickets/{id}/incidents.json").set("id", id)),
                 handleList(Ticket.class, "tickets")));
@@ -155,14 +145,14 @@ public class Zendesk implements Closeable {
     public Iterable<Ticket> getTickets() {
         return new PagedIterable<Ticket>(cnst("/tickets.json"), handleList(Ticket.class, "tickets"));
     }
-    
+
     public Iterable<Ticket> getTicketsByStatus(Status... ticketStatus) {
-        return new PagedIterable<Ticket>(tmpl("/tickets.json{?status}").set("status", statusArray(ticketStatus)), 
+        return new PagedIterable<Ticket>(tmpl("/tickets.json{?status}").set("status", statusArray(ticketStatus)),
                 handleList(Ticket.class, "tickets"));
     }
-    
+
     public Iterable<Ticket> getTicketsFromSearch(String searchTerm) {
-        return new PagedIterable<Ticket>(tmpl("/search.json{?query}").set("query", searchTerm+"+type:ticket"), 
+        return new PagedIterable<Ticket>(tmpl("/search.json{?query}").set("query", searchTerm+"+type:ticket"),
                 handleList(Ticket.class, "results"));
     }
 
@@ -561,7 +551,7 @@ public class Zendesk implements Closeable {
         return new PagedIterable<Comment>(tmpl("/requests/{id}/comments.json").set("id", id),
                 handleList(Comment.class, "comments"));
     }
-    
+
     public Iterable<Comment> getTicketComments(long id) {
         return new PagedIterable<Comment>(tmpl("/tickets/{id}/comments.json").set("id", id),
                 handleList(Comment.class, "comments"));
@@ -685,7 +675,161 @@ public class Zendesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/groups/{id}.json").set("id", id)), handleStatus()));
     }
 
-    public Iterable<SearchResultEntity> getSearchResults(String query) {
+    public Iterable<GroupMembership> getGroupMemberships() {
+      return new PagedIterable<GroupMembership>(cnst("/group_memberships.json"),
+                                                handleList(GroupMembership.class, "group_memberships"));
+    }
+
+    public List<GroupMembership> getGroupMembershipByUser(long user_id) {
+      return complete( submit( req( "GET" , tmpl("/users/{user_id}/group_memberships.json").set( "user_id", user_id ) ),
+                               handleList( GroupMembership.class, "group_memberships" )));
+    }
+
+    public List<GroupMembership> getGroupMemberships(long group_id) {
+      return complete( submit( req( "GET" , tmpl("/groups/{group_id}/memberships.json").set( "group_id", group_id ) ),
+                               handleList( GroupMembership.class, "group_memberships" )));
+    }
+
+    public Iterable<GroupMembership> getAssignableGroupMemberships() {
+      return new PagedIterable<GroupMembership>(cnst("/group_memberships/assignable.json"),
+                                                handleList(GroupMembership.class, "group_memberships"));
+    }
+
+    public List<GroupMembership> getAssignableGroupMemberships(long group_id) {
+      return complete( submit( req( "GET" ,
+                                    tmpl("/groups/{group_id}/memberships/assignable.json").set( "group_id", group_id ) ),
+                               handleList( GroupMembership.class, "group_memberships" )));
+    }
+
+    public GroupMembership getGroupMembership(long id) {
+      return complete(submit(req("GET", tmpl("/group_memberships/{id}.json").set("id", id)),
+                             handle(GroupMembership.class, "group_membership")));
+    }
+
+    public GroupMembership getGroupMembership(long user_id, long group_membership_id) {
+      return complete(submit(req("GET", tmpl("/users/{uid}/group_memberships/{gmid}.json").set("uid", user_id)
+                             .set( "gmid",group_membership_id )),
+                             handle(GroupMembership.class, "group_membership")));
+    }
+
+    public GroupMembership createGroupMembership(GroupMembership groupMembership) {
+      return complete(submit(req("POST", cnst("/group_memberships.json"), JSON, json(
+        Collections.singletonMap("group_membership", groupMembership))),
+                             handle(GroupMembership.class, "group_membership")));
+    }
+
+    public GroupMembership createGroupMembership(long user_id, GroupMembership groupMembership) {
+      return complete(submit(req("POST", tmpl("/users/{id}/group_memberships.json").set( "id", user_id ), JSON,
+                                 json(Collections.singletonMap("group_membership", groupMembership))),
+                             handle(GroupMembership.class, "group_membership")));
+    }
+
+    public void deleteGroupMembership(GroupMembership groupMembership) {
+      checkHasId(groupMembership);
+      deleteGroupMembership( groupMembership.getId() );
+    }
+
+    public void deleteGroupMembership(long id) {
+      complete(submit(req("DELETE", tmpl("/groups_memberships/{id}.json").set("id", id)), handleStatus()));
+    }
+
+    public void deleteGroupMembership(long user_id, GroupMembership groupMembership) {
+      checkHasId(groupMembership);
+      deleteGroupMembership( user_id, groupMembership.getId() );
+    }
+
+    public void deleteGroupMembership( long user_id, long group_membership_id ) {
+      complete(submit(req("DELETE", tmpl("/users/{uid}/groups_memberships/{gmid}.json").set("uid", user_id)
+        .set( "gmid", group_membership_id )), handleStatus()));
+    }
+
+    public List<GroupMembership> setGroupMembershipAsDefault( long user_id, GroupMembership groupMembership)
+    {
+      checkHasId( groupMembership );
+      return complete( submit( req( "POST", tmpl( "/users/{uid}/group_memberships/{gmid}/make_default.json" )
+        .set( "uid", user_id ).set( "gmid", groupMembership.getId() ), JSON, json(
+        Collections.singletonMap( "group_memberships", groupMembership ) ) ),
+                               handleList( GroupMembership.class, "results" ) ) );
+    }
+
+    public Iterable<Forum> getForums() {
+      return new PagedIterable<Forum>(cnst("/forums.json"), handleList(Forum.class, "forums"));
+    }
+
+    public List<Forum> getForums(long category_id) {
+      return complete(submit(req("GET", tmpl("/categories/{id}/forums.json").set("id", category_id)),
+                             handleList( Forum.class, "forums" )));
+    }
+
+    public Forum getForum(long id) {
+      return complete( submit( req( "GET", tmpl( "/forums/{id}.json").set( "id",id ) ),
+                               handle( Forum.class, "forum" ) ) );
+    }
+
+    public Forum createForum(Forum forum) {
+        return complete(submit(req("POST", cnst("/forums.json"), JSON, json(
+          Collections.singletonMap("forum", forum))), handle(Forum.class, "forum")));
+    }
+
+    public Forum updateForum(Forum forum) {
+      checkHasId( forum );
+      return complete(submit(req("PUT", tmpl("/forums/{id}.json").set("id", forum.getId()), JSON, json(
+        Collections.singletonMap("forum", forum))), handle(Forum.class, "forum")));
+    }
+
+    public void deleteForum(Forum forum) {
+      checkHasId( forum );
+      complete(submit(req("DELETE", tmpl("/forums/{id}.json").set("id", forum.getId())), handleStatus()));
+    }
+
+    public Iterable<Topic> Topics() {
+      return new PagedIterable<Topic>(cnst("/topics.json"), handleList(Topic.class, "topics"));
+    }
+
+    public List<Topic> getTopics(long forum_id) {
+      return complete(submit(req("GET", tmpl("/forums/{id}/topics.json").set("id", forum_id)),
+                             handleList( Topic.class, "topics" )));
+    }
+
+    public List<Topic> getTopicsByUser(long user_id) {
+      return complete(submit(req("GET", tmpl("/users/{id}/topics.json").set("id", user_id)),
+                             handleList( Topic.class, "topics" )));
+    }
+
+    public Topic getTopic(long id) {
+      return complete( submit(req("GET", tmpl("/topics/{id}.json").set("id", id)),
+                              handle( Topic.class, "topic" )));
+    }
+
+    public Topic createTopic(Topic topic) {
+      checkHasId(topic);
+      return complete(submit(req("POST", cnst("/topics.json"), JSON, json(
+        Collections.singletonMap("topic", topic))), handle(Topic.class, "topic")));
+    }
+
+    public Topic importTopic(Topic topic) {
+      checkHasId(topic);
+      return complete(submit(req("POST", cnst("/import/topics.json"), JSON, json(
+        Collections.singletonMap("topic", topic))), handle(Topic.class, "topic")));
+    }
+
+    public List<Topic> getTopics(long id, long... ids) {
+      return complete(submit(req("POST", tmpl("/topics/show_many.json{?ids}").set("ids", idArray(id, ids))),
+                             handleList(Topic.class, "topics")));
+    }
+
+    public Topic updateTopic(Topic topic) {
+      checkHasId( topic );
+      return complete(submit(req("PUT", tmpl("/topics/{id}.json").set("id", topic.getId()), JSON, json(
+        Collections.singletonMap("topic", topic))), handle(Topic.class, "topic")));
+    }
+
+    public void deleteTopic(Topic topic) {
+      checkHasId( topic );
+      complete(submit(req("DELETE", tmpl("/topics/{id}.json").set("id", topic.getId())), handleStatus()));
+    }
+
+  public Iterable<SearchResultEntity> getSearchResults(String query) {
         return new PagedIterable<SearchResultEntity>(tmpl("/search.json{?query}").set("query", query),
                 handleSearchList("results"));
     }
@@ -961,6 +1105,24 @@ public class Zendesk implements Closeable {
         }
     }
 
+    private static void checkHasId(GroupMembership groupMembership) {
+      if (groupMembership.getId() == null) {
+        throw new IllegalArgumentException("GroupMembership requires id");
+      }
+    }
+
+    private void checkHasId(Forum forum) {
+      if (forum.getId() == null) {
+        throw new IllegalArgumentException( "Forum requires id");
+      }
+    }
+
+    private void checkHasId(Topic topic) {
+      if (topic.getId() == null) {
+        throw new IllegalArgumentException( "Topic requires id");
+        }
+    }
+
     private static void checkHasToken(Attachment.Upload upload) {
         if (upload.getToken() == null) {
             throw new IllegalArgumentException("Upload requires token");
@@ -975,7 +1137,7 @@ public class Zendesk implements Closeable {
         }
         return result;
     }
-    
+
     private static List<String> statusArray(Status... statuses)
     {
         List<String> result = new ArrayList<String>(statuses.length);
