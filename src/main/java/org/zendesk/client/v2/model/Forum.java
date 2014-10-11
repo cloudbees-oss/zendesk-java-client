@@ -16,7 +16,7 @@ public class Forum {
     private Boolean locked;
     private Long unansweredTopics;
     private Long position;
-    private Topic.TopicType forumType;
+    private TopicType forumType;
     private Access access;
     private List<String> tags;
     private Date createdAt;
@@ -107,11 +107,11 @@ public class Forum {
     }
 
     @JsonProperty("forum_type")
-    public Topic.TopicType getForumType() {
+    public TopicType getForumType() {
         return forumType;
     }
 
-    public void setForumType(final Topic.TopicType forumType) {
+    public void setForumType(final TopicType forumType) {
         this.forumType = forumType;
     }
 
