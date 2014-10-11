@@ -321,33 +321,4 @@ public class User implements SearchResultEntity {
         this.remotePhotoUrl = remotePhotoUrl;
     }
 
-    public static enum Role {
-        END_USER("end-user"),
-        AGENT("agent"),
-        ADMIN("admin");
-
-        private final String name;
-
-        private Role(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-    }
-
-    public static enum TicketRestriction {
-        ORGANIZATION,
-        GROUPS,
-        ASSIGNED,
-        REQUESTED;
-
-        @Override
-        public String toString() {
-            return name().toLowerCase();
-        }
-    }
-
 }
