@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author stephenc
@@ -41,6 +42,7 @@ public class User implements SearchResultEntity {
     private Attachment photo;
     private List<Identity> identities;
     private String remotePhotoUrl;
+    private Map<String,Object> userFields;
 
     public User() {
     }
@@ -302,6 +304,15 @@ public class User implements SearchResultEntity {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+    
+    @JsonProperty("user_fields")
+    public Map<String, Object> getUserFields() {
+        return userFields;
+    }
+
+    public void setUserFields(Map<String, Object> userFields) {
+        this.userFields = userFields;
     }
 
     public Boolean getVerified() {

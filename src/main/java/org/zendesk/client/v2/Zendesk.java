@@ -26,6 +26,7 @@ import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.SearchResultEntity;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.User;
+import org.zendesk.client.v2.model.UserField;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -338,6 +339,11 @@ public class Zendesk implements Closeable {
 
     public User getUser(long id) {
         return complete(submit(req("GET", tmpl("/users/{id}.json").set("id", id)), handle(User.class, "user")));
+    }
+    
+    public Iterable<UserField> getUserFields() {
+        return complete(submit(req("GET", cnst("/user_fields.json")),
+                handleList(UserField.class, "user_fields")));
     }
 
     public User createUser(User user) {
