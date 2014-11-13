@@ -23,9 +23,9 @@
     <version>5</version>
   </parent>
 
-  <groupId>com.cloudbees.thirdparty</groupId>
+  <groupId>com.cloudbees.thirdparty-tetrapod</groupId>
   <artifactId>zendesk-java-client</artifactId>
-  <version>0.2.1-SNAPSHOT</version>
+  <version>0.2.2-SNAPSHOT</version>
 
   <name>zendesk-java-client</name>
   <description>Java client for the Zendesk API</description>
