@@ -42,7 +42,7 @@ public class Zendesk implements Closeable {
     
    private static Map<String, Class<? extends Target>> targetTypes() {
       Map<String, Class<? extends Target>> result = new HashMap<String, Class<? extends Target>>();
-      result.put("UrlTarget", UrlTarget.class);
+      result.put("url_target", UrlTarget.class);
       // TODO: Implement other Target types
       return Collections.unmodifiableMap(result);
    }
@@ -308,6 +308,10 @@ public class Zendesk implements Closeable {
         return new PagedIterable<Target>(cnst("/targets.json"), handleTargetList("targets"));
     }
 
+    public Target getTarget(long id) {
+       return complete(submit(req("GET", tmpl("/targets/{id}.json").set("id", id)), handle(Target.class, "target")));
+    }
+    
     public Target createTarget(Target target) {
         return complete(submit(req("POST", cnst("/targets.json"), JSON, json(Collections.singletonMap("target", target))),
               handle(Target.class, "target")));
@@ -317,6 +321,10 @@ public class Zendesk implements Closeable {
         return new PagedIterable<Trigger>(cnst("/triggers.json"), handleList(Trigger.class, "triggers"));
     }
 
+    public Trigger getTrigger(long id) {
+       return complete(submit(req("GET", tmpl("/triggers/{id}.json").set("id", id)), handle(Trigger.class, "trigger")));
+    }
+    
     public Trigger createTrigger(Trigger trigger) {
         return complete(submit(req("POST", cnst("/triggers.json"), JSON, json(Collections.singletonMap("trigger", trigger))),
               handle(Trigger.class, "trigger")));
@@ -871,7 +879,7 @@ public class Zendesk implements Closeable {
                if (isStatus2xx(response)) {
                    List<Target> values = new ArrayList<Target>();
                    for (JsonNode node : mapper.readTree(response.getResponseBodyAsBytes()).get(name)) {
-                       Class<? extends Target> clazz = targetTypes.get(node.get("type"));
+                       Class<? extends Target> clazz = targetTypes.get(node.get("type").asText());
                        if (clazz != null) {
                        values.add(mapper.convertValue(node, clazz));
                        }
@@ -1010,7 +1018,7 @@ public class Zendesk implements Closeable {
         mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);        
         return mapper;
     }
 

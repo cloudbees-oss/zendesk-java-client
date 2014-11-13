@@ -2,12 +2,12 @@ package org.zendesk.client.v2.model;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.Map.Entry;
+
+import org.zendesk.client.v2.model.Trigger.Action.ActionDeserializer;
 
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * https://developer.zendesk.com/rest_api/docs/core/triggers
@@ -91,7 +91,7 @@ public class Trigger {
    @Override
    public String toString() {
       final StringBuilder sb = new StringBuilder();
-      sb.append("Target");
+      sb.append("Trigger");
       sb.append("{id=").append(id);
       sb.append(", title=").append(title);
       sb.append(", active=").append(active);
@@ -105,8 +105,8 @@ public class Trigger {
    }
 
    public static class Conditions {
-      private List<Condition> all;
-      private List<Condition> any;
+      private List<Condition> all = new ArrayList<Condition>();
+      private List<Condition> any = new ArrayList<Condition>();
 
       public List<Condition> getAll() {
          return all;
@@ -123,11 +123,30 @@ public class Trigger {
       public void setAny(List<Condition> any) {
          this.any = any;
       }
+
+      @Override
+      public String toString() {
+         final StringBuilder sb = new StringBuilder();
+         sb.append("Conditions");
+         sb.append("{all=").append(all);
+         sb.append(", any=").append(any);
+         sb.append('}');
+         return sb.toString();
+      }
    }
 
    public static class Condition {
       private String field;
       private String operator;
+      private String value;
+
+      public Condition() {}
+
+      public Condition(String field, String operator, String value) {
+         this.field = field;
+         this.operator = operator;
+         this.value = value;
+      }
 
       public String getField() {
          return field;
@@ -153,14 +172,30 @@ public class Trigger {
          this.value = value;
       }
 
-      private String value;
+      @Override
+      public String toString() {
+         final StringBuilder sb = new StringBuilder();
+         sb.append("Condition");
+         sb.append("{field=").append(field);
+         sb.append(", operator=").append(operator);
+         sb.append(", value=").append(value);
+         sb.append('}');
+         return sb.toString();
+      }
+
    }
 
+   @JsonDeserialize(using = ActionDeserializer.class)
    public static class Action {
-      private String   field;
-      
-      // FIXME: Zendesk sometimes returns JSON with a String instead of String[]
-      private String[] value; 
+      private String       field;
+      private List<String> value;
+
+      public Action() {}
+
+      public Action(String field, String... values) {
+         this.field = field;
+         this.value = Arrays.asList(values);
+      }
 
       public String getField() {
          return field;
@@ -170,12 +205,43 @@ public class Trigger {
          this.field = field;
       }
 
-      public String[] getValue() {
+      public List<String> getValue() {
          return value;
       }
 
-      public void setValue(String[] value) {
+      public void setValue(List<String> value) {
          this.value = value;
+      }
+
+      @Override
+      public String toString() {
+         final StringBuilder sb = new StringBuilder();
+         sb.append("Action");
+         sb.append("{field=").append(field);
+         sb.append(", value=").append(value);
+         sb.append('}');
+         return sb.toString();
+      }
+
+      // Zendesk sometimes returns JSON with a String instead of String[] so we need a custom deserializer
+      public static class ActionDeserializer extends JsonDeserializer<Action> {
+         @Override
+         public Action deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            JsonNode node = jp.getCodec().readTree(jp);
+            Action a = new Action();
+            a.field = node.get("field").asText();
+            a.value = new ArrayList<String>();
+
+            JsonNode n = node.get("value");
+            if (n.isArray()) {
+               for (final JsonNode objNode : n) {
+                  a.value.add(objNode.asText());
+               }
+            } else {
+               a.value.add(node.get("value").asText());
+            }
+            return a;
+         }
       }
 
    }

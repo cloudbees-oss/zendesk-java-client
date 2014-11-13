@@ -61,7 +61,7 @@ public class UrlTarget extends Target {
    @Override
    public String toString() {
       final StringBuilder sb = new StringBuilder();
-      sb.append("Target");
+      sb.append("UrlTarget");
       sb.append("{id=").append(getId());
       sb.append(", title=").append(getTitle());
       sb.append(", type=").append(getType());
