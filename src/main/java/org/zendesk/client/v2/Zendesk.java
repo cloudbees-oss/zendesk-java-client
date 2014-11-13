@@ -1,44 +1,17 @@
 package org.zendesk.client.v2;
 
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+
+import org.slf4j.*;
+import org.zendesk.client.v2.model.*;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.ning.http.client.AsyncCompletionHandler;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.ListenableFuture;
-import com.ning.http.client.Realm;
+import com.fasterxml.jackson.databind.*;
+import com.ning.http.client.*;
 import com.ning.http.client.Request;
-import com.ning.http.client.RequestBuilder;
-import com.ning.http.client.Response;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.zendesk.client.v2.model.Attachment;
-import org.zendesk.client.v2.model.Audit;
-import org.zendesk.client.v2.model.Comment;
-import org.zendesk.client.v2.model.Field;
-import org.zendesk.client.v2.model.Group;
-import org.zendesk.client.v2.model.Identity;
-import org.zendesk.client.v2.model.Organization;
-import org.zendesk.client.v2.model.SearchResultEntity;
-import org.zendesk.client.v2.model.Ticket;
-import org.zendesk.client.v2.model.User;
-
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.concurrent.ExecutionException;
-import org.zendesk.client.v2.model.Status;
 
 /**
  * @author stephenc
@@ -54,17 +27,25 @@ public class Zendesk implements Closeable {
     private final Logger logger;
     private boolean closed = false;
     private static final Map<String, Class<? extends SearchResultEntity>> searchResultTypes = searchResultTypes();
+    private static final Map<String, Class<? extends Target>> targetTypes = targetTypes();
 
     private static Map<String, Class<? extends SearchResultEntity>> searchResultTypes() {
-        Map<String, Class<? extends SearchResultEntity>> result = new HashMap<String, Class<? extends
-                SearchResultEntity>>();
-        result.put("ticket", Ticket.class);
-        result.put("user", User.class);
-        result.put("group", Group.class);
-        result.put("organization", Organization.class);
-        // result.put("topic", Topic.class) TODO add this when supported
-        return Collections.unmodifiableMap(result);
-    }
+       Map<String, Class<? extends SearchResultEntity>> result = new HashMap<String, Class<? extends
+               SearchResultEntity>>();
+       result.put("ticket", Ticket.class);
+       result.put("user", User.class);
+       result.put("group", Group.class);
+       result.put("organization", Organization.class);
+       // result.put("topic", Topic.class) TODO add this when supported
+       return Collections.unmodifiableMap(result);
+   }    
+    
+   private static Map<String, Class<? extends Target>> targetTypes() {
+      Map<String, Class<? extends Target>> result = new HashMap<String, Class<? extends Target>>();
+      result.put("UrlTarget", UrlTarget.class);
+      // TODO: Implement other Target types
+      return Collections.unmodifiableMap(result);
+   }
 
     private Zendesk(AsyncHttpClient client, String url, String username, String password) {
         this.logger = LoggerFactory.getLogger(Zendesk.class);
@@ -321,6 +302,24 @@ public class Zendesk implements Closeable {
 
     public void deleteAttachment(long id) {
         complete(submit(req("DELETE", tmpl("/attachments/{id}.json").set("id", id)), handleStatus()));
+    }
+
+    public Iterable<Target> getTargets() {
+        return new PagedIterable<Target>(cnst("/targets.json"), handleTargetList("targets"));
+    }
+
+    public Target createTarget(Target target) {
+        return complete(submit(req("POST", cnst("/targets.json"), JSON, json(Collections.singletonMap("target", target))),
+              handle(Target.class, "target")));
+    }
+
+    public Iterable<Trigger> getTriggers() {
+        return new PagedIterable<Trigger>(cnst("/triggers.json"), handleList(Trigger.class, "triggers"));
+    }
+
+    public Trigger createTrigger(Trigger trigger) {
+        return complete(submit(req("POST", cnst("/triggers.json"), JSON, json(Collections.singletonMap("trigger", trigger))),
+              handle(Trigger.class, "trigger")));
     }
 
     public Iterable<User> getUsers() {
@@ -864,6 +863,27 @@ public class Zendesk implements Closeable {
         };
     }
 
+    protected AsyncCompletionHandler<List<Target>> handleTargetList(final String name) {
+       return new AsyncCompletionHandler<List<Target>>() {
+           @Override
+           public List<Target> onCompleted(Response response) throws Exception {
+               logResponse(response);
+               if (isStatus2xx(response)) {
+                   List<Target> values = new ArrayList<Target>();
+                   for (JsonNode node : mapper.readTree(response.getResponseBodyAsBytes()).get(name)) {
+                       Class<? extends Target> clazz = targetTypes.get(node.get("type"));
+                       if (clazz != null) {
+                       values.add(mapper.convertValue(node, clazz));
+                       }
+                   }
+                   return values;
+               }
+               throw new ZendeskResponseException(response);
+           }
+       };
+   }
+
+    
     private TemplateUri tmpl(String template) {
         return new TemplateUri(url + template);
     }
