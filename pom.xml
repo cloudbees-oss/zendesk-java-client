@@ -21,6 +21,7 @@
     <groupId>com.cloudbees</groupId>
     <artifactId>cloudbees-oss-parent</artifactId>
     <version>5</version>
+     <relativePath></relativePath>
   </parent>
 
   <groupId>com.cloudbees.thirdparty-tetrapod</groupId>
