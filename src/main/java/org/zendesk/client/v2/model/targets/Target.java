@@ -1,4 +1,4 @@
-package org.zendesk.client.v2.model;
+package org.zendesk.client.v2.model.targets;
 
 import java.util.Date;
 
