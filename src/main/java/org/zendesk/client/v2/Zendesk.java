@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.slf4j.*;
 import org.zendesk.client.v2.model.*;
+import org.zendesk.client.v2.model.targets.*;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,7 +44,18 @@ public class Zendesk implements Closeable {
    private static Map<String, Class<? extends Target>> targetTypes() {
       Map<String, Class<? extends Target>> result = new HashMap<String, Class<? extends Target>>();
       result.put("url_target", UrlTarget.class);
+      result.put("email_target",EmailTarget.class);
+      result.put("basecamp_target", BasecampTarget.class);
+      result.put("campfire_target", CampfireTarget.class);    
+      result.put("pivotal_target", PivotalTarget.class);    
+      result.put("twitter_target", TwitterTarget.class);      
+      
       // TODO: Implement other Target types
+      //result.put("clickatell_target", ClickatellTarget.class);
+      //result.put("flowdock_target", FlowdockTarget.class);
+      //result.put("get_satisfaction_target", GetSatisfactionTarget.class);
+      //result.put("yammer_target", YammerTarget.class);
+      
       return Collections.unmodifiableMap(result);
    }
 
