@@ -9,9 +9,3 @@ build
 *.iws
 .idea
 
-# eclipse project file
-.settings
-.classpath
-.project
-
-.DS_Store
