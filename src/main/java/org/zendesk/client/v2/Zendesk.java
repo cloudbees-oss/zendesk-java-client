@@ -328,7 +328,11 @@ public class Zendesk implements Closeable {
         return complete(submit(req("POST", cnst("/targets.json"), JSON, json(Collections.singletonMap("target", target))),
               handle(Target.class, "target")));
     }
-
+ 
+    public void deleteTarget(long targetId) { 
+       complete(submit(req("DELETE", tmpl("/targets/{id}.json").set("id", targetId)), handleStatus()));
+    }
+    
     public Iterable<Trigger> getTriggers() {
         return new PagedIterable<Trigger>(cnst("/triggers.json"), handleList(Trigger.class, "triggers"));
     }
@@ -342,6 +346,10 @@ public class Zendesk implements Closeable {
               handle(Trigger.class, "trigger")));
     }
 
+    public void deleteTrigger(long triggerId) { 
+       complete(submit(req("DELETE", tmpl("/triggers/{id}.json").set("id", triggerId)), handleStatus()));
+    }
+    
     public Iterable<User> getUsers() {
         return new PagedIterable<User>(cnst("/users.json"), handleList(User.class, "users"));
     }
@@ -1144,4 +1152,5 @@ public class Zendesk implements Closeable {
             return new Zendesk(client, url, username + "/token", token);
         }
     }
+
 }
