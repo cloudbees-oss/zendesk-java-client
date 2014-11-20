@@ -23,6 +23,7 @@ import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.Organization;
+import org.zendesk.client.v2.model.OrganizationField;
 import org.zendesk.client.v2.model.SearchResultEntity;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.User;
@@ -40,6 +41,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
 import org.zendesk.client.v2.model.Status;
+
 
 /**
  * @author stephenc
@@ -593,6 +595,12 @@ public class Zendesk implements Closeable {
     public Iterable<Organization> getOrganizations() {
         return new PagedIterable<Organization>(cnst("/organizations.json"),
                 handleList(Organization.class, "organizations"));
+    }
+
+    public Iterable<OrganizationField> getOrganizationFields() {
+        //The organization_fields api doesn't seem to support paging
+        return complete(submit(req("GET", cnst("/organization_fields.json")),
+                handleList(OrganizationField.class, "organization_fields")));
     }
 
     public Iterable<Organization> getAutoCompleteOrganizations(String name) {
