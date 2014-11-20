@@ -101,7 +101,7 @@ public class UserField implements SearchResultEntity {
 
     @Override
     public String toString() {
-        return "OrganizationField{" +
+        return "UserField{" +
                 "id=" + id +
                 ", type='" + type + '\'' +
                 ", key='" + key + '\'' +
