@@ -16,7 +16,20 @@ import com.ning.http.client.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zendesk.client.v2.model.*;
+import org.zendesk.client.v2.model.Attachment;
+import org.zendesk.client.v2.model.Audit;
+import org.zendesk.client.v2.model.Comment;
+import org.zendesk.client.v2.model.Field;
+import org.zendesk.client.v2.model.Forum;
+import org.zendesk.client.v2.model.Group;
+import org.zendesk.client.v2.model.GroupMembership;
+import org.zendesk.client.v2.model.Identity;
+import org.zendesk.client.v2.model.Organization;
+import org.zendesk.client.v2.model.SearchResultEntity;
+import org.zendesk.client.v2.model.Status;
+import org.zendesk.client.v2.model.Ticket;
+import org.zendesk.client.v2.model.Topic;
+import org.zendesk.client.v2.model.User;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -676,157 +689,156 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<GroupMembership> getGroupMemberships() {
-      return new PagedIterable<GroupMembership>(cnst("/group_memberships.json"),
-                                                handleList(GroupMembership.class, "group_memberships"));
+        return new PagedIterable<GroupMembership>(cnst("/group_memberships.json"),
+                handleList(GroupMembership.class, "group_memberships"));
     }
 
     public List<GroupMembership> getGroupMembershipByUser(long user_id) {
-      return complete( submit( req( "GET" , tmpl("/users/{user_id}/group_memberships.json").set( "user_id", user_id ) ),
-                               handleList( GroupMembership.class, "group_memberships" )));
+        return complete(submit(req("GET", tmpl("/users/{user_id}/group_memberships.json").set("user_id", user_id)),
+                handleList(GroupMembership.class, "group_memberships")));
     }
 
     public List<GroupMembership> getGroupMemberships(long group_id) {
-      return complete( submit( req( "GET" , tmpl("/groups/{group_id}/memberships.json").set( "group_id", group_id ) ),
-                               handleList( GroupMembership.class, "group_memberships" )));
+        return complete(submit(req("GET", tmpl("/groups/{group_id}/memberships.json").set("group_id", group_id)),
+                handleList(GroupMembership.class, "group_memberships")));
     }
 
     public Iterable<GroupMembership> getAssignableGroupMemberships() {
-      return new PagedIterable<GroupMembership>(cnst("/group_memberships/assignable.json"),
-                                                handleList(GroupMembership.class, "group_memberships"));
+        return new PagedIterable<GroupMembership>(cnst("/group_memberships/assignable.json"),
+                handleList(GroupMembership.class, "group_memberships"));
     }
 
     public List<GroupMembership> getAssignableGroupMemberships(long group_id) {
-      return complete( submit( req( "GET" ,
-                                    tmpl("/groups/{group_id}/memberships/assignable.json").set( "group_id", group_id ) ),
-                               handleList( GroupMembership.class, "group_memberships" )));
+        return complete(submit(req("GET",
+                        tmpl("/groups/{group_id}/memberships/assignable.json").set("group_id", group_id)),
+                handleList(GroupMembership.class, "group_memberships")));
     }
 
     public GroupMembership getGroupMembership(long id) {
-      return complete(submit(req("GET", tmpl("/group_memberships/{id}.json").set("id", id)),
-                             handle(GroupMembership.class, "group_membership")));
+        return complete(submit(req("GET", tmpl("/group_memberships/{id}.json").set("id", id)),
+                handle(GroupMembership.class, "group_membership")));
     }
 
     public GroupMembership getGroupMembership(long user_id, long group_membership_id) {
-      return complete(submit(req("GET", tmpl("/users/{uid}/group_memberships/{gmid}.json").set("uid", user_id)
-                             .set( "gmid",group_membership_id )),
-                             handle(GroupMembership.class, "group_membership")));
+        return complete(submit(req("GET", tmpl("/users/{uid}/group_memberships/{gmid}.json").set("uid", user_id)
+                        .set("gmid", group_membership_id)),
+                handle(GroupMembership.class, "group_membership")));
     }
 
     public GroupMembership createGroupMembership(GroupMembership groupMembership) {
-      return complete(submit(req("POST", cnst("/group_memberships.json"), JSON, json(
-        Collections.singletonMap("group_membership", groupMembership))),
-                             handle(GroupMembership.class, "group_membership")));
+        return complete(submit(req("POST", cnst("/group_memberships.json"), JSON, json(
+                        Collections.singletonMap("group_membership", groupMembership))),
+                handle(GroupMembership.class, "group_membership")));
     }
 
     public GroupMembership createGroupMembership(long user_id, GroupMembership groupMembership) {
-      return complete(submit(req("POST", tmpl("/users/{id}/group_memberships.json").set( "id", user_id ), JSON,
-                                 json(Collections.singletonMap("group_membership", groupMembership))),
-                             handle(GroupMembership.class, "group_membership")));
+        return complete(submit(req("POST", tmpl("/users/{id}/group_memberships.json").set("id", user_id), JSON,
+                        json(Collections.singletonMap("group_membership", groupMembership))),
+                handle(GroupMembership.class, "group_membership")));
     }
 
     public void deleteGroupMembership(GroupMembership groupMembership) {
-      checkHasId(groupMembership);
-      deleteGroupMembership( groupMembership.getId() );
+        checkHasId(groupMembership);
+        deleteGroupMembership(groupMembership.getId());
     }
 
     public void deleteGroupMembership(long id) {
-      complete(submit(req("DELETE", tmpl("/groups_memberships/{id}.json").set("id", id)), handleStatus()));
+        complete(submit(req("DELETE", tmpl("/groups_memberships/{id}.json").set("id", id)), handleStatus()));
     }
 
     public void deleteGroupMembership(long user_id, GroupMembership groupMembership) {
-      checkHasId(groupMembership);
-      deleteGroupMembership( user_id, groupMembership.getId() );
+        checkHasId(groupMembership);
+        deleteGroupMembership(user_id, groupMembership.getId());
     }
 
-    public void deleteGroupMembership( long user_id, long group_membership_id ) {
-      complete(submit(req("DELETE", tmpl("/users/{uid}/groups_memberships/{gmid}.json").set("uid", user_id)
-        .set( "gmid", group_membership_id )), handleStatus()));
+    public void deleteGroupMembership(long user_id, long group_membership_id) {
+        complete(submit(req("DELETE", tmpl("/users/{uid}/groups_memberships/{gmid}.json").set("uid", user_id)
+                .set("gmid", group_membership_id)), handleStatus()));
     }
 
-    public List<GroupMembership> setGroupMembershipAsDefault( long user_id, GroupMembership groupMembership)
-    {
-      checkHasId( groupMembership );
-      return complete( submit( req( "POST", tmpl( "/users/{uid}/group_memberships/{gmid}/make_default.json" )
-        .set( "uid", user_id ).set( "gmid", groupMembership.getId() ), JSON, json(
-        Collections.singletonMap( "group_memberships", groupMembership ) ) ),
-                               handleList( GroupMembership.class, "results" ) ) );
+    public List<GroupMembership> setGroupMembershipAsDefault(long user_id, GroupMembership groupMembership) {
+        checkHasId(groupMembership);
+        return complete(submit(req("POST", tmpl("/users/{uid}/group_memberships/{gmid}/make_default.json")
+                        .set("uid", user_id).set("gmid", groupMembership.getId()), JSON, json(
+                        Collections.singletonMap("group_memberships", groupMembership))),
+                handleList(GroupMembership.class, "results")));
     }
 
     public Iterable<Forum> getForums() {
-      return new PagedIterable<Forum>(cnst("/forums.json"), handleList(Forum.class, "forums"));
+        return new PagedIterable<Forum>(cnst("/forums.json"), handleList(Forum.class, "forums"));
     }
 
     public List<Forum> getForums(long category_id) {
-      return complete(submit(req("GET", tmpl("/categories/{id}/forums.json").set("id", category_id)),
-                             handleList( Forum.class, "forums" )));
+        return complete(submit(req("GET", tmpl("/categories/{id}/forums.json").set("id", category_id)),
+                handleList(Forum.class, "forums")));
     }
 
     public Forum getForum(long id) {
-      return complete( submit( req( "GET", tmpl( "/forums/{id}.json").set( "id",id ) ),
-                               handle( Forum.class, "forum" ) ) );
+        return complete(submit(req("GET", tmpl("/forums/{id}.json").set("id", id)),
+                handle(Forum.class, "forum")));
     }
 
     public Forum createForum(Forum forum) {
         return complete(submit(req("POST", cnst("/forums.json"), JSON, json(
-          Collections.singletonMap("forum", forum))), handle(Forum.class, "forum")));
+                Collections.singletonMap("forum", forum))), handle(Forum.class, "forum")));
     }
 
     public Forum updateForum(Forum forum) {
-      checkHasId( forum );
-      return complete(submit(req("PUT", tmpl("/forums/{id}.json").set("id", forum.getId()), JSON, json(
-        Collections.singletonMap("forum", forum))), handle(Forum.class, "forum")));
+        checkHasId(forum);
+        return complete(submit(req("PUT", tmpl("/forums/{id}.json").set("id", forum.getId()), JSON, json(
+                Collections.singletonMap("forum", forum))), handle(Forum.class, "forum")));
     }
 
     public void deleteForum(Forum forum) {
-      checkHasId( forum );
-      complete(submit(req("DELETE", tmpl("/forums/{id}.json").set("id", forum.getId())), handleStatus()));
+        checkHasId(forum);
+        complete(submit(req("DELETE", tmpl("/forums/{id}.json").set("id", forum.getId())), handleStatus()));
     }
 
     public Iterable<Topic> getTopics() {
-      return new PagedIterable<Topic>(cnst("/topics.json"), handleList(Topic.class, "topics"));
+        return new PagedIterable<Topic>(cnst("/topics.json"), handleList(Topic.class, "topics"));
     }
 
     public List<Topic> getTopics(long forum_id) {
-      return complete(submit(req("GET", tmpl("/forums/{id}/topics.json").set("id", forum_id)),
-                             handleList( Topic.class, "topics" )));
+        return complete(submit(req("GET", tmpl("/forums/{id}/topics.json").set("id", forum_id)),
+                handleList(Topic.class, "topics")));
     }
 
     public List<Topic> getTopicsByUser(long user_id) {
-      return complete(submit(req("GET", tmpl("/users/{id}/topics.json").set("id", user_id)),
-                             handleList( Topic.class, "topics" )));
+        return complete(submit(req("GET", tmpl("/users/{id}/topics.json").set("id", user_id)),
+                handleList(Topic.class, "topics")));
     }
 
     public Topic getTopic(long id) {
-      return complete( submit(req("GET", tmpl("/topics/{id}.json").set("id", id)),
-                              handle( Topic.class, "topic" )));
+        return complete(submit(req("GET", tmpl("/topics/{id}.json").set("id", id)),
+                handle(Topic.class, "topic")));
     }
 
     public Topic createTopic(Topic topic) {
-      checkHasId(topic);
-      return complete(submit(req("POST", cnst("/topics.json"), JSON, json(
-        Collections.singletonMap("topic", topic))), handle(Topic.class, "topic")));
+        checkHasId(topic);
+        return complete(submit(req("POST", cnst("/topics.json"), JSON, json(
+                Collections.singletonMap("topic", topic))), handle(Topic.class, "topic")));
     }
 
     public Topic importTopic(Topic topic) {
-      checkHasId(topic);
-      return complete(submit(req("POST", cnst("/import/topics.json"), JSON, json(
-        Collections.singletonMap("topic", topic))), handle(Topic.class, "topic")));
+        checkHasId(topic);
+        return complete(submit(req("POST", cnst("/import/topics.json"), JSON, json(
+                Collections.singletonMap("topic", topic))), handle(Topic.class, "topic")));
     }
 
     public List<Topic> getTopics(long id, long... ids) {
-      return complete(submit(req("POST", tmpl("/topics/show_many.json{?ids}").set("ids", idArray(id, ids))),
-                             handleList(Topic.class, "topics")));
+        return complete(submit(req("POST", tmpl("/topics/show_many.json{?ids}").set("ids", idArray(id, ids))),
+                handleList(Topic.class, "topics")));
     }
 
     public Topic updateTopic(Topic topic) {
-      checkHasId( topic );
-      return complete(submit(req("PUT", tmpl("/topics/{id}.json").set("id", topic.getId()), JSON, json(
-        Collections.singletonMap("topic", topic))), handle(Topic.class, "topic")));
+        checkHasId(topic);
+        return complete(submit(req("PUT", tmpl("/topics/{id}.json").set("id", topic.getId()), JSON, json(
+                Collections.singletonMap("topic", topic))), handle(Topic.class, "topic")));
     }
 
     public void deleteTopic(Topic topic) {
-      checkHasId( topic );
-      complete(submit(req("DELETE", tmpl("/topics/{id}.json").set("id", topic.getId())), handleStatus()));
+        checkHasId(topic);
+        complete(submit(req("DELETE", tmpl("/topics/{id}.json").set("id", topic.getId())), handleStatus()));
     }
 
   public Iterable<SearchResultEntity> getSearchResults(String query) {
