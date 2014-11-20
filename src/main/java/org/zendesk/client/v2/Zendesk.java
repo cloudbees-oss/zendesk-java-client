@@ -1151,14 +1151,11 @@ public class Zendesk implements Closeable {
 
         public Zendesk build() {
             if (token != null) {
-            	return new Zendesk(client, url, username + "/token", token);
-            } else if(password != null) {
-            	return new Zendesk(client, url, username, password);
-            } else {
-            	return new Zendesk(client, url, oauthToken);
+                return new Zendesk(client, url, username + "/token", token);
+            } else if (oauthToken != null) {
+                return new Zendesk(client, url, oauthToken);
             }
-            
-            
+            return new Zendesk(client, url, username, password);
         }
     }
 }
