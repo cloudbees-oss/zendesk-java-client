@@ -13,7 +13,6 @@ import com.ning.http.client.Realm;
 import com.ning.http.client.Request;
 import com.ning.http.client.RequestBuilder;
 import com.ning.http.client.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.Attachment;
@@ -94,8 +93,8 @@ public class Zendesk implements Closeable {
         }
         this.mapper = createMapper();
     }
-    
-    
+
+
     private Zendesk(AsyncHttpClient client, String url, String oauthToken) {
         this.logger = LoggerFactory.getLogger(Zendesk.class);
         this.closeClient = client == null;
@@ -107,10 +106,10 @@ public class Zendesk implements Closeable {
         } else {
             throw new IllegalStateException("Cannot specify token or password without specifying username");
         }
-            
+
         this.mapper = createMapper();
     }
-    
+
 
     //////////////////////////////////////////////////////////////////////
     // Closeable interface methods
@@ -152,14 +151,14 @@ public class Zendesk implements Closeable {
 
     public Ticket createTicket(Ticket ticket) {
         return complete(submit(req("POST", cnst("/tickets.json"),
-                JSON, json(Collections.singletonMap("ticket", ticket))),
+                        JSON, json(Collections.singletonMap("ticket", ticket))),
                 handle(Ticket.class, "ticket")));
     }
 
     public Ticket updateTicket(Ticket ticket) {
         checkHasId(ticket);
         return complete(submit(req("PUT", tmpl("/tickets/{id}.json").set("id", ticket.getId()),
-                JSON, json(Collections.singletonMap("ticket", ticket))),
+                        JSON, json(Collections.singletonMap("ticket", ticket))),
                 handle(Ticket.class, "ticket")));
     }
 
@@ -187,7 +186,7 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Ticket> getTicketsFromSearch(String searchTerm) {
-        return new PagedIterable<Ticket>(tmpl("/search.json{?query}").set("query", searchTerm+"+type:ticket"),
+        return new PagedIterable<Ticket>(tmpl("/search.json{?query}").set("query", searchTerm + "+type:ticket"),
                 handleList(Ticket.class, "results"));
     }
 
@@ -238,7 +237,8 @@ public class Zendesk implements Closeable {
 
     public Audit getTicketAudit(long ticketId, long auditId) {
         return complete(submit(req("GET",
-                tmpl("/tickets/{ticketId}/audits/{auditId}.json").set("ticketId", ticketId).set("auditId", auditId)),
+                        tmpl("/tickets/{ticketId}/audits/{auditId}.json").set("ticketId", ticketId)
+                                .set("auditId", auditId)),
                 handle(Audit.class, "audit")));
     }
 
@@ -364,7 +364,7 @@ public class Zendesk implements Closeable {
     public User getUser(long id) {
         return complete(submit(req("GET", tmpl("/users/{id}.json").set("id", id)), handle(User.class, "user")));
     }
-    
+
     public Iterable<UserField> getUserFields() {
         return complete(submit(req("GET", cnst("/user_fields.json")),
                 handleList(UserField.class, "user_fields")));
@@ -470,8 +470,8 @@ public class Zendesk implements Closeable {
 
     public List<Identity> setUserPrimaryIdentity(long userId, long identityId) {
         return complete(submit(req("PUT",
-                tmpl("/users/{userId}/identities/{identityId}/make_primary.json").set("userId", userId)
-                        .set("identityId", identityId), JSON, null),
+                        tmpl("/users/{userId}/identities/{identityId}/make_primary.json").set("userId", userId)
+                                .set("identityId", identityId), JSON, null),
                 handleList(Identity.class, "identities")));
     }
 
@@ -519,19 +519,19 @@ public class Zendesk implements Closeable {
 
     public void deleteUserIdentity(long userId, long identityId) {
         complete(submit(req("DELETE", tmpl("/users/{userId}/identities/{identityId}.json")
-                .set("userId", userId)
-                .set("identityId", identityId)
+                        .set("userId", userId)
+                        .set("identityId", identityId)
         ), handleStatus()));
     }
 
     public void createUserIdentity(long userId, Identity identity) {
         complete(submit(req("POST", tmpl("/users/{userId}/identities.json").set("userId", userId), JSON, json(
-             Collections.singletonMap("identity", identity))), handle(Identity.class, "identity")));
+                Collections.singletonMap("identity", identity))), handle(Identity.class, "identity")));
     }
 
     public void createUserIdentity(User user, Identity identity) {
         complete(submit(req("POST", tmpl("/users/{userId}/identities.json").set("userId", user.getId()), JSON, json(
-             Collections.singletonMap("identity", identity))), handle(Identity.class, "identity")));
+                Collections.singletonMap("identity", identity))), handle(Identity.class, "identity")));
     }
 
     public Iterable<org.zendesk.client.v2.model.Request> getRequests() {
@@ -571,14 +571,14 @@ public class Zendesk implements Closeable {
 
     public org.zendesk.client.v2.model.Request createRequest(org.zendesk.client.v2.model.Request request) {
         return complete(submit(req("POST", cnst("/requests.json"),
-                JSON, json(Collections.singletonMap("request", request))),
+                        JSON, json(Collections.singletonMap("request", request))),
                 handle(org.zendesk.client.v2.model.Request.class, "request")));
     }
 
     public org.zendesk.client.v2.model.Request updateRequest(org.zendesk.client.v2.model.Request request) {
         checkHasId(request);
         return complete(submit(req("PUT", tmpl("/requests/{id}.json").set("id", request.getId()),
-                JSON, json(Collections.singletonMap("request", request))),
+                        JSON, json(Collections.singletonMap("request", request))),
                 handle(org.zendesk.client.v2.model.Request.class, "request")));
     }
 
@@ -609,8 +609,8 @@ public class Zendesk implements Closeable {
 
     public Comment getRequestComment(long requestId, long commentId) {
         return complete(submit(req("GET", tmpl("/requests/{requestId}/comments/{commentId}.json")
-                .set("requestId", requestId)
-                .set("commentId", commentId)),
+                        .set("requestId", requestId)
+                        .set("commentId", commentId)),
                 handle(Comment.class, "comment")));
     }
 
@@ -673,7 +673,8 @@ public class Zendesk implements Closeable {
         if (externalId == null || externalId.length() < 2) {
             throw new IllegalArgumentException("Name must be at least 2 characters long");
         }
-        return new PagedIterable<Organization>(tmpl("/organizations/search.json{?external_id}").set("external_id", externalId),
+        return new PagedIterable<Organization>(
+                tmpl("/organizations/search.json{?external_id}").set("external_id", externalId),
                 handleList(Organization.class, "organizations"));
     }
 
@@ -874,20 +875,22 @@ public class Zendesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/topics/{id}.json").set("id", topic.getId())), handleStatus()));
     }
 
-  public Iterable<SearchResultEntity> getSearchResults(String query) {
+    public Iterable<SearchResultEntity> getSearchResults(String query) {
         return new PagedIterable<SearchResultEntity>(tmpl("/search.json{?query}").set("query", query),
                 handleSearchList("results"));
     }
 
     public <T extends SearchResultEntity> Iterable<T> getSearchResults(Class<T> type, String query) {
         String typeName = null;
-        for (Map.Entry<String,Class<? extends SearchResultEntity>> entry: searchResultTypes.entrySet()) {
+        for (Map.Entry<String, Class<? extends SearchResultEntity>> entry : searchResultTypes.entrySet()) {
             if (type.equals(entry.getValue())) {
                 typeName = entry.getKey();
                 break;
             }
         }
-        if (typeName == null) return Collections.emptyList();
+        if (typeName == null) {
+            return Collections.emptyList();
+        }
         return new PagedIterable<T>(tmpl("/search.json{?query}").set("query", query + "+type:" + typeName),
                 handleList(type, "results"));
     }
@@ -913,7 +916,7 @@ public class Zendesk implements Closeable {
                 logger.debug("Request {} {}\n{}", request.getMethod(), request.getUrl(), request.getStringData());
             } else if (request.getByteData() != null) {
                 logger.debug("Request {} {} {} {} bytes", request.getMethod(), request.getUrl(), //
-                    request.getHeaders().getFirstValue("Content-type"), request.getByteData().length);
+                        request.getHeaders().getFirstValue("Content-type"), request.getByteData().length);
             } else {
                 logger.debug("Request {} {}", request.getMethod(), request.getUrl());
             }
@@ -928,7 +931,7 @@ public class Zendesk implements Closeable {
         if (realm != null) {
             builder.setRealm(realm);
         } else {
-        	builder.addHeader("Authorization", "Bearer " + oauthToken);
+            builder.addHeader("Authorization", "Bearer " + oauthToken);
         }
         builder.setUrl(template.toString());
         return builder.build();
@@ -939,7 +942,7 @@ public class Zendesk implements Closeable {
         if (realm != null) {
             builder.setRealm(realm);
         } else {
-        	builder.addHeader("Authorization", "Bearer " + oauthToken);
+            builder.addHeader("Authorization", "Bearer " + oauthToken);
         }
         builder.setUrl(template.toString());
         builder.addHeader("Content-type", contentType);
@@ -952,7 +955,7 @@ public class Zendesk implements Closeable {
         if (realm != null) {
             builder.setRealm(realm);
         } else {
-        	builder.addHeader("Authorization", "Bearer " + oauthToken);
+            builder.addHeader("Authorization", "Bearer " + oauthToken);
         }
         builder.addQueryParameter("page", Integer.toString(page));
         builder.setUrl(template.toString().replace("%2B", "+")); //replace out %2B with + due to API restriction
@@ -1049,7 +1052,7 @@ public class Zendesk implements Closeable {
                     for (JsonNode node : mapper.readTree(response.getResponseBodyAsBytes()).get(name)) {
                         Class<? extends SearchResultEntity> clazz = searchResultTypes.get(node.get("result_type"));
                         if (clazz != null) {
-                        values.add(mapper.convertValue(node, clazz));
+                            values.add(mapper.convertValue(node, clazz));
                         }
                     }
                     return values;
@@ -1069,7 +1072,7 @@ public class Zendesk implements Closeable {
 
     private void logResponse(Response response) throws IOException {
         logger.debug("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
-            response.getResponseBody());
+                response.getResponseBody());
         if (logger.isTraceEnabled()) {
             logger.trace("Response headers {}", response.getHeaders());
         }
@@ -1157,20 +1160,20 @@ public class Zendesk implements Closeable {
     }
 
     private static void checkHasId(GroupMembership groupMembership) {
-      if (groupMembership.getId() == null) {
-        throw new IllegalArgumentException("GroupMembership requires id");
-      }
+        if (groupMembership.getId() == null) {
+            throw new IllegalArgumentException("GroupMembership requires id");
+        }
     }
 
     private void checkHasId(Forum forum) {
-      if (forum.getId() == null) {
-        throw new IllegalArgumentException( "Forum requires id");
-      }
+        if (forum.getId() == null) {
+            throw new IllegalArgumentException("Forum requires id");
+        }
     }
 
     private void checkHasId(Topic topic) {
-      if (topic.getId() == null) {
-        throw new IllegalArgumentException( "Topic requires id");
+        if (topic.getId() == null) {
+            throw new IllegalArgumentException("Topic requires id");
         }
     }
 
@@ -1189,8 +1192,7 @@ public class Zendesk implements Closeable {
         return result;
     }
 
-    private static List<String> statusArray(Status... statuses)
-    {
+    private static List<String> statusArray(Status... statuses) {
         List<String> result = new ArrayList<String>(statuses.length);
         for (Status s : statuses) {
             result.add(s.toString());
@@ -1308,16 +1310,16 @@ public class Zendesk implements Closeable {
             }
             return this;
         }
-        
+
         public Builder setOauthToken(String oauthToken) {
-        	this.oauthToken = oauthToken;
-        	if (oauthToken != null) {
+            this.oauthToken = oauthToken;
+            if (oauthToken != null) {
                 this.password = null;
                 this.token = null;
             }
             return this;
         }
-        
+
 
         public Builder setRetry(boolean retry) {
             return this;
