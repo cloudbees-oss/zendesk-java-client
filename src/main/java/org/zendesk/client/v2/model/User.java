@@ -42,7 +42,7 @@ public class User implements SearchResultEntity {
     private Attachment photo;
     private List<Identity> identities;
     private String remotePhotoUrl;
-    private Map<String,Object> userFields;
+    private Map<String, Object> userFields;
 
     public User() {
     }
@@ -305,7 +305,7 @@ public class User implements SearchResultEntity {
     public void setUrl(String url) {
         this.url = url;
     }
-    
+
     @JsonProperty("user_fields")
     public Map<String, Object> getUserFields() {
         return userFields;

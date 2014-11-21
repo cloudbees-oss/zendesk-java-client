@@ -23,7 +23,7 @@ public class Organization implements SearchResultEntity {
     private Boolean sharedTickets;
     private Boolean sharedComments;
     private List<String> tags;
-    private Map<String,Object> organizationFields;
+    private Map<String, Object> organizationFields;
 
     public Organization() {
     }
