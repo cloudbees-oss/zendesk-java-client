@@ -673,9 +673,9 @@ public class Zendesk implements Closeable {
         if (externalId == null || externalId.length() < 2) {
             throw new IllegalArgumentException("Name must be at least 2 characters long");
         }
-        return new PagedIterable<Organization>(
-                tmpl("/organizations/search.json{?external_id}").set("external_id", externalId),
-                handleList(Organization.class, "organizations"));
+        //The organizations api doesn't seem to support paging
+        return complete(submit(req("GET", tmpl("/organizations/search.json{?external_id}").set("external_id", externalId)),
+                handleList(Organization.class, "organizations")));
     }
 
     public Iterable<Group> getGroups() {
