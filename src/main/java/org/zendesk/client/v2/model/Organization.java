@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author stephenc
@@ -22,6 +23,7 @@ public class Organization implements SearchResultEntity {
     private Boolean sharedTickets;
     private Boolean sharedComments;
     private List<String> tags;
+    private Map<String, Object> organizationFields;
 
     public Organization() {
     }
@@ -127,6 +129,15 @@ public class Organization implements SearchResultEntity {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @JsonProperty("organization_fields")
+    public Map<String, Object> getOrganizationFields() {
+        return organizationFields;
+    }
+
+    public void setOrganizationFields(Map<String, Object> organizationFields) {
+        this.organizationFields = organizationFields;
     }
 
     @Override

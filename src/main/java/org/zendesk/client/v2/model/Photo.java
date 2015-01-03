@@ -2,8 +2,6 @@ package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-
 /**
  * @author stephenc
  * @since 05/04/2013 15:36

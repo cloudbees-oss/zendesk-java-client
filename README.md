@@ -43,15 +43,15 @@ Here is the status of the various API components:
 * [Requests](http://developer.zendesk.com/documentation/rest_api/requests.html) ✓
 * [User Identities](http://developer.zendesk.com/documentation/rest_api/user_identities.html) ✓
 * [Groups](http://developer.zendesk.com/documentation/rest_api/groups.html) ✓
-* [Group Membership](http://developer.zendesk.com/documentation/rest_api/group_memberships.html)
+* [Group Membership](http://developer.zendesk.com/documentation/rest_api/group_memberships.html) ✓
 * [Custom Agent Roles](http://developer.zendesk.com/documentation/rest_api/custom_roles.html)
 * [Organizations](http://developer.zendesk.com/documentation/rest_api/organizations.html) ✓ *except for related info*
 * [Search](http://developer.zendesk.com/documentation/rest_api/search.html) ✓ *except for topics and sort ordering*
 * [Tags](http://developer.zendesk.com/documentation/rest_api/tags.html)
-* [Forums](http://developer.zendesk.com/documentation/rest_api/forums.html)
+* [Forums](http://developer.zendesk.com/documentation/rest_api/forums.html) ✓
 * [Forum Subscriptions](http://developer.zendesk.com/documentation/rest_api/forum_subscriptions.html)
 * [Categories](http://developer.zendesk.com/documentation/rest_api/categories.html)
-* [Topics](http://developer.zendesk.com/documentation/rest_api/topics.html)
+* [Topics](http://developer.zendesk.com/documentation/rest_api/topics.html) ✓
 * [Topic Comments](http://developer.zendesk.com/documentation/rest_api/topic_comments.html)
 * [Topic Subscriptions](http://developer.zendesk.com/documentation/rest_api/topic_subscriptions.html)
 * [Topic Votes](http://developer.zendesk.com/documentation/rest_api/topic_votes.html)
