@@ -917,19 +917,15 @@ public class Zendesk implements Closeable {
     }
 
     private <T> ListenableFuture<T> submit(Request request, AsyncCompletionHandler<T> handler) {
-        try {
-            if (request.getStringData() != null) {
-                logger.debug("Request {} {}\n{}", request.getMethod(), request.getUrl(), request.getStringData());
-            } else if (request.getByteData() != null) {
-                logger.debug("Request {} {} {} {} bytes", request.getMethod(), request.getUrl(), //
-                        request.getHeaders().getFirstValue("Content-type"), request.getByteData().length);
-            } else {
-                logger.debug("Request {} {}", request.getMethod(), request.getUrl());
-            }
-            return client.executeRequest(request, handler);
-        } catch (IOException e) {
-            throw new ZendeskException(e.getMessage(), e);
+        if (request.getStringData() != null) {
+            logger.debug("Request {} {}\n{}", request.getMethod(), request.getUrl(), request.getStringData());
+        } else if (request.getByteData() != null) {
+            logger.debug("Request {} {} {} {} bytes", request.getMethod(), request.getUrl(), //
+                    request.getHeaders().getFirstValue("Content-type"), request.getByteData().length);
+        } else {
+            logger.debug("Request {} {}", request.getMethod(), request.getUrl());
         }
+        return client.executeRequest(request, handler);
     }
 
     private Request req(String method, Uri template) {
@@ -963,7 +959,7 @@ public class Zendesk implements Closeable {
         } else {
             builder.addHeader("Authorization", "Bearer " + oauthToken);
         }
-        builder.addQueryParameter("page", Integer.toString(page));
+        builder.addQueryParam("page", Integer.toString(page));
         builder.setUrl(template.toString().replace("%2B", "+")); //replace out %2B with + due to API restriction
         return builder.build();
     }
