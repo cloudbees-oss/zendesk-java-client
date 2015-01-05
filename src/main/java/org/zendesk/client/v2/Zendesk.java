@@ -965,7 +965,7 @@ public class Zendesk implements Closeable {
     }
 
     protected AsyncCompletionHandler<Void> handleStatus() {
-        return new AsyncCompletionHandler<Void>() {
+        return new ZendeskCompletionHandler<Void>() {
             @Override
             public Void onCompleted(Response response) throws Exception {
                 logResponse(response);
@@ -979,7 +979,7 @@ public class Zendesk implements Closeable {
 
     @SuppressWarnings("unchecked")
     protected <T> AsyncCompletionHandler<T> handle(final Class<T> clazz) {
-        return new AsyncCompletionHandler<T>() {
+        return new ZendeskCompletionHandler<T>() {
             @Override
             public T onCompleted(Response response) throws Exception {
                 logResponse(response);
@@ -995,7 +995,7 @@ public class Zendesk implements Closeable {
     }
 
     protected <T> AsyncCompletionHandler<T> handle(final Class<T> clazz, final String name) {
-        return new AsyncCompletionHandler<T>() {
+        return new ZendeskCompletionHandler<T>() {
             @Override
             public T onCompleted(Response response) throws Exception {
                 logResponse(response);
@@ -1011,7 +1011,7 @@ public class Zendesk implements Closeable {
     }
 
     protected <T> AsyncCompletionHandler<List<T>> handleList(final Class<T> clazz) {
-        return new AsyncCompletionHandler<List<T>>() {
+        return new ZendeskCompletionHandler<List<T>>() {
             @Override
             public List<T> onCompleted(Response response) throws Exception {
                 logResponse(response);
@@ -1028,7 +1028,7 @@ public class Zendesk implements Closeable {
     }
 
     protected <T> AsyncCompletionHandler<List<T>> handleList(final Class<T> clazz, final String name) {
-        return new AsyncCompletionHandler<List<T>>() {
+        return new ZendeskCompletionHandler<List<T>>() {
             @Override
             public List<T> onCompleted(Response response) throws Exception {
                 logResponse(response);
@@ -1045,7 +1045,7 @@ public class Zendesk implements Closeable {
     }
 
     protected AsyncCompletionHandler<List<SearchResultEntity>> handleSearchList(final String name) {
-        return new AsyncCompletionHandler<List<SearchResultEntity>>() {
+        return new ZendeskCompletionHandler<List<SearchResultEntity>>() {
             @Override
             public List<SearchResultEntity> onCompleted(Response response) throws Exception {
                 logResponse(response);
@@ -1271,6 +1271,17 @@ public class Zendesk implements Closeable {
             }
         }
 
+    }
+
+    private static abstract class ZendeskCompletionHandler<T> extends AsyncCompletionHandler<T> {
+        @Override
+        public void onThrowable(Throwable t) {
+            if (t instanceof IOException) {
+                throw new ZendeskException(t);
+            } else {
+                super.onThrowable(t);
+            }
+        }
     }
 
     public static class Builder {
