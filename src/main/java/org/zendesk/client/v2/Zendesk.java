@@ -611,6 +611,14 @@ public class Zendesk implements Closeable {
                 handle(Comment.class, "comment")));
     }
 
+    public Ticket createComment(long ticketId, Comment comment) {
+        Ticket ticket = new Ticket();
+        ticket.setComment(comment);
+        return complete(submit(req("PUT", tmpl("/tickets/{id}.json").set("id", ticketId), JSON,              
+              json(Collections.singletonMap("ticket", ticket))),
+              handle(Ticket.class, "ticket")));
+    }
+
     public Iterable<Organization> getOrganizations() {
         return new PagedIterable<Organization>(cnst("/organizations.json"),
                 handleList(Organization.class, "organizations"));
