@@ -26,6 +26,7 @@ public class Zendesk implements Closeable {
     private final String url;
     private final ObjectMapper mapper;
     private final Logger logger;
+    private final String accessToken;
     private boolean closed = false;
     private static final Map<String, Class<? extends SearchResultEntity>> searchResultTypes = searchResultTypes();
     private static final Map<String, Class<? extends Target>> targetTypes = targetTypes();
@@ -59,7 +60,7 @@ public class Zendesk implements Closeable {
       return Collections.unmodifiableMap(result);
    }
 
-    private Zendesk(AsyncHttpClient client, String url, String username, String password) {
+    private Zendesk(AsyncHttpClient client, String url, String username, String password, String accessToken) {
         this.logger = LoggerFactory.getLogger(Zendesk.class);
         this.closeClient = client == null;
         this.client = client == null ? new AsyncHttpClient() : client;
@@ -77,6 +78,7 @@ public class Zendesk implements Closeable {
             }
             this.realm = null;
         }
+        this.accessToken = accessToken;
         this.mapper = createMapper();
     }
 
@@ -774,6 +776,7 @@ public class Zendesk implements Closeable {
         if (realm != null) {
             builder.setRealm(realm);
         }
+        addAccessTokenAuth(builder);
         builder.setUrl(template.toString());
         return builder.build();
     }
@@ -783,6 +786,7 @@ public class Zendesk implements Closeable {
         if (realm != null) {
             builder.setRealm(realm);
         }
+        addAccessTokenAuth(builder);
         builder.setUrl(template.toString());
         builder.addHeader("Content-type", contentType);
         builder.setBody(body);
@@ -794,9 +798,16 @@ public class Zendesk implements Closeable {
         if (realm != null) {
             builder.setRealm(realm);
         }
+        addAccessTokenAuth(builder);
         builder.addQueryParameter("page", Integer.toString(page));
         builder.setUrl(template.toString().replace("%2B", "+")); //replace out %2B with + due to API restriction
         return builder.build();
+    }
+    
+    private void addAccessTokenAuth(RequestBuilder builder) {
+       if (accessToken != null) {
+          builder.addHeader("Authorization", "Bearer " + accessToken);
+       }
     }
 
     protected AsyncCompletionHandler<Void> handleStatus() {
@@ -1118,6 +1129,7 @@ public class Zendesk implements Closeable {
         private String username = null;
         private String password = null;
         private String token = null;
+        private String accessToken = null;
 
         public Builder(String url) {
             this.url = url;
@@ -1149,15 +1161,20 @@ public class Zendesk implements Closeable {
             return this;
         }
 
+        public Builder setAccessToken(String accessToken) {
+           this.accessToken = accessToken;
+           return this;
+       }
+
         public Builder setRetry(boolean retry) {
             return this;
         }
 
         public Zendesk build() {
             if (token == null) {
-                return new Zendesk(client, url, username, password);
+                return new Zendesk(client, url, username, password, accessToken);
             }
-            return new Zendesk(client, url, username + "/token", token);
+            return new Zendesk(client, url, username + "/token", token, accessToken);
         }
     }
 
