@@ -3,6 +3,7 @@ package org.zendesk.client.v2;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.*;
 import org.zendesk.client.v2.model.*;
@@ -351,6 +352,13 @@ public class Zendesk implements Closeable {
     public void deleteTrigger(long triggerId) { 
        complete(submit(req("DELETE", tmpl("/triggers/{id}.json").set("id", triggerId)), handleStatus()));
     }
+    
+
+    public Iterable<TwitterMonitor> getTwitterMonitors() { 
+        return new PagedIterable<TwitterMonitor>(cnst("/channels/twitter/monitored_twitter_handles.json"),  
+              handleList(TwitterMonitor.class, "monitored_twitter_handles"));
+    }
+
     
     public Iterable<User> getUsers() {
         return new PagedIterable<User>(cnst("/users.json"), handleList(User.class, "users"));
@@ -871,24 +879,32 @@ public class Zendesk implements Closeable {
                 throw new ZendeskResponseException(response);
             }
         };
-    }
-
+    } 
+    
     protected <T> AsyncCompletionHandler<List<T>> handleList(final Class<T> clazz, final String name) {
-        return new AsyncCompletionHandler<List<T>>() {
-            @Override
-            public List<T> onCompleted(Response response) throws Exception {
-                logResponse(response);
-                if (isStatus2xx(response)) {
-                    List<T> values = new ArrayList<T>();
-                    for (JsonNode node : mapper.readTree(response.getResponseBodyAsBytes()).get(name)) {
-                        values.add(mapper.convertValue(node, clazz));
-                    }
-                    return values;
-                }
-                throw new ZendeskResponseException(response);
-            }
-        };
-    }
+       final AtomicInteger readCount = new AtomicInteger(0);
+       return new AsyncCompletionHandler<List<T>>() {
+           @Override
+           public List<T> onCompleted(Response response) throws Exception {
+               logResponse(response);
+               if (isStatus2xx(response)) {                   
+                   JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
+                   int count = responseNode.get("count").asInt();
+                   if (count > readCount.get()) {
+                      List<T> values = new ArrayList<T>();
+                      for (JsonNode node : responseNode.get(name)) {
+                          values.add(mapper.convertValue(node, clazz));
+                          readCount.incrementAndGet();
+                      }
+                      return values;
+                   } else {
+                      return null;
+                   }
+               }
+               throw new ZendeskResponseException(response);
+           }
+       };
+   }
 
     protected AsyncCompletionHandler<List<SearchResultEntity>> handleSearchList(final String name) {
         return new AsyncCompletionHandler<List<SearchResultEntity>>() {
@@ -910,20 +926,28 @@ public class Zendesk implements Closeable {
         };
     }
 
-    protected AsyncCompletionHandler<List<Target>> handleTargetList(final String name) {
+    protected AsyncCompletionHandler<List<Target>> handleTargetList(final String name) {  
+       final AtomicInteger readCount = new AtomicInteger(0);
        return new AsyncCompletionHandler<List<Target>>() {
            @Override
            public List<Target> onCompleted(Response response) throws Exception {
                logResponse(response);
                if (isStatus2xx(response)) {
-                   List<Target> values = new ArrayList<Target>();
-                   for (JsonNode node : mapper.readTree(response.getResponseBodyAsBytes()).get(name)) {
-                       Class<? extends Target> clazz = targetTypes.get(node.get("type").asText());
-                       if (clazz != null) {
-                       values.add(mapper.convertValue(node, clazz));
-                       }
-                   }
-                   return values;
+                  JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
+                  int count = responseNode.get("count").asInt();
+                  if (count > readCount.get()) {
+                      List<Target> values = new ArrayList<Target>();
+                      for (JsonNode node : responseNode.get(name)) {
+                          Class<? extends Target> clazz = targetTypes.get(node.get("type").asText());
+                          if (clazz != null) {
+                             values.add(mapper.convertValue(node, clazz));
+                          }  
+                          readCount.incrementAndGet();
+                      }
+                      return values;
+                  } else {
+                     return null;
+                  }
                }
                throw new ZendeskResponseException(response);
            }
@@ -1070,6 +1094,7 @@ public class Zendesk implements Closeable {
         private final Uri url;
         private final AsyncCompletionHandler<List<T>> handler;
         private final int initialPage;
+        private int size = 0;
 
         private PagedIterable(Uri url, AsyncCompletionHandler<List<T>> handler) {
             this(url, handler, 1);
@@ -1096,12 +1121,16 @@ public class Zendesk implements Closeable {
 
             public boolean hasNext() {
                 if (current == null || !current.hasNext()) {
-                    if (page > 0) {
+                    if (page > 0) {                       
                         List<T> values = complete(submit(req("GET", url, page++), handler));
-                        if (values.isEmpty()) {
+                        if (values == null || values.isEmpty()) {
                             page = -1;
+                        } else {
+                           synchronized (this) {
+                              size += values.size();
+                           }
+                           current = values.iterator();
                         }
-                        current = values.iterator();
                     } else {
                         return false;
                     }
