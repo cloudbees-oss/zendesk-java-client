@@ -30,9 +30,6 @@ public class Ticket extends Request implements SearchResultEntity {
     private List<Long> sharingAgreementIds;
     private List<Long> followupIds;
     private Long ticketFormId;
-    
-    private Long twitterStatusMessageId;
-    private Long monitoredTwitterHandleId;
 
     public Ticket() {
     }
@@ -218,27 +215,6 @@ public class Ticket extends Request implements SearchResultEntity {
         this.type = type;
     }
 
-
-    @JsonProperty("twitter_status_message_id")
-    public Long getTwitterStatusMessageId() {
-       return twitterStatusMessageId;
-    }
-    
-    public void setTwitterStatusMessageId(Long twitterStatusMessageId) {
-       this.twitterStatusMessageId = twitterStatusMessageId;             
-    }
-
-
-    @JsonProperty("monitored_twitter_handle_id")
-    public Long getMonitoredTwitterHandleId() {
-       return monitoredTwitterHandleId;
-    }
-    
-    public void setMonitoredTwitterHandleId(Long monitoredTwitterHandleId) {
-       this.monitoredTwitterHandleId = monitoredTwitterHandleId;             
-    }
-    
-    
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
@@ -334,6 +310,5 @@ public class Ticket extends Request implements SearchResultEntity {
             return sb.toString();
         }
     }
-
 
 }
