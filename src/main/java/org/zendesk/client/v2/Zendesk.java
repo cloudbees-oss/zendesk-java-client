@@ -629,6 +629,18 @@ public class Zendesk implements Closeable {
               handle(Ticket.class, "ticket")));
     }
 
+    
+
+    public Ticket createTicketFromTweet(long tweetId, long monitorId) { 
+       Map<String,Object> map = new HashMap<String,Object>();
+       map.put("twitter_status_message_id", tweetId);
+       map.put("monitored_twitter_handle_id", monitorId);
+      
+       return complete(submit(req("POST", cnst("/channels/twitter/tickets.json"), JSON,              
+             json(Collections.singletonMap("ticket", map ))),
+             handle(Ticket.class, "ticket")));
+    }
+    
     public Iterable<Organization> getOrganizations() {
         return new PagedIterable<Organization>(cnst("/organizations.json"),
                 handleList(Organization.class, "organizations"));
