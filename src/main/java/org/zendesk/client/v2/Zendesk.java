@@ -13,6 +13,7 @@ import com.ning.http.client.Realm;
 import com.ning.http.client.Request;
 import com.ning.http.client.RequestBuilder;
 import com.ning.http.client.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.Attachment;
@@ -28,6 +29,7 @@ import org.zendesk.client.v2.model.OrganizationField;
 import org.zendesk.client.v2.model.SearchResultEntity;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.Ticket;
+import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.Topic;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.UserField;
@@ -130,6 +132,16 @@ public class Zendesk implements Closeable {
     // Action methods
     //////////////////////////////////////////////////////////////////////
 
+    public TicketForm getTicketForm(long id) {
+        return complete(submit(req("GET", tmpl("/ticket_forms/{id}.json").set("id", id)), handle(TicketForm.class,
+                "ticket_form")));
+    }
+
+    public List<TicketForm> getTicketForms() {
+        return complete(submit(req("GET", cnst("/ticket_forms.json")), handleList(TicketForm.class,
+                "ticket_forms")));
+    }
+    
     public Ticket getTicket(long id) {
         return complete(submit(req("GET", tmpl("/tickets/{id}.json").set("id", id)), handle(Ticket.class,
                 "ticket")));
