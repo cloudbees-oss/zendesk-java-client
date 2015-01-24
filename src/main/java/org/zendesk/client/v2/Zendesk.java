@@ -25,6 +25,7 @@ import org.zendesk.client.v2.model.GroupMembership;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.OrganizationField;
+import org.zendesk.client.v2.model.OrganizationMembership;
 import org.zendesk.client.v2.model.SearchResultEntity;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.Ticket;
@@ -875,6 +876,44 @@ public class Zendesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/topics/{id}.json").set("id", topic.getId())), handleStatus()));
     }
 
+    //-- Currently in BETA
+    // https://support.zendesk.com/hc/communities/public/posts/203464106-Managing-Organization-Memberships-via-the-Zendesk-API
+    public List<OrganizationMembership> getOrganizationMembershipByUser(long user_id) {
+        return complete(submit(req("GET", tmpl("/users/{user_id}/organization_memberships.json").set("user_id", user_id)),
+                handleList(OrganizationMembership.class, "organization_memberships")));
+    }
+
+    public OrganizationMembership getGroupOrganization(long user_id, long organization_membership_id) {
+        return complete(submit(req("GET", tmpl("/users/{uid}/organization_memberships/{oid}.json").set("uid", user_id)
+                        .set("oid", organization_membership_id)),
+                handle(OrganizationMembership.class, "organization_membership")));
+    }
+
+    public OrganizationMembership createOrganizationMembership(long user_id, OrganizationMembership organizationMembership) {
+        return complete(submit(req("POST", tmpl("/users/{id}/organization_memberships.json").set("id", user_id), JSON,
+                        json(Collections.singletonMap("organization_membership", organizationMembership))),
+                handle(OrganizationMembership.class, "organization_membership")));
+    }
+
+    public void deleteOrganizationMembership(long user_id, OrganizationMembership organizationMembership) {
+        checkHasId(organizationMembership);
+        deleteOrganizationMembership(user_id, organizationMembership.getId());
+    }
+
+    public void deleteOrganizationMembership(long user_id, long organization_membership_id) {
+        complete(submit(req("DELETE", tmpl("/users/{uid}/organization_memberships/{oid}.json").set("uid", user_id)
+                .set("oid", organization_membership_id)), handleStatus()));
+    }
+    
+    public List<OrganizationMembership> setOrganizationMembershipAsDefault(long user_id, OrganizationMembership organizationMembership) {
+        checkHasId(organizationMembership);
+        return complete(submit(req("POST", tmpl("/users/{uid}/organization_memberships/{gmid}/make_default.json")
+                        .set("uid", user_id).set("gmid", organizationMembership.getId()), JSON, json(
+                        Collections.singletonMap("group_memberships", organizationMembership))),
+                handleList(OrganizationMembership.class, "results")));
+    }
+    //-- END BETA
+
     public Iterable<SearchResultEntity> getSearchResults(String query) {
         return new PagedIterable<SearchResultEntity>(tmpl("/search.json{?query}").set("query", query),
                 handleSearchList("results"));
@@ -1183,6 +1222,12 @@ public class Zendesk implements Closeable {
         }
     }
 
+    private static void checkHasId(OrganizationMembership organizationMembership) {
+        if (organizationMembership.getId() == null) {
+            throw new IllegalArgumentException("OrganizationMembership requires id");
+        }
+    }
+    
     private static void checkHasToken(Attachment.Upload upload) {
         if (upload.getToken() == null) {
             throw new IllegalArgumentException("Upload requires token");
