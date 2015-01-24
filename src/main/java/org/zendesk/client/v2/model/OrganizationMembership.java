@@ -12,7 +12,7 @@ public class OrganizationMembership implements SearchResultEntity, Serializable 
 
     private static final long serialVersionUID = 1L;
 
-    private long id;
+    private Long id;
     private long userId;
     private long organizationId;
     private boolean _default;
@@ -23,7 +23,7 @@ public class OrganizationMembership implements SearchResultEntity, Serializable 
     }
 
     @JsonProperty("id")
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
