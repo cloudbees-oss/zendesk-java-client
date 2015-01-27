@@ -62,6 +62,13 @@
 
   </ciManagement>
 
+  <distributionManagement>
+    <repository>
+      <id>speedledgerReleaseRepository</id>
+      <url>https://artifactory.speedledger.net/repo</url>
+    </repository>
+  </distributionManagement>
+  
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -103,9 +110,18 @@
   </dependencies>
 
   <build>
+
     <pluginManagement>
       <plugins>
         <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.5.1</version>
+          <configuration>
+            <mavenExecutorId>forked-path</mavenExecutorId>
+            <useReleaseProfile>false</useReleaseProfile>
+            <arguments>-P-cloudbees-oss-release ${arguments}</arguments>
+          </configuration>
+        </plugin>    <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <configuration>
