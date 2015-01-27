@@ -42,11 +42,11 @@ public class OrganizationMembership {
     }
 
     @JsonProperty("organization_id")
-    public Long getGroupId() {
+    public Long getOrganizationId() {
         return organizationId;
     }
 
-    public void setGroupId(final Long organizationId) {
+    public void setOrganizationId(final Long organizationId) {
         this.organizationId = organizationId;
     }
 
