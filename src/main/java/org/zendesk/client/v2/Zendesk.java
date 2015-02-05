@@ -759,6 +759,10 @@ public class Zendesk implements Closeable {
         return new PagedIterable<T>(tmpl("/search.json{?query}").set("query", query + "+type:" + typeName),
                 handleList(type, "results"));
     }
+    
+    public void notifyApp(String json) {
+       complete(submit(req("POST", tmpl("/api/v2/apps/notify.json"), JSON, json.getBytes()), handleStatus()));
+    }
 
     // TODO search with sort order
     // TODO search with query building API
