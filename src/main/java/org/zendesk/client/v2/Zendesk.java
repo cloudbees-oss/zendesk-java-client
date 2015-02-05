@@ -761,7 +761,7 @@ public class Zendesk implements Closeable {
     }
     
     public void notifyApp(String json) {
-       complete(submit(req("POST", tmpl("/api/v2/apps/notify.json"), JSON, json.getBytes()), handleStatus()));
+       complete(submit(req("POST", cnst("/api/v2/apps/notify.json"), JSON, json.getBytes()), handleStatus()));
     }
 
     // TODO search with sort order
