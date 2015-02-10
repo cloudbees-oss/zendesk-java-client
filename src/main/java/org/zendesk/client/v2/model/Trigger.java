@@ -3,8 +3,6 @@ package org.zendesk.client.v2.model;
 import java.io.IOException;
 import java.util.*;
 
-import org.zendesk.client.v2.model.Trigger.Action.ActionDeserializer;
-
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -185,7 +183,7 @@ public class Trigger {
 
    }
 
-   @JsonDeserialize(using = ActionDeserializer.class)
+   @JsonDeserialize(using = org.zendesk.client.v2.model.Trigger.Action.ActionDeserializer.class)
    public static class Action {
       private String       field;
       private List<String> value;
