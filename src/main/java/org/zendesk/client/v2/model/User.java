@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author stephenc
@@ -41,6 +42,7 @@ public class User implements SearchResultEntity {
     private Attachment photo;
     private List<Identity> identities;
     private String remotePhotoUrl;
+    private Map<String, Object> userFields;
 
     public User() {
     }
@@ -304,6 +306,15 @@ public class User implements SearchResultEntity {
         this.url = url;
     }
 
+    @JsonProperty("user_fields")
+    public Map<String, Object> getUserFields() {
+        return userFields;
+    }
+
+    public void setUserFields(Map<String, Object> userFields) {
+        this.userFields = userFields;
+    }
+
     public Boolean getVerified() {
         return verified;
     }
@@ -319,35 +330,6 @@ public class User implements SearchResultEntity {
 
     public void setRemotePhotoUrl(String remotePhotoUrl) {
         this.remotePhotoUrl = remotePhotoUrl;
-    }
-
-    public static enum Role {
-        END_USER("end-user"),
-        AGENT("agent"),
-        ADMIN("admin");
-
-        private final String name;
-
-        private Role(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-    }
-
-    public static enum TicketRestriction {
-        ORGANIZATION,
-        GROUPS,
-        ASSIGNED,
-        REQUESTED;
-
-        @Override
-        public String toString() {
-            return name().toLowerCase();
-        }
     }
 
 }

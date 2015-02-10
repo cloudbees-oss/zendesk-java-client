@@ -21,12 +21,11 @@
     <groupId>com.cloudbees</groupId>
     <artifactId>cloudbees-oss-parent</artifactId>
     <version>5</version>
-     <relativePath></relativePath>
   </parent>
 
   <groupId>com.cloudbees.thirdparty-tetrapod</groupId>
   <artifactId>zendesk-java-client</artifactId>
-  <version>0.2.2-SNAPSHOT</version>
+  <version>0.2.5-SNAPSHOT</version>
 
   <name>zendesk-java-client</name>
   <description>Java client for the Zendesk API</description>
