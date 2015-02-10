@@ -1,16 +1,17 @@
 package org.zendesk.client.v2;
+ 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
+ 
+import org.zendesk.client.v2.model.*;
+import org.zendesk.client.v2.model.targets.*;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.ning.http.client.AsyncCompletionHandler;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.ListenableFuture;
-import com.ning.http.client.Realm;
+import com.fasterxml.jackson.databind.*;
+import com.ning.http.client.*;
 import com.ning.http.client.Request;
+ 
 import com.ning.http.client.RequestBuilder;
 import com.ning.http.client.Response;
 import org.slf4j.Logger;
@@ -41,9 +42,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.concurrent.ExecutionException;
-
+import java.util.NoSuchElementException; 
+ 
 
 /**
  * @author stephenc
@@ -57,22 +57,41 @@ public class Zendesk implements Closeable {
     private final String url;
     private final String oauthToken;
     private final ObjectMapper mapper;
-    private final Logger logger;
+    private final Logger logger; 
     private boolean closed = false;
     private static final Map<String, Class<? extends SearchResultEntity>> searchResultTypes = searchResultTypes();
+    private static final Map<String, Class<? extends Target>> targetTypes = targetTypes();
 
     private static Map<String, Class<? extends SearchResultEntity>> searchResultTypes() {
-        Map<String, Class<? extends SearchResultEntity>> result = new HashMap<String, Class<? extends
-                SearchResultEntity>>();
-        result.put("ticket", Ticket.class);
-        result.put("user", User.class);
-        result.put("group", Group.class);
-        result.put("organization", Organization.class);
-        result.put("topic", Topic.class);
-        return Collections.unmodifiableMap(result);
+       Map<String, Class<? extends SearchResultEntity>> result = new HashMap<String, Class<? extends
+             SearchResultEntity>>();
+       result.put("ticket", Ticket.class);
+       result.put("user", User.class);
+       result.put("group", Group.class);
+       result.put("organization", Organization.class);
+       result.put("topic", Topic.class);
+       return Collections.unmodifiableMap(result);
+    }
+    
+    private static Map<String, Class<? extends Target>> targetTypes() {
+       Map<String, Class<? extends Target>> result = new HashMap<String, Class<? extends Target>>();
+       result.put("url_target", UrlTarget.class);
+       result.put("email_target",EmailTarget.class);
+       result.put("basecamp_target", BasecampTarget.class);
+       result.put("campfire_target", CampfireTarget.class);    
+       result.put("pivotal_target", PivotalTarget.class);    
+       result.put("twitter_target", TwitterTarget.class);      
+      
+       // TODO: Implement other Target types
+       //result.put("clickatell_target", ClickatellTarget.class);
+       //result.put("flowdock_target", FlowdockTarget.class);
+       //result.put("get_satisfaction_target", GetSatisfactionTarget.class);
+       //result.put("yammer_target", YammerTarget.class);
+      
+       return Collections.unmodifiableMap(result);
     }
 
-    private Zendesk(AsyncHttpClient client, String url, String username, String password) {
+    private Zendesk(AsyncHttpClient client, String url, String username, String password) {    
         this.logger = LoggerFactory.getLogger(Zendesk.class);
         this.closeClient = client == null;
         this.oauthToken = null;
@@ -90,7 +109,7 @@ public class Zendesk implements Closeable {
                 throw new IllegalStateException("Cannot specify token or password without specifying username");
             }
             this.realm = null;
-        }
+        } 
         this.mapper = createMapper();
     }
 
@@ -348,6 +367,47 @@ public class Zendesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/attachments/{id}.json").set("id", id)), handleStatus()));
     }
 
+    public Iterable<Target> getTargets() {
+        return new PagedIterable<Target>(cnst("/targets.json"), handleTargetList("targets"));
+    }
+
+    public Target getTarget(long id) {
+       return complete(submit(req("GET", tmpl("/targets/{id}.json").set("id", id)), handle(Target.class, "target")));
+    }
+    
+    public Target createTarget(Target target) {
+        return complete(submit(req("POST", cnst("/targets.json"), JSON, json(Collections.singletonMap("target", target))),
+              handle(Target.class, "target")));
+    }
+ 
+    public void deleteTarget(long targetId) { 
+       complete(submit(req("DELETE", tmpl("/targets/{id}.json").set("id", targetId)), handleStatus()));
+    }
+    
+    public Iterable<Trigger> getTriggers() {
+        return new PagedIterable<Trigger>(cnst("/triggers.json"), handleList(Trigger.class, "triggers"));
+    }
+
+    public Trigger getTrigger(long id) {
+       return complete(submit(req("GET", tmpl("/triggers/{id}.json").set("id", id)), handle(Trigger.class, "trigger")));
+    }
+    
+    public Trigger createTrigger(Trigger trigger) {
+        return complete(submit(req("POST", cnst("/triggers.json"), JSON, json(Collections.singletonMap("trigger", trigger))),
+              handle(Trigger.class, "trigger")));
+    }
+
+    public void deleteTrigger(long triggerId) { 
+       complete(submit(req("DELETE", tmpl("/triggers/{id}.json").set("id", triggerId)), handleStatus()));
+    }
+    
+
+    public Iterable<TwitterMonitor> getTwitterMonitors() { 
+        return new PagedIterable<TwitterMonitor>(cnst("/channels/twitter/monitored_twitter_handles.json"),  
+              handleList(TwitterMonitor.class, "monitored_twitter_handles"));
+    }
+
+    
     public Iterable<User> getUsers() {
         return new PagedIterable<User>(cnst("/users.json"), handleList(User.class, "users"));
     }
@@ -614,6 +674,24 @@ public class Zendesk implements Closeable {
                 handle(Comment.class, "comment")));
     }
 
+    public Ticket createComment(long ticketId, Comment comment) {
+        Ticket ticket = new Ticket();
+        ticket.setComment(comment);
+        return complete(submit(req("PUT", tmpl("/tickets/{id}.json").set("id", ticketId), JSON,              
+              json(Collections.singletonMap("ticket", ticket))),
+              handle(Ticket.class, "ticket")));
+    }    
+
+    public Ticket createTicketFromTweet(long tweetId, long monitorId) { 
+       Map<String,Object> map = new HashMap<String,Object>();
+       map.put("twitter_status_message_id", tweetId);
+       map.put("monitored_twitter_handle_id", monitorId);
+      
+       return complete(submit(req("POST", cnst("/channels/twitter/tickets.json"), JSON,              
+             json(Collections.singletonMap("ticket", map ))),
+             handle(Ticket.class, "ticket")));
+    }
+    
     public Iterable<Organization> getOrganizations() {
         return new PagedIterable<Organization>(cnst("/organizations.json"),
                 handleList(Organization.class, "organizations"));
@@ -900,6 +978,14 @@ public class Zendesk implements Closeable {
                 .set("params", params),
                 handleList(type, "results"));
     }
+    
+    public void notifyApp(String json) {
+       complete(submit(req("POST", cnst("/apps/notify.json"), JSON, json.getBytes()), handleStatus()));
+    }
+    
+    public void updateInstallation(int id, String json) {
+       complete(submit(req("PUT", tmpl("/apps/installations/{id}.json").set("id", id), JSON, json.getBytes()), handleStatus()));
+    }
 
     // TODO search with sort order
     // TODO search with query building API
@@ -938,7 +1024,7 @@ public class Zendesk implements Closeable {
             builder.setRealm(realm);
         } else {
             builder.addHeader("Authorization", "Bearer " + oauthToken);
-        }
+        } 
         builder.setUrl(template.toString());
         return builder.build();
     }
@@ -949,7 +1035,7 @@ public class Zendesk implements Closeable {
             builder.setRealm(realm);
         } else {
             builder.addHeader("Authorization", "Bearer " + oauthToken);
-        }
+        } 
         builder.setUrl(template.toString());
         builder.addHeader("Content-type", contentType);
         builder.setBody(body);
@@ -967,6 +1053,8 @@ public class Zendesk implements Closeable {
         builder.setUrl(template.toString().replace("%2B", "+")); //replace out %2B with + due to API restriction
         return builder.build();
     }
+    
+    
 
     protected AsyncCompletionHandler<Void> handleStatus() {
         return new AsyncCompletionHandler<Void>() {
@@ -1029,25 +1117,33 @@ public class Zendesk implements Closeable {
                 throw new ZendeskResponseException(response);
             }
         };
-    }
-
+    } 
+    
     protected <T> AsyncCompletionHandler<List<T>> handleList(final Class<T> clazz, final String name) {
-        return new AsyncCompletionHandler<List<T>>() {
-            @Override
-            public List<T> onCompleted(Response response) throws Exception {
-                logResponse(response);
-                if (isStatus2xx(response)) {
-                    List<T> values = new ArrayList<T>();
-                    for (JsonNode node : mapper.readTree(response.getResponseBodyAsStream()).get(name)) {
-                        values.add(mapper.convertValue(node, clazz));
-                    }
-                    return values;
-                }
-                throw new ZendeskResponseException(response);
-            }
-        };
+       final AtomicInteger readCount = new AtomicInteger(0);
+       return new AsyncCompletionHandler<List<T>>() {
+           @Override
+           public List<T> onCompleted(Response response) throws Exception {
+               logResponse(response);
+               if (isStatus2xx(response)) {                   
+                   JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
+                   int count = responseNode.get("count").asInt();
+                   if (count > readCount.get()) {
+                      List<T> values = new ArrayList<T>();
+                      for (JsonNode node : responseNode.get(name)) {
+                          values.add(mapper.convertValue(node, clazz));
+                          readCount.incrementAndGet();
+                      }
+                      return values;
+                   } else {
+                      return null;
+                   }
+               }
+               throw new ZendeskResponseException(response);
+           }
+       };
     }
-
+ 
     protected AsyncCompletionHandler<List<SearchResultEntity>> handleSearchList(final String name) {
         return new AsyncCompletionHandler<List<SearchResultEntity>>() {
             @Override
@@ -1068,6 +1164,35 @@ public class Zendesk implements Closeable {
         };
     }
 
+    protected AsyncCompletionHandler<List<Target>> handleTargetList(final String name) {  
+       final AtomicInteger readCount = new AtomicInteger(0);
+       return new AsyncCompletionHandler<List<Target>>() {
+           @Override
+           public List<Target> onCompleted(Response response) throws Exception {
+               logResponse(response);
+               if (isStatus2xx(response)) {
+                  JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
+                  int count = responseNode.get("count").asInt();
+                  if (count > readCount.get()) {
+                      List<Target> values = new ArrayList<Target>();
+                      for (JsonNode node : responseNode.get(name)) {
+                          Class<? extends Target> clazz = targetTypes.get(node.get("type").asText());
+                          if (clazz != null) {
+                             values.add(mapper.convertValue(node, clazz));
+                          }  
+                          readCount.incrementAndGet();
+                      }
+                      return values;
+                  } else {
+                     return null;
+                  }
+               }
+               throw new ZendeskResponseException(response);
+           }
+       };
+   }
+
+    
     private TemplateUri tmpl(String template) {
         return new TemplateUri(url + template);
     }
@@ -1211,7 +1336,7 @@ public class Zendesk implements Closeable {
         mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);        
         return mapper;
     }
 
@@ -1224,6 +1349,7 @@ public class Zendesk implements Closeable {
         private final Uri url;
         private final AsyncCompletionHandler<List<T>> handler;
         private final int initialPage;
+        private int size = 0;
 
         private PagedIterable(Uri url, AsyncCompletionHandler<List<T>> handler) {
             this(url, handler, 1);
@@ -1250,12 +1376,16 @@ public class Zendesk implements Closeable {
 
             public boolean hasNext() {
                 if (current == null || !current.hasNext()) {
-                    if (page > 0) {
+                    if (page > 0) {                       
                         List<T> values = complete(submit(req("GET", url, page++), handler));
-                        if (values.isEmpty()) {
+                        if (values == null || values.isEmpty()) {
                             page = -1;
+                        } else {
+                           synchronized (this) {
+                              size += values.size();
+                           }
+                           current = values.iterator();
                         }
-                        current = values.iterator();
                     } else {
                         return false;
                     }
@@ -1317,6 +1447,7 @@ public class Zendesk implements Closeable {
             return this;
         }
 
+
         public Builder setOauthToken(String oauthToken) {
             this.oauthToken = oauthToken;
             if (oauthToken != null) {
@@ -1340,4 +1471,5 @@ public class Zendesk implements Closeable {
             return new Zendesk(client, url, username, password);
         }
     }
+
 }
