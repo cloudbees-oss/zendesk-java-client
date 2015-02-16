@@ -68,7 +68,7 @@ Here is the status of the various API components:
 * [Satisfaction Ratings](http://developer.zendesk.com/documentation/rest_api/satisfaction_ratings.html) ✓
 * [Sharing Agreements](http://developer.zendesk.com/documentation/rest_api/sharing_agreements.html)
 * [Suspended Tickets](http://developer.zendesk.com/documentation/rest_api/suspended_tickets.html)
-* [Triggers](http://developer.zendesk.com/documentation/rest_api/triggers.html)
+* [Triggers](http://developer.zendesk.com/documentation/rest_api/triggers.html) ✓
 
 History
 -------
