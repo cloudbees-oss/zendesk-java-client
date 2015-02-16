@@ -38,6 +38,7 @@ Here is the status of the various API components:
 * [Ticket Fields](http://developer.zendesk.com/documentation/rest_api/ticket_fields.html) ✓
 * [Ticket Import](http://developer.zendesk.com/documentation/rest_api/ticket_import.html)
 * [Ticket Metrics](http://developer.zendesk.com/documentation/rest_api/ticket_metrics.html)
+* [Ticket Forms](http://developer.zendesk.com/documentation/rest_api/ticket_forms.html) *getTicketForm() and getTicketForms()*
 * [Views](http://developer.zendesk.com/documentation/rest_api/views.html)
 * [Users](http://developer.zendesk.com/documentation/rest_api/users.html) ✓
 * [Requests](http://developer.zendesk.com/documentation/rest_api/requests.html) ✓

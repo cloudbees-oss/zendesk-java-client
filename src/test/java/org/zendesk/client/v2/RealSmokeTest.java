@@ -13,6 +13,7 @@ import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.Request;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.Ticket;
+import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.events.Event;
 
@@ -24,7 +25,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
 
 /**
@@ -97,6 +100,36 @@ public class RealSmokeTest {
         assertThat(ticket, notNullValue());
     }
 
+    @Test
+    public void getTicketForm() throws Exception {
+        createClientWithTokenOrPassword();
+        TicketForm ticketForm = instance.getTicketForm(27562);
+        assertThat(ticketForm, notNullValue());
+        assertTrue(ticketForm.isEndUserVisible());
+    }
+ 
+    @Test
+    public void getTicketForms() throws Exception {
+        createClientWithTokenOrPassword();
+        Iterable<TicketForm> ticketForms = instance.getTicketForms();
+        assertTrue(ticketForms.iterator().hasNext());
+        for(TicketForm ticketForm : ticketForms){
+        	assertThat(ticketForm, notNullValue());
+        }
+    }
+    
+    @Test
+    public void getTicketFieldsOnForm() throws Exception {
+        createClientWithTokenOrPassword();
+        TicketForm ticketForm = instance.getTicketForm(27562);
+        for(Integer id :ticketForm.getTicketFieldIds()){
+        	Field f = instance.getTicketField(id);
+        	assertNotNull(f);
+        }
+        assertThat(ticketForm, notNullValue());
+        assertTrue(ticketForm.isEndUserVisible());
+    }
+    
     @Test
     public void getTicketsPagesRequests() throws Exception {
         createClientWithTokenOrPassword();
