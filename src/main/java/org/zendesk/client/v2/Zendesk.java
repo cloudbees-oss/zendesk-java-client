@@ -270,6 +270,11 @@ public class Zendesk implements Closeable {
                 handleList(Ticket.class, "tickets"));
     }
 
+    public Iterable<Ticket> getTicketsByExternalId(String externalId) {
+        return new PagedIterable<Ticket>(tmpl("/tickets.json{?external_id}").set("external_id", externalId),
+                handleList(Ticket.class, "tickets"));
+    }
+
     public Iterable<Ticket> getTicketsFromSearch(String searchTerm) {
         return new PagedIterable<Ticket>(tmpl("/search.json{?query}").set("query", searchTerm + "+type:ticket"),
                 handleList(Ticket.class, "results"));
