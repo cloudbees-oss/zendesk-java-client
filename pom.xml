@@ -25,7 +25,7 @@
 
     <groupId>com.cloudbees.thirdparty</groupId>
     <artifactId>zendesk-java-client</artifactId>
-    <version>0.2.8-BETA</version>
+    <version>0.2.9-BETA-SNAPSHOT</version>
 
     <name>zendesk-java-client</name>
     <description>Java client for the Zendesk API</description>
@@ -53,7 +53,7 @@
         <connection>scm:git:git://github.com/pliljenberg/zendesk-java-client.git</connection>
         <developerConnection>scm:git:git@github.com:pliljenberg/zendesk-java-client.git</developerConnection>
         <url>http://github.com/pliljenberg/zendesk-java-client/tree/master/</url>
-        <tag>zendesk-java-client-0.2.8-BETA</tag>
+        <tag>HEAD</tag>
     </scm>
     <issueManagement>
 
