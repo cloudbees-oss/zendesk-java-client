@@ -1116,7 +1116,7 @@ public class Zendesk implements Closeable {
     }
 
     private void logResponse(Response response) throws IOException {
-        logger.debug("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
+        logger.debug("Response for request URI: {} - HTTP/{} {}\n{}", response.getUri(), response.getStatusCode(), response.getStatusText(),
                 response.getResponseBody());
         if (logger.isTraceEnabled()) {
             logger.trace("Response headers {}", response.getHeaders());
