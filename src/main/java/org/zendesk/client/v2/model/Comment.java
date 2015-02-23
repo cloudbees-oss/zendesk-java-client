@@ -13,6 +13,7 @@ import java.util.List;
 public class Comment {
     private Long id;
     private String body;
+    private String htmlBody;
     private Long authorId;
     private List<String> uploads;
     private List<Attachment> attachments;
@@ -29,6 +30,15 @@ public class Comment {
     public Comment(String body, String... uploads) {
         this.body = body;
         this.uploads = uploads.length == 0 ? null : Arrays.asList(uploads);
+    }
+    
+    @JsonProperty("html_body")
+    public String getHtmlBody() {
+        return htmlBody;
+    }
+
+    public void setHtmlBody(String htmlBody) {
+        this.htmlBody = htmlBody;
     }
 
     public String getBody() {
@@ -94,6 +104,7 @@ public class Comment {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Comment{");
         sb.append("id=").append(id);
+        sb.append(", htmlBody='").append(htmlBody).append('\'');
         sb.append(", body='").append(body).append('\'');
         sb.append(", authorId=").append(authorId);
         sb.append(", attachments=").append(attachments);

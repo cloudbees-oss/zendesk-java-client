@@ -15,111 +15,130 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>com.cloudbees</groupId>
-    <artifactId>cloudbees-oss-parent</artifactId>
-    <version>6</version>
-  </parent>
+    <parent>
+        <groupId>com.cloudbees</groupId>
+        <artifactId>cloudbees-oss-parent</artifactId>
+        <version>6</version>
+    </parent>
 
-  <groupId>com.cloudbees.thirdparty</groupId>
-  <artifactId>zendesk-java-client</artifactId>
-  <version>0.2.5-SNAPSHOT</version>
+    <groupId>com.cloudbees.thirdparty</groupId>
+    <artifactId>zendesk-java-client</artifactId>
+    <version>0.2.9-BETA-SNAPSHOT</version>
 
-  <name>zendesk-java-client</name>
-  <description>Java client for the Zendesk API</description>
-  <url>https://github.com/cloudbees/zendesk-java-client</url>
-  <inceptionYear>2013</inceptionYear>
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+    <name>zendesk-java-client</name>
+    <description>Java client for the Zendesk API</description>
+    <url>https://github.com/pliljenberg/zendesk-java-client</url>
+    <inceptionYear>2013</inceptionYear>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-  <developers>
-    <developer>
-      <name>Stephen Connolly</name>
-    </developer>
-  </developers>
+    <developers>
+        <developer>
+            <name>Stephen Connolly</name>
+        </developer>
+    </developers>
 
-  <prerequisites>
-    <maven>3.0.4</maven>
-  </prerequisites>
+    <prerequisites>
+        <maven>3.0.4</maven>
+    </prerequisites>
 
-  <scm>
-    <connection>scm:git:git://github.com/cloudbees/zendesk-java-client.git</connection>
-    <developerConnection>scm:git:git@github.com:cloudbees/zendesk-java-client.git</developerConnection>
-    <url>http://github.com/cloudbees/zendesk-java-client/tree/master/</url>
-    <tag>HEAD</tag>
-  </scm>
-  <issueManagement>
+    <scm>
+        <connection>scm:git:git://github.com/pliljenberg/zendesk-java-client.git</connection>
+        <developerConnection>scm:git:git@github.com:pliljenberg/zendesk-java-client.git</developerConnection>
+        <url>http://github.com/pliljenberg/zendesk-java-client/tree/master/</url>
+        <tag>HEAD</tag>
+    </scm>
+    <issueManagement>
 
-  </issueManagement>
-  <ciManagement>
+    </issueManagement>
+    <ciManagement>
 
-  </ciManagement>
+    </ciManagement>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.ning</groupId>
-      <artifactId>async-http-client</artifactId>
-      <version>1.7.12</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>2.1.4</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.1.4</version>
-    </dependency>
-    <dependency>
-      <groupId>com.damnhandy</groupId>
-      <artifactId>handy-uri-templates</artifactId>
-      <version>1.1.7</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>1.7.2</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+    <distributionManagement>
+        <repository>
+            <id>speedledgerExtReleaseRepository</id>
+            <url>https://artifactory.speedledger.net/ext-release-local</url>
+        </repository>
+    </distributionManagement>
 
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <configuration>
-            <source>1.5</source>
-            <target>1.5</target>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.12</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ning</groupId>
+            <artifactId>async-http-client</artifactId>
+            <version>1.7.12</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.damnhandy</groupId>
+            <artifactId>handy-uri-templates</artifactId>
+            <version>1.1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5.1</version>
+                    <configuration>
+                        <preparationGoals>clean source:jar verify deploy</preparationGoals>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <mavenExecutorId>forked-path</mavenExecutorId>
+                        <useReleaseProfile>false</useReleaseProfile>
+                        <arguments>-P-cloudbees-oss-release ${arguments}</arguments>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.5</source>
+                        <target>1.5</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.12</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>
