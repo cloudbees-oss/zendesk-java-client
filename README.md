@@ -63,7 +63,7 @@ Here is the status of the various API components:
 * [Automations](http://developer.zendesk.com/documentation/rest_api/automations.html)
 * [Job Statuses](http://developer.zendesk.com/documentation/rest_api/job_statuses.html)
 * [Locales](http://developer.zendesk.com/documentation/rest_api/locales.html)
-* [Macros](http://developer.zendesk.com/documentation/rest_api/macros.html)
+* [Macros](http://developer.zendesk.com/documentation/rest_api/macros.html) ✓ *except for restrictions*
 * [Restrictions and Responsibilities](http://developer.zendesk.com/documentation/rest_api/restrictions.html)
 * [Satisfaction Ratings](http://developer.zendesk.com/documentation/rest_api/satisfaction_ratings.html) ✓
 * [Sharing Agreements](http://developer.zendesk.com/documentation/rest_api/sharing_agreements.html)
