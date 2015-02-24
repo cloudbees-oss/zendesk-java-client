@@ -1,8 +1,7 @@
 package org.zendesk.client.v2;
  
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
- 
+
 import org.zendesk.client.v2.model.*;
 import org.zendesk.client.v2.model.targets.*;
 
@@ -44,8 +43,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException; 
- 
+import java.util.NoSuchElementException;
+import java.util.regex.Pattern;
 
 /**
  * @author stephenc
@@ -1103,13 +1102,19 @@ public class Zendesk implements Closeable {
     }
 
     private Request req(String method, Uri template) {
+        return req(method, template.toString());
+    }
+
+    private static final Pattern RESTRICTED_PATTERN = Pattern.compile("%2B", Pattern.LITERAL);
+
+    private Request req(String method, String url) {
         RequestBuilder builder = new RequestBuilder(method);
         if (realm != null) {
             builder.setRealm(realm);
         } else {
             builder.addHeader("Authorization", "Bearer " + oauthToken);
-        } 
-        builder.setUrl(template.toString());
+        }
+        builder.setUrl(RESTRICTED_PATTERN.matcher(url).replaceAll("+")); // replace out %2B with + due to API restriction
         return builder.build();
     }
 
@@ -1119,26 +1124,12 @@ public class Zendesk implements Closeable {
             builder.setRealm(realm);
         } else {
             builder.addHeader("Authorization", "Bearer " + oauthToken);
-        } 
-        builder.setUrl(template.toString());
+        }
+        builder.setUrl(RESTRICTED_PATTERN.matcher(template.toString()).replaceAll("+")); //replace out %2B with + due to API restriction
         builder.addHeader("Content-type", contentType);
         builder.setBody(body);
         return builder.build();
     }
-
-    private Request req(String method, Uri template, int page) {
-        RequestBuilder builder = new RequestBuilder(method);
-        if (realm != null) {
-            builder.setRealm(realm);
-        } else {
-            builder.addHeader("Authorization", "Bearer " + oauthToken);
-        }
-        builder.addQueryParameter("page", Integer.toString(page));
-        builder.setUrl(template.toString().replace("%2B", "+")); //replace out %2B with + due to API restriction
-        return builder.build();
-    }
-    
-    
 
     protected AsyncCompletionHandler<Void> handleStatus() {
         return new AsyncCompletionHandler<Void>() {
@@ -1186,14 +1177,36 @@ public class Zendesk implements Closeable {
         };
     }
 
-    protected <T> AsyncCompletionHandler<List<T>> handleList(final Class<T> clazz) {
-        return new AsyncCompletionHandler<List<T>>() {
+    private static final String NEXT_PAGE = "next_page";
+
+    private abstract class PagedAsyncCompletionHandler<T> extends AsyncCompletionHandler<T> {
+        private String nextPage;
+
+        public void setPagedProperties(JsonNode responseNode, Class<?> clazz) {
+            JsonNode node = responseNode.get(NEXT_PAGE);
+            if (node == null) {
+                throw new NullPointerException(NEXT_PAGE + " property not found, pagination not supported" +
+                        (clazz != null ? " for " + clazz.getName() : ""));
+            }
+            this.nextPage = node.asText();
+        }
+
+        public String getNextPage() {
+            return nextPage;
+        }
+    }
+
+    protected <T> PagedAsyncCompletionHandler<List<T>> handleList(final Class<T> clazz, final String name) {
+        return new PagedAsyncCompletionHandler<List<T>>() {
+
             @Override
             public List<T> onCompleted(Response response) throws Exception {
                 logResponse(response);
                 if (isStatus2xx(response)) {
+                    JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
+                    setPagedProperties(responseNode, clazz);
                     List<T> values = new ArrayList<T>();
-                    for (JsonNode node : mapper.readTree(response.getResponseBodyAsStream())) {
+                    for (JsonNode node : responseNode.get(name)) {
                         values.add(mapper.convertValue(node, clazz));
                     }
                     return values;
@@ -1201,41 +1214,19 @@ public class Zendesk implements Closeable {
                 throw new ZendeskResponseException(response);
             }
         };
-    } 
-    
-    protected <T> AsyncCompletionHandler<List<T>> handleList(final Class<T> clazz, final String name) {
-       final AtomicInteger readCount = new AtomicInteger(0);
-       return new AsyncCompletionHandler<List<T>>() {
-           @Override
-           public List<T> onCompleted(Response response) throws Exception {
-               logResponse(response);
-               if (isStatus2xx(response)) {                   
-                   JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
-                   int count = responseNode.get("count").asInt();
-                   if (count > readCount.get()) {
-                      List<T> values = new ArrayList<T>();
-                      for (JsonNode node : responseNode.get(name)) {
-                          values.add(mapper.convertValue(node, clazz));
-                          readCount.incrementAndGet();
-                      }
-                      return values;
-                   } else {
-                      return null;
-                   }
-               }
-               throw new ZendeskResponseException(response);
-           }
-       };
     }
- 
-    protected AsyncCompletionHandler<List<SearchResultEntity>> handleSearchList(final String name) {
-        return new AsyncCompletionHandler<List<SearchResultEntity>>() {
+
+    protected PagedAsyncCompletionHandler<List<SearchResultEntity>> handleSearchList(final String name) {
+        return new PagedAsyncCompletionHandler<List<SearchResultEntity>>() {
+
             @Override
             public List<SearchResultEntity> onCompleted(Response response) throws Exception {
                 logResponse(response);
                 if (isStatus2xx(response)) {
+                    JsonNode responseNode = mapper.readTree(response.getResponseBodyAsStream()).get(name);
+                    setPagedProperties(responseNode, null);
                     List<SearchResultEntity> values = new ArrayList<SearchResultEntity>();
-                    for (JsonNode node : mapper.readTree(response.getResponseBodyAsStream()).get(name)) {
+                    for (JsonNode node : responseNode) {
                         Class<? extends SearchResultEntity> clazz = searchResultTypes.get(node.get("result_type"));
                         if (clazz != null) {
                             values.add(mapper.convertValue(node, clazz));
@@ -1248,34 +1239,28 @@ public class Zendesk implements Closeable {
         };
     }
 
-    protected AsyncCompletionHandler<List<Target>> handleTargetList(final String name) {  
-       final AtomicInteger readCount = new AtomicInteger(0);
-       return new AsyncCompletionHandler<List<Target>>() {
-           @Override
-           public List<Target> onCompleted(Response response) throws Exception {
-               logResponse(response);
-               if (isStatus2xx(response)) {
-                  JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
-                  int count = responseNode.get("count").asInt();
-                  if (count > readCount.get()) {
-                      List<Target> values = new ArrayList<Target>();
-                      for (JsonNode node : responseNode.get(name)) {
-                          Class<? extends Target> clazz = targetTypes.get(node.get("type").asText());
-                          if (clazz != null) {
-                             values.add(mapper.convertValue(node, clazz));
-                          }  
-                          readCount.incrementAndGet();
-                      }
-                      return values;
-                  } else {
-                     return null;
-                  }
-               }
-               throw new ZendeskResponseException(response);
-           }
-       };
-   }
+    protected PagedAsyncCompletionHandler<List<Target>> handleTargetList(final String name) {
+        return new PagedAsyncCompletionHandler<List<Target>>() {
 
+            @Override
+            public List<Target> onCompleted(Response response) throws Exception {
+                logResponse(response);
+                if (isStatus2xx(response)) {
+                    JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
+                    setPagedProperties(responseNode, null);
+                    List<Target> values = new ArrayList<Target>();
+                    for (JsonNode node : responseNode.get(name)) {
+                        Class<? extends Target> clazz = targetTypes.get(node.get("type").asText());
+                        if (clazz != null) {
+                            values.add(mapper.convertValue(node, clazz));
+                        }
+                    }
+                    return values;
+                }
+                throw new ZendeskResponseException(response);
+            }
+        };
+    }
     
     private TemplateUri tmpl(String template) {
         return new TemplateUri(url + template);
@@ -1431,48 +1416,34 @@ public class Zendesk implements Closeable {
     private class PagedIterable<T> implements Iterable<T> {
 
         private final Uri url;
-        private final AsyncCompletionHandler<List<T>> handler;
-        private final int initialPage;
-        private int size = 0;
+        private final PagedAsyncCompletionHandler<List<T>> handler;
 
-        private PagedIterable(Uri url, AsyncCompletionHandler<List<T>> handler) {
-            this(url, handler, 1);
-        }
-
-        private PagedIterable(Uri url, AsyncCompletionHandler<List<T>> handler, int initialPage) {
+        private PagedIterable(Uri url, PagedAsyncCompletionHandler<List<T>> handler) {
             this.handler = handler;
             this.url = url;
-            this.initialPage = initialPage;
         }
 
         public Iterator<T> iterator() {
-            return new PagedIterator(initialPage);
+            return new PagedIterator(url);
         }
 
         private class PagedIterator implements Iterator<T> {
 
             private Iterator<T> current;
-            private int page;
+            private String nextPage;
 
-            private PagedIterator(int page) {
-                this.page = page;
+            public PagedIterator(Uri url) {
+                this.nextPage = url.toString();
             }
 
             public boolean hasNext() {
                 if (current == null || !current.hasNext()) {
-                    if (page > 0) {                       
-                        List<T> values = complete(submit(req("GET", url, page++), handler));
-                        if (values == null || values.isEmpty()) {
-                            page = -1;
-                        } else {
-                           synchronized (this) {
-                              size += values.size();
-                           }
-                           current = values.iterator();
-                        }
-                    } else {
+                    if (nextPage == null || nextPage.equalsIgnoreCase("null")) {
                         return false;
                     }
+                    List<T> values = complete(submit(req("GET", nextPage), handler));
+                    nextPage = handler.getNextPage();
+                    current = values.iterator();
                 }
                 return current.hasNext();
             }

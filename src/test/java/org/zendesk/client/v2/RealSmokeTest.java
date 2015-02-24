@@ -16,6 +16,7 @@ import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.events.Event;
+import org.zendesk.client.v2.model.targets.Target;
 
 import java.util.Collections;
 import java.util.Properties;
@@ -26,6 +27,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
@@ -128,6 +130,20 @@ public class RealSmokeTest {
         }
         assertThat(ticketForm, notNullValue());
         assertTrue(ticketForm.isEndUserVisible());
+    }
+
+    @Test
+    public void getTargetsPagination() throws Exception {
+        createClientWithTokenOrPassword();
+        Long firstTargetId = null;
+        for (Target target : instance.getTargets()) {
+            assertNotNull(target);
+            if (firstTargetId != null) {
+                assertNotEquals(firstTargetId, target.getId());
+            } else {
+                firstTargetId = target.getId();
+            }
+        }
     }
     
     @Test
