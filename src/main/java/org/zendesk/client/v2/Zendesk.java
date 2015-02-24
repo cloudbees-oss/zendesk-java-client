@@ -1,8 +1,7 @@
 package org.zendesk.client.v2;
  
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
- 
+
 import org.zendesk.client.v2.model.*;
 import org.zendesk.client.v2.model.targets.*;
 
@@ -1201,33 +1200,25 @@ public class Zendesk implements Closeable {
                 throw new ZendeskResponseException(response);
             }
         };
-    } 
-    
-    protected <T> AsyncCompletionHandler<List<T>> handleList(final Class<T> clazz, final String name) {
-       final AtomicInteger readCount = new AtomicInteger(0);
-       return new AsyncCompletionHandler<List<T>>() {
-           @Override
-           public List<T> onCompleted(Response response) throws Exception {
-               logResponse(response);
-               if (isStatus2xx(response)) {                   
-                   JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
-                   int count = responseNode.get("count").asInt();
-                   if (count > readCount.get()) {
-                      List<T> values = new ArrayList<T>();
-                      for (JsonNode node : responseNode.get(name)) {
-                          values.add(mapper.convertValue(node, clazz));
-                          readCount.incrementAndGet();
-                      }
-                      return values;
-                   } else {
-                      return null;
-                   }
-               }
-               throw new ZendeskResponseException(response);
-           }
-       };
     }
- 
+
+    protected <T> AsyncCompletionHandler<List<T>> handleList(final Class<T> clazz, final String name) {
+        return new AsyncCompletionHandler<List<T>>() {
+            @Override
+            public List<T> onCompleted(Response response) throws Exception {
+                logResponse(response);
+                if (isStatus2xx(response)) {
+                    List<T> values = new ArrayList<T>();
+                    for (JsonNode node : mapper.readTree(response.getResponseBodyAsBytes()).get(name)) {
+                        values.add(mapper.convertValue(node, clazz));
+                    }
+                    return values;
+                }
+                throw new ZendeskResponseException(response);
+            }
+        };
+    }
+
     protected AsyncCompletionHandler<List<SearchResultEntity>> handleSearchList(final String name) {
         return new AsyncCompletionHandler<List<SearchResultEntity>>() {
             @Override
@@ -1248,34 +1239,25 @@ public class Zendesk implements Closeable {
         };
     }
 
-    protected AsyncCompletionHandler<List<Target>> handleTargetList(final String name) {  
-       final AtomicInteger readCount = new AtomicInteger(0);
-       return new AsyncCompletionHandler<List<Target>>() {
-           @Override
-           public List<Target> onCompleted(Response response) throws Exception {
-               logResponse(response);
-               if (isStatus2xx(response)) {
-                  JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
-                  int count = responseNode.get("count").asInt();
-                  if (count > readCount.get()) {
-                      List<Target> values = new ArrayList<Target>();
-                      for (JsonNode node : responseNode.get(name)) {
-                          Class<? extends Target> clazz = targetTypes.get(node.get("type").asText());
-                          if (clazz != null) {
-                             values.add(mapper.convertValue(node, clazz));
-                          }  
-                          readCount.incrementAndGet();
-                      }
-                      return values;
-                  } else {
-                     return null;
-                  }
-               }
-               throw new ZendeskResponseException(response);
-           }
-       };
-   }
-
+    protected AsyncCompletionHandler<List<Target>> handleTargetList(final String name) {
+        return new AsyncCompletionHandler<List<Target>>() {
+            @Override
+            public List<Target> onCompleted(Response response) throws Exception {
+                logResponse(response);
+                if (isStatus2xx(response)) {
+                    List<Target> values = new ArrayList<Target>();
+                    for (JsonNode node : mapper.readTree(response.getResponseBodyAsBytes()).get(name)) {
+                        Class<? extends Target> clazz = targetTypes.get(node.get("type").asText());
+                        if (clazz != null) {
+                            values.add(mapper.convertValue(node, clazz));
+                        }
+                    }
+                    return values;
+                }
+                throw new ZendeskResponseException(response);
+            }
+        };
+    }
     
     private TemplateUri tmpl(String template) {
         return new TemplateUri(url + template);
@@ -1433,7 +1415,6 @@ public class Zendesk implements Closeable {
         private final Uri url;
         private final AsyncCompletionHandler<List<T>> handler;
         private final int initialPage;
-        private int size = 0;
 
         private PagedIterable(Uri url, AsyncCompletionHandler<List<T>> handler) {
             this(url, handler, 1);
@@ -1463,11 +1444,8 @@ public class Zendesk implements Closeable {
                     if (page > 0) {                       
                         List<T> values = complete(submit(req("GET", url, page++), handler));
                         if (values == null || values.isEmpty()) {
-                            page = -1;
+                            return false;
                         } else {
-                           synchronized (this) {
-                              size += values.size();
-                           }
                            current = values.iterator();
                         }
                     } else {
