@@ -29,7 +29,7 @@ public class ChangeEvent extends CreateEvent {
             this.previousValue = null;
         } else if (previousValue instanceof List) {
             this.previousValue = new ArrayList<String>();
-            for (Object o : (List) previousValue) {
+            for (Object o : (List<?>) previousValue) {
                 this.previousValue.add(o == null || o instanceof String ? (String) o : o.toString());
             }
         } else if (previousValue instanceof String[]) {

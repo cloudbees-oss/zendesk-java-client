@@ -39,7 +39,7 @@ public class CreateEvent extends Event {
             this.value = null;
         } else if (value instanceof List) {
             this.value = new ArrayList<String>();
-            for (Object o : (List) value) {
+            for (Object o : (List<?>) value) {
                 this.value.add(o == null || o instanceof String ? (String) o : o.toString());
             }
         } else if (value instanceof String[]) {
