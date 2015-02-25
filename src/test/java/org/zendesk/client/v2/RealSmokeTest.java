@@ -133,13 +133,13 @@ public class RealSmokeTest {
     }
 
     @Test
-    public void getTargetsPagination() throws Exception {
+    public void getTargets() throws Exception {
         createClientWithTokenOrPassword();
         Long firstTargetId = null;
         for (Target target : instance.getTargets()) {
             assertNotNull(target);
             if (firstTargetId != null) {
-                assertNotEquals(firstTargetId, target.getId());
+                assertNotEquals(firstTargetId, target.getId()); // check for infinite loop
             } else {
                 firstTargetId = target.getId();
             }
