@@ -440,7 +440,7 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<User> getOrganizationUsers(long id) {
-        return new PagedIterable<User>(tmpl("/organization/{id}/users.json").set("id", id),
+        return new PagedIterable<User>(tmpl("/organizations/{id}/users.json").set("id", id),
                 handleList(User.class, "users"));
     }
 
