@@ -823,6 +823,11 @@ public class Zendesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/groups/{id}.json").set("id", id)), handleStatus()));
     }
 
+    public Iterable<Macro> getMacros(){
+        return new PagedIterable<Macro>(cnst("/macros.json"),
+                handleList(Macro.class, "macros"));
+    }
+
     public List<String> addTagToTicket(long id, String... tags) {
         return complete(submit(
                 req("PUT", tmpl("/tickets/{id}/tags.json").set("id", id), JSON,
