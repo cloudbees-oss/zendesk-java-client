@@ -246,6 +246,18 @@ public class Zendesk implements Closeable {
                 handleList(Ticket.class, "tickets"));
     }
 
+    public Iterable<Metric> getTicketMetrics() {
+        return new PagedIterable<Metric>(cnst("/ticket_metrics.json"), handleList(Metric.class, "ticket_metrics"));
+    }
+
+    public Metric getTicketMetricByTicket(long id) {
+        return complete(submit(req("GET", tmpl("/tickets/{ticketId}/metrics.json").set("ticketId", id)), handle(Metric.class, "ticket_metric")));
+    }
+
+    public Metric getTicketMetric(long id) {
+        return complete(submit(req("GET", tmpl("/ticket_metrics/{ticketMetricId}.json").set("ticketMetricId", id)), handle(Metric.class, "ticket_metric")));
+    }
+
     public Iterable<Audit> getTicketAudits(Ticket ticket) {
         checkHasId(ticket);
         return getTicketAudits(ticket.getId());
