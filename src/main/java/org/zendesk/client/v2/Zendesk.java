@@ -1,16 +1,16 @@
 package org.zendesk.client.v2;
  
-import java.util.concurrent.ExecutionException;
-
-import org.zendesk.client.v2.model.*;
-import org.zendesk.client.v2.model.targets.*;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
-import com.ning.http.client.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.ning.http.client.AsyncCompletionHandler;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.ListenableFuture;
+import com.ning.http.client.Realm;
 import com.ning.http.client.Request;
- 
 import com.ning.http.client.RequestBuilder;
 import com.ning.http.client.Response;
 
@@ -24,6 +24,8 @@ import org.zendesk.client.v2.model.Forum;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.GroupMembership;
 import org.zendesk.client.v2.model.Identity;
+import org.zendesk.client.v2.model.Macro;
+import org.zendesk.client.v2.model.Metric;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.OrganizationField;
 import org.zendesk.client.v2.model.SearchResultEntity;
@@ -31,19 +33,30 @@ import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.Topic;
+import org.zendesk.client.v2.model.Trigger;
+import org.zendesk.client.v2.model.TwitterMonitor;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.UserField;
+import org.zendesk.client.v2.model.targets.BasecampTarget;
+import org.zendesk.client.v2.model.targets.CampfireTarget;
+import org.zendesk.client.v2.model.targets.EmailTarget;
+import org.zendesk.client.v2.model.targets.PivotalTarget;
+import org.zendesk.client.v2.model.targets.Target;
+import org.zendesk.client.v2.model.targets.TwitterTarget;
+import org.zendesk.client.v2.model.targets.UrlTarget;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 /**
@@ -227,6 +240,12 @@ public class Zendesk implements Closeable {
 
     public Iterable<Ticket> getRecentTickets() {
         return new PagedIterable<Ticket>(cnst("/tickets/recent.json"), handleList(Ticket.class, "tickets"));
+    }
+    
+    public Iterable<Ticket> getTicketsIncrementally(Date fromDate) {
+        return new PagedIterable<Ticket>(
+                tmpl("/incremental/tickets.json{?start_time}").set("start_time", (int) (fromDate.getTime() / 1000)), 
+                handleList(Ticket.class, "tickets"));                
     }
 
     public Iterable<Ticket> getOrganizationTickets(long organizationId) {
@@ -433,6 +452,23 @@ public class Zendesk implements Closeable {
     
     public Iterable<User> getUsers() {
         return new PagedIterable<User>(cnst("/users.json"), handleList(User.class, "users"));
+    }
+    
+    public Iterable<User> getUsersByRole(String role, String... roles) {
+        // Going to have to build this URI manually, because the RFC6570 template spec doesn't support
+        // variables like ?role[]=...role[]=..., which is what Zendesk requires.
+        // See https://developer.zendesk.com/rest_api/docs/core/users#filters
+        final StringBuilder uriBuilder = new StringBuilder("/users.json");
+        if (roles.length == 0) {
+            uriBuilder.append("?role=").append(role);
+        } else {
+            uriBuilder.append("?role[]=").append(role);
+        }
+        for (final String curRole : roles) {
+            uriBuilder.append("&role[]=").append(curRole);
+        }
+        logger.info(uriBuilder.toString());
+        return new PagedIterable<User>(cnst(uriBuilder.toString()), handleList(User.class, "users"));
     }
 
     public Iterable<User> getGroupUsers(long id) {
