@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.common.util.concurrent.RateLimiter;
 import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.ListenableFuture;
@@ -245,7 +246,7 @@ public class Zendesk implements Closeable {
     public Iterable<Ticket> getTicketsIncrementally(Date startTime) {
         return new PagedIterable<Ticket>(
                 tmpl("/incremental/tickets.json{?start_time}").set("start_time", (int) (startTime.getTime() / 1000)), 
-                handleList(Ticket.class, "tickets"));                
+                handleIncrementalList(Ticket.class, "tickets"));                
     }
     
     public Iterable<Ticket> getTicketsIncrementally(Date startTime, Date endTime) {
@@ -253,7 +254,7 @@ public class Zendesk implements Closeable {
                 tmpl("/incremental/tickets.json{?start_time,end_time}")
                     .set("start_time", (int) (startTime.getTime() / 1000))
                     .set("end_time", (int) (endTime.getTime() / 1000)), 
-                handleList(Ticket.class, "tickets"));                
+                    handleIncrementalList(Ticket.class, "tickets"));                
     }
 
     public Iterable<Ticket> getOrganizationTickets(long organizationId) {
@@ -1239,9 +1240,11 @@ public class Zendesk implements Closeable {
     }
 
     private static final String NEXT_PAGE = "next_page";
+    private static final String END_TIME = "end_time";
+    private static final long FIVE_MINUTES_IN_MS = 300000;
 
     private abstract class PagedAsyncCompletionHandler<T> extends AsyncCompletionHandler<T> {
-        private String nextPage;
+        String nextPage;
 
         public void setPagedProperties(JsonNode responseNode, Class<?> clazz) {
             JsonNode node = responseNode.get(NEXT_PAGE);
@@ -1256,23 +1259,53 @@ public class Zendesk implements Closeable {
             return nextPage;
         }
     }
+    
+    private class PagedAsyncListCompletionHandler<T> extends PagedAsyncCompletionHandler<List<T>> {
+        final Class<T> clazz;
+        final String name;
+        public PagedAsyncListCompletionHandler(Class<T> clazz, String name) {
+            this.clazz = clazz;
+            this.name = name;
+        }
+        
+        @Override
+        public List<T> onCompleted(Response response) throws Exception {
+            logResponse(response);
+            if (isStatus2xx(response)) {
+                JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
+                setPagedProperties(responseNode, clazz);
+                List<T> values = new ArrayList<T>();
+                for (JsonNode node : responseNode.get(name)) {
+                    values.add(mapper.convertValue(node, clazz));
+                }
+                return values;
+            }
+            throw new ZendeskResponseException(response);
+        }
+    }
 
     protected <T> PagedAsyncCompletionHandler<List<T>> handleList(final Class<T> clazz, final String name) {
-        return new PagedAsyncCompletionHandler<List<T>>() {
-
-            @Override
-            public List<T> onCompleted(Response response) throws Exception {
-                logResponse(response);
-                if (isStatus2xx(response)) {
-                    JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
-                    setPagedProperties(responseNode, clazz);
-                    List<T> values = new ArrayList<T>();
-                    for (JsonNode node : responseNode.get(name)) {
-                        values.add(mapper.convertValue(node, clazz));
-                    }
-                    return values;
+        return new PagedAsyncListCompletionHandler<T>(clazz, name);
+    }
+    
+    protected <T> PagedAsyncCompletionHandler<List<T>> handleIncrementalList(final Class<T> clazz, final String name) {
+        return new PagedAsyncListCompletionHandler<T>(clazz, name) {
+            public void setPagedProperties(JsonNode responseNode, Class<?> clazz) {
+                JsonNode node = responseNode.get(NEXT_PAGE);
+                if (node == null) {
+                    throw new NullPointerException(NEXT_PAGE + " property not found, pagination not supported" +
+                            (clazz != null ? " for " + clazz.getName() : ""));
                 }
-                throw new ZendeskResponseException(response);
+                JsonNode endTimeNode = responseNode.get(END_TIME);
+                if (endTimeNode == null || endTimeNode.asLong() == 0) {
+                    throw new NullPointerException(END_TIME + " property not found, incremental export pagination not supported" +
+                            (clazz != null ? " for " + clazz.getName() : ""));
+                }
+                if (endTimeNode.asLong() * 1000 > System.currentTimeMillis() - FIVE_MINUTES_IN_MS) {
+                    nextPage = null;
+                } else {
+                    nextPage = node.asText();
+                }
             }
         };
     }
@@ -1572,8 +1605,8 @@ public class Zendesk implements Closeable {
             }
             return this;
         }
-
-
+        
+        
         public Builder setRetry(boolean retry) {
             return this;
         }
