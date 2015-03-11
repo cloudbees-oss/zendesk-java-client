@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.google.common.util.concurrent.RateLimiter;
 import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.ListenableFuture;
@@ -58,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 /**
@@ -1241,7 +1241,7 @@ public class Zendesk implements Closeable {
 
     private static final String NEXT_PAGE = "next_page";
     private static final String END_TIME = "end_time";
-    private static final long FIVE_MINUTES_IN_MS = 300000;
+    private static final long FIVE_MINUTES_IN_MS = TimeUnit.MINUTES.toMillis(5);
 
     private abstract class PagedAsyncCompletionHandler<T> extends AsyncCompletionHandler<T> {
         String nextPage;
