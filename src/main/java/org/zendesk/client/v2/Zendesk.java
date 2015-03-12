@@ -47,6 +47,8 @@ import org.zendesk.client.v2.model.targets.UrlTarget;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -245,15 +247,15 @@ public class Zendesk implements Closeable {
     
     public Iterable<Ticket> getTicketsIncrementally(Date startTime) {
         return new PagedIterable<Ticket>(
-                tmpl("/incremental/tickets.json{?start_time}").set("start_time", (int) (startTime.getTime() / 1000)), 
+                tmpl("/incremental/tickets.json{?start_time}").set("start_time", msToSeconds(startTime.getTime())), 
                 handleIncrementalList(Ticket.class, "tickets"));                
     }
     
     public Iterable<Ticket> getTicketsIncrementally(Date startTime, Date endTime) {
         return new PagedIterable<Ticket>(
                 tmpl("/incremental/tickets.json{?start_time,end_time}")
-                    .set("start_time", (int) (startTime.getTime() / 1000))
-                    .set("end_time", (int) (endTime.getTime() / 1000)), 
+                    .set("start_time", msToSeconds(startTime.getTime()))
+                    .set("end_time", msToSeconds(endTime.getTime())), 
                     handleIncrementalList(Ticket.class, "tickets"));                
     }
 
@@ -469,14 +471,13 @@ public class Zendesk implements Closeable {
         // See https://developer.zendesk.com/rest_api/docs/core/users#filters
         final StringBuilder uriBuilder = new StringBuilder("/users.json");
         if (roles.length == 0) {
-            uriBuilder.append("?role=").append(role);
+            uriBuilder.append("?role=").append(encodeUrl(role));
         } else {
-            uriBuilder.append("?role[]=").append(role);
+            uriBuilder.append("?role[]=").append(encodeUrl(role));
         }
         for (final String curRole : roles) {
-            uriBuilder.append("&role[]=").append(curRole);
+            uriBuilder.append("&role[]=").append(encodeUrl(curRole));
         }
-        logger.info(uriBuilder.toString());
         return new PagedIterable<User>(cnst(uriBuilder.toString()), handleList(User.class, "users"));
     }
 
@@ -1370,6 +1371,20 @@ public class Zendesk implements Closeable {
         if (logger.isTraceEnabled()) {
             logger.trace("Response headers {}", response.getHeaders());
         }
+    }
+    
+    private static final String UTF_8 = "UTF-8";
+    private static String encodeUrl(String str) {
+        try {
+            return URLEncoder.encode(str, UTF_8);
+        } catch (UnsupportedEncodingException e) {
+            // This really can't happen. UTF-8 is guaranteed to exist.
+            return str;
+        }
+    }
+
+    private static int msToSeconds(long millis) {
+        return (int) (millis / 1000);
     }
 
     private boolean isStatus2xx(Response response) {
