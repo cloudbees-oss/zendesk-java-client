@@ -1245,7 +1245,7 @@ public class Zendesk implements Closeable {
     private static final long FIVE_MINUTES_IN_MS = TimeUnit.MINUTES.toMillis(5);
 
     private abstract class PagedAsyncCompletionHandler<T> extends AsyncCompletionHandler<T> {
-        String nextPage;
+        private String nextPage;
 
         public void setPagedProperties(JsonNode responseNode, Class<?> clazz) {
             JsonNode node = responseNode.get(NEXT_PAGE);
@@ -1259,11 +1259,15 @@ public class Zendesk implements Closeable {
         public String getNextPage() {
             return nextPage;
         }
+        
+        public void setNextPage(String nextPage) {
+            this.nextPage = nextPage;
+        }
     }
     
     private class PagedAsyncListCompletionHandler<T> extends PagedAsyncCompletionHandler<List<T>> {
-        final Class<T> clazz;
-        final String name;
+        private final Class<T> clazz;
+        private final String name;
         public PagedAsyncListCompletionHandler(Class<T> clazz, String name) {
             this.clazz = clazz;
             this.name = name;
@@ -1291,6 +1295,7 @@ public class Zendesk implements Closeable {
     
     protected <T> PagedAsyncCompletionHandler<List<T>> handleIncrementalList(final Class<T> clazz, final String name) {
         return new PagedAsyncListCompletionHandler<T>(clazz, name) {
+            @Override
             public void setPagedProperties(JsonNode responseNode, Class<?> clazz) {
                 JsonNode node = responseNode.get(NEXT_PAGE);
                 if (node == null) {
@@ -1302,10 +1307,14 @@ public class Zendesk implements Closeable {
                     throw new NullPointerException(END_TIME + " property not found, incremental export pagination not supported" +
                             (clazz != null ? " for " + clazz.getName() : ""));
                 }
-                if (endTimeNode.asLong() * 1000 > System.currentTimeMillis() - FIVE_MINUTES_IN_MS) {
-                    nextPage = null;
+                /**
+                 * A request after five minutes ago will result in a 422 responds from Zendesk.
+                 * Therefore, we stop pagination.
+                 */
+                if (TimeUnit.SECONDS.toMillis(endTimeNode.asLong()) > System.currentTimeMillis() - FIVE_MINUTES_IN_MS) {
+                    setNextPage(null);
                 } else {
-                    nextPage = node.asText();
+                    setNextPage(node.asText());
                 }
             }
         };
@@ -1383,8 +1392,8 @@ public class Zendesk implements Closeable {
         }
     }
 
-    private static int msToSeconds(long millis) {
-        return (int) (millis / 1000);
+    private static long msToSeconds(long millis) {
+        return TimeUnit.MILLISECONDS.toSeconds(millis);
     }
 
     private boolean isStatus2xx(Response response) {
@@ -1620,8 +1629,8 @@ public class Zendesk implements Closeable {
             }
             return this;
         }
-        
-        
+
+
         public Builder setRetry(boolean retry) {
             return this;
         }
