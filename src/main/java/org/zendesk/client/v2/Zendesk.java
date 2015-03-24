@@ -277,7 +277,7 @@ public class Zendesk implements Closeable {
         if (!includeArchived || results.iterator().hasNext()) {
             return results;
         }
-        return new PagedIterable<Ticket>(tmpl("/search.json{?query}").set("query", "external_id:" + externalId + " type:ticket"),
+        return new PagedIterable<Ticket>(tmpl("/search.json{?query}{&type}").set("query", "external_id:" + externalId).set("type", "ticket"),
                 handleList(Ticket.class, "results"));
     }
 
