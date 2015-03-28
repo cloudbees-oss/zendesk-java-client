@@ -79,4 +79,6 @@ History
 
 * 0.2.x - At request of [Zendesk][zd], renamed `ZenDesk` to `Zendesk`
 
+* 0.3.x - Fixed infinite loop with PagedIterable, updated async-http-client dependency to 1.9.x.
+
   [zd]: http://zendesk.com
