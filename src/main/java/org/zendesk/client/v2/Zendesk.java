@@ -1149,19 +1149,17 @@ public class Zendesk implements Closeable {
     }
 
     private <T> ListenableFuture<T> submit(Request request, ZendeskAsyncCompletionHandler<T> handler) {
-        try {
+        if (logger.isDebugEnabled()) {
             if (request.getStringData() != null) {
                 logger.debug("Request {} {}\n{}", request.getMethod(), request.getUrl(), request.getStringData());
             } else if (request.getByteData() != null) {
-                logger.debug("Request {} {} {} {} bytes", request.getMethod(), request.getUrl(), //
+                logger.debug("Request {} {} {} {} bytes", request.getMethod(), request.getUrl(),
                         request.getHeaders().getFirstValue("Content-type"), request.getByteData().length);
             } else {
                 logger.debug("Request {} {}", request.getMethod(), request.getUrl());
             }
-            return client.executeRequest(request, handler);
-        } catch (Throwable t) {
-            throw new ZendeskException(t);
         }
+        return client.executeRequest(request, handler);
     }
 
     private static abstract class ZendeskAsyncCompletionHandler<T> extends AsyncCompletionHandler<T> {
@@ -1385,8 +1383,10 @@ public class Zendesk implements Closeable {
     }
 
     private void logResponse(Response response) throws IOException {
-        logger.debug("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
-                response.getResponseBody());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
+                    response.getResponseBody());
+        }
         if (logger.isTraceEnabled()) {
             logger.trace("Response headers {}", response.getHeaders());
         }
