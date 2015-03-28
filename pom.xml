@@ -25,11 +25,7 @@
 
   <groupId>com.cloudbees.thirdparty</groupId>
   <artifactId>zendesk-java-client</artifactId>
-  <version>0.2.5-SNAPSHOT</version>
-
-  <properties>
-    <async-http-client.version>1.7.12</async-http-client.version>
-  </properties>
+  <version>0.3.0-SNAPSHOT</version>
 
   <name>zendesk-java-client</name>
   <description>Java client for the Zendesk API</description>
@@ -75,7 +71,7 @@
     <dependency>
       <groupId>com.ning</groupId>
       <artifactId>async-http-client</artifactId>
-      <version>${async-http-client.version}</version>
+      <version>1.9.15</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
