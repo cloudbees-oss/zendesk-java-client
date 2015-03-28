@@ -1253,7 +1253,6 @@ public class Zendesk implements Closeable {
 
     private static final String NEXT_PAGE = "next_page";
     private static final String END_TIME = "end_time";
-    private static final long FIVE_MINUTES_IN_MS = TimeUnit.MINUTES.toMillis(5);
 
     private abstract class PagedAsyncCompletionHandler<T> extends ZendeskAsyncCompletionHandler<T> {
         private String nextPage;
@@ -1304,6 +1303,8 @@ public class Zendesk implements Closeable {
         return new PagedAsyncListCompletionHandler<T>(clazz, name);
     }
 
+    private static final long FIVE_MINUTES = TimeUnit.MINUTES.toMillis(5);
+
     protected <T> PagedAsyncCompletionHandler<List<T>> handleIncrementalList(final Class<T> clazz, final String name) {
         return new PagedAsyncListCompletionHandler<T>(clazz, name) {
             @Override
@@ -1322,7 +1323,7 @@ public class Zendesk implements Closeable {
                  * A request after five minutes ago will result in a 422 responds from Zendesk.
                  * Therefore, we stop pagination.
                  */
-                if (TimeUnit.SECONDS.toMillis(endTimeNode.asLong()) > System.currentTimeMillis() - FIVE_MINUTES_IN_MS) {
+                if (TimeUnit.SECONDS.toMillis(endTimeNode.asLong()) > System.currentTimeMillis() - FIVE_MINUTES) {
                     setNextPage(null);
                 } else {
                     setNextPage(node.asText());
@@ -1392,12 +1393,12 @@ public class Zendesk implements Closeable {
     }
     
     private static final String UTF_8 = "UTF-8";
-    private static String encodeUrl(String str) {
+
+    private static String encodeUrl(String input) {
         try {
-            return URLEncoder.encode(str, UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            // This really can't happen. UTF-8 is guaranteed to exist.
-            return str;
+            return URLEncoder.encode(input, UTF_8);
+        } catch (UnsupportedEncodingException impossible) {
+            return input;
         }
     }
 
