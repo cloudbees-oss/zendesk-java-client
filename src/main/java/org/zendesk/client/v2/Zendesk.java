@@ -1102,7 +1102,7 @@ public class Zendesk implements Closeable {
         }
     }
 
-    private <T> ListenableFuture<T> submit(Request request, AsyncCompletionHandler<T> handler) {
+    private <T> ListenableFuture<T> submit(Request request, ZendeskAsyncCompletionHandler<T> handler) {
         try {
             if (request.getStringData() != null) {
                 logger.debug("Request {} {}\n{}", request.getMethod(), request.getUrl(), request.getStringData());
@@ -1113,8 +1113,19 @@ public class Zendesk implements Closeable {
                 logger.debug("Request {} {}", request.getMethod(), request.getUrl());
             }
             return client.executeRequest(request, handler);
-        } catch (IOException e) {
-            throw new ZendeskException(e.getMessage(), e);
+        } catch (Throwable t) {
+            throw new ZendeskException(t);
+        }
+    }
+
+    private static abstract class ZendeskAsyncCompletionHandler<T> extends AsyncCompletionHandler<T> {
+        @Override
+        public void onThrowable(Throwable t) {
+            if (t instanceof IOException) {
+                throw new ZendeskException(t);
+            } else {
+                super.onThrowable(t);
+            }
         }
     }
 
@@ -1148,8 +1159,8 @@ public class Zendesk implements Closeable {
         return builder.build();
     }
 
-    protected AsyncCompletionHandler<Void> handleStatus() {
-        return new AsyncCompletionHandler<Void>() {
+    protected ZendeskAsyncCompletionHandler<Void> handleStatus() {
+        return new ZendeskAsyncCompletionHandler<Void>() {
             @Override
             public Void onCompleted(Response response) throws Exception {
                 logResponse(response);
@@ -1162,8 +1173,8 @@ public class Zendesk implements Closeable {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> AsyncCompletionHandler<T> handle(final Class<T> clazz) {
-        return new AsyncCompletionHandler<T>() {
+    protected <T> ZendeskAsyncCompletionHandler<T> handle(final Class<T> clazz) {
+        return new ZendeskAsyncCompletionHandler<T>() {
             @Override
             public T onCompleted(Response response) throws Exception {
                 logResponse(response);
@@ -1178,8 +1189,8 @@ public class Zendesk implements Closeable {
         };
     }
 
-    protected <T> AsyncCompletionHandler<T> handle(final Class<T> clazz, final String name) {
-        return new AsyncCompletionHandler<T>() {
+    protected <T> ZendeskAsyncCompletionHandler<T> handle(final Class<T> clazz, final String name) {
+        return new ZendeskAsyncCompletionHandler<T>() {
             @Override
             public T onCompleted(Response response) throws Exception {
                 logResponse(response);
@@ -1196,7 +1207,7 @@ public class Zendesk implements Closeable {
 
     private static final String NEXT_PAGE = "next_page";
 
-    private abstract class PagedAsyncCompletionHandler<T> extends AsyncCompletionHandler<T> {
+    private abstract class PagedAsyncCompletionHandler<T> extends ZendeskAsyncCompletionHandler<T> {
         private String nextPage;
 
         public void setPagedProperties(JsonNode responseNode, Class<?> clazz) {
@@ -1215,7 +1226,6 @@ public class Zendesk implements Closeable {
 
     protected <T> PagedAsyncCompletionHandler<List<T>> handleList(final Class<T> clazz, final String name) {
         return new PagedAsyncCompletionHandler<List<T>>() {
-
             @Override
             public List<T> onCompleted(Response response) throws Exception {
                 logResponse(response);
@@ -1235,7 +1245,6 @@ public class Zendesk implements Closeable {
 
     protected PagedAsyncCompletionHandler<List<SearchResultEntity>> handleSearchList(final String name) {
         return new PagedAsyncCompletionHandler<List<SearchResultEntity>>() {
-
             @Override
             public List<SearchResultEntity> onCompleted(Response response) throws Exception {
                 logResponse(response);
@@ -1258,7 +1267,6 @@ public class Zendesk implements Closeable {
 
     protected PagedAsyncCompletionHandler<List<Target>> handleTargetList(final String name) {
         return new PagedAsyncCompletionHandler<List<Target>>() {
-
             @Override
             public List<Target> onCompleted(Response response) throws Exception {
                 logResponse(response);
