@@ -1,14 +1,14 @@
 package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author stephenc
  * @since 09/04/2013 14:37
  */
-public class Identity {
+public class Identity implements Serializable {
     private Long id;
     private String url;
     private Integer userId;

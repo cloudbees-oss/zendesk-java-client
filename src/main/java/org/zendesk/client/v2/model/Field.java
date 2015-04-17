@@ -1,7 +1,7 @@
 package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -9,7 +9,7 @@ import java.util.List;
  * @author stephenc
  * @since 05/04/2013 12:03
  */
-public class Field {
+public class Field implements Serializable {
     private Long id;
     private String url;
     private String type;

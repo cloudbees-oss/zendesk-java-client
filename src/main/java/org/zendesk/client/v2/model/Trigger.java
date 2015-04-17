@@ -1,8 +1,8 @@
 package org.zendesk.client.v2.model;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
-
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  * 
  * @author adavidson
  */
-public class Trigger {
+public class Trigger implements Serializable {
    private Long         id;
    private String       title;
    private boolean      active;

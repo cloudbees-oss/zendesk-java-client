@@ -2,7 +2,7 @@ package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -10,7 +10,7 @@ import java.util.Date;
  * @since 04/04/2013 14:55
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SatisfactionRating {
+public class SatisfactionRating implements Serializable {
     private Long id;
     private String url;
     private Long assigneeId;

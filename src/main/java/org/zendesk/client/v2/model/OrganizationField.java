@@ -1,13 +1,13 @@
 package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by benashby on 8/27/2014.
  */
-public class OrganizationField implements SearchResultEntity {
+public class OrganizationField implements SearchResultEntity, Serializable {
 
     private Long id;
     private String url;
