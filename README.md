@@ -34,10 +34,10 @@ Here is the status of the various API components:
 
 * [Tickets](http://developer.zendesk.com/documentation/rest_api/tickets.html) ✓
 * [Ticket Audits](http://developer.zendesk.com/documentation/rest_api/ticket_audits.html) ✓
-* [Incremental Tickets](http://developer.zendesk.com/documentation/rest_api/ticket_export.html)
+* [Incremental Export](https://developer.zendesk.com/rest_api/docs/core/incremental_export) - Partial (ticket only) 
 * [Ticket Fields](http://developer.zendesk.com/documentation/rest_api/ticket_fields.html) ✓
 * [Ticket Import](http://developer.zendesk.com/documentation/rest_api/ticket_import.html)
-* [Ticket Metrics](http://developer.zendesk.com/documentation/rest_api/ticket_metrics.html)
+* [Ticket Metrics](http://developer.zendesk.com/documentation/rest_api/ticket_metrics.html) ✓
 * [Ticket Forms](http://developer.zendesk.com/documentation/rest_api/ticket_forms.html) *getTicketForm() and getTicketForms()*
 * [Views](http://developer.zendesk.com/documentation/rest_api/views.html)
 * [Users](http://developer.zendesk.com/documentation/rest_api/users.html) ✓
@@ -63,7 +63,7 @@ Here is the status of the various API components:
 * [Automations](http://developer.zendesk.com/documentation/rest_api/automations.html)
 * [Job Statuses](http://developer.zendesk.com/documentation/rest_api/job_statuses.html)
 * [Locales](http://developer.zendesk.com/documentation/rest_api/locales.html)
-* [Macros](http://developer.zendesk.com/documentation/rest_api/macros.html)
+* [Macros](http://developer.zendesk.com/documentation/rest_api/macros.html) ✓ *except for restrictions*
 * [Restrictions and Responsibilities](http://developer.zendesk.com/documentation/rest_api/restrictions.html)
 * [Satisfaction Ratings](http://developer.zendesk.com/documentation/rest_api/satisfaction_ratings.html) ✓
 * [Sharing Agreements](http://developer.zendesk.com/documentation/rest_api/sharing_agreements.html)
@@ -78,5 +78,7 @@ History
 * 0.1.x - Switched from `Integer` as the id type to `Long` due to reports of overflow
 
 * 0.2.x - At request of [Zendesk][zd], renamed `ZenDesk` to `Zendesk`
+
+* 0.3.x - Fixed infinite loop with PagedIterable, updated async-http-client dependency to 1.9.x.
 
   [zd]: http://zendesk.com

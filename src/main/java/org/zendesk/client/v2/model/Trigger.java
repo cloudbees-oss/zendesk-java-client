@@ -1,11 +1,9 @@
 package org.zendesk.client.v2.model;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.io.Serializable;
-import java.util.*;
-import com.fasterxml.jackson.core.*;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.util.Date;
+import java.util.List;
 
 /**
  * https://developer.zendesk.com/rest_api/docs/core/triggers
@@ -183,64 +181,4 @@ public class Trigger implements Serializable {
 
    }
 
-   @JsonDeserialize(using = org.zendesk.client.v2.model.Trigger.Action.ActionDeserializer.class)
-   public static class Action {
-      private String       field;
-      private List<String> value;
-
-      public Action() {}
-
-      public Action(String field, String... values) {
-         this.field = field;
-         this.value = Arrays.asList(values);
-      }
-
-      public String getField() {
-         return field;
-      }
-
-      public void setField(String field) {
-         this.field = field;
-      }
-
-      public List<String> getValue() {
-         return value;
-      }
-
-      public void setValue(List<String> value) {
-         this.value = value;
-      }
-
-      @Override
-      public String toString() {
-         final StringBuilder sb = new StringBuilder();
-         sb.append("Action");
-         sb.append("{field=").append(field);
-         sb.append(", value=").append(value);
-         sb.append('}');
-         return sb.toString();
-      }
-
-      // Zendesk sometimes returns JSON with a String instead of String[] so we need a custom deserializer
-      public static class ActionDeserializer extends JsonDeserializer<Action> {
-         @Override
-         public Action deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            JsonNode node = jp.getCodec().readTree(jp);
-            Action a = new Action();
-            a.field = node.get("field").asText();
-            a.value = new ArrayList<String>();
-
-            JsonNode n = node.get("value");
-            if (n.isArray()) {
-               for (final JsonNode objNode : n) {
-                  a.value.add(objNode.asText());
-               }
-            } else {
-               a.value.add(node.get("value").asText());
-            }
-            return a;
-         }
-      }
-
-   }
 }

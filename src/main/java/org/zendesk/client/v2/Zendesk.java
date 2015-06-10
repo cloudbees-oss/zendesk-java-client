@@ -1,17 +1,16 @@
 package org.zendesk.client.v2;
  
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
- 
-import org.zendesk.client.v2.model.*;
-import org.zendesk.client.v2.model.targets.*;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
-import com.ning.http.client.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.ning.http.client.AsyncCompletionHandler;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.ListenableFuture;
+import com.ning.http.client.Realm;
 import com.ning.http.client.Request;
- 
 import com.ning.http.client.RequestBuilder;
 import com.ning.http.client.Response;
 
@@ -25,6 +24,8 @@ import org.zendesk.client.v2.model.Forum;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.GroupMembership;
 import org.zendesk.client.v2.model.Identity;
+import org.zendesk.client.v2.model.Macro;
+import org.zendesk.client.v2.model.Metric;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.OrganizationField;
 import org.zendesk.client.v2.model.SearchResultEntity;
@@ -32,20 +33,34 @@ import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.Topic;
+import org.zendesk.client.v2.model.Trigger;
+import org.zendesk.client.v2.model.TwitterMonitor;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.UserField;
+import org.zendesk.client.v2.model.targets.BasecampTarget;
+import org.zendesk.client.v2.model.targets.CampfireTarget;
+import org.zendesk.client.v2.model.targets.EmailTarget;
+import org.zendesk.client.v2.model.targets.PivotalTarget;
+import org.zendesk.client.v2.model.targets.Target;
+import org.zendesk.client.v2.model.targets.TwitterTarget;
+import org.zendesk.client.v2.model.targets.UrlTarget;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException; 
- 
+import java.util.NoSuchElementException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  * @author stephenc
@@ -229,6 +244,20 @@ public class Zendesk implements Closeable {
     public Iterable<Ticket> getRecentTickets() {
         return new PagedIterable<Ticket>(cnst("/tickets/recent.json"), handleList(Ticket.class, "tickets"));
     }
+    
+    public Iterable<Ticket> getTicketsIncrementally(Date startTime) {
+        return new PagedIterable<Ticket>(
+                tmpl("/incremental/tickets.json{?start_time}").set("start_time", msToSeconds(startTime.getTime())), 
+                handleIncrementalList(Ticket.class, "tickets"));                
+    }
+    
+    public Iterable<Ticket> getTicketsIncrementally(Date startTime, Date endTime) {
+        return new PagedIterable<Ticket>(
+                tmpl("/incremental/tickets.json{?start_time,end_time}")
+                    .set("start_time", msToSeconds(startTime.getTime()))
+                    .set("end_time", msToSeconds(endTime.getTime())), 
+                    handleIncrementalList(Ticket.class, "tickets"));                
+    }
 
     public Iterable<Ticket> getOrganizationTickets(long organizationId) {
         return new PagedIterable<Ticket>(
@@ -244,6 +273,18 @@ public class Zendesk implements Closeable {
     public Iterable<Ticket> getUserCCDTickets(long userId) {
         return new PagedIterable<Ticket>(tmpl("/users/{userId}/tickets/ccd.json").set("userId", userId),
                 handleList(Ticket.class, "tickets"));
+    }
+
+    public Iterable<Metric> getTicketMetrics() {
+        return new PagedIterable<Metric>(cnst("/ticket_metrics.json"), handleList(Metric.class, "ticket_metrics"));
+    }
+
+    public Metric getTicketMetricByTicket(long id) {
+        return complete(submit(req("GET", tmpl("/tickets/{ticketId}/metrics.json").set("ticketId", id)), handle(Metric.class, "ticket_metric")));
+    }
+
+    public Metric getTicketMetric(long id) {
+        return complete(submit(req("GET", tmpl("/ticket_metrics/{ticketMetricId}.json").set("ticketMetricId", id)), handle(Metric.class, "ticket_metric")));
     }
 
     public Iterable<Audit> getTicketAudits(Ticket ticket) {
@@ -423,13 +464,29 @@ public class Zendesk implements Closeable {
     public Iterable<User> getUsers() {
         return new PagedIterable<User>(cnst("/users.json"), handleList(User.class, "users"));
     }
+    
+    public Iterable<User> getUsersByRole(String role, String... roles) {
+        // Going to have to build this URI manually, because the RFC6570 template spec doesn't support
+        // variables like ?role[]=...role[]=..., which is what Zendesk requires.
+        // See https://developer.zendesk.com/rest_api/docs/core/users#filters
+        final StringBuilder uriBuilder = new StringBuilder("/users.json");
+        if (roles.length == 0) {
+            uriBuilder.append("?role=").append(encodeUrl(role));
+        } else {
+            uriBuilder.append("?role[]=").append(encodeUrl(role));
+        }
+        for (final String curRole : roles) {
+            uriBuilder.append("&role[]=").append(encodeUrl(curRole));
+        }
+        return new PagedIterable<User>(cnst(uriBuilder.toString()), handleList(User.class, "users"));
+    }
 
     public Iterable<User> getGroupUsers(long id) {
         return new PagedIterable<User>(tmpl("/groups/{id}/users.json").set("id", id), handleList(User.class, "users"));
     }
 
     public Iterable<User> getOrganizationUsers(long id) {
-        return new PagedIterable<User>(tmpl("/organization/{id}/users.json").set("id", id),
+        return new PagedIterable<User>(tmpl("/organizations/{id}/users.json").set("id", id),
                 handleList(User.class, "users"));
     }
 
@@ -812,6 +869,11 @@ public class Zendesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/groups/{id}.json").set("id", id)), handleStatus()));
     }
 
+    public Iterable<Macro> getMacros(){
+        return new PagedIterable<Macro>(cnst("/macros.json"),
+                handleList(Macro.class, "macros"));
+    }
+
     public List<String> addTagToTicket(long id, String... tags) {
         return complete(submit(
                 req("PUT", tmpl("/tickets/{id}/tags.json").set("id", id), JSON,
@@ -1086,30 +1148,45 @@ public class Zendesk implements Closeable {
         }
     }
 
-    private <T> ListenableFuture<T> submit(Request request, AsyncCompletionHandler<T> handler) {
-        try {
+    private <T> ListenableFuture<T> submit(Request request, ZendeskAsyncCompletionHandler<T> handler) {
+        if (logger.isDebugEnabled()) {
             if (request.getStringData() != null) {
                 logger.debug("Request {} {}\n{}", request.getMethod(), request.getUrl(), request.getStringData());
             } else if (request.getByteData() != null) {
-                logger.debug("Request {} {} {} {} bytes", request.getMethod(), request.getUrl(), //
+                logger.debug("Request {} {} {} {} bytes", request.getMethod(), request.getUrl(),
                         request.getHeaders().getFirstValue("Content-type"), request.getByteData().length);
             } else {
                 logger.debug("Request {} {}", request.getMethod(), request.getUrl());
             }
-            return client.executeRequest(request, handler);
-        } catch (IOException e) {
-            throw new ZendeskException(e.getMessage(), e);
+        }
+        return client.executeRequest(request, handler);
+    }
+
+    private static abstract class ZendeskAsyncCompletionHandler<T> extends AsyncCompletionHandler<T> {
+        @Override
+        public void onThrowable(Throwable t) {
+            if (t instanceof IOException) {
+                throw new ZendeskException(t);
+            } else {
+                super.onThrowable(t);
+            }
         }
     }
 
     private Request req(String method, Uri template) {
+        return req(method, template.toString());
+    }
+
+    private static final Pattern RESTRICTED_PATTERN = Pattern.compile("%2B", Pattern.LITERAL);
+
+    private Request req(String method, String url) {
         RequestBuilder builder = new RequestBuilder(method);
         if (realm != null) {
             builder.setRealm(realm);
         } else {
             builder.addHeader("Authorization", "Bearer " + oauthToken);
-        } 
-        builder.setUrl(template.toString());
+        }
+        builder.setUrl(RESTRICTED_PATTERN.matcher(url).replaceAll("+")); // replace out %2B with + due to API restriction
         return builder.build();
     }
 
@@ -1119,29 +1196,15 @@ public class Zendesk implements Closeable {
             builder.setRealm(realm);
         } else {
             builder.addHeader("Authorization", "Bearer " + oauthToken);
-        } 
-        builder.setUrl(template.toString());
+        }
+        builder.setUrl(RESTRICTED_PATTERN.matcher(template.toString()).replaceAll("+")); //replace out %2B with + due to API restriction
         builder.addHeader("Content-type", contentType);
         builder.setBody(body);
         return builder.build();
     }
 
-    private Request req(String method, Uri template, int page) {
-        RequestBuilder builder = new RequestBuilder(method);
-        if (realm != null) {
-            builder.setRealm(realm);
-        } else {
-            builder.addHeader("Authorization", "Bearer " + oauthToken);
-        }
-        builder.addQueryParameter("page", Integer.toString(page));
-        builder.setUrl(template.toString().replace("%2B", "+")); //replace out %2B with + due to API restriction
-        return builder.build();
-    }
-    
-    
-
-    protected AsyncCompletionHandler<Void> handleStatus() {
-        return new AsyncCompletionHandler<Void>() {
+    protected ZendeskAsyncCompletionHandler<Void> handleStatus() {
+        return new ZendeskAsyncCompletionHandler<Void>() {
             @Override
             public Void onCompleted(Response response) throws Exception {
                 logResponse(response);
@@ -1154,8 +1217,8 @@ public class Zendesk implements Closeable {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> AsyncCompletionHandler<T> handle(final Class<T> clazz) {
-        return new AsyncCompletionHandler<T>() {
+    protected <T> ZendeskAsyncCompletionHandler<T> handle(final Class<T> clazz) {
+        return new ZendeskAsyncCompletionHandler<T>() {
             @Override
             public T onCompleted(Response response) throws Exception {
                 logResponse(response);
@@ -1170,8 +1233,8 @@ public class Zendesk implements Closeable {
         };
     }
 
-    protected <T> AsyncCompletionHandler<T> handle(final Class<T> clazz, final String name) {
-        return new AsyncCompletionHandler<T>() {
+    protected <T> ZendeskAsyncCompletionHandler<T> handle(final Class<T> clazz, final String name) {
+        return new ZendeskAsyncCompletionHandler<T>() {
             @Override
             public T onCompleted(Response response) throws Exception {
                 logResponse(response);
@@ -1186,56 +1249,97 @@ public class Zendesk implements Closeable {
         };
     }
 
-    protected <T> AsyncCompletionHandler<List<T>> handleList(final Class<T> clazz) {
-        return new AsyncCompletionHandler<List<T>>() {
-            @Override
-            public List<T> onCompleted(Response response) throws Exception {
-                logResponse(response);
-                if (isStatus2xx(response)) {
-                    List<T> values = new ArrayList<T>();
-                    for (JsonNode node : mapper.readTree(response.getResponseBodyAsStream())) {
-                        values.add(mapper.convertValue(node, clazz));
-                    }
-                    return values;
+    private static final String NEXT_PAGE = "next_page";
+    private static final String END_TIME = "end_time";
+
+    private abstract class PagedAsyncCompletionHandler<T> extends ZendeskAsyncCompletionHandler<T> {
+        private String nextPage;
+
+        public void setPagedProperties(JsonNode responseNode, Class<?> clazz) {
+            JsonNode node = responseNode.get(NEXT_PAGE);
+            if (node == null) {
+                throw new NullPointerException(NEXT_PAGE + " property not found, pagination not supported" +
+                        (clazz != null ? " for " + clazz.getName() : ""));
+            }
+            this.nextPage = node.asText();
+        }
+
+        public String getNextPage() {
+            return nextPage;
+        }
+        
+        public void setNextPage(String nextPage) {
+            this.nextPage = nextPage;
+        }
+    }
+    
+    private class PagedAsyncListCompletionHandler<T> extends PagedAsyncCompletionHandler<List<T>> {
+        private final Class<T> clazz;
+        private final String name;
+        public PagedAsyncListCompletionHandler(Class<T> clazz, String name) {
+            this.clazz = clazz;
+            this.name = name;
+        }
+        
+        @Override
+        public List<T> onCompleted(Response response) throws Exception {
+            logResponse(response);
+            if (isStatus2xx(response)) {
+                JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
+                setPagedProperties(responseNode, clazz);
+                List<T> values = new ArrayList<T>();
+                for (JsonNode node : responseNode.get(name)) {
+                    values.add(mapper.convertValue(node, clazz));
                 }
-                throw new ZendeskResponseException(response);
+                return values;
+            }
+            throw new ZendeskResponseException(response);
+        }
+    }
+
+    protected <T> PagedAsyncCompletionHandler<List<T>> handleList(final Class<T> clazz, final String name) {
+        return new PagedAsyncListCompletionHandler<T>(clazz, name);
+    }
+
+    private static final long FIVE_MINUTES = TimeUnit.MINUTES.toMillis(5);
+
+    protected <T> PagedAsyncCompletionHandler<List<T>> handleIncrementalList(final Class<T> clazz, final String name) {
+        return new PagedAsyncListCompletionHandler<T>(clazz, name) {
+            @Override
+            public void setPagedProperties(JsonNode responseNode, Class<?> clazz) {
+                JsonNode node = responseNode.get(NEXT_PAGE);
+                if (node == null) {
+                    throw new NullPointerException(NEXT_PAGE + " property not found, pagination not supported" +
+                            (clazz != null ? " for " + clazz.getName() : ""));
+                }
+                JsonNode endTimeNode = responseNode.get(END_TIME);
+                if (endTimeNode == null || endTimeNode.asLong() == 0) {
+                    throw new NullPointerException(END_TIME + " property not found, incremental export pagination not supported" +
+                            (clazz != null ? " for " + clazz.getName() : ""));
+                }
+                /**
+                 * A request after five minutes ago will result in a 422 responds from Zendesk.
+                 * Therefore, we stop pagination.
+                 */
+                if (TimeUnit.SECONDS.toMillis(endTimeNode.asLong()) > System.currentTimeMillis() - FIVE_MINUTES) {
+                    setNextPage(null);
+                } else {
+                    setNextPage(node.asText());
+                }
             }
         };
-    } 
-    
-    protected <T> AsyncCompletionHandler<List<T>> handleList(final Class<T> clazz, final String name) {
-       final AtomicInteger readCount = new AtomicInteger(0);
-       return new AsyncCompletionHandler<List<T>>() {
-           @Override
-           public List<T> onCompleted(Response response) throws Exception {
-               logResponse(response);
-               if (isStatus2xx(response)) {                   
-                   JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
-                   int count = responseNode.get("count").asInt();
-                   if (count > readCount.get()) {
-                      List<T> values = new ArrayList<T>();
-                      for (JsonNode node : responseNode.get(name)) {
-                          values.add(mapper.convertValue(node, clazz));
-                          readCount.incrementAndGet();
-                      }
-                      return values;
-                   } else {
-                      return null;
-                   }
-               }
-               throw new ZendeskResponseException(response);
-           }
-       };
     }
- 
-    protected AsyncCompletionHandler<List<SearchResultEntity>> handleSearchList(final String name) {
-        return new AsyncCompletionHandler<List<SearchResultEntity>>() {
+
+    protected PagedAsyncCompletionHandler<List<SearchResultEntity>> handleSearchList(final String name) {
+        return new PagedAsyncCompletionHandler<List<SearchResultEntity>>() {
             @Override
             public List<SearchResultEntity> onCompleted(Response response) throws Exception {
                 logResponse(response);
                 if (isStatus2xx(response)) {
+                    JsonNode responseNode = mapper.readTree(response.getResponseBodyAsStream()).get(name);
+                    setPagedProperties(responseNode, null);
                     List<SearchResultEntity> values = new ArrayList<SearchResultEntity>();
-                    for (JsonNode node : mapper.readTree(response.getResponseBodyAsStream()).get(name)) {
+                    for (JsonNode node : responseNode) {
                         Class<? extends SearchResultEntity> clazz = searchResultTypes.get(node.get("result_type"));
                         if (clazz != null) {
                             values.add(mapper.convertValue(node, clazz));
@@ -1248,34 +1352,27 @@ public class Zendesk implements Closeable {
         };
     }
 
-    protected AsyncCompletionHandler<List<Target>> handleTargetList(final String name) {  
-       final AtomicInteger readCount = new AtomicInteger(0);
-       return new AsyncCompletionHandler<List<Target>>() {
-           @Override
-           public List<Target> onCompleted(Response response) throws Exception {
-               logResponse(response);
-               if (isStatus2xx(response)) {
-                  JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
-                  int count = responseNode.get("count").asInt();
-                  if (count > readCount.get()) {
-                      List<Target> values = new ArrayList<Target>();
-                      for (JsonNode node : responseNode.get(name)) {
-                          Class<? extends Target> clazz = targetTypes.get(node.get("type").asText());
-                          if (clazz != null) {
-                             values.add(mapper.convertValue(node, clazz));
-                          }  
-                          readCount.incrementAndGet();
-                      }
-                      return values;
-                  } else {
-                     return null;
-                  }
-               }
-               throw new ZendeskResponseException(response);
-           }
-       };
-   }
-
+    protected PagedAsyncCompletionHandler<List<Target>> handleTargetList(final String name) {
+        return new PagedAsyncCompletionHandler<List<Target>>() {
+            @Override
+            public List<Target> onCompleted(Response response) throws Exception {
+                logResponse(response);
+                if (isStatus2xx(response)) {
+                    JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
+                    setPagedProperties(responseNode, null);
+                    List<Target> values = new ArrayList<Target>();
+                    for (JsonNode node : responseNode.get(name)) {
+                        Class<? extends Target> clazz = targetTypes.get(node.get("type").asText());
+                        if (clazz != null) {
+                            values.add(mapper.convertValue(node, clazz));
+                        }
+                    }
+                    return values;
+                }
+                throw new ZendeskResponseException(response);
+            }
+        };
+    }
     
     private TemplateUri tmpl(String template) {
         return new TemplateUri(url + template);
@@ -1286,11 +1383,27 @@ public class Zendesk implements Closeable {
     }
 
     private void logResponse(Response response) throws IOException {
-        logger.debug("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
-                response.getResponseBody());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Response HTTP/{} {}\n{}", response.getStatusCode(), response.getStatusText(),
+                    response.getResponseBody());
+        }
         if (logger.isTraceEnabled()) {
             logger.trace("Response headers {}", response.getHeaders());
         }
+    }
+    
+    private static final String UTF_8 = "UTF-8";
+
+    private static String encodeUrl(String input) {
+        try {
+            return URLEncoder.encode(input, UTF_8);
+        } catch (UnsupportedEncodingException impossible) {
+            return input;
+        }
+    }
+
+    private static long msToSeconds(long millis) {
+        return TimeUnit.MILLISECONDS.toSeconds(millis);
     }
 
     private boolean isStatus2xx(Response response) {
@@ -1431,48 +1544,34 @@ public class Zendesk implements Closeable {
     private class PagedIterable<T> implements Iterable<T> {
 
         private final Uri url;
-        private final AsyncCompletionHandler<List<T>> handler;
-        private final int initialPage;
-        private int size = 0;
+        private final PagedAsyncCompletionHandler<List<T>> handler;
 
-        private PagedIterable(Uri url, AsyncCompletionHandler<List<T>> handler) {
-            this(url, handler, 1);
-        }
-
-        private PagedIterable(Uri url, AsyncCompletionHandler<List<T>> handler, int initialPage) {
+        private PagedIterable(Uri url, PagedAsyncCompletionHandler<List<T>> handler) {
             this.handler = handler;
             this.url = url;
-            this.initialPage = initialPage;
         }
 
         public Iterator<T> iterator() {
-            return new PagedIterator(initialPage);
+            return new PagedIterator(url);
         }
 
         private class PagedIterator implements Iterator<T> {
 
             private Iterator<T> current;
-            private int page;
+            private String nextPage;
 
-            private PagedIterator(int page) {
-                this.page = page;
+            public PagedIterator(Uri url) {
+                this.nextPage = url.toString();
             }
 
             public boolean hasNext() {
                 if (current == null || !current.hasNext()) {
-                    if (page > 0) {                       
-                        List<T> values = complete(submit(req("GET", url, page++), handler));
-                        if (values == null || values.isEmpty()) {
-                            page = -1;
-                        } else {
-                           synchronized (this) {
-                              size += values.size();
-                           }
-                           current = values.iterator();
-                        }
-                    } else {
+                    if (nextPage == null || nextPage.equalsIgnoreCase("null")) {
                         return false;
                     }
+                    List<T> values = complete(submit(req("GET", nextPage), handler));
+                    nextPage = handler.getNextPage();
+                    current = values.iterator();
                 }
                 return current.hasNext();
             }
