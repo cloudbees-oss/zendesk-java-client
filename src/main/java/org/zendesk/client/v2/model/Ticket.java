@@ -30,6 +30,7 @@ public class Ticket extends Request implements SearchResultEntity {
     private List<Long> sharingAgreementIds;
     private List<Long> followupIds;
     private Long ticketFormId;
+    private Long brandId;
 
     public Ticket() {
     }
@@ -152,6 +153,15 @@ public class Ticket extends Request implements SearchResultEntity {
         this.recipient = recipient;
     }
 
+    @JsonProperty("brand_id")
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
+
     public Requester getRequester() {
         return requester;
     }
@@ -245,6 +255,7 @@ public class Ticket extends Request implements SearchResultEntity {
         sb.append(", sharingAgreementIds=").append(sharingAgreementIds);
         sb.append(", followupIds=").append(followupIds);
         sb.append(", ticketFormId=").append(ticketFormId);
+        sb.append(", brandId=").append(brandId);
         sb.append(", createdAt=").append(createdAt);
         sb.append(", updatedAt=").append(updatedAt);
         sb.append('}');
