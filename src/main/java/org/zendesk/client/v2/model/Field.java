@@ -208,7 +208,7 @@ public class Field implements Serializable {
         return sb.toString();
     }
 
-    public static class Option {
+    public static class Option implements Serializable{
         private String name;
         private String value;
 
