@@ -37,6 +37,9 @@ import org.zendesk.client.v2.model.Trigger;
 import org.zendesk.client.v2.model.TwitterMonitor;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.UserField;
+import org.zendesk.client.v2.model.hc.Article;
+import org.zendesk.client.v2.model.hc.Category;
+import org.zendesk.client.v2.model.hc.Section;
 import org.zendesk.client.v2.model.targets.BasecampTarget;
 import org.zendesk.client.v2.model.targets.CampfireTarget;
 import org.zendesk.client.v2.model.targets.EmailTarget;
@@ -1137,6 +1140,97 @@ public class Zendesk implements Closeable {
     // TODO search with query building API
 
     //////////////////////////////////////////////////////////////////////
+    // Action methods for Help Center
+    //////////////////////////////////////////////////////////////////////
+
+    public List<Article> getArticles() {
+        return complete(submit(req("GET", cnst("/help_center/articles.json")),
+                handleList(Article.class, "articles")));
+    }
+
+    public Article getArticle(int id) {
+        return complete(submit(req("GET", tmpl("/help_center/articles/{id}.json").set("id", id)),
+                handle(Article.class, "article")));
+    }
+
+    public Article createArticle(Article article) {
+        checkHasSectionId(article);
+        return complete(submit(req("POST", tmpl("/help_center/sections/{id}/articles.json").set("id", article.getSectionId()),
+                JSON, json(Collections.singletonMap("article", article))), handle(Article.class, "article")));
+    }
+
+    public Article updateArticle(Article article) {
+        checkHasId(article);
+        return complete(submit(req("PUT", tmpl("/help_center/articles/{id}.json").set("id", article.getId()),
+                JSON, json(Collections.singletonMap("article", article))), handle(Article.class, "article")));
+    }
+
+    public void deleteArticle(Article article) {
+        checkHasId(article);
+        complete(submit(req("DELETE", tmpl("/help_center/articles/{id}.json").set("id", article.getId())),
+                handleStatus()));
+    }
+
+    public List<Category> getCategories() {
+        return complete(submit(req("GET", cnst("/help_center/categories.json")),
+                handleList(Category.class, "categories")));
+    }
+
+    public Category getCategory(int id) {
+        return complete(submit(req("GET", tmpl("/help_center/categories/{id}.json").set("id", id)),
+                handle(Category.class, "category")));
+    }
+
+    public Category createCategory(Category category) {
+        return complete(submit(req("POST", cnst("/help_center/categories.json"),
+                JSON, json(Collections.singletonMap("category", category))), handle(Category.class, "category")));
+    }
+
+    public Category updateCategory(Category category) {
+        checkHasId(category);
+        return complete(submit(req("PUT", tmpl("/help_center/categories/{id}.json").set("id", category.getId()),
+                JSON, json(Collections.singletonMap("category", category))), handle(Category.class, "category")));
+    }
+
+    public void deleteCategory(Category category) {
+        checkHasId(category);
+        complete(submit(req("DELETE", tmpl("/help_center/categories/{id}.json").set("id", category.getId())),
+                handleStatus()));
+    }
+
+    public List<Section> getSections() {
+        return complete(submit(req("GET", cnst("/help_center/sections.json")), handleList(Section.class, "sections")));
+    }
+
+    public List<Section> getSections(Category category) {
+        checkHasId(category);
+        return complete(submit(req("GET", tmpl("/help_center/categories/{id}/sections.json").set("id", category.getId())),
+                handleList(Section.class, "sections")));
+    }
+
+    public Section getSection(int id) {
+        return complete(submit(req("GET", tmpl("/help_center/sections/{id}.json").set("id", id)),
+                handle(Section.class, "section")));
+    }
+
+    public Section createSection(Section section) {
+        return complete(submit(req("POST", cnst("/help_center/sections.json"), JSON,
+                json(Collections.singletonMap("section", section))), handle(Section.class, "section")));
+    }
+
+    public Section updateSection(Section section) {
+        checkHasId(section);
+        return complete(submit(req("PUT", tmpl("/help_center/sections/{id}.json").set("id", section.getId()),
+                JSON, json(Collections.singletonMap("section", section))), handle(Section.class, "section")));
+    }
+
+    public void deleteSection(Section section) {
+        checkHasId(section);
+        complete(submit(req("DELETE", tmpl("/help_center/sections/{id}.json").set("id", section.getId())),
+                handleStatus()));
+    }
+
+    //////////////////////////////////////////////////////////////////////
     // Helper methods
     //////////////////////////////////////////////////////////////////////
 
@@ -1502,6 +1596,30 @@ public class Zendesk implements Closeable {
     private void checkHasId(Topic topic) {
         if (topic.getId() == null) {
             throw new IllegalArgumentException("Topic requires id");
+        }
+    }
+
+    private static void checkHasId(Article article) {
+        if (article.getId() == null) {
+            throw new IllegalArgumentException("Article requires id");
+        }
+    }
+
+    private static void checkHasSectionId(Article article) {
+        if (article.getSectionId() == null) {
+            throw new IllegalArgumentException("Article requires section id");
+        }
+    }
+
+    private static void checkHasId(Category category) {
+        if (category.getId() == null) {
+            throw new IllegalArgumentException("Category requires id");
+        }
+    }
+
+    private static void checkHasId(Section section) {
+        if (section.getId() == null) {
+            throw new IllegalArgumentException("Section requires id");
         }
     }
 
