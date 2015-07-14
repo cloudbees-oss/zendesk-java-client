@@ -172,6 +172,15 @@ public class Zendesk implements Closeable {
         return complete(submit(req("GET", tmpl("/job_statuses/{id}.json").set("id", status.getId())), handleJobStatus(status.getResultsClass())));
     }
 
+    public List<JobStatus<HashMap<String, Object>>> getJobStatuses(List<JobStatus> statuses) {
+        List<String> ids = new ArrayList<String>(statuses.size());
+        for (JobStatus status : statuses) {
+            ids.add(status.getId());
+        }
+        Class<JobStatus<HashMap<String, Object>>> clazz = (Class<JobStatus<HashMap<String, Object>>>)(Object)JobStatus.class;
+        return complete(submit(req("GET", tmpl("/job_statuses/show_many.json{?ids}").set("ids", ids)), handleList(clazz, "job_statuses")));
+    }
+
     public TicketForm getTicketForm(long id) {
         return complete(submit(req("GET", tmpl("/ticket_forms/{id}.json").set("id", id)), handle(TicketForm.class,
                 "ticket_form")));

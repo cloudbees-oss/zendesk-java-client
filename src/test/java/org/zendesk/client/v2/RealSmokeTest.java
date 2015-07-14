@@ -19,8 +19,11 @@ import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.events.Event;
 import org.zendesk.client.v2.model.targets.Target;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -402,6 +405,57 @@ public class RealSmokeTest {
         for (Organization org : resultOrgs) {
             assertNotNull(org.getId());
             instance.deleteOrganization(org);
+        }
+    }
+
+    @Test(timeout = 10000)
+    public void bulkCreateMultipleJobs() throws Exception {
+        createClientWithTokenOrPassword();
+
+        List<Organization> orgs = new ArrayList<Organization>(4);
+        for (int i = 1; i <= 5; i++) {
+            Organization org = new Organization();
+            org.setExternalId("testorg" + i);
+            org.setName("Test Organization " + i);
+            orgs.add(org);
+        }
+
+        // Clean up to avoid conflicts
+        for (Organization t : instance.getOrganizations()) {
+            for (Organization org : orgs) {
+                if (org.getExternalId().equals(t.getExternalId())) {
+                    instance.deleteOrganization(t);
+                }
+            }
+        }
+
+
+        JobStatus result1 = instance.createOrganizations(orgs.subList(0, 2));
+        JobStatus result2 = instance.createOrganizations(orgs.subList(2, 5));
+
+        while (result1.getStatus() != JobStatus.JobStatusEnum.completed || result2.getStatus() != JobStatus.JobStatusEnum.completed) {
+            List<JobStatus<HashMap<String, Object>>> results = instance.getJobStatuses(Arrays.asList(result1, result2));
+            result1 = results.get(0);
+            result2 = results.get(1);
+            assertNotNull(result1);
+            assertNotNull(result1.getId());
+            assertNotNull(result2);
+            assertNotNull(result2.getId());
+        }
+
+        List<HashMap> resultOrgs1 = result1.getResults();
+        assertEquals(2, resultOrgs1.size());
+        List<HashMap> resultOrgs2 = result2.getResults();
+        assertEquals(3, resultOrgs2.size());
+
+        for (HashMap org : resultOrgs1) {
+            assertNotNull(org.get("id"));
+            instance.deleteOrganization(((Number) org.get("id")).longValue());
+        }
+
+        for (HashMap org : resultOrgs2) {
+            assertNotNull(org.get("id"));
+            instance.deleteOrganization(((Number) org.get("id")).longValue());
         }
     }
 
