@@ -3,7 +3,6 @@ package org.zendesk.client.v2.model;
 import java.util.List;
 
 public class JobStatus<T> {
-    private Class<T> resultClass;
     private String id;
     private String url;
     private Integer total;
@@ -11,14 +10,7 @@ public class JobStatus<T> {
     private JobStatusEnum status;
     private String message;
     private List<T> results;
-
-    public Class<T> getResultClass() {
-        return resultClass;
-    }
-
-    public void setResultClass(Class<T> resultClass) {
-        this.resultClass = resultClass;
-    }
+    private Class<T> resultsClass;
 
     public String getId() {
         return id;
@@ -74,6 +66,14 @@ public class JobStatus<T> {
 
     public void setResults(List<T> results) {
         this.results = results;
+    }
+
+    public Class<T> getResultsClass() {
+        return resultsClass;
+    }
+
+    public void setResultsClass(Class<T> resultsClass) {
+        this.resultsClass = resultsClass;
     }
 
     @Override

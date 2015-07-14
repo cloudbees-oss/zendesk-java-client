@@ -169,7 +169,7 @@ public class Zendesk implements Closeable {
     //////////////////////////////////////////////////////////////////////
 
     public <T> JobStatus<T> getJobStatus(JobStatus<T> status) {
-        return complete(submit(req("GET", tmpl("/job_statuses/{id}.json").set("id", status.getId())), handleJobStatus(status.getResultClass())));
+        return complete(submit(req("GET", tmpl("/job_statuses/{id}.json").set("id", status.getId())), handleJobStatus(status.getResultsClass())));
     }
 
     public TicketForm getTicketForm(long id) {
@@ -1285,7 +1285,7 @@ public class Zendesk implements Closeable {
             @Override
             public JobStatus<T> onCompleted(Response response) throws Exception {
                 JobStatus<T> result = super.onCompleted(response);
-                result.setResultClass(resultClass);
+                result.setResultsClass(resultClass);
                 return result;
             }
         };
