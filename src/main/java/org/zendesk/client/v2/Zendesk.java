@@ -207,6 +207,15 @@ public class Zendesk implements Closeable {
                 handle(Ticket.class, "ticket")));
     }
 
+    public JobStatus<Ticket> createTickets(Ticket... tickets) {
+        return createTickets(Arrays.asList(tickets));
+    }
+
+    public JobStatus<Ticket> createTickets(List<Ticket> tickets) {
+        return complete(submit(req("POST", cnst("/tickets/create_many.json"), JSON, json(
+                Collections.singletonMap("tickets", tickets))), handleJobStatus(Ticket.class)));
+    }
+
     public Ticket updateTicket(Ticket ticket) {
         checkHasId(ticket);
         return complete(submit(req("PUT", tmpl("/tickets/{id}.json").set("id", ticket.getId()),
