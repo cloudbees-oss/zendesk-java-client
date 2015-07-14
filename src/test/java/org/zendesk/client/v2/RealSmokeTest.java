@@ -9,6 +9,7 @@ import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.Identity;
+import org.zendesk.client.v2.model.JobStatus;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.Request;
 import org.zendesk.client.v2.model.Status;
@@ -19,6 +20,7 @@ import org.zendesk.client.v2.model.events.Event;
 import org.zendesk.client.v2.model.targets.Target;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -28,6 +30,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
@@ -337,6 +340,68 @@ public class RealSmokeTest {
             if (++count > 10) {
                 break;
             }
+        }
+    }
+
+    @Test
+    public void createOrganization() throws Exception {
+        createClientWithTokenOrPassword();
+
+        // Clean up to avoid conflicts
+        for (Organization t : instance.getOrganizations()) {
+            if ("testorg".equals(t.getExternalId())) {
+                instance.deleteOrganization(t);
+            }
+        }
+
+        Organization org = new Organization();
+        org.setExternalId("testorg");
+        org.setName("Test Organization");
+        Organization result = instance.createOrganization(org);
+        assertNotNull(result);
+        assertNotNull(result.getId());
+        assertEquals("Test Organization", result.getName());
+        assertEquals("testorg", result.getExternalId());
+        instance.deleteOrganization(result);
+    }
+
+    @Test(timeout = 10000)
+    public void createOrganizations() throws Exception {
+        createClientWithTokenOrPassword();
+
+        // Clean up to avoid conflicts
+        for (Organization t : instance.getOrganizations()) {
+            if ("testorg1".equals(t.getExternalId()) || "testorg2".equals(t.getExternalId())) {
+                instance.deleteOrganization(t);
+            }
+        }
+
+        Organization org1 = new Organization();
+        org1.setExternalId("testorg1");
+        org1.setName("Test Organization 1");
+
+        Organization org2 = new Organization();
+        org2.setExternalId("testorg2");
+        org2.setName("Test Organization 2");
+
+        JobStatus<Organization> result = instance.createOrganizations(org1, org2);
+        assertNotNull(result);
+        assertNotNull(result.getId());
+        assertNotNull(result.getStatus());
+
+        while (result.getStatus() != JobStatus.JobStatusEnum.completed) {
+            result = instance.getJobStatus(result);
+            assertNotNull(result);
+            assertNotNull(result.getId());
+            assertNotNull(result.getStatus());
+        }
+
+        List<Organization> resultOrgs = result.getResults();
+
+        assertEquals(2, resultOrgs.size());
+        for (Organization org : resultOrgs) {
+            assertNotNull(org.getId());
+            instance.deleteOrganization(org);
         }
     }
 

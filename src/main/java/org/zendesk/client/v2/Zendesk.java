@@ -3,6 +3,7 @@ package org.zendesk.client.v2;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -24,6 +25,7 @@ import org.zendesk.client.v2.model.Forum;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.GroupMembership;
 import org.zendesk.client.v2.model.Identity;
+import org.zendesk.client.v2.model.JobStatus;
 import org.zendesk.client.v2.model.Macro;
 import org.zendesk.client.v2.model.Metric;
 import org.zendesk.client.v2.model.Organization;
@@ -165,6 +167,10 @@ public class Zendesk implements Closeable {
     //////////////////////////////////////////////////////////////////////
     // Action methods
     //////////////////////////////////////////////////////////////////////
+
+    public <T> JobStatus<T> getJobStatus(JobStatus<T> status) {
+        return complete(submit(req("GET", tmpl("/job_statuses/{id}.json").set("id", status.getId())), handleJobStatus(status.getResultClass())));
+    }
 
     public TicketForm getTicketForm(long id) {
         return complete(submit(req("GET", tmpl("/ticket_forms/{id}.json").set("id", id)), handle(TicketForm.class,
@@ -504,13 +510,13 @@ public class Zendesk implements Closeable {
                 Collections.singletonMap("user", user))), handle(User.class, "user")));
     }
 
-    public List<User> createUsers(User... users) {
+    public JobStatus<User> createUsers(User... users) {
         return createUsers(Arrays.asList(users));
     }
 
-    public List<User> createUsers(List<User> users) {
+    public JobStatus<User> createUsers(List<User> users) {
         return complete(submit(req("POST", cnst("/users/create_many.json"), JSON, json(
-                Collections.singletonMap("users", users))), handleList(User.class, "results")));
+                Collections.singletonMap("users", users))), handleJobStatus(User.class)));
     }
 
     public User updateUser(User user) {
@@ -792,13 +798,13 @@ public class Zendesk implements Closeable {
                 Collections.singletonMap("organization", organization))), handle(Organization.class, "organization")));
     }
 
-    public List<Organization> createOrganizations(Organization... organizations) {
+    public JobStatus<Organization> createOrganizations(Organization... organizations) {
         return createOrganizations(Arrays.asList(organizations));
     }
 
-    public List<Organization> createOrganizations(List<Organization> organizations) {
+    public JobStatus createOrganizations(List<Organization> organizations) {
         return complete(submit(req("POST", cnst("/organizations/create_many.json"), JSON, json(
-                Collections.singletonMap("organizations", organizations))), handleList(Organization.class, "results")));
+                Collections.singletonMap("organizations", organizations))), handleJobStatus(Organization.class)));
     }
 
     public Organization updateOrganization(Organization organization) {
@@ -1233,18 +1239,45 @@ public class Zendesk implements Closeable {
         };
     }
 
-    protected <T> ZendeskAsyncCompletionHandler<T> handle(final Class<T> clazz, final String name) {
-        return new ZendeskAsyncCompletionHandler<T>() {
+    private class BasicAsyncCompletionHandler<T> extends ZendeskAsyncCompletionHandler<T> {
+        private final Class<T> clazz;
+        private final String name;
+        private final Class[] typeParams;
+
+        public BasicAsyncCompletionHandler(Class clazz, String name, Class... typeParams) {
+            this.clazz = clazz;
+            this.name = name;
+            this.typeParams = typeParams;
+        }
+
+        @Override
+        public T onCompleted(Response response) throws Exception {
+            logResponse(response);
+            if (isStatus2xx(response)) {
+                if (typeParams.length > 0) {
+                    JavaType type = mapper.getTypeFactory().constructParametricType(clazz, typeParams);
+                    return mapper.convertValue(mapper.readTree(response.getResponseBodyAsStream()).get(name), type);
+                }
+                return mapper.convertValue(mapper.readTree(response.getResponseBodyAsStream()).get(name), clazz);
+            }
+            if (response.getStatusCode() == 404) {
+                return null;
+            }
+            throw new ZendeskResponseException(response);
+        }
+    }
+
+    protected <T> ZendeskAsyncCompletionHandler<T> handle(final Class<T> clazz, final String name, final Class... typeParams) {
+        return new BasicAsyncCompletionHandler<T>(clazz, name, typeParams);
+    }
+
+    protected <T> ZendeskAsyncCompletionHandler<JobStatus<T>> handleJobStatus(final Class<T> resultClass) {
+        return new BasicAsyncCompletionHandler<JobStatus<T>>(JobStatus.class, "job_status", resultClass) {
             @Override
-            public T onCompleted(Response response) throws Exception {
-                logResponse(response);
-                if (isStatus2xx(response)) {
-                    return mapper.convertValue(mapper.readTree(response.getResponseBodyAsStream()).get(name), clazz);
-                }
-                if (response.getStatusCode() == 404) {
-                    return null;
-                }
-                throw new ZendeskResponseException(response);
+            public JobStatus<T> onCompleted(Response response) throws Exception {
+                JobStatus<T> result = super.onCompleted(response);
+                result.setResultClass(resultClass);
+                return result;
             }
         };
     }
@@ -1654,5 +1687,4 @@ public class Zendesk implements Closeable {
             return new Zendesk(client, url, username, password);
         }
     }
-
 }
