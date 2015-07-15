@@ -11,6 +11,14 @@ public class CustomFieldValue {
     private Long id;
     private String value;
 
+    public CustomFieldValue() {
+    }
+
+    public CustomFieldValue(Long id, String value) {
+        this.id = id;
+        this.value = value;
+    }
+
     public Long getId() {
         return id;
     }
