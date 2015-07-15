@@ -14,20 +14,25 @@ public class Field {
     private String url;
     private String type;
     private String title;
+    private String rawTitle;
     private String description;
+    private String rawDescription;
     private Integer position;
     private Boolean active;
     private Boolean required;
     private Boolean collapsedForAgents;
     private String regexpForValidation;
     private String titleInPortal;
+    private String rawTitleInPortal;
     private Boolean visibleInPortal;
     private Boolean editableInPortal;
     private Boolean requiredInPortal;
     private String tag;
     private Date createdAt;
     private Date updatedAt;
+    private List<Option> systemFieldOptions;
     private List<Option> customFieldOptions;
+    private Boolean removable;
 
     public Boolean getActive() {
         return active;
@@ -97,6 +102,33 @@ public class Field {
         this.position = position;
     }
 
+    @JsonProperty("raw_description")
+    public String getRawDescription() {
+        return rawDescription;
+    }
+
+    public void setRawDescription(String rawDescription) {
+        this.rawDescription = rawDescription;
+    }
+
+    @JsonProperty("raw_title")
+    public String getRawTitle() {
+        return rawTitle;
+    }
+
+    public void setRawTitle(String rawTitle) {
+        this.rawTitle = rawTitle;
+    }
+
+    @JsonProperty("raw_title_in_portal")
+    public String getRawTitleInPortal() {
+        return rawTitleInPortal;
+    }
+
+    public void setRawTitleInPortal(String rawTitleInPortal) {
+        this.rawTitleInPortal = rawTitleInPortal;
+    }
+
     @JsonProperty("regexp_for_validation")
     public String getRegexpForValidation() {
         return regexpForValidation;
@@ -104,6 +136,14 @@ public class Field {
 
     public void setRegexpForValidation(String regexpForValidation) {
         this.regexpForValidation = regexpForValidation;
+    }
+
+    public Boolean getRemovable() {
+        return removable;
+    }
+
+    public void setRemovable(Boolean removable) {
+        this.removable = removable;
     }
 
     public Boolean getRequired() {
@@ -121,6 +161,15 @@ public class Field {
 
     public void setRequiredInPortal(Boolean requiredInPortal) {
         this.requiredInPortal = requiredInPortal;
+    }
+
+    @JsonProperty("system_field_options")
+    public List<Option> getSystemFieldOptions() {
+        return systemFieldOptions;
+    }
+
+    public void setSystemFieldOptions(List<Option> systemFieldOptions) {
+        this.systemFieldOptions = systemFieldOptions;
     }
 
     public String getTag() {
