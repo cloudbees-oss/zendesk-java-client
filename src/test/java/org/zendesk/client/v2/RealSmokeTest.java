@@ -109,6 +109,7 @@ public class RealSmokeTest {
     }
 
     @Test
+    @Ignore("Needs specfic ticket form instance")
     public void getTicketForm() throws Exception {
         createClientWithTokenOrPassword();
         TicketForm ticketForm = instance.getTicketForm(27562);
@@ -127,12 +128,13 @@ public class RealSmokeTest {
     }
     
     @Test
+    @Ignore("Needs specfic ticket form instance")
     public void getTicketFieldsOnForm() throws Exception {
         createClientWithTokenOrPassword();
         TicketForm ticketForm = instance.getTicketForm(27562);
         for(Integer id :ticketForm.getTicketFieldIds()){
-        	Field f = instance.getTicketField(id);
-        	assertNotNull(f);
+            Field f = instance.getTicketField(id);  
+            assertNotNull(f);
         }
         assertThat(ticketForm, notNullValue());
         assertTrue(ticketForm.isEndUserVisible());
@@ -166,6 +168,7 @@ public class RealSmokeTest {
     }
 
     @Test
+    @Ignore("Needs test data setup correctly")
     public void getRecentTickets() throws Exception {
         createClientWithTokenOrPassword();
         int count = 0;
