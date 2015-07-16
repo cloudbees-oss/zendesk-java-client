@@ -10,7 +10,8 @@ public enum Status {
     PENDING,
     HOLD,
     SOLVED,
-    CLOSED;
+    CLOSED,
+    DELETED;
 
     @Override
     public String toString() {
