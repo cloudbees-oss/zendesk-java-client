@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.zendesk.client.v2.model.Audit;
+import org.zendesk.client.v2.model.Collaborator;
 import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Group;
@@ -242,6 +243,7 @@ public class RealSmokeTest {
         Ticket t = new Ticket(
                 new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
                 "This is a test", new Comment("Please ignore this ticket"));
+        t.setCollaborators(Arrays.asList(new Collaborator("Bob Example", "bob@example.org"), new Collaborator("Alice Example", "alice@example.org")));
         Ticket ticket = instance.createTicket(t);
         System.out.println(ticket.getId() + " -> " + ticket.getUrl());
         assertThat(ticket.getId(), notNullValue());
@@ -256,6 +258,7 @@ public class RealSmokeTest {
         assertThat(ticket.getRequester(), nullValue());
         assertThat(ticket.getRequesterId(), notNullValue());
         assertThat(ticket.getDescription(), is(t.getComment().getBody()));
+        assertThat("Collaborators", ticket.getCollaboratorIds().size(), is(2));
         assertThat(instance.getTicket(ticket.getId()), nullValue());
     }
 
