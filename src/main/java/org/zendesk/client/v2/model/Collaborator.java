@@ -10,6 +10,11 @@ public class Collaborator {
     public Collaborator() {
     }
 
+    protected Collaborator(String name) {
+        this.name = name;
+        this.email = email;
+    }
+
     public Collaborator(String name, String email) {
         this.name = name;
         this.email = email;

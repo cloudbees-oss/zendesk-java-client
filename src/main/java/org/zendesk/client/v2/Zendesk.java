@@ -212,6 +212,11 @@ public class Zendesk implements Closeable {
                 handleList(Ticket.class, "tickets")));
     }
 
+    public List<User> getTicketCollaborators(long id) {
+        return complete(submit(req("GET", tmpl("/tickets/{id}/collaborators.json").set("id", id)),
+                handleList(User.class, "users")));
+    }
+
     public void deleteTicket(Ticket ticket) {
         checkHasId(ticket);
         deleteTicket(ticket.getId());

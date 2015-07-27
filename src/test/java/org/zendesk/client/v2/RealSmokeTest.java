@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.UUID;
 
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -251,6 +252,10 @@ public class RealSmokeTest {
             Ticket t2 = instance.getTicket(ticket.getId());
             assertThat(t2, notNullValue());
             assertThat(t2.getId(), is(ticket.getId()));
+
+            List<User> ticketCollaborators = instance.getTicketCollaborators(ticket.getId());
+            assertThat("Collaborators", ticketCollaborators.size(), is(2));
+            assertThat("First Collaborator", ticketCollaborators.get(0).getEmail(), anyOf(is("alice@example.org"), is("bob@example.org")));
         } finally {
             instance.deleteTicket(ticket.getId());
         }
