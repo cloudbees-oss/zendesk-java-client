@@ -92,6 +92,7 @@ public class Zendesk implements Closeable {
        result.put("group", Group.class);
        result.put("organization", Organization.class);
        result.put("topic", Topic.class);
+        result.put("article", Article.class);
        return Collections.unmodifiableMap(result);
     }
     
@@ -273,6 +274,11 @@ public class Zendesk implements Closeable {
     public Iterable<Ticket> getTicketsFromSearch(String searchTerm) {
         return new PagedIterable<Ticket>(tmpl("/search.json{?query}").set("query", searchTerm + "+type:ticket"),
                 handleList(Ticket.class, "results"));
+    }
+
+    public Iterable<Article> getArticleFromSearch(String searchTerm) {
+        return new PagedIterable<Article>(tmpl("/help_center/articles/search.json{?query}").set("query", searchTerm),
+                handleList(Article.class, "results"));
     }
 
     public List<Ticket> getTickets(long id, long... ids) {

@@ -1,11 +1,12 @@
 package org.zendesk.client.v2.model.hc;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.zendesk.client.v2.model.SearchResultEntity;
 
 import java.util.Date;
 import java.util.List;
 
-public class Article {
+public class Article implements SearchResultEntity {
     /** Automatically assigned when the article is created */
     private Long id;
 
