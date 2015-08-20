@@ -1,5 +1,5 @@
 package org.zendesk.client.v2;
- 
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -14,7 +14,6 @@ import com.ning.http.client.Realm;
 import com.ning.http.client.Request;
 import com.ning.http.client.RequestBuilder;
 import com.ning.http.client.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.Attachment;
@@ -56,6 +55,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -246,6 +246,34 @@ public class Zendesk implements Closeable {
         return complete(submit(req("PUT", tmpl("/tickets/{id}.json").set("id", ticket.getId()),
                         JSON, json(Collections.singletonMap("ticket", ticket))),
                 handle(Ticket.class, "ticket")));
+    }
+
+    public JobStatus<Ticket> updateTickets(Ticket... tickets) {
+        return updateTickets(Arrays.asList(tickets));
+    }
+
+    public JobStatus<Ticket> updateTickets(List<Ticket> tickets) {
+        return complete(updateTicketsAsync(tickets));
+    }
+
+    public ListenableFuture<JobStatus<Ticket>> updateTicketsAsync(List<Ticket> tickets) {
+        return submit(req("PUT", cnst("/tickets/update_many.json"),
+                        JSON, json(Collections.singletonMap("tickets", tickets))),
+                handleJobStatus(Ticket.class));
+    }
+
+    public JobStatus<Ticket> updateTickets(Ticket ticket, long id, long... ids) {
+        return complete(updateTicketsAsync(ticket, idArray(id, ids)));
+    }
+
+    public JobStatus<Ticket> updateTickets(Ticket ticket, Collection<Long> ids) {
+        return complete(updateTicketsAsync(ticket, ids));
+    }
+
+    public ListenableFuture<JobStatus<Ticket>> updateTicketsAsync(Ticket ticket, Collection<Long> ids) {
+        return submit(req("PUT", tmpl("/tickets/update_many.json{?ids}").set("ids", ids),
+                        JSON, json(Collections.singletonMap("ticket", ticket))),
+                handleJobStatus(Ticket.class));
     }
 
     public void markTicketAsSpam(Ticket ticket) {
