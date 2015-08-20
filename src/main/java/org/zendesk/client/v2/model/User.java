@@ -2,6 +2,7 @@ package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -12,7 +13,10 @@ import java.util.Map;
  * @author stephenc
  * @since 05/04/2013 15:32
  */
-public class User extends Collaborator implements SearchResultEntity {
+public class User extends Collaborator implements SearchResultEntity, Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private Long id;
     private String url;
     private String externalId;

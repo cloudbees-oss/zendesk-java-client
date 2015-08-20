@@ -12,6 +12,9 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Ticket extends Request implements SearchResultEntity {
+
+    private static final long serialVersionUID = 1L;
+
     private String externalId;
     private Type type;
     private Priority priority;

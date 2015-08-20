@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 05/04/2013 11:55
  */
 public class CommentPrivacyChangeEvent extends PublicPrivateEvent {
+
+    private static final long serialVersionUID = 1L;
+
     private Long commentId;
 
     @JsonProperty("comment_id")

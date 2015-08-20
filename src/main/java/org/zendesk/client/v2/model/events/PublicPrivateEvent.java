@@ -5,6 +5,9 @@ package org.zendesk.client.v2.model.events;
  * @since 05/04/2013 11:53
  */
 abstract class PublicPrivateEvent extends Event {
+
+    private static final long serialVersionUID = 1L;
+
     private Boolean publicComment;
 
     public Boolean getPublic() {

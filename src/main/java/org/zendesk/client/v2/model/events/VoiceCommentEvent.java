@@ -10,6 +10,9 @@ import java.util.Map;
  * @since 05/04/2013 11:55
  */
 public class VoiceCommentEvent extends PublicPrivateEvent {
+
+    private static final long serialVersionUID = 1L;
+
     private Map<String, Object> data;
     private String formattedFrom;
     private String formattedTo;

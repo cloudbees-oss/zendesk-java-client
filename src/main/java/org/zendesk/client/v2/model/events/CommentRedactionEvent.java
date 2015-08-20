@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class CommentRedactionEvent extends Event {
 
+  private static final long serialVersionUID = 1L;
+
   private Long commentId;
 
   @JsonProperty("comment_id")

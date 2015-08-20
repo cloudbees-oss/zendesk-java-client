@@ -1,5 +1,7 @@
 package org.zendesk.client.v2.model.events;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -29,7 +31,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = OrganizationActivityEvent.class, name = "OrganizationActivity" )
 })
 
-public abstract class Event {
+public abstract class Event implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private Long id;
 
     public Long getId() {

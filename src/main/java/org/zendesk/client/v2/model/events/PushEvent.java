@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 05/04/2013 11:57
  */
 public class PushEvent extends Event {
+
+    private static final long serialVersionUID = 1L;
+
     private String value;
     private String valueReference;
 

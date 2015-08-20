@@ -2,9 +2,13 @@ package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class GroupMembership {
+public class GroupMembership implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private Long id;
     private String url;
     private Long userId;

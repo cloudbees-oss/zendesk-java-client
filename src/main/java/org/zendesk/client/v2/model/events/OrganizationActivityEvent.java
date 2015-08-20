@@ -13,6 +13,8 @@ import org.zendesk.client.v2.model.Via;
  */
 public class OrganizationActivityEvent extends Event {
 
+  private static final long serialVersionUID = 1L;
+
   private String subject;
   private String body;
   private List<Long> recipients;

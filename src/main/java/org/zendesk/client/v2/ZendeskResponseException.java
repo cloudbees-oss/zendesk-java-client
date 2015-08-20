@@ -9,6 +9,9 @@ import java.text.MessageFormat;
  * {@link ZendeskException} specialisation for HTTP non-2xx responses
  */
 public class ZendeskResponseException extends ZendeskException {
+
+    private static final long serialVersionUID = 1L;
+
     private int statusCode;
     private String statusText;
     private String body;

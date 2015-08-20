@@ -10,6 +10,9 @@ import java.util.List;
  * @since 05/04/2013 11:54
  */
 public class CommentEvent extends PublicPrivateEvent {
+
+    private static final long serialVersionUID = 1L;
+
     private String body;
     private String htmlBody;
     private Boolean trusted;

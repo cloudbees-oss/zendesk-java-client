@@ -5,6 +5,9 @@ package org.zendesk.client.v2.model.events;
  * @since 05/04/2013 11:56
  */
 public class NotificationEvent extends CcEvent {
+
+    private static final long serialVersionUID = 1L;
+
     private String subject;
     private String body;
 

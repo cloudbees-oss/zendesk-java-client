@@ -1,12 +1,17 @@
 package org.zendesk.client.v2.model;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author stephenc
  * @since 05/04/2013 15:36
  */
-public class Photo {
+public class Photo implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private Long id;
     private String fileName;
     private String contentUrl;

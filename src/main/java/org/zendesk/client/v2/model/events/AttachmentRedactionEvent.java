@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class AttachmentRedactionEvent extends Event {
 
+  private static final long serialVersionUID = 1L;
+
   private Long attachmentId;
   private Long commentId;
 

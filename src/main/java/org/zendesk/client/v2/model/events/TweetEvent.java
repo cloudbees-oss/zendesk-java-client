@@ -9,6 +9,9 @@ import java.util.List;
  * @since 05/04/2013 11:57
  */
 public class TweetEvent extends Event {
+
+    private static final long serialVersionUID = 1L;
+
     private Boolean directMessage;
     private String body;
     private List<Long> recipients;
