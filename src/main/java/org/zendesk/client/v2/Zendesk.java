@@ -526,6 +526,12 @@ public class Zendesk implements Closeable {
         return new PagedIterable<User>(cnst(uriBuilder.toString()), handleList(User.class, "users"));
     }
 
+    public Iterable<User> getUsersIncrementally(Date startTime) {
+        return new PagedIterable<User>(
+              tmpl("/incremental/users.json{?start_time}").set("start_time", msToSeconds(startTime.getTime())), 
+              handleIncrementalList(User.class, "users"));                
+    }
+
     public Iterable<User> getGroupUsers(long id) {
         return new PagedIterable<User>(tmpl("/groups/{id}/users.json").set("id", id), handleList(User.class, "users"));
     }
@@ -813,6 +819,12 @@ public class Zendesk implements Closeable {
     public Iterable<Organization> getOrganizations() {
         return new PagedIterable<Organization>(cnst("/organizations.json"),
                 handleList(Organization.class, "organizations"));
+    }
+
+    public Iterable<Organization> getOrganizationsIncrementally(Date startTime) {
+        return new PagedIterable<Organization>(
+            tmpl("/incremental/users.json{?start_time}").set("start_time", msToSeconds(startTime.getTime())), 
+            handleIncrementalList(Organization.class, "users"));                
     }
 
     public Iterable<OrganizationField> getOrganizationFields() {

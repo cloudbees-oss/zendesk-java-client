@@ -22,6 +22,7 @@ import org.zendesk.client.v2.model.targets.Target;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Properties;
@@ -155,6 +156,7 @@ public class RealSmokeTest {
     }
     
     @Test
+    @Ignore("Needs test data setup correctly")
     public void getTicketsPagesRequests() throws Exception {
         createClientWithTokenOrPassword();
         int count = 0;
@@ -191,6 +193,18 @@ public class RealSmokeTest {
             count += 5;
         }
         assertThat(count, is(16L));
+    }
+
+    @Test
+    public void getTicketsIncrementally() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (Ticket t : instance.getTicketsIncrementally(new Date(0L))) {
+            assertThat(t.getId(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
     }
 
     @Test
@@ -340,10 +354,46 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void getUsers() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (User u : instance.getUsers()) {
+            assertThat(u.getName(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void getUsersIncrementally() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (User u : instance.getUsersIncrementally(new Date(0L))) {
+            assertThat(u.getName(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
     public void getOrganizations() throws Exception {
         createClientWithTokenOrPassword();
         int count = 0;
         for (Organization t : instance.getOrganizations()) {
+            assertThat(t.getName(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void getOrganizationsIncrementally() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (Organization t : instance.getOrganizationsIncrementally(new Date(0L))) {
             assertThat(t.getName(), notNullValue());
             if (++count > 10) {
                 break;
