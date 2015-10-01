@@ -11,36 +11,56 @@ import java.util.Date;
  */
 public class ArticleAttachments {
 
-    // Automatically assigned when the article attachment is created
+    /**
+     *  Automatically assigned when the article attachment is created
+     */
     private int id;
 
-    // The API url of this article attachment
+    /**
+     *  The API url of this article attachment
+     */
     private String url;
 
-    // Id of the associated article, if present
+    /**
+     *  Id of the associated article, if present
+     */
     private int articleId;
 
-    // The name of the file
+    /**
+     *  The name of the file
+     */
     private String fileName;
 
-    // A full URL where the attachment file can be downloaded
+    /**
+     *  A full URL where the attachment file can be downloaded
+     */
     private String contentUrl;
 
-    // The content type of the file. Example: image/png
+    /**
+     *  The content type of the file. Example: image/png
+     */
     private String contentType;
 
-    // The size of the attachment file in bytes
+    /**
+     *  The size of the attachment file in bytes
+     */
     private int size;
 
-    // If true, the attached file is shown in the dedicated admin UI for inline attachments and
-    // its url can be referenced in the HTML body of the article.
-    // If false, the attachment is listed in the list of attachments. Default is false
+    /**
+     *  If true, the attached file is shown in the dedicated admin UI for inline attachments and
+     *  its url can be referenced in the HTML body of the article.
+     *  If false, the attachment is listed in the list of attachments. Default is false
+     */
     private boolean inline;
 
-    // The time at which the article attachment was created
+    /**
+     *  The time at which the article attachment was created
+     */
     private Date createdAt;
 
-    // The time at which the article attachment was last updated
+    /**
+     *  The time at which the article attachment was last updated
+     */
     private Date updatedAt;
 
     public int getId() {
