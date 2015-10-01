@@ -4,11 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 
-/**
- * @author schristou88
- *         Date: 8/31/15
- *         Time: 1:39 AM
- */
 public class ArticleAttachments {
 
     /**
