@@ -1200,8 +1200,10 @@ public class Zendesk implements Closeable {
     //////////////////////////////////////////////////////////////////////
 
     /**
-     * @Deprecated use #getArticlesFromPage(int). Same as #getArticlesFromPage(0)
-     * @return
+     * Get first page of articles from help center.
+     *
+     * @deprecated use #getArticlesFromPage(int). Same as #getArticlesFromPage(0)
+     * @return List of Articles.
      */
     @Deprecated
     public List<Article> getArticles() {
