@@ -40,6 +40,7 @@ import org.zendesk.client.v2.model.TwitterMonitor;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.UserField;
 import org.zendesk.client.v2.model.hc.Article;
+import org.zendesk.client.v2.model.hc.ArticleAttachments;
 import org.zendesk.client.v2.model.hc.Category;
 import org.zendesk.client.v2.model.hc.Section;
 import org.zendesk.client.v2.model.targets.BasecampTarget;
@@ -279,6 +280,11 @@ public class Zendesk implements Closeable {
     public Iterable<Article> getArticleFromSearch(String searchTerm) {
         return new PagedIterable<Article>(tmpl("/help_center/articles/search.json{?query}").set("query", searchTerm),
                 handleList(Article.class, "results"));
+    }
+
+    public List<ArticleAttachments> getAttachmentsFromArticle(Long articleID) {
+        return complete(submit(req("GET", tmpl("/help_center/articles/{?query}/attachments.json").set("query", articleID)),
+                handleList(ArticleAttachments.class, "articles")));
     }
 
     public List<Ticket> getTickets(long id, long... ids) {
@@ -1193,8 +1199,20 @@ public class Zendesk implements Closeable {
     // Action methods for Help Center
     //////////////////////////////////////////////////////////////////////
 
+    /**
+     * Get first page of articles from help center.
+     *
+     * @deprecated use #getArticlesFromPage(int). Same as #getArticlesFromPage(0)
+     * @return List of Articles.
+     */
+    @Deprecated
     public List<Article> getArticles() {
         return complete(submit(req("GET", cnst("/help_center/articles.json")),
+                handleList(Article.class, "articles")));
+    }
+
+    public List<Article> getArticlesFromPage(int page) {
+        return complete(submit(req("GET", tmpl("/help_center/articles.json?page={page}").set("page", page)),
                 handleList(Article.class, "articles")));
     }
 
