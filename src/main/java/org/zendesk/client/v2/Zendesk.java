@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.Attachment;
 import org.zendesk.client.v2.model.Audit;
+import org.zendesk.client.v2.model.Automation;
 import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Forum;
@@ -511,6 +512,37 @@ public class Zendesk implements Closeable {
     }
     
 
+  // Automations
+  public Iterable<Automation> getAutomations() {
+    return new PagedIterable<Automation>(cnst("/automations.json"),
+        handleList(Automation.class, "automations"));
+  }
+
+  public Automation getAutomation(long id) {
+    return complete(submit(req("GET", tmpl("/automations/{id}.json").set("id", id)),
+        handle(Automation.class, "automation")));
+  }
+
+  public Automation createAutomation(Automation automation) {
+    return complete(submit(
+        req("POST", cnst("/automations.json"), JSON,
+            json(Collections.singletonMap("automation", automation))),
+        handle(Automation.class, "automation")));
+  }
+
+  public Automation updateAutomation(Long automationId, Automation automation) {
+    return complete(submit(
+        req("PUT", tmpl("/automations/{id}.json").set("id", automationId), JSON,
+            json(Collections.singletonMap("automation", automation))),
+        handle(Automation.class, "automation")));
+  }
+
+  public void deleteAutomation(long automationId) {
+    complete(submit(req("DELETE", tmpl("/automations/{id}.json").set("id", automationId)),
+        handleStatus()));
+  }
+
+    
     public Iterable<TwitterMonitor> getTwitterMonitors() { 
         return new PagedIterable<TwitterMonitor>(cnst("/channels/twitter/monitored_twitter_handles.json"),  
               handleList(TwitterMonitor.class, "monitored_twitter_handles"));
