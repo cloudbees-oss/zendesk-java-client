@@ -34,7 +34,7 @@ Here is the status of the various API components:
 
 * [Tickets](http://developer.zendesk.com/documentation/rest_api/tickets.html) ✓
 * [Ticket Audits](http://developer.zendesk.com/documentation/rest_api/ticket_audits.html) ✓
-* [Incremental Export](https://developer.zendesk.com/rest_api/docs/core/incremental_export) - Partial (ticket only) 
+* [Incremental Export](https://developer.zendesk.com/rest_api/docs/core/incremental_export) - Partial (tickets, users, organizations only) 
 * [Ticket Fields](http://developer.zendesk.com/documentation/rest_api/ticket_fields.html) ✓
 * [Ticket Import](http://developer.zendesk.com/documentation/rest_api/ticket_import.html)
 * [Ticket Metrics](http://developer.zendesk.com/documentation/rest_api/ticket_metrics.html) ✓
@@ -55,12 +55,15 @@ Here is the status of the various API components:
 * [Topics](http://developer.zendesk.com/documentation/rest_api/topics.html) ✓
 * [Topic Comments](http://developer.zendesk.com/documentation/rest_api/topic_comments.html)
 * [Topic Subscriptions](http://developer.zendesk.com/documentation/rest_api/topic_subscriptions.html)
+* [Help Center Categories](https://developer.zendesk.com/rest_api/docs/help_center/categories)
+* [Help Center Sections](https://developer.zendesk.com/rest_api/docs/help_center/sections)
+* [Help Center Articles](https://developer.zendesk.com/rest_api/docs/help_center/articles)
 * [Topic Votes](http://developer.zendesk.com/documentation/rest_api/topic_votes.html)
 * [Account Settings](http://developer.zendesk.com/documentation/rest_api/account_settings.html)
 * [Activity Stream](http://developer.zendesk.com/documentation/rest_api/activity_stream.html)
 * [Attachments](http://developer.zendesk.com/documentation/rest_api/attachments.html) ✓
 * [Autocompletion](http://developer.zendesk.com/documentation/rest_api/autocomplete.html)
-* [Automations](http://developer.zendesk.com/documentation/rest_api/automations.html)
+* [Automations](http://developer.zendesk.com/documentation/rest_api/automations.html) ✓
 * [Job Statuses](http://developer.zendesk.com/documentation/rest_api/job_statuses.html)
 * [Locales](http://developer.zendesk.com/documentation/rest_api/locales.html)
 * [Macros](http://developer.zendesk.com/documentation/rest_api/macros.html) ✓ *except for restrictions*
