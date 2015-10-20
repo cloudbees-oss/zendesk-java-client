@@ -500,6 +500,11 @@ public class Zendesk implements Closeable {
         return complete(submit(req("POST", cnst("/triggers.json"), JSON, json(Collections.singletonMap("trigger", trigger))),
               handle(Trigger.class, "trigger")));
     }
+    
+    public Trigger updateTrigger(Long triggerId, Trigger trigger) {
+      return complete(submit(req("PUT", tmpl("/triggers/{id}.json").set("id", triggerId), JSON, json(Collections.singletonMap("trigger", trigger))),
+            handle(Trigger.class, "trigger")));
+  }
 
     public void deleteTrigger(long triggerId) { 
        complete(submit(req("DELETE", tmpl("/triggers/{id}.json").set("id", triggerId)), handleStatus()));
@@ -932,6 +937,23 @@ public class Zendesk implements Closeable {
         return new PagedIterable<Macro>(cnst("/macros.json"),
                 handleList(Macro.class, "macros"));
     }
+    
+    public Macro getMacro(long macroId){
+      
+      return complete(submit(req("GET", tmpl("/macros/{id}.json").set("id", macroId)), handle(Macro.class, "macro")));
+  }
+    
+  public Macro createMacro(Macro macro) {
+    return complete(submit(
+        req("POST", cnst("/macros.json"), JSON, json(Collections.singletonMap("macro", macro))),
+        handle(Macro.class, "macro")));
+  }
+
+  public Macro updateMacro(Long macroId, Macro macro) {
+    return complete(submit(req("PUT", tmpl("/macros/{id}.json").set("id", macroId), JSON,
+        json(Collections.singletonMap("macro", macro))), handle(Macro.class, "macro")));
+  }
+    
 
     public List<String> addTagToTicket(long id, String... tags) {
         return complete(submit(
