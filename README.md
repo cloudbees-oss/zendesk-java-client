@@ -60,7 +60,7 @@ Here is the status of the various API components:
 * [Activity Stream](http://developer.zendesk.com/documentation/rest_api/activity_stream.html)
 * [Attachments](http://developer.zendesk.com/documentation/rest_api/attachments.html) ✓
 * [Autocompletion](http://developer.zendesk.com/documentation/rest_api/autocomplete.html)
-* [Automations](http://developer.zendesk.com/documentation/rest_api/automations.html)
+* [Automations](http://developer.zendesk.com/documentation/rest_api/automations.html) ✓
 * [Job Statuses](http://developer.zendesk.com/documentation/rest_api/job_statuses.html)
 * [Locales](http://developer.zendesk.com/documentation/rest_api/locales.html)
 * [Macros](http://developer.zendesk.com/documentation/rest_api/macros.html) ✓ *except for restrictions*
