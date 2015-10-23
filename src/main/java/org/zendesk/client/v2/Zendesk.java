@@ -282,6 +282,11 @@ public class Zendesk implements Closeable {
                 handleList(Article.class, "results"));
     }
 
+    public Iterable<Article> getArticleFromSearch(String searchTerm, Long sectionId) {
+        return new PagedIterable<Article>(tmpl("/help_center/articles/search.json{?section,query}")
+                .set("query", searchTerm).set("section", sectionId), handleList(Article.class, "results"));
+    }
+
     public List<ArticleAttachments> getAttachmentsFromArticle(Long articleID) {
         return complete(submit(req("GET", tmpl("/help_center/articles/{?query}/attachments.json").set("query", articleID)),
                 handleList(ArticleAttachments.class, "articles")));
