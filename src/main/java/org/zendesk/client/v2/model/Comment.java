@@ -1,105 +1,112 @@
 package org.zendesk.client.v2.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author stephenc
  * @since 09/04/2013 15:09
  */
-public class Comment {
-    private Long id;
-    private String body;
-    private Long authorId;
-    private List<String> uploads;
-    private List<Attachment> attachments;
-    private Date createdAt;
-    private Boolean publicComment;
+public class Comment
+{
+  private Long id;
 
-    public Comment() {
-    }
+  private String body;
 
-    public Comment(String body) {
-        this.body = body;
-    }
+  private Long authorId;
 
-    public Comment(String body, String... uploads) {
-        this.body = body;
-        this.uploads = uploads.length == 0 ? null : Arrays.asList(uploads);
-    }
+  private List<String> uploads;
 
-    public String getBody() {
-        return body;
-    }
+  private List<Attachment> attachments;
 
-    public void setBody(String body) {
-        this.body = body;
-    }
+  private Date createdAt;
 
-    public List<String> getUploads() {
-        return uploads;
-    }
+  private Boolean publicComment;
 
-    public void setUploads(List<String> uploads) {
-        this.uploads = uploads;
-    }
+  public Comment() {
+  }
 
-    public List<Attachment> getAttachments() {
-        return attachments;
-    }
+  public Comment(String body) {
+    this.body = body;
+  }
 
-    public void setAttachments(List<Attachment> attachments) {
-        this.attachments = attachments;
-    }
+  public Comment(String body, String... uploads) {
+    this.body = body;
+    this.uploads = uploads.length == 0 ? null : Arrays.asList(uploads);
+  }
 
-    @JsonProperty("author_id")
-    public Long getAuthorId() {
-        return authorId;
-    }
+  public String getBody() {
+    return body;
+  }
 
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
-    }
+  public void setBody(String body) {
+    this.body = body;
+  }
 
-    @JsonProperty("created_at")
-    public Date getCreatedAt() {
-        return createdAt;
-    }
+  public List<String> getUploads() {
+    return uploads;
+  }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+  public void setUploads(List<String> uploads) {
+    this.uploads = uploads;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public List<Attachment> getAttachments() {
+    return attachments;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setAttachments(List<Attachment> attachments) {
+    this.attachments = attachments;
+  }
 
-    @JsonProperty("public")
-    public Boolean isPublic() {
-        return publicComment;
-    }
+  @JsonProperty("author_id")
+  public Long getAuthorId() {
+    return authorId;
+  }
 
-    public void setPublic(Boolean isPublic) {
-        this.publicComment = isPublic;
-    }
+  public void setAuthorId(Long authorId) {
+    this.authorId = authorId;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Comment{");
-        sb.append("id=").append(id);
-        sb.append(", body='").append(body).append('\'');
-        sb.append(", authorId=").append(authorId);
-        sb.append(", attachments=").append(attachments);
-        sb.append(", createdAt=").append(createdAt);
-        sb.append(", uploads=").append(uploads);
-        sb.append('}');
-        return sb.toString();
-    }
+  @JsonProperty("created_at")
+  public Date getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  @JsonProperty("public")
+  public Boolean isPublic() {
+    return publicComment;
+  }
+
+  public void setPublic(Boolean isPublic) {
+    this.publicComment = isPublic;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("Comment{");
+    sb.append("id=").append(id);
+    sb.append(", body='").append(body).append('\'');
+    sb.append(", authorId=").append(authorId);
+    sb.append(", attachments=").append(attachments);
+    sb.append(", createdAt=").append(createdAt);
+    sb.append(", uploads=").append(uploads);
+    sb.append('}');
+    return sb.toString();
+  }
 }

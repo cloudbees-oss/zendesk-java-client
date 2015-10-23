@@ -1,51 +1,55 @@
 package org.zendesk.client.v2.model.events;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author stephenc
  * @since 05/04/2013 11:57
  */
-public class TweetEvent extends Event {
-    private Boolean directMessage;
-    private String body;
-    private List<Long> recipients;
+public class TweetEvent
+    extends Event
+{
+  private Boolean directMessage;
 
-    public String getBody() {
-        return body;
-    }
+  private String body;
 
-    public void setBody(String body) {
-        this.body = body;
-    }
+  private List<Long> recipients;
 
-    @JsonProperty("direct_message")
-    public Boolean getDirectMessage() {
-        return directMessage;
-    }
+  public String getBody() {
+    return body;
+  }
 
-    public void setDirectMessage(Boolean directMessage) {
-        this.directMessage = directMessage;
-    }
+  public void setBody(String body) {
+    this.body = body;
+  }
 
-    public List<Long> getRecipients() {
-        return recipients;
-    }
+  @JsonProperty("direct_message")
+  public Boolean getDirectMessage() {
+    return directMessage;
+  }
 
-    public void setRecipients(List<Long> recipients) {
-        this.recipients = recipients;
-    }
+  public void setDirectMessage(Boolean directMessage) {
+    this.directMessage = directMessage;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("TweetEvent");
-        sb.append("{body='").append(body).append('\'');
-        sb.append(", directMessage=").append(directMessage);
-        sb.append(", recipients=").append(recipients);
-        sb.append('}');
-        return sb.toString();
-    }
+  public List<Long> getRecipients() {
+    return recipients;
+  }
+
+  public void setRecipients(List<Long> recipients) {
+    this.recipients = recipients;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("TweetEvent");
+    sb.append("{body='").append(body).append('\'');
+    sb.append(", directMessage=").append(directMessage);
+    sb.append(", recipients=").append(recipients);
+    sb.append('}');
+    return sb.toString();
+  }
 }

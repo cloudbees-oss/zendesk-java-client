@@ -1,79 +1,86 @@
 package org.zendesk.client.v2.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 
-public class GroupMembership {
-    private Long id;
-    private String url;
-    private Long userId;
-    private Long groupId;
-    private Boolean _default;
-    private Date createdAt;
-    private Date updatedAt;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    public GroupMembership() {
-    }
+public class GroupMembership
+{
+  private Long id;
 
-    public Long getId() {
-        return id;
-    }
+  private String url;
 
-    public void setId(final Long id) {
-        this.id = id;
-    }
+  private Long userId;
 
-    public String getUrl() {
-        return url;
-    }
+  private Long groupId;
 
-    public void setUrl(final String url) {
-        this.url = url;
-    }
+  private Boolean _default;
 
-    @JsonProperty("user_id")
-    public Long getUserId() {
-        return userId;
-    }
+  private Date createdAt;
 
-    public void setUserId(final Long userId) {
-        this.userId = userId;
-    }
+  private Date updatedAt;
 
-    @JsonProperty("group_id")
-    public Long getGroupId() {
-        return groupId;
-    }
+  public GroupMembership() {
+  }
 
-    public void setGroupId(final Long groupId) {
-        this.groupId = groupId;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    @JsonProperty("default")
-    public Boolean get_default() {
-        return _default;
-    }
+  public void setId(final Long id) {
+    this.id = id;
+  }
 
-    public void set_default(final Boolean _default) {
-        this._default = _default;
-    }
+  public String getUrl() {
+    return url;
+  }
 
-    @JsonProperty("created_at")
-    public Date getCreatedAt() {
-        return createdAt;
-    }
+  public void setUrl(final String url) {
+    this.url = url;
+  }
 
-    public void setCreatedAt(final Date createdAt) {
-        this.createdAt = createdAt;
-    }
+  @JsonProperty("user_id")
+  public Long getUserId() {
+    return userId;
+  }
 
-    @JsonProperty("updated_at")
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
+  public void setUserId(final Long userId) {
+    this.userId = userId;
+  }
 
-    public void setUpdatedAt(final Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  @JsonProperty("group_id")
+  public Long getGroupId() {
+    return groupId;
+  }
+
+  public void setGroupId(final Long groupId) {
+    this.groupId = groupId;
+  }
+
+  @JsonProperty("default")
+  public Boolean get_default() {
+    return _default;
+  }
+
+  public void set_default(final Boolean _default) {
+    this._default = _default;
+  }
+
+  @JsonProperty("created_at")
+  public Date getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(final Date createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  @JsonProperty("updated_at")
+  public Date getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(final Date updatedAt) {
+    this.updatedAt = updatedAt;
+  }
 }

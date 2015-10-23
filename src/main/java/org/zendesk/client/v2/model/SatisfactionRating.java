@@ -1,110 +1,120 @@
 package org.zendesk.client.v2.model;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.Date;
 
 /**
  * @author stephenc
  * @since 04/04/2013 14:55
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SatisfactionRating {
-    private Long id;
-    private String url;
-    private Long assigneeId;
-    private Long groupId;
-    private Long requesterId;
-    private Long ticketId;
-    private String score;
-    private Date createdAt;
-    private Date updatedAt;
-    private String comment;
+public class SatisfactionRating
+{
+  private Long id;
 
-    @JsonProperty("assignee_id")
-    public Long getAssigneeId() {
-        return assigneeId;
-    }
+  private String url;
 
-    public void setAssigneeId(Long assigneeId) {
-        this.assigneeId = assigneeId;
-    }
+  private Long assigneeId;
 
-    public String getComment() {
-        return comment;
-    }
+  private Long groupId;
 
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
+  private Long requesterId;
 
-    @JsonProperty("created_at")
-    public Date getCreatedAt() {
-        return createdAt;
-    }
+  private Long ticketId;
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+  private String score;
 
-    @JsonProperty("group_id")
-    public Long getGroupId() {
-        return groupId;
-    }
+  private Date createdAt;
 
-    public void setGroupId(Long groupId) {
-        this.groupId = groupId;
-    }
+  private Date updatedAt;
 
-    public Long getId() {
-        return id;
-    }
+  private String comment;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  @JsonProperty("assignee_id")
+  public Long getAssigneeId() {
+    return assigneeId;
+  }
 
-    @JsonProperty("requester_id")
-    public Long getRequesterId() {
-        return requesterId;
-    }
+  public void setAssigneeId(Long assigneeId) {
+    this.assigneeId = assigneeId;
+  }
 
-    public void setRequesterId(Long requesterId) {
-        this.requesterId = requesterId;
-    }
+  public String getComment() {
+    return comment;
+  }
 
-    public String getScore() {
-        return score;
-    }
+  public void setComment(String comment) {
+    this.comment = comment;
+  }
 
-    public void setScore(String score) {
-        this.score = score;
-    }
+  @JsonProperty("created_at")
+  public Date getCreatedAt() {
+    return createdAt;
+  }
 
-    @JsonProperty("ticket_id")
-    public Long getTicketId() {
-        return ticketId;
-    }
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
 
-    public void setTicketId(Long ticketId) {
-        this.ticketId = ticketId;
-    }
+  @JsonProperty("group_id")
+  public Long getGroupId() {
+    return groupId;
+  }
 
-    @JsonProperty("updated_at")
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
+  public void setGroupId(Long groupId) {
+    this.groupId = groupId;
+  }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public String getUrl() {
-        return url;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+  @JsonProperty("requester_id")
+  public Long getRequesterId() {
+    return requesterId;
+  }
+
+  public void setRequesterId(Long requesterId) {
+    this.requesterId = requesterId;
+  }
+
+  public String getScore() {
+    return score;
+  }
+
+  public void setScore(String score) {
+    this.score = score;
+  }
+
+  @JsonProperty("ticket_id")
+  public Long getTicketId() {
+    return ticketId;
+  }
+
+  public void setTicketId(Long ticketId) {
+    this.ticketId = ticketId;
+  }
+
+  @JsonProperty("updated_at")
+  public Date getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(Date updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
 }

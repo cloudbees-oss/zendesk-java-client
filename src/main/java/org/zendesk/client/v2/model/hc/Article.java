@@ -1,253 +1,294 @@
 package org.zendesk.client.v2.model.hc;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.zendesk.client.v2.model.SearchResultEntity;
-
 import java.util.Date;
 import java.util.List;
 
-public class Article implements SearchResultEntity {
-    /** Automatically assigned when the article is created */
-    private Long id;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.zendesk.client.v2.model.SearchResultEntity;
 
-    /** The API url of the article */
-    private String url;
+public class Article
+    implements SearchResultEntity
+{
+  /**
+   * Automatically assigned when the article is created
+   */
+  private Long id;
 
-    /** The url of the article in Help Center */
-    @JsonProperty("html_url")
-    private String htmlUrl;
+  /**
+   * The API url of the article
+   */
+  private String url;
 
-    /** The title of the article */
-    private String title;
+  /**
+   * The url of the article in Help Center
+   */
+  @JsonProperty("html_url")
+  private String htmlUrl;
 
-    /** The HTML body of the article */
-    private String body;
+  /**
+   * The title of the article
+   */
+  private String title;
 
-    /** The locale that the article is being displayed in */
-    private String locale;
+  /**
+   * The HTML body of the article
+   */
+  private String body;
 
-    /** The source (default) locale of the article */
-    @JsonProperty("source_locale")
-    private String sourceLocale;
+  /**
+   * The locale that the article is being displayed in
+   */
+  private String locale;
 
-    /** The id of the user who wrote the article (set to the user who made the request on create by default) */
-    @JsonProperty("author_id")
-    private Long authorId;
+  /**
+   * The source (default) locale of the article
+   */
+  @JsonProperty("source_locale")
+  private String sourceLocale;
 
-    /** True if comments are disabled; false otherwise */
-    @JsonProperty("comments_disabled")
-    private Boolean commentsDisabled;
+  /**
+   * The id of the user who wrote the article (set to the user who made the request on create by default)
+   */
+  @JsonProperty("author_id")
+  private Long authorId;
 
-    /** Whether the source (default) translation of the article is out of date */
-    private Boolean outdated;
+  /**
+   * True if comments are disabled; false otherwise
+   */
+  @JsonProperty("comments_disabled")
+  private Boolean commentsDisabled;
 
-    /** An array of label names associated with this article. By default no label names are used. Only available on certain plans */
-    @JsonProperty("label_names")
-    private List<String> labelNames;
+  /**
+   * Whether the source (default) translation of the article is out of date
+   */
+  private Boolean outdated;
 
-    /** True if the translation for the current locale is a draft; false otherwise. false by default. */
-    private Boolean draft;
+  /**
+   * An array of label names associated with this article. By default no label names are used. Only available on certain
+   * plans
+   */
+  @JsonProperty("label_names")
+  private List<String> labelNames;
 
-    /** True if this article is promoted; false otherwise. false by default */
-    private Boolean promoted;
+  /**
+   * True if the translation for the current locale is a draft; false otherwise. false by default.
+   */
+  private Boolean draft;
 
-    /** The position of this article in the article list. 0 by default */
-    private Long position;
+  /**
+   * True if this article is promoted; false otherwise. false by default
+   */
+  private Boolean promoted;
 
-    /** The total sum of votes on this article */
-    @JsonProperty("vote_sum")
-    private Long voteSum;
+  /**
+   * The position of this article in the article list. 0 by default
+   */
+  private Long position;
 
-    /** The number of votes cast on this article */
-    @JsonProperty("vote_count")
-    private Long voteCount;
+  /**
+   * The total sum of votes on this article
+   */
+  @JsonProperty("vote_sum")
+  private Long voteSum;
 
-    /** The id of the section to which this article belongs */
-    @JsonProperty("section_id")
-    private Long sectionId;
+  /**
+   * The number of votes cast on this article
+   */
+  @JsonProperty("vote_count")
+  private Long voteCount;
 
-    /** The time the article was created */
-    @JsonProperty("created_at")
-    private Date createdAt;
+  /**
+   * The id of the section to which this article belongs
+   */
+  @JsonProperty("section_id")
+  private Long sectionId;
 
-    /** The time the article was last updated */
-    @JsonProperty("updated_at")
-    private Date updatedAt;
+  /**
+   * The time the article was created
+   */
+  @JsonProperty("created_at")
+  private Date createdAt;
 
-    public Long getId() {
-        return id;
-    }
+  /**
+   * The time the article was last updated
+   */
+  @JsonProperty("updated_at")
+  private Date updatedAt;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public String getUrl() {
-        return url;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+  public String getUrl() {
+    return url;
+  }
 
-    public String getHtmlUrl() {
-        return htmlUrl;
-    }
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-    public void setHtmlUrl(String htmlUrl) {
-        this.htmlUrl = htmlUrl;
-    }
+  public String getHtmlUrl() {
+    return htmlUrl;
+  }
 
-    public String getTitle() {
-        return title;
-    }
+  public void setHtmlUrl(String htmlUrl) {
+    this.htmlUrl = htmlUrl;
+  }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  public String getTitle() {
+    return title;
+  }
 
-    public String getBody() {
-        return body;
-    }
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-    public void setBody(String body) {
-        this.body = body;
-    }
+  public String getBody() {
+    return body;
+  }
 
-    public String getLocale() {
-        return locale;
-    }
+  public void setBody(String body) {
+    this.body = body;
+  }
 
-    public void setLocale(String locale) {
-        this.locale = locale;
-    }
+  public String getLocale() {
+    return locale;
+  }
 
-    public String getSourceLocale() {
-        return sourceLocale;
-    }
+  public void setLocale(String locale) {
+    this.locale = locale;
+  }
 
-    public void setSourceLocale(String sourceLocale) {
-        this.sourceLocale = sourceLocale;
-    }
+  public String getSourceLocale() {
+    return sourceLocale;
+  }
 
-    public Long getAuthorId() {
-        return authorId;
-    }
+  public void setSourceLocale(String sourceLocale) {
+    this.sourceLocale = sourceLocale;
+  }
 
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
-    }
+  public Long getAuthorId() {
+    return authorId;
+  }
 
-    public Boolean getCommentsDisabled() {
-        return commentsDisabled;
-    }
+  public void setAuthorId(Long authorId) {
+    this.authorId = authorId;
+  }
 
-    public void setCommentsDisabled(Boolean commentsDisabled) {
-        this.commentsDisabled = commentsDisabled;
-    }
+  public Boolean getCommentsDisabled() {
+    return commentsDisabled;
+  }
 
-    public Boolean getOutdated() {
-        return outdated;
-    }
+  public void setCommentsDisabled(Boolean commentsDisabled) {
+    this.commentsDisabled = commentsDisabled;
+  }
 
-    public void setOutdated(Boolean outdated) {
-        this.outdated = outdated;
-    }
+  public Boolean getOutdated() {
+    return outdated;
+  }
 
-    public List<String> getLabelNames() {
-        return labelNames;
-    }
+  public void setOutdated(Boolean outdated) {
+    this.outdated = outdated;
+  }
 
-    public void setLabelNames(List<String> labelNames) {
-        this.labelNames = labelNames;
-    }
+  public List<String> getLabelNames() {
+    return labelNames;
+  }
 
-    public Boolean getDraft() {
-        return draft;
-    }
+  public void setLabelNames(List<String> labelNames) {
+    this.labelNames = labelNames;
+  }
 
-    public void setDraft(Boolean draft) {
-        this.draft = draft;
-    }
+  public Boolean getDraft() {
+    return draft;
+  }
 
-    public Boolean getPromoted() {
-        return promoted;
-    }
+  public void setDraft(Boolean draft) {
+    this.draft = draft;
+  }
 
-    public void setPromoted(Boolean promoted) {
-        this.promoted = promoted;
-    }
+  public Boolean getPromoted() {
+    return promoted;
+  }
 
-    public Long getPosition() {
-        return position;
-    }
+  public void setPromoted(Boolean promoted) {
+    this.promoted = promoted;
+  }
 
-    public void setPosition(Long position) {
-        this.position = position;
-    }
+  public Long getPosition() {
+    return position;
+  }
 
-    public Long getVoteSum() {
-        return voteSum;
-    }
+  public void setPosition(Long position) {
+    this.position = position;
+  }
 
-    public void setVoteSum(Long voteSum) {
-        this.voteSum = voteSum;
-    }
+  public Long getVoteSum() {
+    return voteSum;
+  }
 
-    public Long getVoteCount() {
-        return voteCount;
-    }
+  public void setVoteSum(Long voteSum) {
+    this.voteSum = voteSum;
+  }
 
-    public void setVoteCount(Long voteCount) {
-        this.voteCount = voteCount;
-    }
+  public Long getVoteCount() {
+    return voteCount;
+  }
 
-    public Long getSectionId() {
-        return sectionId;
-    }
+  public void setVoteCount(Long voteCount) {
+    this.voteCount = voteCount;
+  }
 
-    public void setSectionId(Long sectionId) {
-        this.sectionId = sectionId;
-    }
+  public Long getSectionId() {
+    return sectionId;
+  }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
+  public void setSectionId(Long sectionId) {
+    this.sectionId = sectionId;
+  }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+  public Date getCreatedAt() {
+    return createdAt;
+  }
 
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public Date getUpdatedAt() {
+    return updatedAt;
+  }
 
-    @Override
-    public String toString() {
-        return "Article{" +
-                "id=" + id +
-                ", url='" + url + '\'' +
-                ", htmlUrl='" + htmlUrl + '\'' +
-                ", title='" + title + '\'' +
-                ", body='" + body + '\'' +
-                ", locale='" + locale + '\'' +
-                ", sourceLocale='" + sourceLocale + '\'' +
-                ", authorId=" + authorId +
-                ", commentsDisabled=" + commentsDisabled +
-                ", outdated=" + outdated +
-                ", labelNames=" + labelNames +
-                ", draft=" + draft +
-                ", promoted=" + promoted +
-                ", position=" + position +
-                ", voteSum=" + voteSum +
-                ", voteCount=" + voteCount +
-                ", sectionId=" + sectionId +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
-    }
+  public void setUpdatedAt(Date updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  @Override
+  public String toString() {
+    return "Article{" +
+        "id=" + id +
+        ", url='" + url + '\'' +
+        ", htmlUrl='" + htmlUrl + '\'' +
+        ", title='" + title + '\'' +
+        ", body='" + body + '\'' +
+        ", locale='" + locale + '\'' +
+        ", sourceLocale='" + sourceLocale + '\'' +
+        ", authorId=" + authorId +
+        ", commentsDisabled=" + commentsDisabled +
+        ", outdated=" + outdated +
+        ", labelNames=" + labelNames +
+        ", draft=" + draft +
+        ", promoted=" + promoted +
+        ", position=" + position +
+        ", voteSum=" + voteSum +
+        ", voteCount=" + voteCount +
+        ", sectionId=" + sectionId +
+        ", createdAt=" + createdAt +
+        ", updatedAt=" + updatedAt +
+        '}';
+  }
 }

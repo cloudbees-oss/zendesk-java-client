@@ -5,76 +5,82 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * @author adavidson
  */
-public class CampfireTarget extends Target {
-   private String  subdomain;
-   private boolean ssl;
-   private boolean preserveFormat;
-   private String  token;
-   private String  room;
+public class CampfireTarget
+    extends Target
+{
+  private String subdomain;
 
-   @Override
-   public String getType() {
-      return "campfire_target";
-   }
+  private boolean ssl;
 
-   @Override
-   public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("UrlTarget");
-      sb.append("{id=").append(getId());
-      sb.append(", title=").append(getTitle());
-      sb.append(", type=").append(getType());
-      sb.append(", active=").append(isActive());
-      sb.append(", createdAt=").append(getCreatedAt());
-      sb.append(", subdomain=").append(subdomain);
-      sb.append(", token=").append(token);
-      sb.append(", ssl=").append(ssl);
-      sb.append(", preserveFormat=").append(preserveFormat);
-      sb.append(", token=").append(token);
-      sb.append(", room=").append(room);
-      sb.append('}');
-      return sb.toString();
-   }
+  private boolean preserveFormat;
 
-   public String getSubdomain() {
-      return subdomain;
-   }
+  private String token;
 
-   public void setSubdomain(String subdomain) {
-      this.subdomain = subdomain;
-   }
+  private String room;
 
-   public boolean isSsl() {
-      return ssl;
-   }
+  @Override
+  public String getType() {
+    return "campfire_target";
+  }
 
-   public void setSsl(boolean ssl) {
-      this.ssl = ssl;
-   }
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("UrlTarget");
+    sb.append("{id=").append(getId());
+    sb.append(", title=").append(getTitle());
+    sb.append(", type=").append(getType());
+    sb.append(", active=").append(isActive());
+    sb.append(", createdAt=").append(getCreatedAt());
+    sb.append(", subdomain=").append(subdomain);
+    sb.append(", token=").append(token);
+    sb.append(", ssl=").append(ssl);
+    sb.append(", preserveFormat=").append(preserveFormat);
+    sb.append(", token=").append(token);
+    sb.append(", room=").append(room);
+    sb.append('}');
+    return sb.toString();
+  }
 
-   @JsonProperty("preserve_format")
-   public boolean isPreserveFormat() {
-      return preserveFormat;
-   }
+  public String getSubdomain() {
+    return subdomain;
+  }
 
-   public void setPreserveFormat(boolean preserveFormat) {
-      this.preserveFormat = preserveFormat;
-   }
+  public void setSubdomain(String subdomain) {
+    this.subdomain = subdomain;
+  }
 
-   public String getToken() {
-      return token;
-   }
+  public boolean isSsl() {
+    return ssl;
+  }
 
-   public void setToken(String token) {
-      this.token = token;
-   }
+  public void setSsl(boolean ssl) {
+    this.ssl = ssl;
+  }
 
-   public String getRoom() {
-      return room;
-   }
+  @JsonProperty("preserve_format")
+  public boolean isPreserveFormat() {
+    return preserveFormat;
+  }
 
-   public void setRoom(String room) {
-      this.room = room;
-   }
+  public void setPreserveFormat(boolean preserveFormat) {
+    this.preserveFormat = preserveFormat;
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
+  }
+
+  public String getRoom() {
+    return room;
+  }
+
+  public void setRoom(String room) {
+    this.room = room;
+  }
 
 }

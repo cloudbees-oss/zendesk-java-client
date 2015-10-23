@@ -1,161 +1,175 @@
 package org.zendesk.client.v2.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author stephenc
  * @since 22/04/2013 15:38
  */
-public class Organization implements SearchResultEntity {
-    private Long id;
-    private String externalId;
-    private String name;
-    private Date createdAt;
-    private Date updatedAt;
-    private List<String> domainNames;
-    private String details;
-    private String notes;
-    private Long groupId;
-    private Boolean sharedTickets;
-    private Boolean sharedComments;
-    private List<String> tags;
-    private Map<String, Object> organizationFields;
+public class Organization
+    implements SearchResultEntity
+{
+  private Long id;
 
-    public Organization() {
-    }
+  private String externalId;
 
-    @JsonProperty("created_at")
-    public Date getCreatedAt() {
-        return createdAt;
-    }
+  private String name;
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+  private Date createdAt;
 
-    public String getDetails() {
-        return details;
-    }
+  private Date updatedAt;
 
-    public void setDetails(String details) {
-        this.details = details;
-    }
+  private List<String> domainNames;
 
-    @JsonProperty("domain_names")
-    public List<String> getDomainNames() {
-        return domainNames;
-    }
+  private String details;
 
-    public void setDomainNames(List<String> domainNames) {
-        this.domainNames = domainNames;
-    }
+  private String notes;
 
-    @JsonProperty("external_id")
-    public String getExternalId() {
-        return externalId;
-    }
+  private Long groupId;
 
-    public void setExternalId(String externalId) {
-        this.externalId = externalId;
-    }
+  private Boolean sharedTickets;
 
-    @JsonProperty("group_id")
-    public Long getGroupId() {
-        return groupId;
-    }
+  private Boolean sharedComments;
 
-    public void setGroupId(Long groupId) {
-        this.groupId = groupId;
-    }
+  private List<String> tags;
 
-    public Long getId() {
-        return id;
-    }
+  private Map<String, Object> organizationFields;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Organization() {
+  }
 
-    public String getName() {
-        return name;
-    }
+  @JsonProperty("created_at")
+  public Date getCreatedAt() {
+    return createdAt;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
 
-    public String getNotes() {
-        return notes;
-    }
+  public String getDetails() {
+    return details;
+  }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
+  public void setDetails(String details) {
+    this.details = details;
+  }
 
-    @JsonProperty("shared_comments")
-    public Boolean getSharedComments() {
-        return sharedComments;
-    }
+  @JsonProperty("domain_names")
+  public List<String> getDomainNames() {
+    return domainNames;
+  }
 
-    public void setSharedComments(Boolean sharedComments) {
-        this.sharedComments = sharedComments;
-    }
+  public void setDomainNames(List<String> domainNames) {
+    this.domainNames = domainNames;
+  }
 
-    @JsonProperty("shared_tickets")
-    public Boolean getSharedTickets() {
-        return sharedTickets;
-    }
+  @JsonProperty("external_id")
+  public String getExternalId() {
+    return externalId;
+  }
 
-    public void setSharedTickets(Boolean sharedTickets) {
-        this.sharedTickets = sharedTickets;
-    }
+  public void setExternalId(String externalId) {
+    this.externalId = externalId;
+  }
 
-    public List<String> getTags() {
-        return tags;
-    }
+  @JsonProperty("group_id")
+  public Long getGroupId() {
+    return groupId;
+  }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
+  public void setGroupId(Long groupId) {
+    this.groupId = groupId;
+  }
 
-    @JsonProperty("updated_at")
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    @JsonProperty("organization_fields")
-    public Map<String, Object> getOrganizationFields() {
-        return organizationFields;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setOrganizationFields(Map<String, Object> organizationFields) {
-        this.organizationFields = organizationFields;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Organization{");
-        sb.append("id=").append(id);
-        sb.append(", externalId='").append(externalId).append('\'');
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", createdAt=").append(createdAt);
-        sb.append(", updatedAt=").append(updatedAt);
-        sb.append(", domainNames=").append(domainNames);
-        sb.append(", details='").append(details).append('\'');
-        sb.append(", notes='").append(notes).append('\'');
-        sb.append(", groupId=").append(groupId);
-        sb.append(", sharedTickets=").append(sharedTickets);
-        sb.append(", sharedComments=").append(sharedComments);
-        sb.append(", tags=").append(tags);
-        sb.append('}');
-        return sb.toString();
-    }
+  public String getNotes() {
+    return notes;
+  }
+
+  public void setNotes(String notes) {
+    this.notes = notes;
+  }
+
+  @JsonProperty("shared_comments")
+  public Boolean getSharedComments() {
+    return sharedComments;
+  }
+
+  public void setSharedComments(Boolean sharedComments) {
+    this.sharedComments = sharedComments;
+  }
+
+  @JsonProperty("shared_tickets")
+  public Boolean getSharedTickets() {
+    return sharedTickets;
+  }
+
+  public void setSharedTickets(Boolean sharedTickets) {
+    this.sharedTickets = sharedTickets;
+  }
+
+  public List<String> getTags() {
+    return tags;
+  }
+
+  public void setTags(List<String> tags) {
+    this.tags = tags;
+  }
+
+  @JsonProperty("updated_at")
+  public Date getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(Date updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  @JsonProperty("organization_fields")
+  public Map<String, Object> getOrganizationFields() {
+    return organizationFields;
+  }
+
+  public void setOrganizationFields(Map<String, Object> organizationFields) {
+    this.organizationFields = organizationFields;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("Organization{");
+    sb.append("id=").append(id);
+    sb.append(", externalId='").append(externalId).append('\'');
+    sb.append(", name='").append(name).append('\'');
+    sb.append(", createdAt=").append(createdAt);
+    sb.append(", updatedAt=").append(updatedAt);
+    sb.append(", domainNames=").append(domainNames);
+    sb.append(", details='").append(details).append('\'');
+    sb.append(", notes='").append(notes).append('\'');
+    sb.append(", groupId=").append(groupId);
+    sb.append(", sharedTickets=").append(sharedTickets);
+    sb.append(", sharedComments=").append(sharedComments);
+    sb.append(", tags=").append(tags);
+    sb.append('}');
+    return sb.toString();
+  }
 }

@@ -6,45 +6,49 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author stephenc
  * @since 05/04/2013 11:57
  */
-public class SMSEvent extends Event {
-    private String body;
-    private String phoneNumber;
-    private Long recipientId;
+public class SMSEvent
+    extends Event
+{
+  private String body;
 
-    public String getBody() {
-        return body;
-    }
+  private String phoneNumber;
 
-    public void setBody(String body) {
-        this.body = body;
-    }
+  private Long recipientId;
 
-    @JsonProperty("phone_number")
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
+  public String getBody() {
+    return body;
+  }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+  public void setBody(String body) {
+    this.body = body;
+  }
 
-    @JsonProperty("recipient_id")
-    public Long getRecipientId() {
-        return recipientId;
-    }
+  @JsonProperty("phone_number")
+  public String getPhoneNumber() {
+    return phoneNumber;
+  }
 
-    public void setRecipientId(Long recipientId) {
-        this.recipientId = recipientId;
-    }
+  public void setPhoneNumber(String phoneNumber) {
+    this.phoneNumber = phoneNumber;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("SMSEvent");
-        sb.append("{body='").append(body).append('\'');
-        sb.append(", phoneNumber='").append(phoneNumber).append('\'');
-        sb.append(", recipientId=").append(recipientId);
-        sb.append('}');
-        return sb.toString();
-    }
+  @JsonProperty("recipient_id")
+  public Long getRecipientId() {
+    return recipientId;
+  }
+
+  public void setRecipientId(Long recipientId) {
+    this.recipientId = recipientId;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("SMSEvent");
+    sb.append("{body='").append(body).append('\'');
+    sb.append(", phoneNumber='").append(phoneNumber).append('\'');
+    sb.append(", recipientId=").append(recipientId);
+    sb.append('}');
+    return sb.toString();
+  }
 }

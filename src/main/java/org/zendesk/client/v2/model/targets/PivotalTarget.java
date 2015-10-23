@@ -5,100 +5,108 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * @author adavidson
  */
-public class PivotalTarget extends Target {
-   private String token;
-   private String projectId;
-   private String storyType;
-   private String storyTitle;
-   private String requestedBy;
-   private String ownerBy;
-   private String storyLabels;
+public class PivotalTarget
+    extends Target
+{
+  private String token;
 
-   @Override
-   public String getType() {
-      return "pivotal_target";
-   }
+  private String projectId;
 
-   @Override
-   public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("UrlTarget");
-      sb.append("{id=").append(getId());
-      sb.append(", title=").append(getTitle());
-      sb.append(", type=").append(getType());
-      sb.append(", active=").append(isActive());
-      sb.append(", createdAt=").append(getCreatedAt());
-      sb.append(", token=").append(token);
-      sb.append(", projectId=").append(projectId);
-      sb.append(", storyType=").append(storyType);
-      sb.append(", storyTitle=").append(storyTitle);
-      sb.append(", requestedBy=").append(requestedBy);
-      sb.append(", ownerBy=").append(ownerBy);
-      sb.append(", storyLabels=").append(storyLabels);
-      sb.append('}');
-      return sb.toString();
-   }
+  private String storyType;
 
-   public String getToken() {
-      return token;
-   }
+  private String storyTitle;
 
-   public void setToken(String token) {
-      this.token = token;
-   }
+  private String requestedBy;
 
-   @JsonProperty("project_id")
-   public String getProjectId() {
-      return projectId;
-   }
+  private String ownerBy;
 
-   public void setProjectId(String projectId) {
-      this.projectId = projectId;
-   }
+  private String storyLabels;
 
-   @JsonProperty("story_type")
-   public String getStoryType() {
-      return storyType;
-   }
+  @Override
+  public String getType() {
+    return "pivotal_target";
+  }
 
-   public void setStoryType(String storyType) {
-      this.storyType = storyType;
-   }
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("UrlTarget");
+    sb.append("{id=").append(getId());
+    sb.append(", title=").append(getTitle());
+    sb.append(", type=").append(getType());
+    sb.append(", active=").append(isActive());
+    sb.append(", createdAt=").append(getCreatedAt());
+    sb.append(", token=").append(token);
+    sb.append(", projectId=").append(projectId);
+    sb.append(", storyType=").append(storyType);
+    sb.append(", storyTitle=").append(storyTitle);
+    sb.append(", requestedBy=").append(requestedBy);
+    sb.append(", ownerBy=").append(ownerBy);
+    sb.append(", storyLabels=").append(storyLabels);
+    sb.append('}');
+    return sb.toString();
+  }
 
-   @JsonProperty("story_title")
-   public String getStoryTitle() {
-      return storyTitle;
-   }
+  public String getToken() {
+    return token;
+  }
 
-   public void setStoryTitle(String storyTitle) {
-      this.storyTitle = storyTitle;
-   }
+  public void setToken(String token) {
+    this.token = token;
+  }
 
-   @JsonProperty("requested_by")
-   public String getRequestedBy() {
-      return requestedBy;
-   }
+  @JsonProperty("project_id")
+  public String getProjectId() {
+    return projectId;
+  }
 
-   public void setRequestedBy(String requestedBy) {
-      this.requestedBy = requestedBy;
-   }
+  public void setProjectId(String projectId) {
+    this.projectId = projectId;
+  }
 
-   @JsonProperty("owner_by")
-   public String getOwnerBy() {
-      return ownerBy;
-   }
+  @JsonProperty("story_type")
+  public String getStoryType() {
+    return storyType;
+  }
 
-   public void setOwnerBy(String ownerBy) {
-      this.ownerBy = ownerBy;
-   }
+  public void setStoryType(String storyType) {
+    this.storyType = storyType;
+  }
 
-   @JsonProperty("storey_labels")
-   public String getStoryLabels() {
-      return storyLabels;
-   }
+  @JsonProperty("story_title")
+  public String getStoryTitle() {
+    return storyTitle;
+  }
 
-   public void setStoryLabels(String storyLabels) {
-      this.storyLabels = storyLabels;
-   }
+  public void setStoryTitle(String storyTitle) {
+    this.storyTitle = storyTitle;
+  }
+
+  @JsonProperty("requested_by")
+  public String getRequestedBy() {
+    return requestedBy;
+  }
+
+  public void setRequestedBy(String requestedBy) {
+    this.requestedBy = requestedBy;
+  }
+
+  @JsonProperty("owner_by")
+  public String getOwnerBy() {
+    return ownerBy;
+  }
+
+  public void setOwnerBy(String ownerBy) {
+    this.ownerBy = ownerBy;
+  }
+
+  @JsonProperty("storey_labels")
+  public String getStoryLabels() {
+    return storyLabels;
+  }
+
+  public void setStoryLabels(String storyLabels) {
+    this.storyLabels = storyLabels;
+  }
 
 }

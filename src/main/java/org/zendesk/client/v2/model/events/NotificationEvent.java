@@ -4,33 +4,36 @@ package org.zendesk.client.v2.model.events;
  * @author stephenc
  * @since 05/04/2013 11:56
  */
-public class NotificationEvent extends CcEvent {
-    private String subject;
-    private String body;
+public class NotificationEvent
+    extends CcEvent
+{
+  private String subject;
 
-    public String getBody() {
-        return body;
-    }
+  private String body;
 
-    public void setBody(String body) {
-        this.body = body;
-    }
+  public String getBody() {
+    return body;
+  }
 
-    public String getSubject() {
-        return subject;
-    }
+  public void setBody(String body) {
+    this.body = body;
+  }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
+  public String getSubject() {
+    return subject;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("NotificationEvent");
-        sb.append("{body='").append(body).append('\'');
-        sb.append(", subject='").append(subject).append('\'');
-        sb.append('}');
-        return sb.toString();
-    }
+  public void setSubject(String subject) {
+    this.subject = subject;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("NotificationEvent");
+    sb.append("{body='").append(body).append('\'');
+    sb.append(", subject='").append(subject).append('\'');
+    sb.append('}');
+    return sb.toString();
+  }
 }

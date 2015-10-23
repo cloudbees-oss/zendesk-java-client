@@ -6,34 +6,37 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author stephenc
  * @since 05/04/2013 11:57
  */
-public class PushEvent extends Event {
-    private String value;
-    private String valueReference;
+public class PushEvent
+    extends Event
+{
+  private String value;
 
-    public String getValue() {
-        return value;
-    }
+  private String valueReference;
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+  public String getValue() {
+    return value;
+  }
 
-    @JsonProperty("value_reference")
-    public String getValueReference() {
-        return valueReference;
-    }
+  public void setValue(String value) {
+    this.value = value;
+  }
 
-    public void setValueReference(String valueReference) {
-        this.valueReference = valueReference;
-    }
+  @JsonProperty("value_reference")
+  public String getValueReference() {
+    return valueReference;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("PushEvent");
-        sb.append("{value='").append(value).append('\'');
-        sb.append(", valueReference='").append(valueReference).append('\'');
-        sb.append('}');
-        return sb.toString();
-    }
+  public void setValueReference(String valueReference) {
+    this.valueReference = valueReference;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("PushEvent");
+    sb.append("{value='").append(value).append('\'');
+    sb.append(", valueReference='").append(valueReference).append('\'');
+    sb.append('}');
+    return sb.toString();
+  }
 }
