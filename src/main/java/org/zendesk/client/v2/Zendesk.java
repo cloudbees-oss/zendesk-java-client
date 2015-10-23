@@ -550,6 +550,10 @@ public class Zendesk implements Closeable {
         return complete(submit(req("GET", tmpl("/users/{id}.json").set("id", id)), handle(User.class, "user")));
     }
 
+    public User getAuthenticatedUser() {
+        return complete(submit(req("GET", cnst("/users/me.json")), handle(User.class, "user")));
+    }
+
     public Iterable<UserField> getUserFields() {
         return complete(submit(req("GET", cnst("/user_fields.json")),
                 handleList(UserField.class, "user_fields")));
