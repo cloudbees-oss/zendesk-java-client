@@ -1,119 +1,130 @@
 package org.zendesk.client.v2.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Created by benashby on 8/27/2014.
  */
-public class OrganizationField implements SearchResultEntity {
+public class OrganizationField
+    implements SearchResultEntity
+{
 
-    private Long id;
-    private String url;
-    private String type;
-    private String key;
-    private String title;
-    private String description;
-    private Long position;
-    private Boolean active;
-    private Date createdAt;
-    private Date updatedAt;
+  private Long id;
 
-    public Long getId() {
-        return id;
-    }
+  private String url;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  private String type;
 
-    public String getUrl() {
-        return url;
-    }
+  private String key;
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+  private String title;
 
-    public String getType() {
-        return type;
-    }
+  private String description;
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  private Long position;
 
-    public String getKey() {
-        return key;
-    }
+  private Boolean active;
 
-    public void setKey(String key) {
-        this.key = key;
-    }
+  private Date createdAt;
 
-    public String getTitle() {
-        return title;
-    }
+  private Date updatedAt;
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public String getUrl() {
+    return url;
+  }
 
-    public Long getPosition() {
-        return position;
-    }
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-    public void setPosition(Long position) {
-        this.position = position;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public Boolean getActive() {
-        return active;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
+  public String getKey() {
+    return key;
+  }
 
-    @JsonProperty("created_at")
-    public Date getCreatedAt() {
-        return createdAt;
-    }
+  public void setKey(String key) {
+    this.key = key;
+  }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+  public String getTitle() {
+    return title;
+  }
 
-    @JsonProperty("updated_at")
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    @Override
-    public String toString() {
-        return "OrganizationField{" +
-                "id=" + id +
-                ", type='" + type + '\'' +
-                ", key='" + key + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", position=" + position +
-                ", active=" + active +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public Long getPosition() {
+    return position;
+  }
+
+  public void setPosition(Long position) {
+    this.position = position;
+  }
+
+  public Boolean getActive() {
+    return active;
+  }
+
+  public void setActive(Boolean active) {
+    this.active = active;
+  }
+
+  @JsonProperty("created_at")
+  public Date getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  @JsonProperty("updated_at")
+  public Date getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(Date updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  @Override
+  public String toString() {
+    return "OrganizationField{" +
+        "id=" + id +
+        ", type='" + type + '\'' +
+        ", key='" + key + '\'' +
+        ", title='" + title + '\'' +
+        ", description='" + description + '\'' +
+        ", position=" + position +
+        ", active=" + active +
+        ", createdAt=" + createdAt +
+        ", updatedAt=" + updatedAt +
+        '}';
+  }
 }

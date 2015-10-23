@@ -2,98 +2,107 @@ package org.zendesk.client.v2.model;
 
 import java.util.List;
 
-public class JobStatus<T> {
-    private String id;
-    private String url;
-    private Integer total;
-    private Integer progress;
-    private JobStatusEnum status;
-    private String message;
-    private List<T> results;
-    private Class<T> resultsClass;
+public class JobStatus<T>
+{
+  private String id;
 
-    public String getId() {
-        return id;
-    }
+  private String url;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  private Integer total;
 
-    public String getUrl() {
-        return url;
-    }
+  private Integer progress;
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+  private JobStatusEnum status;
 
-    public Integer getTotal() {
-        return total;
-    }
+  private String message;
 
-    public void setTotal(Integer total) {
-        this.total = total;
-    }
+  private List<T> results;
 
-    public Integer getProgress() {
-        return progress;
-    }
+  private Class<T> resultsClass;
 
-    public void setProgress(Integer progress) {
-        this.progress = progress;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public JobStatusEnum getStatus() {
-        return status;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setStatus(JobStatusEnum status) {
-        this.status = status;
-    }
+  public String getUrl() {
+    return url;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public Integer getTotal() {
+    return total;
+  }
 
-    public List<T> getResults() {
-        return results;
-    }
+  public void setTotal(Integer total) {
+    this.total = total;
+  }
 
-    public void setResults(List<T> results) {
-        this.results = results;
-    }
+  public Integer getProgress() {
+    return progress;
+  }
 
-    public Class<T> getResultsClass() {
-        return resultsClass;
-    }
+  public void setProgress(Integer progress) {
+    this.progress = progress;
+  }
 
-    public void setResultsClass(Class<T> resultsClass) {
-        this.resultsClass = resultsClass;
-    }
+  public JobStatusEnum getStatus() {
+    return status;
+  }
 
-    @Override
-    public String toString() {
-        return "JobStatus{" +
-                "id='" + id + '\'' +
-                ", url='" + url + '\'' +
-                ", total=" + total +
-                ", progress=" + progress +
-                ", status=" + status +
-                ", message='" + message + '\'' +
-                ", results=" + results +
-                '}';
-    }
+  public void setStatus(JobStatusEnum status) {
+    this.status = status;
+  }
 
-    public enum JobStatusEnum {
-        working,
-        failed,
-        completed,
-        killed,
-        queued
-    }
+  public String getMessage() {
+    return message;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
+
+  public List<T> getResults() {
+    return results;
+  }
+
+  public void setResults(List<T> results) {
+    this.results = results;
+  }
+
+  public Class<T> getResultsClass() {
+    return resultsClass;
+  }
+
+  public void setResultsClass(Class<T> resultsClass) {
+    this.resultsClass = resultsClass;
+  }
+
+  @Override
+  public String toString() {
+    return "JobStatus{" +
+        "id='" + id + '\'' +
+        ", url='" + url + '\'' +
+        ", total=" + total +
+        ", progress=" + progress +
+        ", status=" + status +
+        ", message='" + message + '\'' +
+        ", results=" + results +
+        '}';
+  }
+
+  public enum JobStatusEnum
+  {
+    working,
+    failed,
+    completed,
+    killed,
+    queued
+  }
 }

@@ -1,84 +1,91 @@
 package org.zendesk.client.v2.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author stephenc
  * @since 22/04/2013 16:27
  */
-public class Group implements SearchResultEntity {
-    private Long id;
-    private String url;
-    private String name;
-    private Boolean deleted;
-    private Date createdAt;
-    private Date updatedAt;
+public class Group
+    implements SearchResultEntity
+{
+  private Long id;
 
-    public Group() {
-    }
+  private String url;
 
-    public Long getId() {
-        return id;
-    }
+  private String name;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  private Boolean deleted;
 
-    public String getUrl() {
-        return url;
-    }
+  private Date createdAt;
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+  private Date updatedAt;
 
-    public String getName() {
-        return name;
-    }
+  public Group() {
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public Boolean getDeleted() {
-        return deleted;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
-    }
+  public String getUrl() {
+    return url;
+  }
 
-    @JsonProperty("created_at")
-    public Date getCreatedAt() {
-        return createdAt;
-    }
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+  public String getName() {
+    return name;
+  }
 
-    @JsonProperty("deleted_at")
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public Boolean getDeleted() {
+    return deleted;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Group{");
-        sb.append("id=").append(id);
-        sb.append(", url='").append(url).append('\'');
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", deleted=").append(deleted);
-        sb.append(", createdAt=").append(createdAt);
-        sb.append(", updatedAt=").append(updatedAt);
-        sb.append('}');
-        return sb.toString();
-    }
+  public void setDeleted(Boolean deleted) {
+    this.deleted = deleted;
+  }
+
+  @JsonProperty("created_at")
+  public Date getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  @JsonProperty("deleted_at")
+  public Date getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(Date updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("Group{");
+    sb.append("id=").append(id);
+    sb.append(", url='").append(url).append('\'');
+    sb.append(", name='").append(name).append('\'');
+    sb.append(", deleted=").append(deleted);
+    sb.append(", createdAt=").append(createdAt);
+    sb.append(", updatedAt=").append(updatedAt);
+    sb.append('}');
+    return sb.toString();
+  }
 }

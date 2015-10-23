@@ -1,105 +1,114 @@
 package org.zendesk.client.v2.model.events;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author stephenc
  * @since 05/04/2013 11:55
  */
-public class VoiceCommentEvent extends PublicPrivateEvent {
-    private Map<String, Object> data;
-    private String formattedFrom;
-    private String formattedTo;
-    private String body;
-    private String htmlBody;
-    private Boolean trusted;
-    private Long authorId;
-    private List<String> attachments;
+public class VoiceCommentEvent
+    extends PublicPrivateEvent
+{
+  private Map<String, Object> data;
 
-    public List<String> getAttachments() {
-        return attachments;
-    }
+  private String formattedFrom;
 
-    public void setAttachments(List<String> attachments) {
-        this.attachments = attachments;
-    }
+  private String formattedTo;
 
-    @JsonProperty("author_id")
-    public Long getAuthorId() {
-        return authorId;
-    }
+  private String body;
 
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
-    }
+  private String htmlBody;
 
-    public String getBody() {
-        return body;
-    }
+  private Boolean trusted;
 
-    public void setBody(String body) {
-        this.body = body;
-    }
+  private Long authorId;
 
-    @JsonProperty("html_body")
-    public String getHtmlBody() {
-        return htmlBody;
-    }
+  private List<String> attachments;
 
-    public void setHtmlBody(String htmlBody) {
-        this.htmlBody = htmlBody;
-    }
+  public List<String> getAttachments() {
+    return attachments;
+  }
 
-    public boolean getTrusted() {
-        return trusted;
-    }
+  public void setAttachments(List<String> attachments) {
+    this.attachments = attachments;
+  }
 
-    public void setTrusted(Boolean trusted) {
-        this.trusted = trusted;
-    }
+  @JsonProperty("author_id")
+  public Long getAuthorId() {
+    return authorId;
+  }
 
-    public Map<String, Object> getData() {
-        return data;
-    }
+  public void setAuthorId(Long authorId) {
+    this.authorId = authorId;
+  }
 
-    public void setData(Map<String, Object> data) {
-        this.data = data;
-    }
+  public String getBody() {
+    return body;
+  }
 
-    @JsonProperty("formatted_from")
-    public String getFormattedFrom() {
-        return formattedFrom;
-    }
+  public void setBody(String body) {
+    this.body = body;
+  }
 
-    public void setFormattedFrom(String formattedFrom) {
-        this.formattedFrom = formattedFrom;
-    }
+  @JsonProperty("html_body")
+  public String getHtmlBody() {
+    return htmlBody;
+  }
 
-    @JsonProperty("formatted_to")
-    public String getFormattedTo() {
-        return formattedTo;
-    }
+  public void setHtmlBody(String htmlBody) {
+    this.htmlBody = htmlBody;
+  }
 
-    public void setFormattedTo(String formattedTo) {
-        this.formattedTo = formattedTo;
-    }
+  public boolean getTrusted() {
+    return trusted;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("VoiceCommentEvent");
-        sb.append("{attachments=").append(attachments);
-        sb.append(", data=").append(data);
-        sb.append(", formattedFrom='").append(formattedFrom).append('\'');
-        sb.append(", formattedTo='").append(formattedTo).append('\'');
-        sb.append(", body='").append(body).append('\'');
-        sb.append(", htmlBody='").append(htmlBody).append('\'');
-        sb.append(", trusted=").append(trusted);
-        sb.append(", authorId=").append(authorId);
-        sb.append('}');
-        return sb.toString();
-    }
+  public void setTrusted(Boolean trusted) {
+    this.trusted = trusted;
+  }
+
+  public Map<String, Object> getData() {
+    return data;
+  }
+
+  public void setData(Map<String, Object> data) {
+    this.data = data;
+  }
+
+  @JsonProperty("formatted_from")
+  public String getFormattedFrom() {
+    return formattedFrom;
+  }
+
+  public void setFormattedFrom(String formattedFrom) {
+    this.formattedFrom = formattedFrom;
+  }
+
+  @JsonProperty("formatted_to")
+  public String getFormattedTo() {
+    return formattedTo;
+  }
+
+  public void setFormattedTo(String formattedTo) {
+    this.formattedTo = formattedTo;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("VoiceCommentEvent");
+    sb.append("{attachments=").append(attachments);
+    sb.append(", data=").append(data);
+    sb.append(", formattedFrom='").append(formattedFrom).append('\'');
+    sb.append(", formattedTo='").append(formattedTo).append('\'');
+    sb.append(", body='").append(body).append('\'');
+    sb.append(", htmlBody='").append(htmlBody).append('\'');
+    sb.append(", trusted=").append(trusted);
+    sb.append(", authorId=").append(authorId);
+    sb.append('}');
+    return sb.toString();
+  }
 }

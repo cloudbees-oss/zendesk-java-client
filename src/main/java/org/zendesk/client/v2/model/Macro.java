@@ -1,10 +1,10 @@
 package org.zendesk.client.v2.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * User: Dominic (Dominic.Gunn@sulake.com)
@@ -12,77 +12,83 @@ import java.util.List;
  * Time: 12:43
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Macro {
+public class Macro
+{
 
-    private int id;
-    private String title;
-    private boolean active;
-    private List<Action> actions;
-    private Date createdAt;
-    private Date updatedAt;
+  private int id;
 
-    public Macro() {}
+  private String title;
 
-    public int getId() {
-        return id;
-    }
+  private boolean active;
 
-    public void setId(int id) {
-        this.id = id;
-    }
+  private List<Action> actions;
 
-    public String getTitle() {
-        return title;
-    }
+  private Date createdAt;
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  private Date updatedAt;
 
-    public boolean getActive() {
-        return active;
-    }
+  public Macro() {}
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+  public int getId() {
+    return id;
+  }
 
-    public List<Action> getActions() {
-        return actions;
-    }
+  public void setId(int id) {
+    this.id = id;
+  }
 
-    public void setActions(List<Action> actions) {
-        this.actions = actions;
-    }
+  public String getTitle() {
+    return title;
+  }
 
-    @JsonProperty("created_at")
-    public Date getCreatedAt() {
-        return createdAt;
-    }
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+  public boolean getActive() {
+    return active;
+  }
 
-    @JsonProperty("deleted_at")
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
+  public void setActive(boolean active) {
+    this.active = active;
+  }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public List<Action> getActions() {
+    return actions;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Macro{");
-        sb.append("id=").append(id);
-        sb.append(", title='").append(title).append('\'');
-        sb.append(", active='").append(active).append('\'');
-        sb.append(", actions=").append(actions);
-        sb.append(", createdAt=").append(createdAt);
-        sb.append(", updatedAt=").append(updatedAt);
-        sb.append('}');
-        return sb.toString();
-    }
+  public void setActions(List<Action> actions) {
+    this.actions = actions;
+  }
+
+  @JsonProperty("created_at")
+  public Date getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  @JsonProperty("deleted_at")
+  public Date getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(Date updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("Macro{");
+    sb.append("id=").append(id);
+    sb.append(", title='").append(title).append('\'');
+    sb.append(", active='").append(active).append('\'');
+    sb.append(", actions=").append(actions);
+    sb.append(", createdAt=").append(createdAt);
+    sb.append(", updatedAt=").append(updatedAt);
+    sb.append('}');
+    return sb.toString();
+  }
 }

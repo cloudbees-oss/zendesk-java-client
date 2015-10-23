@@ -7,44 +7,48 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 05/04/2013 11:57
  */
 public class
-        SatisfactionRatingEvent extends Event {
-    private String score;
-    private Long assigneeId;
-    private String body;
+    SatisfactionRatingEvent
+    extends Event
+{
+  private String score;
 
-    @JsonProperty("assignee_id")
-    public Long getAssigneeId() {
-        return assigneeId;
-    }
+  private Long assigneeId;
 
-    public void setAssigneeId(Long assigneeId) {
-        this.assigneeId = assigneeId;
-    }
+  private String body;
 
-    public String getBody() {
-        return body;
-    }
+  @JsonProperty("assignee_id")
+  public Long getAssigneeId() {
+    return assigneeId;
+  }
 
-    public void setBody(String body) {
-        this.body = body;
-    }
+  public void setAssigneeId(Long assigneeId) {
+    this.assigneeId = assigneeId;
+  }
 
-    public String getScore() {
-        return score;
-    }
+  public String getBody() {
+    return body;
+  }
 
-    public void setScore(String score) {
-        this.score = score;
-    }
+  public void setBody(String body) {
+    this.body = body;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("SatisfactionRatingEvent");
-        sb.append("{assigneeId=").append(assigneeId);
-        sb.append(", score='").append(score).append('\'');
-        sb.append(", body='").append(body).append('\'');
-        sb.append('}');
-        return sb.toString();
-    }
+  public String getScore() {
+    return score;
+  }
+
+  public void setScore(String score) {
+    this.score = score;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("SatisfactionRatingEvent");
+    sb.append("{assigneeId=").append(assigneeId);
+    sb.append(", score='").append(score).append('\'');
+    sb.append(", body='").append(body).append('\'');
+    sb.append('}');
+    return sb.toString();
+  }
 }

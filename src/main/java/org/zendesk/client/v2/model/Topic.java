@@ -1,198 +1,219 @@
 package org.zendesk.client.v2.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 import java.util.List;
 
-public class Topic implements SearchResultEntity {
-    private Long id;
-    private String url;
-    private String title;
-    private String body;
-    private TopicType topicType;
-    private Long submitterId;
-    private Long updaterId;
-    private Long forumId;
-    private Boolean locked;
-    private Boolean pinned;
-    private Boolean highlighted;
-    private Boolean answered;
-    private Long commentCount;
-    private List<String> searchPhrases;
-    private Long position;
-    private List<String> tags;
-    private Date createdAt;
-    private Date updatedAt;
-    private List<Attachment> attachments;
-    private List<Attachment.Upload> uploads;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    public String getUrl() {
-        return url;
-    }
+public class Topic
+    implements SearchResultEntity
+{
+  private Long id;
 
-    public void setUrl(final String url) {
-        this.url = url;
-    }
+  private String url;
 
-    public Long getId() {
-        return id;
-    }
+  private String title;
 
-    public void setId(final Long id) {
-        this.id = id;
-    }
+  private String body;
 
-    public String getTitle() {
-        return title;
-    }
+  private TopicType topicType;
 
-    public void setTitle(final String title) {
-        this.title = title;
-    }
+  private Long submitterId;
 
-    public String getBody() {
-        return body;
-    }
+  private Long updaterId;
 
-    public void setBody(final String body) {
-        this.body = body;
-    }
+  private Long forumId;
 
-    @JsonProperty("topic_type")
-    public TopicType getTopicType() {
-        return topicType;
-    }
+  private Boolean locked;
 
-    public void setTopicType(final TopicType topicType) {
-        this.topicType = topicType;
-    }
+  private Boolean pinned;
 
-    @JsonProperty("submitter_id")
-    public Long getSubmitterId() {
-        return submitterId;
-    }
+  private Boolean highlighted;
 
-    public void setSubmitterId(final Long submitterId) {
-        this.submitterId = submitterId;
-    }
+  private Boolean answered;
 
-    @JsonProperty("updater_id")
-    public Long getUpdaterId() {
-        return updaterId;
-    }
+  private Long commentCount;
 
-    public void setUpdaterId(final Long updaterId) {
-        this.updaterId = updaterId;
-    }
+  private List<String> searchPhrases;
 
-    @JsonProperty("forum_id")
-    public Long getForumId() {
-        return forumId;
-    }
+  private Long position;
 
-    public void setForumId(final Long forumId) {
-        this.forumId = forumId;
-    }
+  private List<String> tags;
 
-    public Boolean getLocked() {
-        return locked;
-    }
+  private Date createdAt;
 
-    public void setLocked(final Boolean locked) {
-        this.locked = locked;
-    }
+  private Date updatedAt;
 
-    public Boolean getPinned() {
-        return pinned;
-    }
+  private List<Attachment> attachments;
 
-    public void setPinned(final Boolean pinned) {
-        this.pinned = pinned;
-    }
+  private List<Attachment.Upload> uploads;
 
-    public Boolean getHighlighted() {
-        return highlighted;
-    }
+  public String getUrl() {
+    return url;
+  }
 
-    public void setHighlighted(final Boolean highlighted) {
-        this.highlighted = highlighted;
-    }
+  public void setUrl(final String url) {
+    this.url = url;
+  }
 
-    public Boolean getAnswered() {
-        return answered;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setAnswered(final Boolean answered) {
-        this.answered = answered;
-    }
+  public void setId(final Long id) {
+    this.id = id;
+  }
 
-    @JsonProperty("comment_count")
-    public Long getCommentCount() {
-        return commentCount;
-    }
+  public String getTitle() {
+    return title;
+  }
 
-    public void setCommentCount(final Long commentCount) {
-        this.commentCount = commentCount;
-    }
+  public void setTitle(final String title) {
+    this.title = title;
+  }
 
-    @JsonProperty("search_phrases")
-    public List<String> getSearchPhrases() {
-        return searchPhrases;
-    }
+  public String getBody() {
+    return body;
+  }
 
-    public void setSearchPhrases(final List<String> searchPhrases) {
-        this.searchPhrases = searchPhrases;
-    }
+  public void setBody(final String body) {
+    this.body = body;
+  }
 
-    public Long getPosition() {
-        return position;
-    }
+  @JsonProperty("topic_type")
+  public TopicType getTopicType() {
+    return topicType;
+  }
 
-    public void setPosition(final Long position) {
-        this.position = position;
-    }
+  public void setTopicType(final TopicType topicType) {
+    this.topicType = topicType;
+  }
 
-    public List<String> getTags() {
-        return tags;
-    }
+  @JsonProperty("submitter_id")
+  public Long getSubmitterId() {
+    return submitterId;
+  }
 
-    public void setTags(final List<String> tags) {
-        this.tags = tags;
-    }
+  public void setSubmitterId(final Long submitterId) {
+    this.submitterId = submitterId;
+  }
 
-    @JsonProperty("created_at")
-    public Date getCreatedAt() {
-        return createdAt;
-    }
+  @JsonProperty("updater_id")
+  public Long getUpdaterId() {
+    return updaterId;
+  }
 
-    public void setCreatedAt(final Date createdAt) {
-        this.createdAt = createdAt;
-    }
+  public void setUpdaterId(final Long updaterId) {
+    this.updaterId = updaterId;
+  }
 
-    @JsonProperty("updated_at")
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
+  @JsonProperty("forum_id")
+  public Long getForumId() {
+    return forumId;
+  }
 
-    public void setUpdatedAt(final Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public void setForumId(final Long forumId) {
+    this.forumId = forumId;
+  }
 
-    public List<Attachment> getAttachments() {
-        return attachments;
-    }
+  public Boolean getLocked() {
+    return locked;
+  }
 
-    public void setAttachments(final List<Attachment> attachments) {
-        this.attachments = attachments;
-    }
+  public void setLocked(final Boolean locked) {
+    this.locked = locked;
+  }
 
-    public List<Attachment.Upload> getUploads() {
-        return uploads;
-    }
+  public Boolean getPinned() {
+    return pinned;
+  }
 
-    public void setUploads(final List<Attachment.Upload> uploads) {
-        this.uploads = uploads;
-    }
+  public void setPinned(final Boolean pinned) {
+    this.pinned = pinned;
+  }
+
+  public Boolean getHighlighted() {
+    return highlighted;
+  }
+
+  public void setHighlighted(final Boolean highlighted) {
+    this.highlighted = highlighted;
+  }
+
+  public Boolean getAnswered() {
+    return answered;
+  }
+
+  public void setAnswered(final Boolean answered) {
+    this.answered = answered;
+  }
+
+  @JsonProperty("comment_count")
+  public Long getCommentCount() {
+    return commentCount;
+  }
+
+  public void setCommentCount(final Long commentCount) {
+    this.commentCount = commentCount;
+  }
+
+  @JsonProperty("search_phrases")
+  public List<String> getSearchPhrases() {
+    return searchPhrases;
+  }
+
+  public void setSearchPhrases(final List<String> searchPhrases) {
+    this.searchPhrases = searchPhrases;
+  }
+
+  public Long getPosition() {
+    return position;
+  }
+
+  public void setPosition(final Long position) {
+    this.position = position;
+  }
+
+  public List<String> getTags() {
+    return tags;
+  }
+
+  public void setTags(final List<String> tags) {
+    this.tags = tags;
+  }
+
+  @JsonProperty("created_at")
+  public Date getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(final Date createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  @JsonProperty("updated_at")
+  public Date getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(final Date updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  public List<Attachment> getAttachments() {
+    return attachments;
+  }
+
+  public void setAttachments(final List<Attachment> attachments) {
+    this.attachments = attachments;
+  }
+
+  public List<Attachment.Upload> getUploads() {
+    return uploads;
+  }
+
+  public void setUploads(final List<Attachment.Upload> uploads) {
+    this.uploads = uploads;
+  }
 
 }

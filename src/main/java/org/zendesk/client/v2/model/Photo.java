@@ -6,66 +6,71 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author stephenc
  * @since 05/04/2013 15:36
  */
-public class Photo {
-    private Long id;
-    private String fileName;
-    private String contentUrl;
-    private String contentType;
-    private Long size;
+public class Photo
+{
+  private Long id;
 
-    @JsonProperty("content_type")
-    public String getContentType() {
-        return contentType;
-    }
+  private String fileName;
 
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
+  private String contentUrl;
 
-    @JsonProperty("content_url")
-    public String getContentUrl() {
-        return contentUrl;
-    }
+  private String contentType;
 
-    public void setContentUrl(String contentUrl) {
-        this.contentUrl = contentUrl;
-    }
+  private Long size;
 
-    @JsonProperty("file_name")
-    public String getFileName() {
-        return fileName;
-    }
+  @JsonProperty("content_type")
+  public String getContentType() {
+    return contentType;
+  }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
+  public void setContentType(String contentType) {
+    this.contentType = contentType;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  @JsonProperty("content_url")
+  public String getContentUrl() {
+    return contentUrl;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setContentUrl(String contentUrl) {
+    this.contentUrl = contentUrl;
+  }
 
-    public Long getSize() {
-        return size;
-    }
+  @JsonProperty("file_name")
+  public String getFileName() {
+    return fileName;
+  }
 
-    public void setSize(Long size) {
-        this.size = size;
-    }
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("Photo");
-        sb.append("{contentType='").append(contentType).append('\'');
-        sb.append(", id=").append(id);
-        sb.append(", fileName='").append(fileName).append('\'');
-        sb.append(", contentUrl='").append(contentUrl).append('\'');
-        sb.append(", size=").append(size);
-        sb.append('}');
-        return sb.toString();
-    }
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public Long getSize() {
+    return size;
+  }
+
+  public void setSize(Long size) {
+    this.size = size;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("Photo");
+    sb.append("{contentType='").append(contentType).append('\'');
+    sb.append(", id=").append(id);
+    sb.append(", fileName='").append(fileName).append('\'');
+    sb.append(", contentUrl='").append(contentUrl).append('\'');
+    sb.append(", size=").append(size);
+    sb.append('}');
+    return sb.toString();
+  }
 }

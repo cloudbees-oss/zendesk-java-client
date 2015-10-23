@@ -1,40 +1,43 @@
 package org.zendesk.client.v2.model.events;
 
-import org.zendesk.client.v2.model.Via;
-
 import java.util.List;
+
+import org.zendesk.client.v2.model.Via;
 
 /**
  * @author stephenc
  * @since 05/04/2013 11:56
  */
-public class CcEvent extends Event {
-    private List<Long> recipients;
-    private Via via;
+public class CcEvent
+    extends Event
+{
+  private List<Long> recipients;
 
-    public List<Long> getRecipients() {
-        return recipients;
-    }
+  private Via via;
 
-    public void setRecipients(List<Long> recipients) {
-        this.recipients = recipients;
-    }
+  public List<Long> getRecipients() {
+    return recipients;
+  }
 
-    public Via getVia() {
-        return via;
-    }
+  public void setRecipients(List<Long> recipients) {
+    this.recipients = recipients;
+  }
 
-    public void setVia(Via via) {
-        this.via = via;
-    }
+  public Via getVia() {
+    return via;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("CcEvent");
-        sb.append("{recipients=").append(recipients);
-        sb.append(", via=").append(via);
-        sb.append('}');
-        return sb.toString();
-    }
+  public void setVia(Via via) {
+    this.via = via;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("CcEvent");
+    sb.append("{recipients=").append(recipients);
+    sb.append(", via=").append(via);
+    sb.append('}');
+    return sb.toString();
+  }
 }

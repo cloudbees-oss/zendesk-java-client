@@ -1,163 +1,164 @@
 package org.zendesk.client.v2.model.hc;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 
-public class ArticleAttachments {
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    /**
-     *  Automatically assigned when the article attachment is created
-     */
-    private int id;
+public class ArticleAttachments
+{
 
-    /**
-     *  The API url of this article attachment
-     */
-    private String url;
+  /**
+   * Automatically assigned when the article attachment is created
+   */
+  private int id;
 
-    /**
-     *  Id of the associated article, if present
-     */
-    private int articleId;
+  /**
+   * The API url of this article attachment
+   */
+  private String url;
 
-    /**
-     *  The name of the file
-     */
-    private String fileName;
+  /**
+   * Id of the associated article, if present
+   */
+  private int articleId;
 
-    /**
-     *  A full URL where the attachment file can be downloaded
-     */
-    private String contentUrl;
+  /**
+   * The name of the file
+   */
+  private String fileName;
 
-    /**
-     *  The content type of the file. Example: image/png
-     */
-    private String contentType;
+  /**
+   * A full URL where the attachment file can be downloaded
+   */
+  private String contentUrl;
 
-    /**
-     *  The size of the attachment file in bytes
-     */
-    private int size;
+  /**
+   * The content type of the file. Example: image/png
+   */
+  private String contentType;
 
-    /**
-     *  If true, the attached file is shown in the dedicated admin UI for inline attachments and
-     *  its url can be referenced in the HTML body of the article.
-     *  If false, the attachment is listed in the list of attachments. Default is false
-     */
-    private boolean inline;
+  /**
+   * The size of the attachment file in bytes
+   */
+  private int size;
 
-    /**
-     *  The time at which the article attachment was created
-     */
-    private Date createdAt;
+  /**
+   * If true, the attached file is shown in the dedicated admin UI for inline attachments and
+   * its url can be referenced in the HTML body of the article.
+   * If false, the attachment is listed in the list of attachments. Default is false
+   */
+  private boolean inline;
 
-    /**
-     *  The time at which the article attachment was last updated
-     */
-    private Date updatedAt;
+  /**
+   * The time at which the article attachment was created
+   */
+  private Date createdAt;
 
-    public int getId() {
-        return id;
-    }
+  /**
+   * The time at which the article attachment was last updated
+   */
+  private Date updatedAt;
 
-    public void setId(int id) {
-        this.id = id;
-    }
+  public int getId() {
+    return id;
+  }
 
-    public String getUrl() {
-        return url;
-    }
+  public void setId(int id) {
+    this.id = id;
+  }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+  public String getUrl() {
+    return url;
+  }
 
-    @JsonProperty("article_id")
-    public int getArticleId() {
-        return articleId;
-    }
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-    public void setArticleId(int articleId) {
-        this.articleId = articleId;
-    }
+  @JsonProperty("article_id")
+  public int getArticleId() {
+    return articleId;
+  }
 
-    @JsonProperty("file_name")
-    public String getFileName() {
-        return fileName;
-    }
+  public void setArticleId(int articleId) {
+    this.articleId = articleId;
+  }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
+  @JsonProperty("file_name")
+  public String getFileName() {
+    return fileName;
+  }
 
-    @JsonProperty("content_url")
-    public String getContentUrl() {
-        return contentUrl;
-    }
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
 
-    public void setContentUrl(String contentUrl) {
-        this.contentUrl = contentUrl;
-    }
+  @JsonProperty("content_url")
+  public String getContentUrl() {
+    return contentUrl;
+  }
 
-    @JsonProperty("content_type")
-    public String getContentType() {
-        return contentType;
-    }
+  public void setContentUrl(String contentUrl) {
+    this.contentUrl = contentUrl;
+  }
 
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
+  @JsonProperty("content_type")
+  public String getContentType() {
+    return contentType;
+  }
 
-    public int getSize() {
-        return size;
-    }
+  public void setContentType(String contentType) {
+    this.contentType = contentType;
+  }
 
-    public void setSize(int size) {
-        this.size = size;
-    }
+  public int getSize() {
+    return size;
+  }
 
-    @JsonProperty("inline")
-    public boolean isInline() {
-        return inline;
-    }
+  public void setSize(int size) {
+    this.size = size;
+  }
 
-    public void setInline(boolean inline) {
-        this.inline = inline;
-    }
+  @JsonProperty("inline")
+  public boolean isInline() {
+    return inline;
+  }
 
-    @JsonProperty("created_at")
-    public Date getCreatedAt() {
-        return createdAt;
-    }
+  public void setInline(boolean inline) {
+    this.inline = inline;
+  }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+  @JsonProperty("created_at")
+  public Date getCreatedAt() {
+    return createdAt;
+  }
 
-    @JsonProperty("updated_at")
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  @JsonProperty("updated_at")
+  public Date getUpdatedAt() {
+    return updatedAt;
+  }
 
-    @Override
-    public String toString() {
-        return "ArticleAttachments{" +
-                "id=" + id +
-                ", url='" + url + '\'' +
-                ", articleId=" + articleId +
-                ", fileName='" + fileName + '\'' +
-                ", contentUrl='" + contentUrl + '\'' +
-                ", contentType='" + contentType + '\'' +
-                ", size=" + size +
-                ", inline=" + inline +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
-    }
+  public void setUpdatedAt(Date updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  @Override
+  public String toString() {
+    return "ArticleAttachments{" +
+        "id=" + id +
+        ", url='" + url + '\'' +
+        ", articleId=" + articleId +
+        ", fileName='" + fileName + '\'' +
+        ", contentUrl='" + contentUrl + '\'' +
+        ", contentType='" + contentType + '\'' +
+        ", size=" + size +
+        ", inline=" + inline +
+        ", createdAt=" + createdAt +
+        ", updatedAt=" + updatedAt +
+        '}';
+  }
 }

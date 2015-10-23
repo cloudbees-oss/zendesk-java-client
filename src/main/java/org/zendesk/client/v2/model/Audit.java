@@ -1,97 +1,104 @@
 package org.zendesk.client.v2.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.zendesk.client.v2.model.events.Event;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.zendesk.client.v2.model.events.Event;
 
 /**
  * @author stephenc
  * @since 05/04/2013 10:22
  */
-public class Audit {
-    private Long id;
-    private Long ticketId;
-    private Map<String, Object> metadata;
-    private Via via;
-    private Date createdAt;
-    private Long authorId;
-    private List<Event> events;
+public class Audit
+{
+  private Long id;
 
-    @JsonProperty("author_id")
-    public Long getAuthorId() {
-        return authorId;
-    }
+  private Long ticketId;
 
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
-    }
+  private Map<String, Object> metadata;
 
-    @JsonProperty("created_at")
-    public Date getCreatedAt() {
-        return createdAt;
-    }
+  private Via via;
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+  private Date createdAt;
 
-    public List<Event> getEvents() {
-        return events;
-    }
+  private Long authorId;
 
-    public void setEvents(List<Event> events) {
-        this.events = events;
-    }
+  private List<Event> events;
 
-    public Long getId() {
-        return id;
-    }
+  @JsonProperty("author_id")
+  public Long getAuthorId() {
+    return authorId;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setAuthorId(Long authorId) {
+    this.authorId = authorId;
+  }
 
-    public Map<String, Object> getMetadata() {
-        return metadata;
-    }
+  @JsonProperty("created_at")
+  public Date getCreatedAt() {
+    return createdAt;
+  }
 
-    public void setMetadata(Map<String, Object> metadata) {
-        this.metadata = metadata;
-    }
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
 
-    @JsonProperty("ticket_id")
-    public Long getTicketId() {
-        return ticketId;
-    }
+  public List<Event> getEvents() {
+    return events;
+  }
 
-    public void setTicketId(Long ticketId) {
-        this.ticketId = ticketId;
-    }
+  public void setEvents(List<Event> events) {
+    this.events = events;
+  }
 
-    public Via getVia() {
-        return via;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setVia(Via via) {
-        this.via = via;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("Audit");
-        sb.append("{authorId=").append(authorId);
-        sb.append(", id=").append(id);
-        sb.append(", ticketId=").append(ticketId);
-        sb.append(", metadata=").append(metadata);
-        sb.append(", via=").append(via);
-        sb.append(", createdAt=").append(createdAt);
-        sb.append(", events=").append(events);
-        sb.append('}');
-        return sb.toString();
-    }
+  public Map<String, Object> getMetadata() {
+    return metadata;
+  }
+
+  public void setMetadata(Map<String, Object> metadata) {
+    this.metadata = metadata;
+  }
+
+  @JsonProperty("ticket_id")
+  public Long getTicketId() {
+    return ticketId;
+  }
+
+  public void setTicketId(Long ticketId) {
+    this.ticketId = ticketId;
+  }
+
+  public Via getVia() {
+    return via;
+  }
+
+  public void setVia(Via via) {
+    this.via = via;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("Audit");
+    sb.append("{authorId=").append(authorId);
+    sb.append(", id=").append(id);
+    sb.append(", ticketId=").append(ticketId);
+    sb.append(", metadata=").append(metadata);
+    sb.append(", via=").append(via);
+    sb.append(", createdAt=").append(createdAt);
+    sb.append(", events=").append(events);
+    sb.append('}');
+    return sb.toString();
+  }
 
 }

@@ -7,31 +7,33 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * @since 04/04/2013 14:53
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CustomFieldValue {
-    private Long id;
-    private String value;
+public class CustomFieldValue
+{
+  private Long id;
 
-    public CustomFieldValue() {
-    }
+  private String value;
 
-    public CustomFieldValue(Long id, String value) {
-        this.id = id;
-        this.value = value;
-    }
+  public CustomFieldValue() {
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public CustomFieldValue(Long id, String value) {
+    this.id = id;
+    this.value = value;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public String getValue() {
-        return value;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+  public String getValue() {
+    return value;
+  }
+
+  public void setValue(String value) {
+    this.value = value;
+  }
 }

@@ -1,61 +1,66 @@
 package org.zendesk.client.v2.model.events;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author stephenc
  * @since 05/04/2013 11:57
  */
-public class FacebookEvent extends Event {
-    private Map<String, Object> page;
-    private Long communication;
-    private String ticketVia;
-    private String body;
+public class FacebookEvent
+    extends Event
+{
+  private Map<String, Object> page;
 
-    public Long getCommunication() {
-        return communication;
-    }
+  private Long communication;
 
-    public void setCommunication(Long communication) {
-        this.communication = communication;
-    }
+  private String ticketVia;
 
-    public Map<String, Object> getPage() {
-        return page;
-    }
+  private String body;
 
-    public void setPage(Map<String, Object> page) {
-        this.page = page;
-    }
+  public Long getCommunication() {
+    return communication;
+  }
 
-    @JsonProperty("ticket_via")
-    public String getTicketVia() {
-        return ticketVia;
-    }
+  public void setCommunication(Long communication) {
+    this.communication = communication;
+  }
 
-    public void setTicketVia(String ticketVia) {
-        this.ticketVia = ticketVia;
-    }
+  public Map<String, Object> getPage() {
+    return page;
+  }
 
-    public String getBody() {
-        return body;
-    }
+  public void setPage(Map<String, Object> page) {
+    this.page = page;
+  }
 
-    public void setBody(String body) {
-        this.body = body;
-    }
+  @JsonProperty("ticket_via")
+  public String getTicketVia() {
+    return ticketVia;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("FacebookEvent");
-        sb.append("{body='").append(body).append('\'');
-        sb.append(", page=").append(page);
-        sb.append(", communication=").append(communication);
-        sb.append(", ticketVia='").append(ticketVia).append('\'');
-        sb.append('}');
-        return sb.toString();
-    }
+  public void setTicketVia(String ticketVia) {
+    this.ticketVia = ticketVia;
+  }
+
+  public String getBody() {
+    return body;
+  }
+
+  public void setBody(String body) {
+    this.body = body;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("FacebookEvent");
+    sb.append("{body='").append(body).append('\'');
+    sb.append(", page=").append(page);
+    sb.append(", communication=").append(communication);
+    sb.append(", ticketVia='").append(ticketVia).append('\'');
+    sb.append('}');
+    return sb.toString();
+  }
 }

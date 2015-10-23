@@ -6,33 +6,35 @@ import java.util.Map;
  * @author stephenc
  * @since 04/04/2013 17:00
  */
-public class Via {
-    private String channel;
-    private Map<String, Object> source;
+public class Via
+{
+  private String channel;
 
-    public String getChannel() {
-        return channel;
-    }
+  private Map<String, Object> source;
 
-    public void setChannel(String channel) {
-        this.channel = channel;
-    }
+  public String getChannel() {
+    return channel;
+  }
 
-    public Map<String, Object> getSource() {
-        return source;
-    }
+  public void setChannel(String channel) {
+    this.channel = channel;
+  }
 
-    public void setSource(Map<String, Object> source) {
-        this.source = source;
-    }
+  public Map<String, Object> getSource() {
+    return source;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("Via");
-        sb.append("{channel='").append(channel).append('\'');
-        sb.append(", source=").append(source);
-        sb.append('}');
-        return sb.toString();
-    }
+  public void setSource(Map<String, Object> source) {
+    this.source = source;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("Via");
+    sb.append("{channel='").append(channel).append('\'');
+    sb.append(", source=").append(source);
+    sb.append('}');
+    return sb.toString();
+  }
 }
