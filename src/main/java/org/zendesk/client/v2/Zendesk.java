@@ -1209,15 +1209,13 @@ public class Zendesk implements Closeable {
     //////////////////////////////////////////////////////////////////////
 
     /**
-     * Get first page of articles from help center.
+     * Get all articles from help center.
      *
-     * @deprecated use #getArticlesFromPage(int). Same as #getArticlesFromPage(0)
      * @return List of Articles.
      */
-    @Deprecated
-    public List<Article> getArticles() {
-        return complete(submit(req("GET", cnst("/help_center/articles.json")),
-                handleList(Article.class, "articles")));
+    public Iterable<Article> getArticles() {
+        return new PagedIterable<Article>(cnst("/help_center/articles.json"),
+                handleList(Article.class, "articles"));
     }
 
     public List<Article> getArticlesFromPage(int page) {

@@ -17,6 +17,7 @@ import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.events.Event;
+import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.targets.Target;
 
 import java.util.ArrayList;
@@ -476,4 +477,15 @@ public class RealSmokeTest {
         }
     }
 
+    @Test
+    public void getArticles() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (Article t : instance.getArticles()) {
+            assertThat(t.getTitle(), notNullValue());
+            if (++count > 40) {  // Check enough to pull 2 result pages
+                break;
+            }
+        }
+    }
 }

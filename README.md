@@ -55,6 +55,9 @@ Here is the status of the various API components:
 * [Topics](http://developer.zendesk.com/documentation/rest_api/topics.html) ✓
 * [Topic Comments](http://developer.zendesk.com/documentation/rest_api/topic_comments.html)
 * [Topic Subscriptions](http://developer.zendesk.com/documentation/rest_api/topic_subscriptions.html)
+* [Help Center Categories](https://developer.zendesk.com/rest_api/docs/help_center/categories)
+* [Help Center Sections](https://developer.zendesk.com/rest_api/docs/help_center/sections)
+* [Help Center Articles](https://developer.zendesk.com/rest_api/docs/help_center/articles)
 * [Topic Votes](http://developer.zendesk.com/documentation/rest_api/topic_votes.html)
 * [Account Settings](http://developer.zendesk.com/documentation/rest_api/account_settings.html)
 * [Activity Stream](http://developer.zendesk.com/documentation/rest_api/activity_stream.html)
