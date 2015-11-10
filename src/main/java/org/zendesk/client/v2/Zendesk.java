@@ -1361,6 +1361,13 @@ public class Zendesk implements Closeable {
                 handleList(Article.class, "articles"));
     }
 
+    public Iterable<Article> getArticlesIncrementally(Date startTime) {
+      return new PagedIterable<Article>(
+          tmpl("/help_center/incremental/articles.json{?start_time}")
+              .set("start_time", msToSeconds(startTime.getTime())),
+          handleIncrementalList(Article.class, "articles")); 
+    }
+
     public List<Article> getArticlesFromPage(int page) {
         return complete(submit(req("GET", tmpl("/help_center/articles.json?page={page}").set("page", page)),
                 handleList(Article.class, "articles")));
