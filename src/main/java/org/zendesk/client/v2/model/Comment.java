@@ -1,7 +1,7 @@
 package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
  * @author stephenc
  * @since 09/04/2013 15:09
  */
-public class Comment {
+public class Comment implements Serializable {
     private Long id;
     private String body;
     private Long authorId;

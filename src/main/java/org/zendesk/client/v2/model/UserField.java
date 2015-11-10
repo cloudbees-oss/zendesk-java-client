@@ -1,10 +1,10 @@
 package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import java.io.Serializable;
 import java.util.Date;
 
-public class UserField implements SearchResultEntity {
+public class UserField implements SearchResultEntity, Serializable {
 
     private Long id;
     private String url;

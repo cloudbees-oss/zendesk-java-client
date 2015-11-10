@@ -1,14 +1,14 @@
 package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author stephenc
  * @since 22/04/2013 16:27
  */
-public class Group implements SearchResultEntity {
+public class Group implements SearchResultEntity, Serializable {
     private Long id;
     private String url;
     private String name;

@@ -1,11 +1,11 @@
 package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class Forum {
+public class Forum implements Serializable {
     private Long id;
     private String url;
     private String name;
