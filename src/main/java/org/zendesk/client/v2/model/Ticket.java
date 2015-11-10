@@ -20,6 +20,7 @@ public class Ticket extends Request implements SearchResultEntity {
     private Long assigneeId;
     private Long groupId;
     private List<Long> collaboratorIds;
+    private List<Collaborator> collaborators;
     private Long forumTopicId;
     private Long problemId;
     private boolean hasIncidents;
@@ -63,6 +64,15 @@ public class Ticket extends Request implements SearchResultEntity {
 
     public void setCollaboratorIds(List<Long> collaboratorIds) {
         this.collaboratorIds = collaboratorIds;
+    }
+
+    @JsonProperty("collaborators")
+    private List<Collaborator> getCollaborators() {
+        return collaborators;
+    }
+
+    public void setCollaborators(List<Collaborator> collaborators) {
+        this.collaborators = collaborators;
     }
 
     @JsonProperty("custom_fields")
