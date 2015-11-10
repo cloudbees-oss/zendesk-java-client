@@ -34,6 +34,7 @@ import org.zendesk.client.v2.model.OrganizationField;
 import org.zendesk.client.v2.model.SearchResultEntity;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.Ticket;
+import org.zendesk.client.v2.model.TicketResult;
 import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.Topic;
 import org.zendesk.client.v2.model.Trigger;
@@ -878,7 +879,7 @@ public class Zendesk implements Closeable {
        map.put("monitored_twitter_handle_id", monitorId);
       
        return complete(submit(req("POST", cnst("/channels/twitter/tickets.json"), JSON,              
-             json(Collections.singletonMap("ticket", map ))),
+             json(Collections.singletonMap("ticket", map))),
              handle(Ticket.class, "ticket")));
     }
     
@@ -1015,6 +1016,18 @@ public class Zendesk implements Closeable {
         json(Collections.singletonMap("macro", macro))), handle(Macro.class, "macro")));
   }
     
+
+    public Ticket macrosShowChangesToTicket(long macroId) {
+        return complete(submit(req("GET", tmpl("/macros/{id}/apply.json").set("id", macroId)),
+                handle(TicketResult.class, "result"))).getTicket();
+    }
+
+    public Ticket macrosShowTicketAfterChanges(long ticketId, long macroId) {
+        return complete(submit(req("GET", tmpl("/tickets/{ticket_id}/macros/{id}/apply.json")
+                        .set("ticket_id", ticketId)
+                        .set("id", macroId)),
+                handle(TicketResult.class, "result"))).getTicket();
+    }
 
     public List<String> addTagToTicket(long id, String... tags) {
         return complete(submit(
