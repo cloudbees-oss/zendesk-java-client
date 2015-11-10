@@ -1,5 +1,5 @@
 package org.zendesk.client.v2;
- 
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -1464,6 +1464,8 @@ public class Zendesk implements Closeable {
 
     private static final String NEXT_PAGE = "next_page";
     private static final String END_TIME = "end_time";
+    private static final String COUNT = "count";
+    private static final int INCREMENTAL_EXPORT_MAX_COUNT_BY_REQUEST = 1000;
 
     private abstract class PagedAsyncCompletionHandler<T> extends ZendeskAsyncCompletionHandler<T> {
         private String nextPage;
@@ -1537,7 +1539,18 @@ public class Zendesk implements Closeable {
                 if (TimeUnit.SECONDS.toMillis(endTimeNode.asLong()) > System.currentTimeMillis() - FIVE_MINUTES) {
                     setNextPage(null);
                 } else {
-                    setNextPage(node.asText());
+                    // Taking into account documentation found at https://developer.zendesk.com/rest_api/docs/core/incremental_export#polling-strategy
+                    JsonNode countNode = responseNode.get(COUNT);
+                    if (countNode == null) {
+                        throw new NullPointerException(COUNT + " property not found, incremental export pagination not supported" +
+                                (clazz != null ? " for " + clazz.getName() : ""));
+                    }
+
+                    if (countNode.asInt() < INCREMENTAL_EXPORT_MAX_COUNT_BY_REQUEST) {
+                        setNextPage(null);
+                    } else {
+                        setNextPage(node.asText());
+                    }
                 }
             }
         };
