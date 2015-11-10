@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.Attachment;
 import org.zendesk.client.v2.model.Audit;
+import org.zendesk.client.v2.model.Automation;
 import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Forum;
@@ -525,12 +526,48 @@ public class Zendesk implements Closeable {
         return complete(submit(req("POST", cnst("/triggers.json"), JSON, json(Collections.singletonMap("trigger", trigger))),
               handle(Trigger.class, "trigger")));
     }
+    
+    public Trigger updateTrigger(Long triggerId, Trigger trigger) {
+      return complete(submit(req("PUT", tmpl("/triggers/{id}.json").set("id", triggerId), JSON, json(Collections.singletonMap("trigger", trigger))),
+            handle(Trigger.class, "trigger")));
+  }
 
     public void deleteTrigger(long triggerId) { 
        complete(submit(req("DELETE", tmpl("/triggers/{id}.json").set("id", triggerId)), handleStatus()));
     }
     
 
+  // Automations
+  public Iterable<Automation> getAutomations() {
+    return new PagedIterable<Automation>(cnst("/automations.json"),
+        handleList(Automation.class, "automations"));
+  }
+
+  public Automation getAutomation(long id) {
+    return complete(submit(req("GET", tmpl("/automations/{id}.json").set("id", id)),
+        handle(Automation.class, "automation")));
+  }
+
+  public Automation createAutomation(Automation automation) {
+    return complete(submit(
+        req("POST", cnst("/automations.json"), JSON,
+            json(Collections.singletonMap("automation", automation))),
+        handle(Automation.class, "automation")));
+  }
+
+  public Automation updateAutomation(Long automationId, Automation automation) {
+    return complete(submit(
+        req("PUT", tmpl("/automations/{id}.json").set("id", automationId), JSON,
+            json(Collections.singletonMap("automation", automation))),
+        handle(Automation.class, "automation")));
+  }
+
+  public void deleteAutomation(long automationId) {
+    complete(submit(req("DELETE", tmpl("/automations/{id}.json").set("id", automationId)),
+        handleStatus()));
+  }
+
+    
     public Iterable<TwitterMonitor> getTwitterMonitors() { 
         return new PagedIterable<TwitterMonitor>(cnst("/channels/twitter/monitored_twitter_handles.json"),  
               handleList(TwitterMonitor.class, "monitored_twitter_handles"));
@@ -961,6 +998,23 @@ public class Zendesk implements Closeable {
         return new PagedIterable<Macro>(cnst("/macros.json"),
                 handleList(Macro.class, "macros"));
     }
+    
+    public Macro getMacro(long macroId){
+      
+      return complete(submit(req("GET", tmpl("/macros/{id}.json").set("id", macroId)), handle(Macro.class, "macro")));
+  }
+    
+  public Macro createMacro(Macro macro) {
+    return complete(submit(
+        req("POST", cnst("/macros.json"), JSON, json(Collections.singletonMap("macro", macro))),
+        handle(Macro.class, "macro")));
+  }
+
+  public Macro updateMacro(Long macroId, Macro macro) {
+    return complete(submit(req("PUT", tmpl("/macros/{id}.json").set("id", macroId), JSON,
+        json(Collections.singletonMap("macro", macro))), handle(Macro.class, "macro")));
+  }
+    
 
     public List<String> addTagToTicket(long id, String... tags) {
         return complete(submit(
