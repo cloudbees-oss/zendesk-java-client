@@ -1,8 +1,7 @@
 package org.zendesk.client.v2.model.events;
 
-import org.zendesk.client.v2.model.Via;
-
 import java.util.List;
+import org.zendesk.client.v2.model.Via;
 
 /**
  * @author stephenc

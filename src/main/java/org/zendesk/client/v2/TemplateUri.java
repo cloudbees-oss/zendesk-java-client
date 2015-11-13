@@ -1,7 +1,6 @@
 package org.zendesk.client.v2;
 
 import com.damnhandy.uri.template.UriTemplate;
-
 import java.util.Date;
 import java.util.Map;
 
