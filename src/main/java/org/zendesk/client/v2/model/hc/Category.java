@@ -1,49 +1,72 @@
 package org.zendesk.client.v2.model.hc;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 import java.util.List;
 
 public class Category {
-    /** Automatically assigned when creating categories */
+    /**
+     * Automatically assigned when creating categories
+     */
     private Long id;
 
-    /** The name of the category */
+    /**
+     * The name of the category
+     */
     private String name;
 
-    /** The description of the category */
+    /**
+     * The description of the category
+     */
     private String description;
 
-    /** The locale that the category is being displayed in */
+    /**
+     * The locale that the category is being displayed in
+     */
     private String locale;
 
-    /** The source (default) locale of the category */
+    /**
+     * The source (default) locale of the category
+     */
     @JsonProperty("source_locale")
     private String sourceLocale;
 
-    /** The API url of this category */
+    /**
+     * The API url of this category
+     */
     private String url;
 
-    /** The url of this category in Help Center */
+    /**
+     * The url of this category in Help Center
+     */
     @JsonProperty("html_url")
     private String htmlUrl;
 
-    /** Whether the category is out of date */
+    /**
+     * Whether the category is out of date
+     */
     private Boolean outdated;
 
-    /** The position of this category relative to other categories */
+    /**
+     * The position of this category relative to other categories
+     */
     private Long position;
 
-    /** The ids of all translations of this category */
+    /**
+     * The ids of all translations of this category
+     */
     @JsonProperty("translation_ids")
     private List<String> translation_ids;
 
-    /** The time the category was created */
+    /**
+     * The time the category was created
+     */
     @JsonProperty("created_at")
     private Date createdAt;
 
-    /** The time the category was last updated */
+    /**
+     * The time the category was last updated
+     */
     @JsonProperty("updated_at")
     private Date updatedAt;
 

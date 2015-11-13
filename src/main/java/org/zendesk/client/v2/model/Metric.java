@@ -1,7 +1,6 @@
 package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 
 /**
@@ -220,7 +219,10 @@ public class Metric {
         @JsonProperty("business")
         protected Long businessMinutes;
 
-        public ZendeskComboMinutes() {};
+        public ZendeskComboMinutes() {
+        }
+
+        ;
 
         public Long getCalendarMinutes() {
             return calendarMinutes;

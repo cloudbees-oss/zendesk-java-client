@@ -1,9 +1,8 @@
 package org.zendesk.client.v2.model.events;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.zendesk.client.v2.model.Attachment;
-
 import java.util.List;
+import org.zendesk.client.v2.model.Attachment;
 
 /**
  * @author stephenc

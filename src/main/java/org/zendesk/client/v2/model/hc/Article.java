@@ -1,76 +1,113 @@
 package org.zendesk.client.v2.model.hc;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.zendesk.client.v2.model.SearchResultEntity;
-
 import java.util.Date;
 import java.util.List;
+import org.zendesk.client.v2.model.SearchResultEntity;
 
 public class Article implements SearchResultEntity {
-    /** Automatically assigned when the article is created */
+    /**
+     * Automatically assigned when the article is created
+     */
     private Long id;
 
-    /** The API url of the article */
+    /**
+     * The API url of the article
+     */
     private String url;
 
-    /** The url of the article in Help Center */
+    /**
+     * The url of the article in Help Center
+     */
     @JsonProperty("html_url")
     private String htmlUrl;
 
-    /** The title of the article */
+    /**
+     * The title of the article
+     */
     private String title;
 
-    /** The HTML body of the article */
+    /**
+     * The HTML body of the article
+     */
     private String body;
 
-    /** The locale that the article is being displayed in */
+    /**
+     * The locale that the article is being displayed in
+     */
     private String locale;
 
-    /** The source (default) locale of the article */
+    /**
+     * The source (default) locale of the article
+     */
     @JsonProperty("source_locale")
     private String sourceLocale;
 
-    /** The id of the user who wrote the article (set to the user who made the request on create by default) */
+    /**
+     * The id of the user who wrote the article (set to the user who made the request on create by default)
+     */
     @JsonProperty("author_id")
     private Long authorId;
 
-    /** True if comments are disabled; false otherwise */
+    /**
+     * True if comments are disabled; false otherwise
+     */
     @JsonProperty("comments_disabled")
     private Boolean commentsDisabled;
 
-    /** Whether the source (default) translation of the article is out of date */
+    /**
+     * Whether the source (default) translation of the article is out of date
+     */
     private Boolean outdated;
 
-    /** An array of label names associated with this article. By default no label names are used. Only available on certain plans */
+    /**
+     * An array of label names associated with this article. By default no label names are used. Only available on certain plans
+     */
     @JsonProperty("label_names")
     private List<String> labelNames;
 
-    /** True if the translation for the current locale is a draft; false otherwise. false by default. */
+    /**
+     * True if the translation for the current locale is a draft; false otherwise. false by default.
+     */
     private Boolean draft;
 
-    /** True if this article is promoted; false otherwise. false by default */
+    /**
+     * True if this article is promoted; false otherwise. false by default
+     */
     private Boolean promoted;
 
-    /** The position of this article in the article list. 0 by default */
+    /**
+     * The position of this article in the article list. 0 by default
+     */
     private Long position;
 
-    /** The total sum of votes on this article */
+    /**
+     * The total sum of votes on this article
+     */
     @JsonProperty("vote_sum")
     private Long voteSum;
 
-    /** The number of votes cast on this article */
+    /**
+     * The number of votes cast on this article
+     */
     @JsonProperty("vote_count")
     private Long voteCount;
 
-    /** The id of the section to which this article belongs */
+    /**
+     * The id of the section to which this article belongs
+     */
     @JsonProperty("section_id")
     private Long sectionId;
 
-    /** The time the article was created */
+    /**
+     * The time the article was created
+     */
     @JsonProperty("created_at")
     private Date createdAt;
 
-    /** The time the article was last updated */
+    /**
+     * The time the article was last updated
+     */
     @JsonProperty("updated_at")
     private Date updatedAt;
 

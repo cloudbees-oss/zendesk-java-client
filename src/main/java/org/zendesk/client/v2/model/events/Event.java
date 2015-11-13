@@ -24,9 +24,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = TweetEvent.class, name = "Tweet"),
         @JsonSubTypes.Type(value = SMSEvent.class, name = "SMS"),
         @JsonSubTypes.Type(value = TicketSharingEvent.class, name = "TicketSharingEvent"),
-        @JsonSubTypes.Type(value = AttachmentRedactionEvent.class, name = "AttachmentRedactionEvent" ),
-        @JsonSubTypes.Type(value = CommentRedactionEvent.class, name = "CommentRedactionEvent" ),
-        @JsonSubTypes.Type(value = OrganizationActivityEvent.class, name = "OrganizationActivity" )
+        @JsonSubTypes.Type(value = AttachmentRedactionEvent.class, name = "AttachmentRedactionEvent"),
+        @JsonSubTypes.Type(value = CommentRedactionEvent.class, name = "CommentRedactionEvent"),
+        @JsonSubTypes.Type(value = OrganizationActivityEvent.class, name = "OrganizationActivity")
 })
 
 public abstract class Event {

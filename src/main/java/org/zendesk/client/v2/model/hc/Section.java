@@ -1,50 +1,73 @@
 package org.zendesk.client.v2.model.hc;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 import java.util.List;
 
 public class Section {
-    /** Automatically assigned when creating subscriptions */
+    /**
+     * Automatically assigned when creating subscriptions
+     */
     private Long id;
 
-    /** The name of the section */
+    /**
+     * The name of the section
+     */
     private String name;
 
-    /** The locale in which the section is displayed */
+    /**
+     * The locale in which the section is displayed
+     */
     private String locale;
 
-    /** The source (default) locale of the section */
+    /**
+     * The source (default) locale of the section
+     */
     @JsonProperty("source_locale")
     private String sourceLocale;
 
-    /** The API url of this section */
+    /**
+     * The API url of this section
+     */
     private String url;
 
-    /** The url of this section in Help Center */
+    /**
+     * The url of this section in Help Center
+     */
     @JsonProperty("html_url")
     private String htmlUrl;
 
-    /** The id of the category to which this section belongs */
+    /**
+     * The id of the category to which this section belongs
+     */
     @JsonProperty("category_id")
     private String categoryId;
 
-    /** Whether the section is out of date */
+    /**
+     * Whether the section is out of date
+     */
     private Boolean outdated;
 
-    /** The position of this section in the section list. By default the section is added to the end of the list */
+    /**
+     * The position of this section in the section list. By default the section is added to the end of the list
+     */
     private Long position;
 
-    /** The ids of all translations of this section */
+    /**
+     * The ids of all translations of this section
+     */
     @JsonProperty("translation_ids")
     private List<String> translation_ids;
 
-    /** The time the section was created */
+    /**
+     * The time the section was created
+     */
     @JsonProperty("created_at")
     private Date createdAt;
 
-    /** The time the section was last updated */
+    /**
+     * The time the section was last updated
+     */
     @JsonProperty("updated_at")
     private Date updatedAt;
 

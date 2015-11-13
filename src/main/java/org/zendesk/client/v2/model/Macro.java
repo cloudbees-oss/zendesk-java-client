@@ -2,7 +2,6 @@ package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +20,8 @@ public class Macro {
     private Date createdAt;
     private Date updatedAt;
 
-    public Macro() {}
+    public Macro() {
+    }
 
     public int getId() {
         return id;
