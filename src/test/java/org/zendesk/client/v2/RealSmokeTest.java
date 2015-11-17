@@ -20,6 +20,9 @@ import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.events.Event;
 import org.zendesk.client.v2.model.hc.Article;
+import org.zendesk.client.v2.model.hc.Category;
+import org.zendesk.client.v2.model.hc.Section;
+import org.zendesk.client.v2.model.hc.Translation;
 import org.zendesk.client.v2.model.targets.Target;
 
 import java.util.ArrayList;
@@ -556,6 +559,69 @@ public class RealSmokeTest {
             assertThat(t.getTitle(), notNullValue());
             if (++count > 40) {  // Check enough to pull 2 result pages
                 break;
+            }
+        }
+    }
+
+    @Test
+    public void getArticleTranslations() throws Exception {
+        createClientWithTokenOrPassword();
+        int articleCount = 0;
+        int translationCount = 0;  // Count total translations checked, not per-article
+        for (Article art : instance.getArticles()) {
+            assertNotNull(art.getId());
+            if (++articleCount > 10) {
+                break; // Do not overwhelm the getArticles API
+            }
+            for (Translation t : instance.getArticleTranslations(art.getId())) {
+                assertNotNull(t.getId());
+                assertNotNull(t.getTitle());
+                assertNotNull(t.getBody());
+                if (++translationCount > 3) {
+                    return;
+                }
+            }
+        }
+    }
+
+    @Test
+    public void getSectionTranslations() throws Exception {
+        createClientWithTokenOrPassword();
+        int sectionCount = 0;
+        int translationCount = 0;
+        for (Section sect : instance.getSections()) {
+            assertNotNull(sect.getId());
+            if (++sectionCount > 10) {
+                break;
+            }
+            for (Translation t : instance.getSectionTranslations(sect.getId())) {
+                assertNotNull(t.getId());
+                assertNotNull(t.getTitle());
+                assertNotNull(t.getBody());
+                if (++translationCount > 3) {
+                    return;
+                }
+            }
+        }
+    }
+
+    @Test
+    public void getCategoryTranslations() throws Exception {
+        createClientWithTokenOrPassword();
+        int categoryCount = 0;
+        int translationCount = 0;
+        for (Category cat : instance.getCategories()) {
+            assertNotNull(cat.getId());
+            if (++categoryCount > 10) {
+                break;
+            }
+            for (Translation t: instance.getCategoryTranslations(cat.getId())) {
+                assertNotNull(t.getId());
+                assertNotNull(t.getTitle());
+                assertNotNull(t.getBody());
+                if (++translationCount > 3) {
+                    return;
+                }
             }
         }
     }

@@ -50,6 +50,7 @@ import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.ArticleAttachments;
 import org.zendesk.client.v2.model.hc.Category;
 import org.zendesk.client.v2.model.hc.Section;
+import org.zendesk.client.v2.model.hc.Translation;
 import org.zendesk.client.v2.model.targets.BasecampTarget;
 import org.zendesk.client.v2.model.targets.CampfireTarget;
 import org.zendesk.client.v2.model.targets.EmailTarget;
@@ -1370,6 +1371,11 @@ public class Zendesk implements Closeable {
                 handle(Article.class, "article")));
     }
 
+    public Iterable<Translation> getArticleTranslations(Long articleId) {
+        return new PagedIterable<Translation>(
+            tmpl("/help_center/articles/{articleId}/translations.json").set("articleId", articleId),
+            handleList(Translation.class, "translations"));
+    }
     public Article createArticle(Article article) {
         checkHasSectionId(article);
         return complete(submit(req("POST", tmpl("/help_center/sections/{id}/articles.json").set("id", article.getSectionId()),
@@ -1417,6 +1423,11 @@ public class Zendesk implements Closeable {
                 handle(Category.class, "category")));
     }
 
+    public Iterable<Translation> getCategoryTranslations(Long categoryId) {
+        return new PagedIterable<Translation>(
+            tmpl("/help_center/categories/{categoryId}/translations.json").set("categoryId", categoryId),
+            handleList(Translation.class, "translations"));
+    }
     public Category createCategory(Category category) {
         return complete(submit(req("POST", cnst("/help_center/categories.json"),
                 JSON, json(Collections.singletonMap("category", category))), handle(Category.class, "category")));
@@ -1449,6 +1460,11 @@ public class Zendesk implements Closeable {
                 handle(Section.class, "section")));
     }
 
+    public Iterable<Translation> getSectionTranslations(Long sectionId) {
+        return new PagedIterable<Translation>(
+            tmpl("/help_center/sections/{sectionId}/translations.json").set("sectionId", sectionId),
+            handleList(Translation.class, "translations"));
+    }
     public Section createSection(Section section) {
         return complete(submit(req("POST", cnst("/help_center/sections.json"), JSON,
                 json(Collections.singletonMap("section", section))), handle(Section.class, "section")));
