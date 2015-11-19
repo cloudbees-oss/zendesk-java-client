@@ -33,6 +33,7 @@ import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.OrganizationField;
 import org.zendesk.client.v2.model.SearchResultEntity;
 import org.zendesk.client.v2.model.Status;
+import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.TicketResult;
 import org.zendesk.client.v2.model.TicketForm;
@@ -450,6 +451,20 @@ public class Zendesk implements Closeable {
 
     public void deleteTicketField(long id) {
         complete(submit(req("DELETE", tmpl("/ticket_fields/{id}.json").set("id", id)), handleStatus()));
+    }
+
+    public Iterable<SuspendedTicket> getSuspendedTickets() {
+        return new PagedIterable<SuspendedTicket>(cnst("/suspended_tickets.json"),
+            handleList(SuspendedTicket.class, "suspended_tickets"));
+    }
+
+    public void deleteSuspendedTicket(SuspendedTicket ticket) {
+        checkHasId(ticket);
+        deleteSuspendedTicket(ticket.getId());
+    }
+
+    public void deleteSuspendedTicket(long id) {
+        complete(submit(req("DELETE", tmpl("/suspended_tickets/{id}.json").set("id", id)), handleStatus()));
     }
 
     public Attachment.Upload createUpload(String fileName, byte[] content) {
@@ -1834,6 +1849,12 @@ public class Zendesk implements Closeable {
     private static void checkHasId(Section section) {
         if (section.getId() == null) {
             throw new IllegalArgumentException("Section requires id");
+        }
+    }
+
+    private static void checkHasId(SuspendedTicket ticket) {
+        if (ticket == null || ticket.getId() == null) {
+            throw new IllegalArgumentException("SuspendedTicket requires id");
         }
     }
 
