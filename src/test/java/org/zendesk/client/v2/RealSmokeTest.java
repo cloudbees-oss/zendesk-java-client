@@ -14,6 +14,7 @@ import org.zendesk.client.v2.model.JobStatus;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.Request;
 import org.zendesk.client.v2.model.Status;
+import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.User;
@@ -380,6 +381,18 @@ public class RealSmokeTest {
         int count = 0;
         for (User u : instance.getUsersIncrementally(new Date(0L))) {
             assertThat(u.getName(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void getSuspendedTickets() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (SuspendedTicket ticket : instance.getSuspendedTickets()) {
+            assertThat(ticket.getId(), notNullValue());
             if (++count > 10) {
                 break;
             }
