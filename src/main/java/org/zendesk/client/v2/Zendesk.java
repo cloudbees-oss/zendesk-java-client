@@ -1593,10 +1593,14 @@ public class Zendesk implements Closeable {
         public void setPagedProperties(JsonNode responseNode, Class<?> clazz) {
             JsonNode node = responseNode.get(NEXT_PAGE);
             if (node == null) {
-                throw new NullPointerException(NEXT_PAGE + " property not found, pagination not supported" +
+                this.nextPage = null;
+                if (logger.isDebugEnabled()) {
+                    logger.debug(NEXT_PAGE + " property not found, pagination not supported" +
                         (clazz != null ? " for " + clazz.getName() : ""));
+                }
+            } else {
+                this.nextPage = node.asText();
             }
-            this.nextPage = node.asText();
         }
 
         public String getNextPage() {
@@ -1644,13 +1648,21 @@ public class Zendesk implements Closeable {
             public void setPagedProperties(JsonNode responseNode, Class<?> clazz) {
                 JsonNode node = responseNode.get(NEXT_PAGE);
                 if (node == null) {
-                    throw new NullPointerException(NEXT_PAGE + " property not found, pagination not supported" +
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(NEXT_PAGE + " property not found, pagination not supported" +
                             (clazz != null ? " for " + clazz.getName() : ""));
+                    }
+                    setNextPage(null);
+                    return;
                 }
                 JsonNode endTimeNode = responseNode.get(END_TIME);
                 if (endTimeNode == null || endTimeNode.asLong() == 0) {
-                    throw new NullPointerException(END_TIME + " property not found, incremental export pagination not supported" +
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(END_TIME + " property not found, incremental export pagination not supported" +
                             (clazz != null ? " for " + clazz.getName() : ""));
+                    }
+                    setNextPage(null);
+                    return;
                 }
                 /**
                  * A request after five minutes ago will result in a 422 responds from Zendesk.
@@ -1662,8 +1674,12 @@ public class Zendesk implements Closeable {
                     // Taking into account documentation found at https://developer.zendesk.com/rest_api/docs/core/incremental_export#polling-strategy
                     JsonNode countNode = responseNode.get(COUNT);
                     if (countNode == null) {
-                        throw new NullPointerException(COUNT + " property not found, incremental export pagination not supported" +
+                        if (logger.isDebugEnabled()) {
+                            logger.debug(COUNT + " property not found, incremental export pagination not supported" +
                                 (clazz != null ? " for " + clazz.getName() : ""));
+                        }
+                        setNextPage(null);
+                        return;
                     }
 
                     if (countNode.asInt() < INCREMENTAL_EXPORT_MAX_COUNT_BY_REQUEST) {
