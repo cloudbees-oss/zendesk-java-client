@@ -1479,7 +1479,7 @@ public class Zendesk implements Closeable {
         return builder.build();
     }
 
-    protected ZendeskAsyncCompletionHandler<Void> handleStatus() {
+    private ZendeskAsyncCompletionHandler<Void> handleStatus() {
         return new ZendeskAsyncCompletionHandler<Void>() {
             @Override
             public Void onCompleted(Response response) throws Exception {
@@ -1493,7 +1493,7 @@ public class Zendesk implements Closeable {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> ZendeskAsyncCompletionHandler<T> handle(final Class<T> clazz) {
+    private <T> ZendeskAsyncCompletionHandler<T> handle(final Class<T> clazz) {
         return new ZendeskAsyncCompletionHandler<T>() {
             @Override
             public T onCompleted(Response response) throws Exception {
@@ -1538,11 +1538,11 @@ public class Zendesk implements Closeable {
         }
     }
 
-    protected <T> ZendeskAsyncCompletionHandler<T> handle(final Class<T> clazz, final String name, final Class... typeParams) {
+    private <T> ZendeskAsyncCompletionHandler<T> handle(final Class<T> clazz, final String name, final Class... typeParams) {
         return new BasicAsyncCompletionHandler<T>(clazz, name, typeParams);
     }
 
-    protected <T> ZendeskAsyncCompletionHandler<JobStatus<T>> handleJobStatus(final Class<T> resultClass) {
+    private <T> ZendeskAsyncCompletionHandler<JobStatus<T>> handleJobStatus(final Class<T> resultClass) {
         return new BasicAsyncCompletionHandler<JobStatus<T>>(JobStatus.class, "job_status", resultClass) {
             @Override
             public JobStatus<T> onCompleted(Response response) throws Exception {
@@ -1606,13 +1606,13 @@ public class Zendesk implements Closeable {
         }
     }
 
-    protected <T> PagedAsyncCompletionHandler<List<T>> handleList(final Class<T> clazz, final String name) {
+    private <T> PagedAsyncCompletionHandler<List<T>> handleList(final Class<T> clazz, final String name) {
         return new PagedAsyncListCompletionHandler<T>(clazz, name);
     }
 
     private static final long FIVE_MINUTES = TimeUnit.MINUTES.toMillis(5);
 
-    protected <T> PagedAsyncCompletionHandler<List<T>> handleIncrementalList(final Class<T> clazz, final String name) {
+    private <T> PagedAsyncCompletionHandler<List<T>> handleIncrementalList(final Class<T> clazz, final String name) {
         return new PagedAsyncListCompletionHandler<T>(clazz, name) {
             @Override
             public void setPagedProperties(JsonNode responseNode, Class<?> clazz) {
@@ -1650,7 +1650,7 @@ public class Zendesk implements Closeable {
         };
     }
 
-    protected PagedAsyncCompletionHandler<List<SearchResultEntity>> handleSearchList(final String name) {
+    private PagedAsyncCompletionHandler<List<SearchResultEntity>> handleSearchList(final String name) {
         return new PagedAsyncCompletionHandler<List<SearchResultEntity>>() {
             @Override
             public List<SearchResultEntity> onCompleted(Response response) throws Exception {
@@ -1672,7 +1672,7 @@ public class Zendesk implements Closeable {
         };
     }
 
-    protected PagedAsyncCompletionHandler<List<Target>> handleTargetList(final String name) {
+    private PagedAsyncCompletionHandler<List<Target>> handleTargetList(final String name) {
         return new PagedAsyncCompletionHandler<List<Target>>() {
             @Override
             public List<Target> onCompleted(Response response) throws Exception {
