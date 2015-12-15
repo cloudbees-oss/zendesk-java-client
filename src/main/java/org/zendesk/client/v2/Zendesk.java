@@ -45,6 +45,8 @@ import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.ArticleAttachments;
 import org.zendesk.client.v2.model.hc.Category;
 import org.zendesk.client.v2.model.hc.Section;
+import org.zendesk.client.v2.model.oauth.OAuthTokenRequest;
+import org.zendesk.client.v2.model.oauth.OAuthTokenResponse;
 import org.zendesk.client.v2.model.targets.BasecampTarget;
 import org.zendesk.client.v2.model.targets.CampfireTarget;
 import org.zendesk.client.v2.model.targets.EmailTarget;
@@ -77,10 +79,16 @@ import java.util.regex.Pattern;
 public class Zendesk implements Closeable {
 
     private static final String JSON = "application/json; charset=UTF-8";
+    /**
+     * Workaround for the OAuth endpoint which returns strange errors like "'client_id', 'grant_type' required." when
+     * charset is specified.
+     */
+    private static final String JSON_FOR_OAUTH = "application/json";
     private final boolean closeClient;
     private final AsyncHttpClient client;
     private final Realm realm;
     private final String url;
+    private final String oauthUrl;
     private final String oauthToken;
     private final ObjectMapper mapper;
     private final Logger logger;
@@ -122,6 +130,7 @@ public class Zendesk implements Closeable {
         this.oauthToken = null;
         this.client = client == null ? new AsyncHttpClient() : client;
         this.url = url.endsWith("/") ? url + "api/v2" : url + "/api/v2";
+        this.oauthUrl = url.endsWith("/") ? url + "oauth" : url + "/oauth";
         if (username != null) {
             this.realm = new Realm.RealmBuilder()
                     .setScheme(Realm.AuthScheme.BASIC)
@@ -144,6 +153,7 @@ public class Zendesk implements Closeable {
         this.realm = null;
         this.client = client == null ? new AsyncHttpClient() : client;
         this.url = url.endsWith("/") ? url + "api/v2" : url + "/api/v2";
+        this.oauthUrl = url.endsWith("/") ? url + "oauth" : url + "/oauth";
         if (oauthToken != null) {
             this.oauthToken = oauthToken;
         } else {
@@ -170,6 +180,11 @@ public class Zendesk implements Closeable {
     //////////////////////////////////////////////////////////////////////
     // Action methods
     //////////////////////////////////////////////////////////////////////
+    public OAuthTokenResponse createOAuthToken(OAuthTokenRequest oauthToken) {
+        return complete(submit(req("POST", cnstOAuth("/tokens"), JSON_FOR_OAUTH, json(oauthToken)),
+                handle(OAuthTokenResponse.class)));
+    }
+
     public <T> JobStatus<T> getJobStatus(JobStatus<T> status) {
         return complete(getJobStatusAsync(status));
     }
@@ -501,9 +516,14 @@ public class Zendesk implements Closeable {
         return complete(submit(req("GET", tmpl("/targets/{id}.json").set("id", id)), handle(Target.class, "target")));
     }
 
-    public Target createTarget(Target target) {
-        return complete(submit(req("POST", cnst("/targets.json"), JSON, json(Collections.singletonMap("target", target))),
-                handle(Target.class, "target")));
+    public <T extends Target> T createTarget(T target) {
+        return (T) complete(submit(req("POST", cnst("/targets.json"), JSON, json(Collections.singletonMap("target", target))),
+                handle(target.getClass(), "target")));
+    }
+
+    public <T extends Target> T updateTarget(Long targetId, T target) {
+        return (T) complete(submit(req("PUT", tmpl("/targets/{id}.json").set("id", targetId), JSON, json(Collections.singletonMap("target", target))),
+                handle(target.getClass(), "target")));
     }
 
     public void deleteTarget(long targetId) {
@@ -1439,7 +1459,7 @@ public class Zendesk implements Closeable {
         RequestBuilder builder = new RequestBuilder(method);
         if (realm != null) {
             builder.setRealm(realm);
-        } else {
+        } else if (oauthToken != null) {
             builder.addHeader("Authorization", "Bearer " + oauthToken);
         }
         builder.setUrl(RESTRICTED_PATTERN.matcher(url).replaceAll("+")); // replace out %2B with + due to API restriction
@@ -1450,7 +1470,7 @@ public class Zendesk implements Closeable {
         RequestBuilder builder = new RequestBuilder(method);
         if (realm != null) {
             builder.setRealm(realm);
-        } else {
+        } else if (oauthToken != null) {
             builder.addHeader("Authorization", "Bearer " + oauthToken);
         }
         builder.setUrl(RESTRICTED_PATTERN.matcher(template.toString()).replaceAll("+")); //replace out %2B with + due to API restriction
@@ -1680,6 +1700,10 @@ public class Zendesk implements Closeable {
 
     private Uri cnst(String template) {
         return new FixedUri(url + template);
+    }
+
+    private Uri cnstOAuth(String constant) {
+        return new FixedUri(oauthUrl + constant);
     }
 
     private void logResponse(Response response) throws IOException {
