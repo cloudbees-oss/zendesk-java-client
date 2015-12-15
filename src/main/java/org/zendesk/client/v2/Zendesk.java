@@ -1660,7 +1660,7 @@ public class Zendesk implements Closeable {
                     setPagedProperties(responseNode, null);
                     List<SearchResultEntity> values = new ArrayList<SearchResultEntity>();
                     for (JsonNode node : responseNode) {
-                        Class<? extends SearchResultEntity> clazz = searchResultTypes.get(node.get("result_type"));
+                        Class<? extends SearchResultEntity> clazz = searchResultTypes.get(node.get("result_type").asText());
                         if (clazz != null) {
                             values.add(mapper.convertValue(node, clazz));
                         }
@@ -1698,8 +1698,8 @@ public class Zendesk implements Closeable {
         return new TemplateUri(url + template);
     }
 
-    private Uri cnst(String template) {
-        return new FixedUri(url + template);
+    private Uri cnst(String constant) {
+        return new FixedUri(url + constant);
     }
 
     private Uri cnstOAuth(String constant) {
@@ -1929,6 +1929,7 @@ public class Zendesk implements Closeable {
                 return current.next();
             }
 
+            @Override
             public void remove() {
                 throw new UnsupportedOperationException();
             }
