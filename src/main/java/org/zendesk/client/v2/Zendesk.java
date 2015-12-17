@@ -896,8 +896,8 @@ public class Zendesk implements Closeable {
 
     public Iterable<Organization> getOrganizationsIncrementally(Date startTime) {
         return new PagedIterable<Organization>(
-            tmpl("/incremental/users.json{?start_time}").set("start_time", msToSeconds(startTime.getTime())), 
-            handleIncrementalList(Organization.class, "users"));                
+            tmpl("/incremental/organizations.json{?start_time}").set("start_time", msToSeconds(startTime.getTime())), 
+            handleIncrementalList(Organization.class, "organizations"));
     }
 
     public Iterable<OrganizationField> getOrganizationFields() {
