@@ -1,5 +1,26 @@
 package org.zendesk.client.v2;
 
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeThat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
+import java.util.UUID;
+
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -12,6 +33,7 @@ import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.JobStatus;
 import org.zendesk.client.v2.model.Organization;
+import org.zendesk.client.v2.model.OrganizationMembership;
 import org.zendesk.client.v2.model.Request;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.Ticket;
@@ -20,27 +42,6 @@ import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.events.Event;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.targets.Target;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.UUID;
-
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeThat;
 
 /**
  * @author stephenc
@@ -546,4 +547,21 @@ public class RealSmokeTest {
             }
         }
     }
+    
+    @Test
+    public void getOrganizationMemberships() throws Exception {
+		
+    	createClientWithTokenOrPassword();
+		
+    	//enter valid user id
+		Long id = new Long("232");
+
+		List<OrganizationMembership> memberships =  instance.getOrganizationMemberships(id);
+		for(OrganizationMembership membership: memberships){
+			assertNotNull(membership.getId());
+			assertNotNull(membership.getOrganizationId());
+			assertNotNull(membership.getUserId());
+		}
+		
+	}
 }
