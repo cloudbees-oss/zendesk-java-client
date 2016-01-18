@@ -625,4 +625,26 @@ public class RealSmokeTest {
             }
         }
     }
+
+    @Test
+    public void getArticlesIncrementally() throws Exception {
+        createClientWithTokenOrPassword();
+        final long ONE_WEEK = 7*24*60*60*1000;
+        int count = 0;
+        try {
+            for (Article t : instance.getArticlesIncrementally(new Date(new Date().getTime() - ONE_WEEK))) {
+                assertThat(t.getTitle(), notNullValue());
+                if (++count > 10) {
+                    break;
+                }
+            }
+        } catch (ZendeskResponseException zre) {
+            if (zre.getStatusCode() == 502) {
+                // Ignore, this is an API limitation
+                // A "Bad Gateway" response is returned if HelpCenter was not active at the given time
+            } else {
+                throw zre;
+            }
+        }
+    }
 }
