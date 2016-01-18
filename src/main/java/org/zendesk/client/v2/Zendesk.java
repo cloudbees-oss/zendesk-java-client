@@ -1431,11 +1431,12 @@ public class Zendesk implements Closeable {
     /**
      * OrganizationMemberships method retrieves the organization memberships of user
      * @param id
-     * @return OrganizationMembership
+     * @return Iterable<OrganizationMembership>
      */
-    public List<OrganizationMembership> getOrganizationMemberships(long id) {
-    	return complete(submit(req("GET", tmpl("/users/{id}/organization_memberships.json").set("id", id)), 
-    			handleList(OrganizationMembership.class, "organization_memberships")));
+    public Iterable<OrganizationMembership> getOrganizationMemberships(long id) {
+    	return new PagedIterable<OrganizationMembership>(
+    			tmpl("/users/{id}/organization_memberships.json").set("id", id),
+    			handleList(OrganizationMembership.class, "organization_memberships"));
     }
     
     /**

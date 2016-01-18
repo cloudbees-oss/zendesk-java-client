@@ -655,9 +655,9 @@ public class RealSmokeTest {
     	createClientWithTokenOrPassword();
 		
     	//enter valid user id
-		Long id = new Long("232");
+		Long id = new Long("3598454327");
 
-		List<OrganizationMembership> memberships =  instance.getOrganizationMemberships(id);
+		Iterable<OrganizationMembership> memberships =  instance.getOrganizationMemberships(id);
 		for(OrganizationMembership membership: memberships){
 			assertNotNull(membership.getId());
 			assertNotNull(membership.getOrganizationId());
