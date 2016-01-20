@@ -9,11 +9,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClient.BoundRequestBuilder;
 import com.ning.http.client.ListenableFuture;
 import com.ning.http.client.Realm;
 import com.ning.http.client.Request;
 import com.ning.http.client.RequestBuilder;
 import com.ning.http.client.Response;
+import com.ning.http.client.multipart.FilePart;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +37,8 @@ import org.zendesk.client.v2.model.SearchResultEntity;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
-import org.zendesk.client.v2.model.TicketResult;
 import org.zendesk.client.v2.model.TicketForm;
+import org.zendesk.client.v2.model.TicketResult;
 import org.zendesk.client.v2.model.Topic;
 import org.zendesk.client.v2.model.Trigger;
 import org.zendesk.client.v2.model.TwitterMonitor;
@@ -56,9 +58,11 @@ import org.zendesk.client.v2.model.targets.TwitterTarget;
 import org.zendesk.client.v2.model.targets.UrlTarget;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -312,8 +316,8 @@ public class Zendesk implements Closeable {
     }
 
     public List<ArticleAttachments> getAttachmentsFromArticle(Long articleID) {
-        return complete(submit(req("GET", tmpl("/help_center/articles/{?query}/attachments.json").set("query", articleID)),
-                handleList(ArticleAttachments.class, "articles")));
+        return complete(submit(req("GET", tmpl("/help_center/articles/{id}/attachments.json").set("id", articleID)),
+                handleArticleAttachmentsList("article_attachments")));
     }
 
     public List<Ticket> getTickets(long id, long... ids) {
@@ -486,6 +490,29 @@ public class Zendesk implements Closeable {
                         content), handle(Attachment.Upload.class, "upload")));
     }
 
+  public void associateAttachmentsToArticle(String idArticle, List<Attachment> attachments) {
+     TemplateUri uri = tmpl("/help_center/articles/{article_id}/bulk_attachments.json").set("article_id", idArticle);
+     List<Long> attachmentsIds = new ArrayList<Long>();
+     for(Attachment item : attachments){
+       attachmentsIds.add(item.getId());
+     }
+     complete(submit(req("POST", uri, JSON, json(Collections.singletonMap("attachment_ids", attachmentsIds))), handleStatus()));
+ }
+   
+  public ArticleAttachments createUploadArticle(long articleId, File file) throws IOException {
+    BoundRequestBuilder builder = client.preparePost(tmpl("/help_center/articles/{id}/attachments.json").set("id", articleId).toString());
+    if (realm != null) {
+      builder.setRealm(realm);
+    } else {
+      builder.addHeader("Authorization", "Bearer " + oauthToken);
+    }
+    builder.setHeader("Content-Type", "multipart/form-data");
+    builder.addBodyPart(
+        new FilePart("file", file, "application/octet-stream", Charset.forName("UTF-8"), file.getName()));
+    final Request req = builder.build();
+    return complete(submit(req, handle(ArticleAttachments.class, "article_attachment")));
+  }
+  
     public void deleteUpload(Attachment.Upload upload) {
         checkHasToken(upload);
         deleteUpload(upload.getToken());
@@ -1373,6 +1400,25 @@ public class Zendesk implements Closeable {
                 handleStatus()));
     }
 
+    /**
+     * Delete attachment from article.
+     * @param attachment 
+     */
+    public void deleteArticleAttachment(ArticleAttachments attachment) {
+      if (attachment.getId() == 0) {
+        throw new IllegalArgumentException("Attachment requires id");
+      }
+      deleteArticleAttachment(attachment.getId());
+    }
+
+    /**
+     * Delete attachment from article.
+     * @param id attachment identifier. 
+     */
+    public void deleteArticleAttachment(long id) {
+      complete(submit(req("DELETE", tmpl("/help_center/articles/attachments/{id}.json").set("id", id)), handleStatus()));
+    }
+    
     public List<Category> getCategories() {
         return complete(submit(req("GET", cnst("/help_center/categories.json")),
                 handleList(Category.class, "categories")));
@@ -1736,6 +1782,25 @@ public class Zendesk implements Closeable {
         };
     }
     
+
+    protected PagedAsyncCompletionHandler<List<ArticleAttachments>> handleArticleAttachmentsList(final String name) {
+        return new PagedAsyncCompletionHandler<List<ArticleAttachments>>() {
+            @Override
+            public List<ArticleAttachments> onCompleted(Response response) throws Exception {
+                logResponse(response);
+                if (isStatus2xx(response)) {
+                    JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
+                    List<ArticleAttachments> values = new ArrayList<ArticleAttachments>();
+                    for (JsonNode node : responseNode.get(name)) {
+                        values.add(mapper.convertValue(node, ArticleAttachments.class));
+                    }
+                    return values;
+                }
+                throw new ZendeskResponseException(response);
+            }
+        };
+    }
+
     private TemplateUri tmpl(String template) {
         return new TemplateUri(url + template);
     }
