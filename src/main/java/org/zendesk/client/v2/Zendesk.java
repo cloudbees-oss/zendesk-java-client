@@ -508,9 +508,8 @@ public class Zendesk implements Closeable {
       builder.addHeader("Authorization", "Bearer " + oauthToken);
     }
     builder.setHeader("Content-Type", "multipart/form-data");
-    javax.activation.MimetypesFileTypeMap fileTypeMap = new javax.activation.MimetypesFileTypeMap();
     builder.addBodyPart(
-        new FilePart("file", file, fileTypeMap.getContentType(file), Charset.forName("UTF-8"), file.getName()));
+        new FilePart("file", file, "application/octet-stream", Charset.forName("UTF-8"), file.getName()));
     final Request req = builder.build();
     return complete(submit(req, handle(ArticleAttachments.class, "article_attachment")));
   }
