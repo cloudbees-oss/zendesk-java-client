@@ -35,7 +35,6 @@ public final class ZendeskConfig {
                     result.put(newKey, systemVars.get(key));
                 }
             }
-
             if (result.isEmpty()) {
                 return null;
             }
