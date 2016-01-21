@@ -1405,10 +1405,10 @@ public class Zendesk implements Closeable {
      * @param attachment 
      */
     public void deleteArticleAttachment(ArticleAttachments attachment) {
-      if (attachment.getId() == 0) {
-        throw new IllegalArgumentException("Attachment requires id");
-      }
-      deleteArticleAttachment(attachment.getId());
+        if (attachment.getId() == 0) {
+            throw new IllegalArgumentException("Attachment requires id");
+        }
+        deleteArticleAttachment(attachment.getId());
     }
 
     /**
@@ -1416,7 +1416,7 @@ public class Zendesk implements Closeable {
      * @param id attachment identifier. 
      */
     public void deleteArticleAttachment(long id) {
-      complete(submit(req("DELETE", tmpl("/help_center/articles/attachments/{id}.json").set("id", id)), handleStatus()));
+        complete(submit(req("DELETE", tmpl("/help_center/articles/attachments/{id}.json").set("id", id)), handleStatus()));
     }
     
     public List<Category> getCategories() {
