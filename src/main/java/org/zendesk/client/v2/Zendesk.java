@@ -491,27 +491,27 @@ public class Zendesk implements Closeable {
     }
 
   public void associateAttachmentsToArticle(String idArticle, List<Attachment> attachments) {
-     TemplateUri uri = tmpl("/help_center/articles/{article_id}/bulk_attachments.json").set("article_id", idArticle);
-     List<Long> attachmentsIds = new ArrayList<Long>();
-     for(Attachment item : attachments){
-       attachmentsIds.add(item.getId());
-     }
-     complete(submit(req("POST", uri, JSON, json(Collections.singletonMap("attachment_ids", attachmentsIds))), handleStatus()));
- }
+        TemplateUri uri = tmpl("/help_center/articles/{article_id}/bulk_attachments.json").set("article_id", idArticle);
+        List<Long> attachmentsIds = new ArrayList<Long>();
+        for(Attachment item : attachments){
+            attachmentsIds.add(item.getId());
+        }
+        complete(submit(req("POST", uri, JSON, json(Collections.singletonMap("attachment_ids", attachmentsIds))), handleStatus()));
+    }
    
   public ArticleAttachments createUploadArticle(long articleId, File file) throws IOException {
-    BoundRequestBuilder builder = client.preparePost(tmpl("/help_center/articles/{id}/attachments.json").set("id", articleId).toString());
-    if (realm != null) {
-      builder.setRealm(realm);
-    } else {
-      builder.addHeader("Authorization", "Bearer " + oauthToken);
+        BoundRequestBuilder builder = client.preparePost(tmpl("/help_center/articles/{id}/attachments.json").set("id", articleId).toString());
+        if (realm != null) {
+            builder.setRealm(realm);
+        } else {
+            builder.addHeader("Authorization", "Bearer " + oauthToken);
+        }
+        builder.setHeader("Content-Type", "multipart/form-data");
+        builder.addBodyPart(
+            new FilePart("file", file, "application/octet-stream", Charset.forName("UTF-8"), file.getName()));
+        final Request req = builder.build();
+        return complete(submit(req, handle(ArticleAttachments.class, "article_attachment")));
     }
-    builder.setHeader("Content-Type", "multipart/form-data");
-    builder.addBodyPart(
-        new FilePart("file", file, "application/octet-stream", Charset.forName("UTF-8"), file.getName()));
-    final Request req = builder.build();
-    return complete(submit(req, handle(ArticleAttachments.class, "article_attachment")));
-  }
   
     public void deleteUpload(Attachment.Upload upload) {
         checkHasToken(upload);
