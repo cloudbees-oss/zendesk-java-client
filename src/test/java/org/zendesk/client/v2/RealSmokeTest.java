@@ -12,6 +12,7 @@ import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.JobStatus;
 import org.zendesk.client.v2.model.Organization;
+import org.zendesk.client.v2.model.OrganizationMembership;
 import org.zendesk.client.v2.model.Request;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
@@ -647,4 +648,21 @@ public class RealSmokeTest {
             }
         }
     }
+    
+    @Test
+    public void getOrganizationMemberships() throws Exception {
+		
+    	createClientWithTokenOrPassword();
+		
+    	//enter valid user id
+		Long id = new Long("3598454327");
+
+		Iterable<OrganizationMembership> memberships =  instance.getOrganizationMemberships(id);
+		for(OrganizationMembership membership: memberships){
+			assertNotNull(membership.getId());
+			assertNotNull(membership.getOrganizationId());
+			assertNotNull(membership.getUserId());
+		}
+		
+	}
 }

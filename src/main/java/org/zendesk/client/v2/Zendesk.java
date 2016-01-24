@@ -33,6 +33,7 @@ import org.zendesk.client.v2.model.Macro;
 import org.zendesk.client.v2.model.Metric;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.OrganizationField;
+import org.zendesk.client.v2.model.OrganizationMembership;
 import org.zendesk.client.v2.model.SearchResultEntity;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
@@ -1471,6 +1472,40 @@ public class Zendesk implements Closeable {
             tmpl("/help_center/sections/{sectionId}/translations.json").set("sectionId", sectionId),
             handleList(Translation.class, "translations"));
     }
+    
+    
+    /**
+     * OrganizationMemberships method retrieves the organization memberships of user
+     * @param id
+     * @return Iterable<OrganizationMembership>
+     */
+    public Iterable<OrganizationMembership> getOrganizationMemberships(long id) {
+    	return new PagedIterable<OrganizationMembership>(
+    			tmpl("/users/{id}/organization_memberships.json").set("id", id),
+    			handleList(OrganizationMembership.class, "organization_memberships"));
+    }
+    
+    /**
+     * deleteOrganizationMembership method deletes organization membership of user
+     * @param id
+     * @return void
+     */
+    public void deleteOrganizationMembership(long id) {
+    	complete(submit(req("DELETE", tmpl("/organization_memberships/{id}.json").set("id", id)), 
+    			handleStatus()));
+    }
+    
+    
+    /**
+     * updateUserIdentity method used to update user identity
+     * @param id
+     * @return Identity
+     */
+    public Identity updateUserIdentity(Identity identity, User user) {
+        return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{id}.json").set("userId", user.getId()).set("id", identity.getId()), JSON, json(
+                Collections.singletonMap("identity", identity))), handle(Identity.class, "identity")));
+    }
+    
     public Section createSection(Section section) {
         return complete(submit(req("POST", cnst("/help_center/sections.json"), JSON,
                 json(Collections.singletonMap("section", section))), handle(Section.class, "section")));
