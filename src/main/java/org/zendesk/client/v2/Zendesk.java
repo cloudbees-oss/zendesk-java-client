@@ -50,6 +50,8 @@ import org.zendesk.client.v2.model.hc.ArticleAttachments;
 import org.zendesk.client.v2.model.hc.Category;
 import org.zendesk.client.v2.model.hc.Section;
 import org.zendesk.client.v2.model.hc.Translation;
+import org.zendesk.client.v2.model.schedules.Holiday;
+import org.zendesk.client.v2.model.schedules.Schedule;
 import org.zendesk.client.v2.model.targets.BasecampTarget;
 import org.zendesk.client.v2.model.targets.CampfireTarget;
 import org.zendesk.client.v2.model.targets.EmailTarget;
@@ -1560,6 +1562,36 @@ public class Zendesk implements Closeable {
                 handleStatus()));
     }
 
+    /**
+     * Get a list of the current business hours schedules
+     * @return A List of Schedules
+     */
+    public Iterable<Schedule> getSchedules() {
+        return complete(submit(req("GET", cnst("/business_hours/schedules.json")),
+            handleList(Schedule.class, "schedules")));
+    }
+
+    public Schedule getSchedule(Schedule schedule) {
+        checkHasId(schedule);
+        return getSchedule(schedule.getId());
+    }
+
+    public Schedule getSchedule(Long scheduleId) {
+        return complete(submit(req("GET", tmpl("/business_hours/schedules/{id}.json").set("id", scheduleId)),
+            handle(Schedule.class, "schedule")));
+    }
+
+    public Iterable<Holiday> getHolidaysForSchedule(Schedule schedule) {
+        checkHasId(schedule);
+        return getHolidaysForSchedule(schedule.getId());
+    }
+
+    public Iterable<Holiday> getHolidaysForSchedule(Long scheduleId) {
+        return complete(submit(req("GET",
+            tmpl("/business_hours/schedules/{id}/holidays.json").set("id", scheduleId)),
+            handleList(Holiday.class, "holidays")));
+    }
+
     //////////////////////////////////////////////////////////////////////
     // Helper methods
     //////////////////////////////////////////////////////////////////////
@@ -2037,6 +2069,18 @@ public class Zendesk implements Closeable {
     private static void checkHasId(Translation translation) {
         if (translation.getId() == null) {
             throw new IllegalArgumentException("Translation requires id");
+        }
+    }
+
+    private static void checkHasId(Schedule schedule) {
+        if (schedule == null || schedule.getId() == null) {
+            throw new IllegalArgumentException("Schedule requires id");
+        }
+    }
+
+    private static void checkHasId(Holiday holiday) {
+        if (holiday == null || holiday.getId() == null) {
+            throw new IllegalArgumentException("Holiday requires id");
         }
     }
 
