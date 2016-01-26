@@ -3,6 +3,7 @@ package org.zendesk.client.v2.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author stephenc
@@ -21,6 +22,7 @@ public class Request {
     protected Date createdAt;
     protected Date updatedAt;
     protected Comment comment;
+    private List<CustomFieldValue> customFields;
 
     @JsonProperty("created_at")
     public Date getCreatedAt() {
@@ -116,5 +118,14 @@ public class Request {
 
     public void setComment(Comment comment) {
         this.comment = comment;
+    }
+    
+    @JsonProperty("custom_fields")
+    public List<CustomFieldValue> getCustomFields() {
+        return customFields;
+    }
+
+    public void setCustomFields(List<CustomFieldValue> customFields) {
+        this.customFields = customFields;
     }
 }
