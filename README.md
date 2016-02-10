@@ -45,7 +45,7 @@ Here is the status of the various API components:
 * [User Identities](http://developer.zendesk.com/documentation/rest_api/user_identities.html) ✓
 * [Groups](http://developer.zendesk.com/documentation/rest_api/groups.html) ✓
 * [Group Membership](http://developer.zendesk.com/documentation/rest_api/group_memberships.html) ✓
-* [Custom Agent Roles](http://developer.zendesk.com/documentation/rest_api/custom_roles.html)
+* [Custom Agent Roles](http://developer.zendesk.com/documentation/rest_api/custom_roles.html) ✓
 * [Organizations](http://developer.zendesk.com/documentation/rest_api/organizations.html) ✓ *except for related info*
 * [Search](http://developer.zendesk.com/documentation/rest_api/search.html) ✓ *except for topics and sort ordering*
 * [Tags](http://developer.zendesk.com/documentation/rest_api/tags.html)
