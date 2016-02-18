@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.zendesk.client.v2.model.Audit;
+import org.zendesk.client.v2.model.Collaborator;
 import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Group;
@@ -13,20 +14,27 @@ import org.zendesk.client.v2.model.JobStatus;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.Request;
 import org.zendesk.client.v2.model.Status;
+import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.events.Event;
+import org.zendesk.client.v2.model.hc.Article;
+import org.zendesk.client.v2.model.hc.Category;
+import org.zendesk.client.v2.model.hc.Section;
+import org.zendesk.client.v2.model.hc.Translation;
 import org.zendesk.client.v2.model.targets.Target;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.UUID;
 
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -155,6 +163,7 @@ public class RealSmokeTest {
     }
     
     @Test
+    @Ignore("Needs test data setup correctly")
     public void getTicketsPagesRequests() throws Exception {
         createClientWithTokenOrPassword();
         int count = 0;
@@ -191,6 +200,18 @@ public class RealSmokeTest {
             count += 5;
         }
         assertThat(count, is(16L));
+    }
+
+    @Test
+    public void getTicketsIncrementally() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (Ticket t : instance.getTicketsIncrementally(new Date(0L))) {
+            assertThat(t.getId(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
     }
 
     @Test
@@ -242,6 +263,7 @@ public class RealSmokeTest {
         Ticket t = new Ticket(
                 new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
                 "This is a test", new Comment("Please ignore this ticket"));
+        t.setCollaborators(Arrays.asList(new Collaborator("Bob Example", "bob@example.org"), new Collaborator("Alice Example", "alice@example.org")));
         Ticket ticket = instance.createTicket(t);
         System.out.println(ticket.getId() + " -> " + ticket.getUrl());
         assertThat(ticket.getId(), notNullValue());
@@ -249,6 +271,10 @@ public class RealSmokeTest {
             Ticket t2 = instance.getTicket(ticket.getId());
             assertThat(t2, notNullValue());
             assertThat(t2.getId(), is(ticket.getId()));
+
+            List<User> ticketCollaborators = instance.getTicketCollaborators(ticket.getId());
+            assertThat("Collaborators", ticketCollaborators.size(), is(2));
+            assertThat("First Collaborator", ticketCollaborators.get(0).getEmail(), anyOf(is("alice@example.org"), is("bob@example.org")));
         } finally {
             instance.deleteTicket(ticket.getId());
         }
@@ -256,6 +282,7 @@ public class RealSmokeTest {
         assertThat(ticket.getRequester(), nullValue());
         assertThat(ticket.getRequesterId(), notNullValue());
         assertThat(ticket.getDescription(), is(t.getComment().getBody()));
+        assertThat("Collaborators", ticket.getCollaboratorIds().size(), is(2));
         assertThat(instance.getTicket(ticket.getId()), nullValue());
     }
 
@@ -340,10 +367,58 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void getUsers() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (User u : instance.getUsers()) {
+            assertThat(u.getName(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void getUsersIncrementally() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (User u : instance.getUsersIncrementally(new Date(0L))) {
+            assertThat(u.getName(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void getSuspendedTickets() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (SuspendedTicket ticket : instance.getSuspendedTickets()) {
+            assertThat(ticket.getId(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
     public void getOrganizations() throws Exception {
         createClientWithTokenOrPassword();
         int count = 0;
         for (Organization t : instance.getOrganizations()) {
+            assertThat(t.getName(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void getOrganizationsIncrementally() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (Organization t : instance.getOrganizationsIncrementally(new Date(0L))) {
             assertThat(t.getName(), notNullValue());
             if (++count > 10) {
                 break;
@@ -476,4 +551,100 @@ public class RealSmokeTest {
         }
     }
 
+    @Test
+    public void getArticles() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (Article t : instance.getArticles()) {
+            assertThat(t.getTitle(), notNullValue());
+            if (++count > 40) {  // Check enough to pull 2 result pages
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void getArticleTranslations() throws Exception {
+        createClientWithTokenOrPassword();
+        int articleCount = 0;
+        int translationCount = 0;  // Count total translations checked, not per-article
+        for (Article art : instance.getArticles()) {
+            assertNotNull(art.getId());
+            if (++articleCount > 10) {
+                break; // Do not overwhelm the getArticles API
+            }
+            for (Translation t : instance.getArticleTranslations(art.getId())) {
+                assertNotNull(t.getId());
+                assertNotNull(t.getTitle());
+                assertNotNull(t.getBody());
+                if (++translationCount > 3) {
+                    return;
+                }
+            }
+        }
+    }
+
+    @Test
+    public void getSectionTranslations() throws Exception {
+        createClientWithTokenOrPassword();
+        int sectionCount = 0;
+        int translationCount = 0;
+        for (Section sect : instance.getSections()) {
+            assertNotNull(sect.getId());
+            if (++sectionCount > 10) {
+                break;
+            }
+            for (Translation t : instance.getSectionTranslations(sect.getId())) {
+                assertNotNull(t.getId());
+                assertNotNull(t.getTitle());
+                assertNotNull(t.getBody());
+                if (++translationCount > 3) {
+                    return;
+                }
+            }
+        }
+    }
+
+    @Test
+    public void getCategoryTranslations() throws Exception {
+        createClientWithTokenOrPassword();
+        int categoryCount = 0;
+        int translationCount = 0;
+        for (Category cat : instance.getCategories()) {
+            assertNotNull(cat.getId());
+            if (++categoryCount > 10) {
+                break;
+            }
+            for (Translation t: instance.getCategoryTranslations(cat.getId())) {
+                assertNotNull(t.getId());
+                assertNotNull(t.getTitle());
+                assertNotNull(t.getBody());
+                if (++translationCount > 3) {
+                    return;
+                }
+            }
+        }
+    }
+
+    @Test
+    public void getArticlesIncrementally() throws Exception {
+        createClientWithTokenOrPassword();
+        final long ONE_WEEK = 7*24*60*60*1000;
+        int count = 0;
+        try {
+            for (Article t : instance.getArticlesIncrementally(new Date(new Date().getTime() - ONE_WEEK))) {
+                assertThat(t.getTitle(), notNullValue());
+                if (++count > 10) {
+                    break;
+                }
+            }
+        } catch (ZendeskResponseException zre) {
+            if (zre.getStatusCode() == 502) {
+                // Ignore, this is an API limitation
+                // A "Bad Gateway" response is returned if HelpCenter was not active at the given time
+            } else {
+                throw zre;
+            }
+        }
+    }
 }
