@@ -1211,7 +1211,7 @@ public class Zendesk implements Closeable {
     }
 
     public void deleteGroupMembership(long id) {
-        complete(submit(req("DELETE", tmpl("/groups_memberships/{id}.json").set("id", id)), handleStatus()));
+        complete(submit(req("DELETE", tmpl("/group_memberships/{id}.json").set("id", id)), handleStatus()));
     }
 
     public void deleteGroupMembership(long user_id, GroupMembership groupMembership) {
@@ -1220,13 +1220,13 @@ public class Zendesk implements Closeable {
     }
 
     public void deleteGroupMembership(long user_id, long group_membership_id) {
-        complete(submit(req("DELETE", tmpl("/users/{uid}/groups_memberships/{gmid}.json").set("uid", user_id)
+        complete(submit(req("DELETE", tmpl("/users/{uid}/group_memberships/{gmid}.json").set("uid", user_id)
                 .set("gmid", group_membership_id)), handleStatus()));
     }
 
     public List<GroupMembership> setGroupMembershipAsDefault(long user_id, GroupMembership groupMembership) {
         checkHasId(groupMembership);
-        return complete(submit(req("POST", tmpl("/users/{uid}/group_memberships/{gmid}/make_default.json")
+        return complete(submit(req("PUT", tmpl("/users/{uid}/group_memberships/{gmid}/make_default.json")
                         .set("uid", user_id).set("gmid", groupMembership.getId()), JSON, json(
                         Collections.singletonMap("group_memberships", groupMembership))),
                 handleList(GroupMembership.class, "results")));
