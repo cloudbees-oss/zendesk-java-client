@@ -1,9 +1,6 @@
 package org.zendesk.client.v2.model.schedules;
 
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.TimeZone;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Holiday implements Serializable {
@@ -12,8 +9,8 @@ public class Holiday implements Serializable {
 
     private String name;
     private Long id;
-    private Long startDate;
-    private Long endDate;
+    private String startDate;
+    private String endDate;
 
     /*
      * Name of the holiday
@@ -37,27 +34,21 @@ public class Holiday implements Serializable {
         this.id = id;
     }
 
-    /*
-     *  Integer representation of the holiday start date
-     */
     @JsonProperty("start_date")
-    public Long getStartDay() {
+    public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDay( Long startDate ) {
+    public void setStartDate( String startDate ) {
         this.startDate = startDate;
     }
 
-    /*
-     *  Integer representation of the holiday end date
-     */
     @JsonProperty("end_date")
-    public Long getEndDay() {
+    public String getEndDate() {
         return endDate;
     }
 
-    public void setEndDay( Long endDate ) {
+    public void setEndDate( String endDate ) {
         this.endDate = endDate;
     }
 }
