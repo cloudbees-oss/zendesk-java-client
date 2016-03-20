@@ -1748,7 +1748,7 @@ public class Zendesk implements Closeable {
                     setPagedProperties(responseNode, null);
                     List<SearchResultEntity> values = new ArrayList<SearchResultEntity>();
                     for (JsonNode node : responseNode) {
-                        Class<? extends SearchResultEntity> clazz = searchResultTypes.get(node.get("result_type"));
+                        Class<? extends SearchResultEntity> clazz = searchResultTypes.get(node.get("result_type").asText());
                         if (clazz != null) {
                             values.add(mapper.convertValue(node, clazz));
                         }
