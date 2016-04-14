@@ -55,9 +55,9 @@ Here is the status of the various API components:
 * [Topics](http://developer.zendesk.com/documentation/rest_api/topics.html) ✓
 * [Topic Comments](http://developer.zendesk.com/documentation/rest_api/topic_comments.html)
 * [Topic Subscriptions](http://developer.zendesk.com/documentation/rest_api/topic_subscriptions.html)
-* [Help Center Categories](https://developer.zendesk.com/rest_api/docs/help_center/categories)
-* [Help Center Sections](https://developer.zendesk.com/rest_api/docs/help_center/sections)
-* [Help Center Articles](https://developer.zendesk.com/rest_api/docs/help_center/articles)
+* [Help Center Categories](https://developer.zendesk.com/rest_api/docs/help_center/categories) ✓
+* [Help Center Sections](https://developer.zendesk.com/rest_api/docs/help_center/sections) ✓
+* [Help Center Articles](https://developer.zendesk.com/rest_api/docs/help_center/articles) ✓
 * [Topic Votes](http://developer.zendesk.com/documentation/rest_api/topic_votes.html)
 * [Account Settings](http://developer.zendesk.com/documentation/rest_api/account_settings.html)
 * [Activity Stream](http://developer.zendesk.com/documentation/rest_api/activity_stream.html)
@@ -83,5 +83,7 @@ History
 * 0.2.x - At request of [Zendesk][zd], renamed `ZenDesk` to `Zendesk`
 
 * 0.3.x - Fixed infinite loop with PagedIterable, updated async-http-client dependency to 1.9.x.
+
+* 0.4.x - Few API breakage (in particular changed userId to Long in Identity), updated async-http-client dependency to latest.
 
   [zd]: http://zendesk.com
