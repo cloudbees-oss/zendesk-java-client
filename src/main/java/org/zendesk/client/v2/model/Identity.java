@@ -11,7 +11,7 @@ import java.util.Date;
 public class Identity {
     private Long id;
     private String url;
-    private Integer userId;
+    private Long userId;
     private String type;
     private String value;
     private Boolean verified;
@@ -60,11 +60,11 @@ public class Identity {
     }
 
     @JsonProperty("user_id")
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
