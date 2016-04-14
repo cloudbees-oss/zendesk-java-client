@@ -647,4 +647,28 @@ public class RealSmokeTest {
             }
         }
     }
+
+    @Test
+    public void getCategories() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (Category cat : instance.getCategories()) {
+            assertThat(cat.getName(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void getSections() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (Section s : instance.getSections()) {
+            assertThat(s.getName(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
 }
