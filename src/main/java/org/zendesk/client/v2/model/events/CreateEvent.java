@@ -11,6 +11,9 @@ import java.util.List;
  * @since 05/04/2013 11:56
  */
 public class CreateEvent extends Event {
+
+    private static final long serialVersionUID = 1L;
+
     private String fieldName;
     private List<String> value;
 

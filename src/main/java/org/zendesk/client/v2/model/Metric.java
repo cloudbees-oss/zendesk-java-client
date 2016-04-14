@@ -2,12 +2,15 @@ package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author jyrij
  */
-public class Metric {
+public class Metric implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @JsonProperty("id")
     protected Long id;

@@ -7,6 +7,9 @@ import java.util.List;
  * @since 05/04/2013 15:38
  */
 public class Attachment extends Photo {
+
+    private static final long serialVersionUID = 1L;
+
     private List<Photo> thumbnails;
 
     public List<Photo> getThumbnails() {

@@ -5,6 +5,9 @@ package org.zendesk.client.v2.model.events;
  * @since 05/04/2013 11:57
  */
 public class LogMeInTranscriptEvent extends Event {
+
+    private static final long serialVersionUID = 1L;
+
     private String body;
 
     public String getBody() {

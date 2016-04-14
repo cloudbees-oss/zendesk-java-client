@@ -11,6 +11,9 @@ import java.util.List;
  * @since 05/04/2013 11:56
  */
 public class ChangeEvent extends CreateEvent {
+
+    private static final long serialVersionUID = 1L;
+
     private List<String> previousValue;
 
     @JsonProperty("previous_value")

@@ -3,6 +3,7 @@
  */
 package org.zendesk.client.v2.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,10 @@ import java.util.List;
  * @author Sandeep Kaul(sandeep.kaul@olacabs.com)
  *
  */
-public class Conditions {
+public class Conditions implements Serializable {
+
+  private static final long serialVersionUID = 1L;
+
   private List<Condition> all = new ArrayList<Condition>();
   private List<Condition> any = new ArrayList<Condition>();
 

@@ -3,6 +3,7 @@ package org.zendesk.client.v2.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -12,7 +13,9 @@ import java.util.List;
  * Time: 12:43
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Macro {
+public class Macro implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private int id;
     private String title;

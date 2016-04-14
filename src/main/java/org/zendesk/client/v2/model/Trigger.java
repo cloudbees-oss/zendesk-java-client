@@ -1,5 +1,6 @@
 package org.zendesk.client.v2.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,7 +10,10 @@ import java.util.List;
  * 
  * @author adavidson
  */
-public class Trigger {
+public class Trigger implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
    private Long         id;
    private String       title;
    private boolean      active;

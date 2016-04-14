@@ -2,13 +2,17 @@ package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author stephenc
  * @since 09/04/2013 15:08
  */
-public class Request {
+public class Request implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     protected Long id;
     protected String url;
     protected String subject;

@@ -9,6 +9,9 @@ import java.util.Map;
  * @since 05/04/2013 11:57
  */
 public class FacebookEvent extends Event {
+
+    private static final long serialVersionUID = 1L;
+
     private Map<String, Object> page;
     private Long communication;
     private String ticketVia;
