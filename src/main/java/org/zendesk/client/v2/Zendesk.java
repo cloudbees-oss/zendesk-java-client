@@ -1394,6 +1394,12 @@ public class Zendesk implements Closeable {
                 JSON, json(Collections.singletonMap("article", article))), handle(Article.class, "article")));
     }
 
+    public Translation updateArticleTranslation(Long articleId, String locale, Translation translation) {
+        checkHasId(translation);
+        return complete(submit(req("PUT", tmpl("/help_center/articles/{id}/translations/{locale}.json").set("id", articleId).set("locale",locale),
+                JSON, json(Collections.singletonMap("translation", translation))), handle(Translation.class, "translation")));
+    }
+
     public void deleteArticle(Article article) {
         checkHasId(article);
         complete(submit(req("DELETE", tmpl("/help_center/articles/{id}.json").set("id", article.getId())),
@@ -1445,6 +1451,12 @@ public class Zendesk implements Closeable {
                 JSON, json(Collections.singletonMap("category", category))), handle(Category.class, "category")));
     }
 
+    public Translation updateCategoryTranslation(Long categoryId, String locale, Translation translation) {
+        checkHasId(translation);
+        return complete(submit(req("PUT", tmpl("/help_center/categories/{id}/translations/{locale}.json").set("id", categoryId).set("locale",locale),
+                JSON, json(Collections.singletonMap("translation", translation))), handle(Translation.class, "translation")));
+    }
+
     public void deleteCategory(Category category) {
         checkHasId(category);
         complete(submit(req("DELETE", tmpl("/help_center/categories/{id}.json").set("id", category.getId())),
@@ -1482,6 +1494,12 @@ public class Zendesk implements Closeable {
         checkHasId(section);
         return complete(submit(req("PUT", tmpl("/help_center/sections/{id}.json").set("id", section.getId()),
                 JSON, json(Collections.singletonMap("section", section))), handle(Section.class, "section")));
+    }
+
+    public Translation updateSectionTranslation(Long sectionId, String locale, Translation translation) {
+        checkHasId(translation);
+        return complete(submit(req("PUT", tmpl("/help_center/sections/{id}/translations/{locale}.json").set("id", sectionId).set("locale",locale),
+                JSON, json(Collections.singletonMap("translation", translation))), handle(Translation.class, "translation")));
     }
 
     public void deleteSection(Section section) {
@@ -1961,6 +1979,12 @@ public class Zendesk implements Closeable {
     private static void checkHasId(SuspendedTicket ticket) {
         if (ticket == null || ticket.getId() == null) {
             throw new IllegalArgumentException("SuspendedTicket requires id");
+        }
+    }
+
+    private static void checkHasId(Translation translation) {
+        if (translation.getId() == null) {
+            throw new IllegalArgumentException("Translation requires id");
         }
     }
 
