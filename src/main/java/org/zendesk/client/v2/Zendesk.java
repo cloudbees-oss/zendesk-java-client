@@ -1026,13 +1026,26 @@ public class Zendesk implements Closeable {
                 Collections.singletonMap("group", group))), handle(Group.class, "group")));
     }
 
+    /**
+     * This API will be removed in a future release.  The API endpoint does not exist.
+     * Instead, the {@link #createGroup(Group) createGroup} method should be called for each Group
+     * 
+     * @see <a href="https://github.com/cloudbees/zendesk-java-client/issues/111">Zendesk Java Client Issue #111</a> 
+     */
+    @Deprecated
     public List<Group> createGroups(Group... groups) {
         return createGroups(Arrays.asList(groups));
     }
 
+    /**
+     * This API will be removed in a future release.  The API endpoint does not exist.
+     * Instead, the {@link #createGroup(Group) createGroup} method should be called for each Group
+     * 
+     * @see <a href="https://github.com/cloudbees/zendesk-java-client/issues/111">Zendesk Java Client Issue #111</a> 
+     */
+    @Deprecated
     public List<Group> createGroups(List<Group> groups) {
-        return complete(submit(req("POST", cnst("/groups/create_many.json"), JSON, json(
-                Collections.singletonMap("groups", groups))), handleList(Group.class, "results")));
+        throw new ZendeskException("API Endpoint for createGroups does not exist.");
     }
 
     public Group updateGroup(Group group) {
