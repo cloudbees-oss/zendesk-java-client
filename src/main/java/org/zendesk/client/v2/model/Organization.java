@@ -159,6 +159,7 @@ public class Organization implements SearchResultEntity, Serializable {
         sb.append(", sharedTickets=").append(sharedTickets);
         sb.append(", sharedComments=").append(sharedComments);
         sb.append(", tags=").append(tags);
+        sb.append(", organizationFields=").append(organizationFields);
         sb.append('}');
         return sb.toString();
     }
