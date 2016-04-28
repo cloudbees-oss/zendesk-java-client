@@ -24,6 +24,7 @@ public class Request {
     protected Date createdAt;
     protected Date updatedAt;
     protected Comment comment;
+    protected boolean canBeSolvedByMe;
     private List<CustomFieldValue> customFields;
 
     @JsonProperty("created_at")
@@ -136,6 +137,15 @@ public class Request {
 
     public void setType(Type type) {
         this.type = type;
+    }
+    
+    @JsonProperty("can_be_solved_by_me")
+    public boolean getCanBeSolvedByMe() {
+    	return canBeSolvedByMe;
+    }
+    
+    public void setCanBeSolvedByMe(boolean canBe) {
+    	canBeSolvedByMe = canBe;
     }
 
     
