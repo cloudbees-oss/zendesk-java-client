@@ -811,6 +811,19 @@ public class Zendesk implements Closeable {
                 Collections.singletonMap("users", users))), handleJobStatus(User.class));
     }
 
+    public JobStatus<User> createOrUpdateUsers(User... users) {
+        return createOrUpdateUsers(Arrays.asList(users));
+    }
+
+    public JobStatus<User> createOrUpdateUsers(List<User> users) {
+        return complete(createOrUpdateUsersAsync(users));
+    }
+
+    public ListenableFuture<JobStatus<User>> createOrUpdateUsersAsync(List<User> users) {
+        return submit(req("POST", cnst("/users/create_or_update_many.json"), JSON, json(
+            Collections.singletonMap("users", users))), handleJobStatus(User.class));
+    }
+
     public User updateUser(User user) {
         checkHasId(user);
         return complete(submit(req("PUT", tmpl("/users/{id}.json").set("id", user.getId()), JSON, json(
