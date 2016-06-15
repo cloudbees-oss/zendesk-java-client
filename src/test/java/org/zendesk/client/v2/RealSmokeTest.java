@@ -704,7 +704,7 @@ public class RealSmokeTest {
     private static <T> T getFirstIfExist(final Iterable<T> iterable)
     {
         Iterator<T> iterator = iterable.iterator();
-        assumeTrue(iterator.hasNext());
+        assumeTrue("At least one entity is required for the test", iterator.hasNext());
 
         return iterator.next();
     }
