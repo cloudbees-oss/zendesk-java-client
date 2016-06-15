@@ -1455,11 +1455,9 @@ public class Zendesk implements Closeable {
                 JSON, json(Collections.singletonMap("article", article))), handle(Article.class, "article")));
     }
 
-    public Translation createArticleTranslation(Long articleId, String locale, Translation translation) {
-        return complete(submit(req("POST", tmpl("/help_center/articles/{articleId}/translations/{locale}.json")
-                    .set("articleId", articleId)
-                    .set("locale", locale
-                ),
+    public Translation createArticleTranslation(Long articleId, Translation translation) {
+        return complete(submit(req("POST", tmpl("/help_center/articles/{articleId}/translations.json")
+                    .set("articleId", articleId),
                 JSON, json(Collections.singletonMap("translation", translation))),
                 this.handle(Translation.class, "translation")));
     }
@@ -1530,11 +1528,9 @@ public class Zendesk implements Closeable {
                 JSON, json(Collections.singletonMap("category", category))), handle(Category.class, "category")));
     }
 
-    public Translation createCategoryTranslation(Long categoryId, String locale, Translation translation) {
-        return complete(submit(req("POST", tmpl("/help_center/categories/{categoryId}/translations/{locale}.json")
-                        .set("categoryId", categoryId)
-                        .set("locale", locale
-                        ),
+    public Translation createCategoryTranslation(Long categoryId, Translation translation) {
+        return complete(submit(req("POST", tmpl("/help_center/categories/{categoryId}/translations.json")
+                        .set("categoryId", categoryId),
                 JSON, json(Collections.singletonMap("translation", translation))),
                 this.handle(Translation.class, "translation")));
     }
@@ -1593,11 +1589,9 @@ public class Zendesk implements Closeable {
                 JSON, json(Collections.singletonMap("section", section))), handle(Section.class, "section")));
     }
 
-    public Translation createSectionTranslation(Long sectionId, String locale, Translation translation) {
-        return complete(submit(req("POST", tmpl("/help_center/sections/{sectionId}/translations/{locale}.json")
-                        .set("sectionId", sectionId)
-                        .set("locale", locale
-                        ),
+    public Translation createSectionTranslation(Long sectionId, Translation translation) {
+        return complete(submit(req("POST", tmpl("/help_center/sections/{sectionId}/translations.json")
+                        .set("sectionId", sectionId),
                 JSON, json(Collections.singletonMap("translation", translation))),
                 this.handle(Translation.class, "translation")));
     }
