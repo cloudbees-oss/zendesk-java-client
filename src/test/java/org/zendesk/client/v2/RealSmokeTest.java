@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Properties;
@@ -45,6 +46,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * @author stephenc
@@ -574,14 +576,23 @@ public class RealSmokeTest {
                 break; // Do not overwhelm the getArticles API
             }
             for (Translation t : instance.getArticleTranslations(art.getId())) {
-                assertNotNull(t.getId());
-                assertNotNull(t.getTitle());
-                assertNotNull(t.getBody());
+                assertTranslationValid(t);
                 if (++translationCount > 3) {
                     return;
                 }
             }
         }
+    }
+
+    @Test
+    public void getArticleTranslation() throws Exception
+    {
+        createClientWithTokenOrPassword();
+        Article article = getFirstIfExist(instance.getArticles());
+
+        Translation translation = instance.getArticleTranslation(article.getId(), article.getSourceLocale());
+
+        assertTranslationValid(translation);
     }
 
     @Test
@@ -595,14 +606,23 @@ public class RealSmokeTest {
                 break;
             }
             for (Translation t : instance.getSectionTranslations(sect.getId())) {
-                assertNotNull(t.getId());
-                assertNotNull(t.getTitle());
-                assertNotNull(t.getBody());
+                assertTranslationValid(t);
                 if (++translationCount > 3) {
                     return;
                 }
             }
         }
+    }
+
+    @Test
+    public void getSectionTranslation() throws Exception
+    {
+        createClientWithTokenOrPassword();
+        Section section = getFirstIfExist(instance.getSections());
+
+        Translation translation = instance.getSectionTranslation(section.getId(), section.getSourceLocale());
+
+        assertTranslationValid(translation);
     }
 
     @Test
@@ -616,14 +636,23 @@ public class RealSmokeTest {
                 break;
             }
             for (Translation t: instance.getCategoryTranslations(cat.getId())) {
-                assertNotNull(t.getId());
-                assertNotNull(t.getTitle());
-                assertNotNull(t.getBody());
+                assertTranslationValid(t);
                 if (++translationCount > 3) {
                     return;
                 }
             }
         }
+    }
+
+    @Test
+    public void getCategoryTranslation() throws Exception
+    {
+        createClientWithTokenOrPassword();
+        Category category = getFirstIfExist(instance.getCategories());
+
+        Translation translation = instance.getCategoryTranslation(category.getId(), category.getSourceLocale());
+
+        assertTranslationValid(translation);
     }
 
     @Test
@@ -670,5 +699,21 @@ public class RealSmokeTest {
                 break;
             }
         }
+    }
+
+    private static <T> T getFirstIfExist(final Iterable<T> iterable)
+    {
+        Iterator<T> iterator = iterable.iterator();
+        assumeTrue(iterator.hasNext());
+
+        return iterator.next();
+    }
+
+    private static void assertTranslationValid(final Translation translation)
+    {
+        assertNotNull(translation);
+        assertNotNull(translation.getId());
+        assertNotNull(translation.getTitle());
+        assertNotNull(translation.getBody());
     }
 }
