@@ -1012,25 +1012,17 @@ public class Zendesk implements Closeable {
                 handleList(OrganizationMembership.class, "organization_memberships"));
     }
 
-    /**
-     * Use either the user id or organization id, and set the other to a value < 0. Will only search based
-     * on user id if the user id is > 0.
-     *
-     * @param user_id
-     * @param organization_id
-     * @return
-     */
-    public Iterable<OrganizationMembership> getOrganizationMemberships(long user_id, long organization_id) {
-        if (user_id > 0) {
-            return new PagedIterable<OrganizationMembership>(tmpl("/users/{user_id}/organization_memberships.json").set("user_id", user_id),
-                    handleList(OrganizationMembership.class, "organization_memberships"));
-        } else {
+    public Iterable<OrganizationMembership> getOrganizationMembershipsForOrg(long organization_id) {
             return new PagedIterable<OrganizationMembership>(tmpl("/organizations/{organization_id}/organization_memberships.json").set("organization_id", organization_id),
                     handleList(OrganizationMembership.class, "organization_memberships"));
-        }
     }
 
-    public OrganizationMembership getOrganizationMembership(long user_id, long id) {
+    public Iterable<OrganizationMembership> getOrganizationMembershipsForUser(long user_id) {
+            return new PagedIterable<OrganizationMembership>(tmpl("/users/{user_id}/organization_memberships.json").set("user_id", user_id),
+                    handleList(OrganizationMembership.class, "organization_memberships"));
+    }
+
+    public OrganizationMembership getOrganizationMembershipForUser(long user_id, long id) {
         return complete(submit(req("GET",
                 tmpl("/users/{user_id}/organization_memberships/{id}.json").set("user_id", user_id).set("id", id)),
                 handle(OrganizationMembership.class, "organization_membership")));
