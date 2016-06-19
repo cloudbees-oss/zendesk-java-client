@@ -33,6 +33,7 @@ import org.zendesk.client.v2.model.Macro;
 import org.zendesk.client.v2.model.Metric;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.OrganizationField;
+import org.zendesk.client.v2.model.SatisfactionRating;
 import org.zendesk.client.v2.model.SearchResultEntity;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
@@ -1520,6 +1521,28 @@ public class Zendesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/help_center/sections/{id}.json").set("id", section.getId())),
                 handleStatus()));
     }
+
+
+    public Iterable<SatisfactionRating> getSatisfactionRatings() {
+        return new PagedIterable<SatisfactionRating>(cnst("/satisfaction_ratings.json"),
+                handleList(SatisfactionRating.class, "satisfaction_ratings"));
+    }
+
+    public SatisfactionRating getSatisfactionRating(long id) {
+        return complete(submit(req("GET", tmpl("/satisfaction_ratings/{id}.json").set("id", id)),
+                handle(SatisfactionRating.class, "satisfaction_rating")));
+    }
+
+    public SatisfactionRating createSatisfactionRating(long ticketId, SatisfactionRating satisfactionRating) {
+        return complete(submit(req("POST", tmpl("/tickets/{ticketId}/satisfaction_rating.json")
+                .set("ticketId", ticketId), JSON, json(Collections.singletonMap("satisfaction_rating", satisfactionRating))),
+                handle(SatisfactionRating.class, "satisfaction_rating")));
+    }
+
+    public SatisfactionRating createSatisfactionRating(Ticket ticket, SatisfactionRating satisfactionRating) {
+        return createSatisfactionRating(ticket.getId(), satisfactionRating);
+    }
+
 
     //////////////////////////////////////////////////////////////////////
     // Helper methods
