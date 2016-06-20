@@ -33,6 +33,7 @@ import org.zendesk.client.v2.model.Macro;
 import org.zendesk.client.v2.model.Metric;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.OrganizationField;
+import org.zendesk.client.v2.model.OrganizationMembership;
 import org.zendesk.client.v2.model.SearchResultEntity;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
@@ -1004,6 +1005,44 @@ public class Zendesk implements Closeable {
         return new PagedIterable<Organization>(
                 tmpl("/organizations/search.json{?external_id}").set("external_id", externalId),
                 handleList(Organization.class, "organizations"));
+    }
+
+    public Iterable<OrganizationMembership> getOrganizationMemberships() {
+        return new PagedIterable<OrganizationMembership>(cnst("/organization_memberships.json"),
+                handleList(OrganizationMembership.class, "organization_memberships"));
+    }
+
+    public Iterable<OrganizationMembership> getOrganizationMembershipsForOrg(long organization_id) {
+            return new PagedIterable<OrganizationMembership>(tmpl("/organizations/{organization_id}/organization_memberships.json").set("organization_id", organization_id),
+                    handleList(OrganizationMembership.class, "organization_memberships"));
+    }
+
+    public Iterable<OrganizationMembership> getOrganizationMembershipsForUser(long user_id) {
+            return new PagedIterable<OrganizationMembership>(tmpl("/users/{user_id}/organization_memberships.json").set("user_id", user_id),
+                    handleList(OrganizationMembership.class, "organization_memberships"));
+    }
+
+    public OrganizationMembership getOrganizationMembershipForUser(long user_id, long id) {
+        return complete(submit(req("GET",
+                tmpl("/users/{user_id}/organization_memberships/{id}.json").set("user_id", user_id).set("id", id)),
+                handle(OrganizationMembership.class, "organization_membership")));
+    }
+
+    public OrganizationMembership getOrganizationMembership(long id) {
+        return complete(submit(req("GET",
+                tmpl("/organization_memberships/{id}.json").set("id", id)),
+                handle(OrganizationMembership.class, "organization_membership")));
+    }
+
+    public OrganizationMembership createOrganizationMembership(OrganizationMembership organizationMembership) {
+        return complete(submit(req("POST",
+                cnst("/organization_memberships.json"), JSON, json(
+                        Collections.singletonMap("organization_membership",
+                                organizationMembership))), handle(OrganizationMembership.class, "organization_membership")));
+    }
+
+    public void deleteOrganizationMembership(long id) {
+        complete(submit(req("DELETE", tmpl("/organization_memberships/{id}.json").set("id", id)), handleStatus()));
     }
 
     public Iterable<Group> getGroups() {
