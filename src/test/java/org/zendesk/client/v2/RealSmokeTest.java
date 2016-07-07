@@ -685,7 +685,5 @@ public class RealSmokeTest {
             assertThat(locale.getId(), notNullValue());
             assertThat(locale.getLocale(), notNullValue());
         }
-
-        System.err.println(locales);
     }
 }
