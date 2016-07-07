@@ -4,20 +4,7 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.zendesk.client.v2.model.Audit;
-import org.zendesk.client.v2.model.Collaborator;
-import org.zendesk.client.v2.model.Comment;
-import org.zendesk.client.v2.model.Field;
-import org.zendesk.client.v2.model.Group;
-import org.zendesk.client.v2.model.Identity;
-import org.zendesk.client.v2.model.JobStatus;
-import org.zendesk.client.v2.model.Organization;
-import org.zendesk.client.v2.model.Request;
-import org.zendesk.client.v2.model.Status;
-import org.zendesk.client.v2.model.SuspendedTicket;
-import org.zendesk.client.v2.model.Ticket;
-import org.zendesk.client.v2.model.TicketForm;
-import org.zendesk.client.v2.model.User;
+import org.zendesk.client.v2.model.*;
 import org.zendesk.client.v2.model.events.Event;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.Category;
@@ -39,11 +26,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.junit.Assume.assumeThat;
 
 /**
@@ -670,5 +653,20 @@ public class RealSmokeTest {
                 break;
             }
         }
+    }
+
+    @Test
+    public void getLocales() throws Exception {
+        createClientWithTokenOrPassword();
+        List<Locale> locales = instance.getLocales();
+
+        assertFalse(locales.isEmpty());
+
+        for (Locale locale: locales) {
+            assertThat(locale.getId(), notNullValue());
+            assertThat(locale.getLocale(), notNullValue());
+        }
+
+        System.err.println(locales);
     }
 }
