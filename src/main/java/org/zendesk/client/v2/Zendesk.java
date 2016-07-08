@@ -16,7 +16,6 @@ import com.ning.http.client.Request;
 import com.ning.http.client.RequestBuilder;
 import com.ning.http.client.Response;
 import com.ning.http.client.multipart.FilePart;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.Attachment;
@@ -29,6 +28,7 @@ import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.GroupMembership;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.JobStatus;
+import org.zendesk.client.v2.model.Locale;
 import org.zendesk.client.v2.model.Macro;
 import org.zendesk.client.v2.model.Metric;
 import org.zendesk.client.v2.model.Organization;
@@ -669,6 +669,11 @@ public class Zendesk implements Closeable {
 
     public User createUser(User user) {
         return complete(submit(req("POST", cnst("/users.json"), JSON, json(
+                Collections.singletonMap("user", user))), handle(User.class, "user")));
+    }
+
+    public User createOrUpdateUser(User user) {
+        return complete(submit(req("POST", cnst("/users/create_or_update.json"), JSON, json(
                 Collections.singletonMap("user", user))), handle(User.class, "user")));
     }
 
@@ -1558,6 +1563,15 @@ public class Zendesk implements Closeable {
         checkHasId(section);
         complete(submit(req("DELETE", tmpl("/help_center/sections/{id}.json").set("id", section.getId())),
                 handleStatus()));
+    }
+
+    //////////////////////////////////////////////////////////////////////
+    // Locales
+    //////////////////////////////////////////////////////////////////////
+
+    public List<Locale> getLocales() {
+        return complete(submit(req("GET", cnst("/locales.json")), handleList(Locale.class,
+                "locales")));
     }
 
     //////////////////////////////////////////////////////////////////////
