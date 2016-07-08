@@ -126,24 +126,24 @@ public class RealSmokeTest {
         assertThat(ticketForm, notNullValue());
         assertTrue(ticketForm.isEndUserVisible());
     }
- 
+
     @Test
     public void getTicketForms() throws Exception {
         createClientWithTokenOrPassword();
         Iterable<TicketForm> ticketForms = instance.getTicketForms();
         assertTrue(ticketForms.iterator().hasNext());
-        for(TicketForm ticketForm : ticketForms){
-        	assertThat(ticketForm, notNullValue());
+        for (TicketForm ticketForm : ticketForms) {
+            assertThat(ticketForm, notNullValue());
         }
     }
-    
+
     @Test
     @Ignore("Needs specfic ticket form instance")
     public void getTicketFieldsOnForm() throws Exception {
         createClientWithTokenOrPassword();
         TicketForm ticketForm = instance.getTicketForm(27562);
-        for(Integer id :ticketForm.getTicketFieldIds()){
-            Field f = instance.getTicketField(id);  
+        for (Integer id : ticketForm.getTicketFieldIds()) {
+            Field f = instance.getTicketField(id);
             assertNotNull(f);
         }
         assertThat(ticketForm, notNullValue());
@@ -163,7 +163,7 @@ public class RealSmokeTest {
             }
         }
     }
-    
+
     @Test
     @Ignore("Needs test data setup correctly")
     public void getTicketsPagesRequests() throws Exception {
@@ -302,12 +302,12 @@ public class RealSmokeTest {
             ticket = instance.createTicket(t);
             System.out.println(ticket.getId() + " -> " + ticket.getUrl());
             assertThat(ticket.getId(), notNullValue());
-                Ticket t2 = instance.getTicket(ticket.getId());
-                assertThat(t2, notNullValue());
-                assertThat(t2.getId(), is(ticket.getId()));
-                t2.setAssigneeId(instance.getCurrentUser().getId());
-                t2.setStatus(Status.CLOSED);
-                instance.updateTicket(t2);
+            Ticket t2 = instance.getTicket(ticket.getId());
+            assertThat(t2, notNullValue());
+            assertThat(t2.getId(), is(ticket.getId()));
+            t2.setAssigneeId(instance.getCurrentUser().getId());
+            t2.setStatus(Status.CLOSED);
+            instance.updateTicket(t2);
             assertThat(ticket.getSubject(), is(t.getSubject()));
             assertThat(ticket.getRequester(), nullValue());
             assertThat(ticket.getRequesterId(), notNullValue());
@@ -332,7 +332,7 @@ public class RealSmokeTest {
         createClientWithTokenOrPassword();
         String requesterEmail = config.getProperty("requester.email");
         assumeThat("Must have a requester email", requesterEmail, notNullValue());
-        for (User user : instance.getSearchResults(User.class, "requester:"+requesterEmail)) {
+        for (User user : instance.getSearchResults(User.class, "requester:" + requesterEmail)) {
             assertThat(user.getEmail(), is(requesterEmail));
         }
     }
@@ -617,7 +617,7 @@ public class RealSmokeTest {
             if (++categoryCount > 10) {
                 break;
             }
-            for (Translation t: instance.getCategoryTranslations(cat.getId())) {
+            for (Translation t : instance.getCategoryTranslations(cat.getId())) {
                 assertNotNull(t.getId());
                 assertNotNull(t.getTitle());
                 assertNotNull(t.getBody());
@@ -631,7 +631,7 @@ public class RealSmokeTest {
     @Test
     public void getArticlesIncrementally() throws Exception {
         createClientWithTokenOrPassword();
-        final long ONE_WEEK = 7*24*60*60*1000;
+        final long ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
         int count = 0;
         try {
             for (Article t : instance.getArticlesIncrementally(new Date(new Date().getTime() - ONE_WEEK))) {
@@ -681,9 +681,28 @@ public class RealSmokeTest {
 
         assertFalse(locales.isEmpty());
 
-        for (Locale locale: locales) {
+        for (Locale locale : locales) {
             assertThat(locale.getId(), notNullValue());
             assertThat(locale.getLocale(), notNullValue());
         }
+    }
+
+    @Test
+    public void createOrUpdateUser() throws Exception {
+        createClientWithTokenOrPassword();
+
+        // Create a User
+        User originalUser = new User("John Smith", "fake@email.com");
+        User createdUser = instance.createOrUpdateUser(originalUser);
+
+        assertNotNull(createdUser.getId());
+        assertEquals("John Smith", createdUser.getName());
+
+        // Update the user without using Zendesk's ID
+        User updatedUser = new User("Jonathan Smith", "fake@email.com");
+
+        // The update has been made on the record we expect
+        assertEquals("Jonathan Smith", updatedUser.getName());
+        assertEquals(createdUser.getId(), updatedUser.getId());
     }
 }

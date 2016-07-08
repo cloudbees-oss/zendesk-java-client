@@ -672,6 +672,11 @@ public class Zendesk implements Closeable {
                 Collections.singletonMap("user", user))), handle(User.class, "user")));
     }
 
+    public User createOrUpdateUser(User user) {
+        return complete(submit(req("POST", cnst("/users/create_or_update.json"), JSON, json(
+                Collections.singletonMap("user", user))), handle(User.class, "user")));
+    }
+
     public JobStatus<User> createUsers(User... users) {
         return createUsers(Arrays.asList(users));
     }
