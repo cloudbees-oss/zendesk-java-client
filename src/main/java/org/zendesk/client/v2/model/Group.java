@@ -64,7 +64,7 @@ public class Group implements SearchResultEntity, Serializable {
         this.createdAt = createdAt;
     }
 
-    @JsonProperty("deleted_at")
+    @JsonProperty("updated_at")
     public Date getUpdatedAt() {
         return updatedAt;
     }
