@@ -482,7 +482,7 @@ public class Zendesk implements Closeable {
     }
 
     public Attachment.Upload createUpload(String token, String fileName, String contentType, byte[] content) {
-        TemplateUri uri = tmpl("/uploads.json{?filename}{?token}").set("filename", fileName);
+        TemplateUri uri = tmpl("/uploads.json{?filename,token}").set("filename", fileName);
         if (token != null) {
             uri.set("token", token);
         }
