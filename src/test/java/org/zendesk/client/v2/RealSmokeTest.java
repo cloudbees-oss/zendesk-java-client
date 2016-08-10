@@ -365,6 +365,8 @@ public class RealSmokeTest {
         Identity updatedIdentity = instance.updateUserIdentity(user, createdIdentity);
 
         assertThat(updatedIdentity.getValue(), is("second@test.com"));
+
+        instance.deleteUserIdentity(user, identity);
     }
 
     @Test
