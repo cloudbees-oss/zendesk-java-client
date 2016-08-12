@@ -26,7 +26,7 @@ public class SatisfactionRating implements Serializable {
     private Date updatedAt;
     private String comment;
     private String reason;
-    private String reasonId;
+    private Long reasonId;
 
     @JsonProperty("assignee_id")
     public Long getAssigneeId() {
@@ -116,11 +116,11 @@ public class SatisfactionRating implements Serializable {
     }
 
     @JsonProperty("reason_id")
-    public String getReasonId() {
+    public Long getReasonId() {
         return reasonId;
     }
 
-    public void setReasonId(String reasonId) {
+    public void setReasonId(Long reasonId) {
         this.reasonId = reasonId;
     }
 
