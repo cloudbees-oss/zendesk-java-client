@@ -1634,6 +1634,8 @@ public class Zendesk implements Closeable {
                 logResponse(response);
                 if (isStatus2xx(response)) {
                     return null;
+                } else if (isRateLimitResponse(response)) {
+                    throw new ZendeskResponseRateLimitException(response);
                 }
                 throw new ZendeskResponseException(response);
             }
@@ -1648,6 +1650,8 @@ public class Zendesk implements Closeable {
                 logResponse(response);
                 if (isStatus2xx(response)) {
                     return (T) mapper.reader(clazz).readValue(response.getResponseBodyAsStream());
+                } else if (isRateLimitResponse(response)) {
+                    throw new ZendeskResponseRateLimitException(response);
                 }
                 if (response.getStatusCode() == 404) {
                     return null;
@@ -1677,6 +1681,8 @@ public class Zendesk implements Closeable {
                     return mapper.convertValue(mapper.readTree(response.getResponseBodyAsStream()).get(name), type);
                 }
                 return mapper.convertValue(mapper.readTree(response.getResponseBodyAsStream()).get(name), clazz);
+            } else if (isRateLimitResponse(response)) {
+                throw new ZendeskResponseRateLimitException(response);
             }
             if (response.getStatusCode() == 404) {
                 return null;
@@ -1749,6 +1755,8 @@ public class Zendesk implements Closeable {
                     values.add(mapper.convertValue(node, clazz));
                 }
                 return values;
+            } else if (isRateLimitResponse(response)) {
+                throw new ZendeskResponseRateLimitException(response);
             }
             throw new ZendeskResponseException(response);
         }
@@ -1826,6 +1834,8 @@ public class Zendesk implements Closeable {
                         }
                     }
                     return values;
+                } else if (isRateLimitResponse(response)) {
+                    throw new ZendeskResponseRateLimitException(response);
                 }
                 throw new ZendeskResponseException(response);
             }
@@ -1848,6 +1858,8 @@ public class Zendesk implements Closeable {
                         }
                     }
                     return values;
+                } else if (isRateLimitResponse(response)) {
+                    throw new ZendeskResponseRateLimitException(response);
                 }
                 throw new ZendeskResponseException(response);
             }
@@ -1867,6 +1879,8 @@ public class Zendesk implements Closeable {
                         values.add(mapper.convertValue(node, ArticleAttachments.class));
                     }
                     return values;
+                } else if (isRateLimitResponse(response)) {
+                    throw new ZendeskResponseRateLimitException(response);
                 }
                 throw new ZendeskResponseException(response);
             }
@@ -1907,6 +1921,10 @@ public class Zendesk implements Closeable {
 
     private boolean isStatus2xx(Response response) {
         return response.getStatusCode() / 100 == 2;
+    }
+
+    private boolean isRateLimitResponse(Response response) {
+        return response.getStatusCode() == 429;
     }
 
     //////////////////////////////////////////////////////////////////////
