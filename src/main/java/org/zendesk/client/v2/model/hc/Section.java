@@ -1,9 +1,9 @@
 package org.zendesk.client.v2.model.hc;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Section {
     /** Automatically assigned when creating subscriptions */
@@ -28,7 +28,7 @@ public class Section {
 
     /** The id of the category to which this section belongs */
     @JsonProperty("category_id")
-    private String categoryId;
+    private Long categoryId;
 
     /** Whether the section is out of date */
     private Boolean outdated;
@@ -96,11 +96,11 @@ public class Section {
         this.htmlUrl = htmlUrl;
     }
 
-    public String getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(String categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 
