@@ -12,11 +12,13 @@ public class ZendeskResponseException extends ZendeskException {
 
     private static final long serialVersionUID = 1L;
 
+    private static final int NOT_FOUND_STATUS = 404;
+
     private int statusCode;
     private String statusText;
     private String body;
 
-    private ZendeskResponseException(Response resp) throws IOException {
+    ZendeskResponseException(Response resp) throws IOException {
         this(resp.getStatusCode(), resp.getStatusText(), resp.getResponseBody());
     }
 
@@ -28,7 +30,11 @@ public class ZendeskResponseException extends ZendeskException {
     }
 
     public static ZendeskResponseException fromResponse(Response resp) throws IOException {
-        return new ZendeskResponseException(resp);
+        if (resp.getStatusCode() == NOT_FOUND_STATUS) {
+            return new ZendeskEntityNotFoundException(resp);
+        } else {
+            return new ZendeskResponseException(resp);
+        }
     }
 
     public int getStatusCode() {
