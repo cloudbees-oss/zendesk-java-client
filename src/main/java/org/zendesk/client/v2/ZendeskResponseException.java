@@ -16,15 +16,19 @@ public class ZendeskResponseException extends ZendeskException {
     private String statusText;
     private String body;
 
-    public ZendeskResponseException(Response resp) throws IOException {
+    private ZendeskResponseException(Response resp) throws IOException {
         this(resp.getStatusCode(), resp.getStatusText(), resp.getResponseBody());
     }
 
-    public ZendeskResponseException(int statusCode, String statusText, String body) {
+    private ZendeskResponseException(int statusCode, String statusText, String body) {
         super(MessageFormat.format("HTTP/{0}: {1}", statusCode, statusText));
         this.statusCode = statusCode;
         this.statusText = statusText;
         this.body = body;
+    }
+
+    public static ZendeskResponseException fromResponse(Response resp) throws IOException {
+        return new ZendeskResponseException(resp);
     }
 
     public int getStatusCode() {

@@ -1635,7 +1635,7 @@ public class Zendesk implements Closeable {
                 if (isStatus2xx(response)) {
                     return null;
                 }
-                throw new ZendeskResponseException(response);
+                throw ZendeskResponseException.fromResponse(response);
             }
         };
     }
@@ -1652,7 +1652,7 @@ public class Zendesk implements Closeable {
                 if (response.getStatusCode() == 404) {
                     return null;
                 }
-                throw new ZendeskResponseException(response);
+                throw ZendeskResponseException.fromResponse(response);
             }
         };
     }
@@ -1681,7 +1681,7 @@ public class Zendesk implements Closeable {
             if (response.getStatusCode() == 404) {
                 return null;
             }
-            throw new ZendeskResponseException(response);
+            throw ZendeskResponseException.fromResponse(response);
         }
     }
 
@@ -1750,7 +1750,7 @@ public class Zendesk implements Closeable {
                 }
                 return values;
             }
-            throw new ZendeskResponseException(response);
+            throw ZendeskResponseException.fromResponse(response);
         }
     }
 
@@ -1827,7 +1827,7 @@ public class Zendesk implements Closeable {
                     }
                     return values;
                 }
-                throw new ZendeskResponseException(response);
+                throw ZendeskResponseException.fromResponse(response);
             }
         };
     }
@@ -1849,7 +1849,7 @@ public class Zendesk implements Closeable {
                     }
                     return values;
                 }
-                throw new ZendeskResponseException(response);
+                throw ZendeskResponseException.fromResponse(response);
             }
         };
     }
@@ -1868,7 +1868,7 @@ public class Zendesk implements Closeable {
                     }
                     return values;
                 }
-                throw new ZendeskResponseException(response);
+                throw ZendeskResponseException.fromResponse(response);
             }
         };
     }
