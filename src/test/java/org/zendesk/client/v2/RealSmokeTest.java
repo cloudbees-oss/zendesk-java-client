@@ -671,4 +671,44 @@ public class RealSmokeTest {
             }
         }
     }
+
+    @Test
+    public void createOrUpdateUser() throws Exception {
+        createClientWithTokenOrPassword();
+
+        String name = "testCreateOrUpdateUser";
+        String externalId = "testCreateOrUpdateUser";
+
+        // Clean up to avoid conflicts
+        for (User u: instance.lookupUserByExternalId(externalId)){
+            instance.deleteUser(u.getId());
+        }
+
+        String phoneAtCreation = "5555551234";
+        User user = new User(true, name);
+        user.setExternalId(externalId);
+        user.setPhone(phoneAtCreation);
+
+        User createResult = instance.createOrUpdateUser(user);
+        assertNotNull(createResult);
+        assertNotNull(createResult.getId());
+        assertEquals(name, createResult.getName());
+        assertEquals(externalId, createResult.getExternalId());
+        assertEquals(phoneAtCreation, createResult.getPhone());
+
+        String phoneAtUpdate = "5555551235";
+        User updateUser = new User(true, name);
+        updateUser.setId(createResult.getId());
+        updateUser.setExternalId(externalId);
+        updateUser.setPhone(phoneAtUpdate);
+
+        User updateResult = instance.createOrUpdateUser(updateUser);
+        assertNotNull(updateResult);
+        assertEquals(createResult.getId(), updateResult.getId());
+        assertEquals(name, updateResult.getName());
+        assertEquals(externalId, updateResult.getExternalId());
+        assertEquals(phoneAtUpdate, updateResult.getPhone());
+
+        instance.deleteUser(updateResult);
+    }
 }
