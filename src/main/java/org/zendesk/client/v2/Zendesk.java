@@ -808,6 +808,18 @@ public class Zendesk implements Closeable {
                 .set("identityId", identityId), JSON, null), handle(Identity.class, "identity")));
     }
 
+    public Identity updateUserIdentity(long userId, Identity identity) {
+        checkHasId(identity);
+        return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}.json")
+                .set("userId", userId)
+                .set("identityId", identity.getId()), JSON, null), handle(Identity.class, "identity")));
+    }
+
+    public Identity updateUserIdentity(User user, Identity identity) {
+        checkHasId(user);
+        return updateUserIdentity(user.getId(), identity);
+    }
+
     public void deleteUserIdentity(User user, Identity identity) {
         checkHasId(identity);
         deleteUserIdentity(user, identity.getId());
@@ -825,14 +837,14 @@ public class Zendesk implements Closeable {
         ), handleStatus()));
     }
 
-    public void createUserIdentity(long userId, Identity identity) {
-        complete(submit(req("POST", tmpl("/users/{userId}/identities.json").set("userId", userId), JSON, json(
-                Collections.singletonMap("identity", identity))), handle(Identity.class, "identity")));
+    public Identity createUserIdentity(long userId, Identity identity) {
+        return complete(submit(req("POST", tmpl("/users/{userId}/identities.json").set("userId", userId), JSON,
+                json(Collections.singletonMap("identity", identity))), handle(Identity.class, "identity")));
     }
 
-    public void createUserIdentity(User user, Identity identity) {
-        complete(submit(req("POST", tmpl("/users/{userId}/identities.json").set("userId", user.getId()), JSON, json(
-                Collections.singletonMap("identity", identity))), handle(Identity.class, "identity")));
+    public Identity createUserIdentity(User user, Identity identity) {
+        return complete(submit(req("POST", tmpl("/users/{userId}/identities.json").set("userId", user.getId()), JSON,
+                json(Collections.singletonMap("identity", identity))), handle(Identity.class, "identity")));
     }
 
     public Iterable<org.zendesk.client.v2.model.Request> getRequests() {

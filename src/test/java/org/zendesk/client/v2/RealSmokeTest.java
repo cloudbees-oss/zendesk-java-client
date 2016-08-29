@@ -349,6 +349,27 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void updateUserIdentity() throws Exception {
+        createClientWithTokenOrPassword();
+        User user = instance.getCurrentUser();
+
+        Identity identity = new Identity();
+        identity.setUserId(user.getId());
+        identity.setType("email");
+        identity.setValue("first@test.com");
+
+        Identity createdIdentity = instance.createUserIdentity(user, identity);
+        assertThat(createdIdentity.getValue(), is("first@test.com"));
+
+        createdIdentity.setValue("second@test.com");
+        Identity updatedIdentity = instance.updateUserIdentity(user, createdIdentity);
+
+        assertThat(updatedIdentity.getValue(), is("second@test.com"));
+
+        instance.deleteUserIdentity(user, identity);
+    }
+
+    @Test
     public void getUserRequests() throws Exception {
         createClientWithTokenOrPassword();
         User user = instance.getCurrentUser();
