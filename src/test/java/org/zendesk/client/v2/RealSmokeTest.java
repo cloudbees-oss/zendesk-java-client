@@ -23,6 +23,9 @@ import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.Category;
 import org.zendesk.client.v2.model.hc.Section;
 import org.zendesk.client.v2.model.hc.Translation;
+import org.zendesk.client.v2.model.schedules.Holiday;
+import org.zendesk.client.v2.model.schedules.Interval;
+import org.zendesk.client.v2.model.schedules.Schedule;
 import org.zendesk.client.v2.model.targets.Target;
 
 import java.util.ArrayList;
@@ -687,6 +690,32 @@ public class RealSmokeTest {
         int count = 0;
         for (Section s : instance.getSections()) {
             assertThat(s.getName(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void getSchedules() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (Schedule t : instance.getSchedules()) {
+            assertThat(t.getId(), notNullValue());
+            assertThat(t.getName(), notNullValue());
+            assertThat(t.getCreatedAt(), notNullValue());
+            assertThat(t.getUpdatedAt(), notNullValue());
+            assertThat(t.getTimeZone(), notNullValue());
+            for (Interval i : t.getIntervals()) {
+                assertThat(i.getStartTime(), notNullValue());
+                assertThat(i.getEndTime(), notNullValue());
+            }
+            for (Holiday h : instance.getHolidaysForSchedule(t)) {
+                assertThat(h.getId(), notNullValue());
+                assertThat(h.getName(), notNullValue());
+                assertThat(h.getStartDate(), notNullValue());
+                assertThat(h.getEndDate(), notNullValue());
+            }
             if (++count > 10) {
                 break;
             }
