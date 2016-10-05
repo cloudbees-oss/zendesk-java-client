@@ -216,7 +216,7 @@ public class Metric implements Serializable {
                 '}';
     }
 
-    protected class ZendeskComboMinutes {
+    public class ZendeskComboMinutes {
 
         @JsonProperty("calendar")
         protected Long calendarMinutes;
