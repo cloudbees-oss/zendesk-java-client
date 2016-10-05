@@ -1,9 +1,31 @@
 package org.zendesk.client.v2;
 
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeThat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
+import java.util.UUID;
+
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.zendesk.client.v2.model.AgentRole;
 import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Collaborator;
 import org.zendesk.client.v2.model.Comment;
@@ -27,27 +49,6 @@ import org.zendesk.client.v2.model.schedules.Holiday;
 import org.zendesk.client.v2.model.schedules.Interval;
 import org.zendesk.client.v2.model.schedules.Schedule;
 import org.zendesk.client.v2.model.targets.Target;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.UUID;
-
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeThat;
 
 /**
  * @author stephenc
@@ -717,6 +718,23 @@ public class RealSmokeTest {
                 assertThat(h.getStartDate(), notNullValue());
                 assertThat(h.getEndDate(), notNullValue());
             }
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void getCustomAgentRoles() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (AgentRole role : instance.getCustomAgentRoles()) {
+            assertThat(role.getId(), notNullValue());
+            assertThat(role.getName(), notNullValue());
+            assertThat(role.getCreatedAt(), notNullValue());
+            assertThat(role.getUpdatedAt(), notNullValue());
+            assertThat(role.getConfiguration(), notNullValue());
+            assertTrue(role.getConfiguration().containsKey("ticket_access"));
             if (++count > 10) {
                 break;
             }

@@ -19,6 +19,7 @@ import com.ning.http.client.multipart.FilePart;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zendesk.client.v2.model.AgentRole;
 import org.zendesk.client.v2.model.Attachment;
 import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Automation;
@@ -853,6 +854,11 @@ public class Zendesk implements Closeable {
     public Identity createUserIdentity(User user, Identity identity) {
         return complete(submit(req("POST", tmpl("/users/{userId}/identities.json").set("userId", user.getId()), JSON,
                 json(Collections.singletonMap("identity", identity))), handle(Identity.class, "identity")));
+    }
+
+    public Iterable<AgentRole> getCustomAgentRoles() {
+        return new PagedIterable<AgentRole>(cnst("/custom_roles.json"),
+            handleList(AgentRole.class, "custom_roles"));
     }
 
     public Iterable<org.zendesk.client.v2.model.Request> getRequests() {
