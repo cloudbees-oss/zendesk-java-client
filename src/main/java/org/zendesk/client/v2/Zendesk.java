@@ -283,6 +283,12 @@ public class Zendesk implements Closeable {
         return new PagedIterable<Ticket>(cnst("/tickets.json"), handleList(Ticket.class, "tickets"));
     }
 
+    /**
+     * @deprecated This API is no longer available from the vendor. Use the {@link #getTicketsFromSearch(String)} method instead
+     * @param ticketStatus
+     * @return
+     */
+    @Deprecated
     public Iterable<Ticket> getTicketsByStatus(Status... ticketStatus) {
         return new PagedIterable<Ticket>(tmpl("/tickets.json{?status}").set("status", statusArray(ticketStatus)),
                 handleList(Ticket.class, "tickets"));
