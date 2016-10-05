@@ -48,6 +48,16 @@
     </developer>
   </developers>
 
+  <mailingLists>
+    <mailingList>
+      <name>Zendesk Java Client User List</name>
+      <subscribe>zendesk-java-client-users+subscribe@googlegroups.com</subscribe>
+      <unsubscribe>zendesk-java-client-users+unsubscribe@googlegroups.com</unsubscribe>
+      <post>zendesk-java-client-users@googlegroups.com</post>
+      <archive>https://groups.google.com/forum/#!forum/zendesk-java-client-users</archive>
+    </mailingList>
+  </mailingLists>
+
   <prerequisites>
     <maven>3.0.4</maven>
   </prerequisites>
