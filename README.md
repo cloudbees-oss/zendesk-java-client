@@ -27,6 +27,11 @@ all records have been fetched, so e.g.
 will iterate through *all* tickets. Most likely you will want to implement your own cut-off process to stop iterating
 when you have got enough data.
 
+Mailing lists
+-------------
+
+* [Users list](https://groups.google.com/forum/#!forum/zendesk-java-client-users)
+
 Status
 ------
 
