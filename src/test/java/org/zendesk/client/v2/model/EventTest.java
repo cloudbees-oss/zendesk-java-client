@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
+import org.zendesk.client.v2.model.events.AgentMacroReferenceEvent;
 import org.zendesk.client.v2.model.events.AttachmentRedactionEvent;
 import org.zendesk.client.v2.model.events.CommentRedactionEvent;
 import org.zendesk.client.v2.model.events.Event;
@@ -60,4 +61,17 @@ public class EventTest {
     assertEquals( new Long(18974155255L), ((CommentRedactionEvent) ev).getCommentId() );
     assertEquals( "CommentRedactionEvent{commentId=18974155255}", ev.toString() );
   }
+
+    @Test
+    public void testAgentMacroReferenceEvent() {
+        String json = "{ \"id\": 789, \"type\": \"AgentMacroReference\", \"via\": { \"channel\": \"web\", \"source\": {"
+            + "\"from\": {}, \"to\": {}, \"rel\": null } }, \"macro_title\": \"TheMacroTitle\", \"macro_id\": \"123\" }";
+        Event ev = parseJson( json.getBytes() );
+        assertNotNull(ev);
+        assertEquals(AgentMacroReferenceEvent.class, ev.getClass());
+        assertEquals(new Long(789L), ev.getId());
+        assertEquals(new Long(123L), ((AgentMacroReferenceEvent) ev).getMacroId());
+        assertEquals("TheMacroTitle", ((AgentMacroReferenceEvent) ev).getMacroTitle());
+        assertNotNull(((AgentMacroReferenceEvent) ev).getVia());
+    }
 }
