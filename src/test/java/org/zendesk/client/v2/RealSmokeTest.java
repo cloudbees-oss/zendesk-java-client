@@ -27,6 +27,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.zendesk.client.v2.model.AgentRole;
 import org.zendesk.client.v2.model.Audit;
+import org.zendesk.client.v2.model.Brand;
 import org.zendesk.client.v2.model.Collaborator;
 import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.Field;
@@ -111,6 +112,16 @@ public class RealSmokeTest {
             builder.setPassword(config.getProperty("password"));
         }
         instance = builder.build();
+    }
+
+    @Test
+    public void getBrands() throws Exception {
+        createClientWithTokenOrPassword();
+        List<Brand> brands = instance.getBrands();
+        assertTrue(brands.iterator().hasNext());
+        for(Brand brand : brands){
+            assertThat(brand, notNullValue());
+        }
     }
 
     @Test
