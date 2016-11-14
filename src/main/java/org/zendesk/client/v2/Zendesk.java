@@ -23,6 +23,7 @@ import org.zendesk.client.v2.model.AgentRole;
 import org.zendesk.client.v2.model.Attachment;
 import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Automation;
+import org.zendesk.client.v2.model.Brand;
 import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Forum;
@@ -204,6 +205,11 @@ public class Zendesk implements Closeable {
         }
         Class<JobStatus<HashMap<String, Object>>> clazz = (Class<JobStatus<HashMap<String, Object>>>)(Object)JobStatus.class;
         return submit(req("GET", tmpl("/job_statuses/show_many.json{?ids}").set("ids", ids)), handleList(clazz, "job_statuses"));
+    }
+
+    public List<Brand> getBrands(){
+        return complete(submit(req("GET", cnst("/brands.json")), handleList(Brand.class,
+                "brands")));
     }
 
     public TicketForm getTicketForm(long id) {
