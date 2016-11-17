@@ -375,14 +375,18 @@ public class RealSmokeTest {
         identity.setValue("first@test.com");
 
         Identity createdIdentity = instance.createUserIdentity(user, identity);
-        assertThat(createdIdentity.getValue(), is("first@test.com"));
+        try {
+            assertThat(createdIdentity.getValue(), is("first@test.com"));
 
-        createdIdentity.setValue("second@test.com");
-        Identity updatedIdentity = instance.updateUserIdentity(user, createdIdentity);
+            createdIdentity.setValue("second@test.com");
+            Identity updatedIdentity = instance.updateUserIdentity(user, createdIdentity);
 
-        assertThat(updatedIdentity.getValue(), is("second@test.com"));
-
-        instance.deleteUserIdentity(user, identity);
+            assertThat(updatedIdentity.getValue(), is("second@test.com"));
+        } finally {
+            if (createdIdentity != null) {
+                instance.deleteUserIdentity(user, createdIdentity.getId());
+            }
+        }
     }
 
     @Test
