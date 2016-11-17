@@ -12,10 +12,10 @@ public class OrganizationMembership implements SearchResultEntity, Serializable 
 
     private static final long serialVersionUID = 1L;
 
-    private long id;
-    private long userId;
-    private long organizationId;
-    private boolean _default;
+    private Long id;
+    private Long userId;
+    private Long organizationId;
+    private Boolean _default;
     private Date createdAt;
     private Date updatedAt;
 
@@ -23,38 +23,38 @@ public class OrganizationMembership implements SearchResultEntity, Serializable 
     }
 
     @JsonProperty("id")
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
     @JsonProperty("user_id")
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
     @JsonProperty("organization_id")
-    public long getOrganizationId() {
+    public Long getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(long organizationId) {
+    public void setOrganizationId(final Long organizationId) {
         this.organizationId = organizationId;
     }
 
     @JsonProperty("default")
-    public boolean isDefault() {
+    public Boolean isDefault() {
         return _default;
     }
 
-    public void setDefault(boolean _default) {
+    public void setDefault(Boolean _default) {
         this._default = _default;
     }
 
