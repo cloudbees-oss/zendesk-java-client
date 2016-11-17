@@ -45,6 +45,7 @@ import org.zendesk.client.v2.model.events.Event;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.Category;
 import org.zendesk.client.v2.model.hc.Section;
+import org.zendesk.client.v2.model.hc.Subscription;
 import org.zendesk.client.v2.model.hc.Translation;
 import org.zendesk.client.v2.model.schedules.Holiday;
 import org.zendesk.client.v2.model.schedules.Interval;
@@ -600,6 +601,28 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void getArticleSubscriptions() throws Exception {
+        createClientWithTokenOrPassword();
+        int articleCount = 0;
+        int subCount = 0;
+        for (Article t : instance.getArticles()) {
+            if (++articleCount > 50) {
+                break; // Stop if we're not finding articles with subscriptions
+            }
+            for (Subscription sub : instance.getArticleSubscriptions(t.getId())) {
+                assertThat(sub.getId(), notNullValue());
+                assertThat(sub.getUserId(), notNullValue());
+                assertThat(sub.getContentId(), notNullValue());
+                assertThat(sub.getCreatedAt(), notNullValue());
+                assertThat(sub.getUpdatedAt(), notNullValue());
+                if (++subCount > 10) {
+                    break;
+                }
+            }
+        }
+    }
+
+    @Test
     public void getArticleTranslations() throws Exception {
         createClientWithTokenOrPassword();
         int articleCount = 0;
@@ -705,6 +728,28 @@ public class RealSmokeTest {
             assertThat(s.getCategoryId(), notNullValue());
             if (++count > 10) {
                 break;
+            }
+        }
+    }
+
+    @Test
+    public void getSectionSubscriptions() throws Exception {
+        createClientWithTokenOrPassword();
+        int sectionCount = 0;
+        int count = 0;
+        for (Section s : instance.getSections()) {
+            if (++sectionCount > 50) {
+                break; // Stop if we're not finding sections with subscriptions
+            }
+            for (Subscription sub : instance.getSectionSubscriptions(s.getId())) {
+                assertThat(sub.getId(), notNullValue());
+                assertThat(sub.getUserId(), notNullValue());
+                assertThat(sub.getContentId(), notNullValue());
+                assertThat(sub.getCreatedAt(), notNullValue());
+                assertThat(sub.getUpdatedAt(), notNullValue());
+                if (++count > 10) {
+                    break;
+                }
             }
         }
     }

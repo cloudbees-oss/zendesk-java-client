@@ -51,6 +51,7 @@ import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.ArticleAttachments;
 import org.zendesk.client.v2.model.hc.Category;
 import org.zendesk.client.v2.model.hc.Section;
+import org.zendesk.client.v2.model.hc.Subscription;
 import org.zendesk.client.v2.model.hc.Translation;
 import org.zendesk.client.v2.model.schedules.Holiday;
 import org.zendesk.client.v2.model.schedules.Schedule;
@@ -1602,6 +1603,37 @@ public class Zendesk implements Closeable {
         checkHasId(section);
         complete(submit(req("DELETE", tmpl("/help_center/sections/{id}.json").set("id", section.getId())),
                 handleStatus()));
+    }
+
+    public Iterable<Subscription> getUserSubscriptions(User user) {
+        checkHasId(user);
+        return getUserSubscriptions(user.getId());
+    }
+
+    public Iterable<Subscription> getUserSubscriptions(Long userId) {
+        return new PagedIterable<Subscription>(
+            tmpl("/help_center/users/{userId}/subscriptions.json").set("userId", userId),
+            handleList(Subscription.class, "subscriptions"));
+    }
+
+    public Iterable<Subscription> getArticleSubscriptions(Long articleId) {
+        return getArticleSubscriptions(articleId, null);
+    }
+
+    public Iterable<Subscription> getArticleSubscriptions(Long articleId, String locale) {
+        return new PagedIterable<Subscription>(
+            tmpl("/help_center{/locale}/articles/{articleId}/subscriptions.json").set("locale", locale).set("articleId", articleId),
+            handleList(Subscription.class, "subscriptions"));
+    }
+
+    public Iterable<Subscription> getSectionSubscriptions(Long sectionId) {
+        return getSectionSubscriptions(sectionId, null);
+    }
+
+    public Iterable<Subscription> getSectionSubscriptions(Long sectionId, String locale) {
+        return new PagedIterable<Subscription>(
+            tmpl("/help_center{/locale}/sections/{sectionId}/subscriptions.json").set("locale", locale).set("sectionId", sectionId),
+            handleList(Subscription.class, "subscriptions"));
     }
 
     /**
