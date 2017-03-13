@@ -1528,7 +1528,7 @@ public class Zendesk implements Closeable {
                 handleList(Article.class, "articles")));
     }
 
-    public Article getArticle(int id) {
+    public Article getArticle(long id) {
         return complete(submit(req("GET", tmpl("/help_center/articles/{id}.json").set("id", id)),
                 handle(Article.class, "article")));
     }
@@ -1586,7 +1586,7 @@ public class Zendesk implements Closeable {
             handleList(Category.class, "categories"));
     }
 
-    public Category getCategory(int id) {
+    public Category getCategory(long id) {
         return complete(submit(req("GET", tmpl("/help_center/categories/{id}.json").set("id", id)),
                 handle(Category.class, "category")));
     }
@@ -1631,7 +1631,7 @@ public class Zendesk implements Closeable {
             handleList(Section.class, "sections"));
     }
 
-    public Section getSection(int id) {
+    public Section getSection(long id) {
         return complete(submit(req("GET", tmpl("/help_center/sections/{id}.json").set("id", id)),
                 handle(Section.class, "section")));
     }
