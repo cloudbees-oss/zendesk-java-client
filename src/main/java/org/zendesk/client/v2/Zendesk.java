@@ -1586,7 +1586,7 @@ public class Zendesk implements Closeable {
             handleList(Category.class, "categories"));
     }
 
-    public Category getCategory(int id) {
+    public Category getCategory(long id) {
         return complete(submit(req("GET", tmpl("/help_center/categories/{id}.json").set("id", id)),
                 handle(Category.class, "category")));
     }
