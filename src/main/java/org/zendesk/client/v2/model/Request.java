@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author stephenc
@@ -18,13 +19,17 @@ public class Request implements Serializable {
     protected String subject;
     protected String description;
     protected Status status;
+    private Type type;
     protected Ticket.Requester requester;
     protected Long requesterId;
     protected Long organizationId;
     protected Via via;
+    protected boolean solved;
     protected Date createdAt;
     protected Date updatedAt;
     protected Comment comment;
+    protected boolean canBeSolvedByMe;
+    private List<CustomFieldValue> customFields;
 
     @JsonProperty("created_at")
     public Date getCreatedAt() {
@@ -120,5 +125,40 @@ public class Request implements Serializable {
 
     public void setComment(Comment comment) {
         this.comment = comment;
+    }
+    
+    public void setSolved(boolean solved) {
+    	this.solved = solved;
+    }
+    
+    public boolean getSolved() {
+    	return solved;
+    }
+    
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+    
+    @JsonProperty("can_be_solved_by_me")
+    public boolean getCanBeSolvedByMe() {
+    	return canBeSolvedByMe;
+    }
+    
+    public void setCanBeSolvedByMe(boolean canBe) {
+    	canBeSolvedByMe = canBe;
+    }
+
+    
+    @JsonProperty("custom_fields")
+    public List<CustomFieldValue> getCustomFields() {
+        return customFields;
+    }
+
+    public void setCustomFields(List<CustomFieldValue> customFields) {
+        this.customFields = customFields;
     }
 }
