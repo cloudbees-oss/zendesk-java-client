@@ -22,6 +22,7 @@ public class Request implements Serializable {
     protected Long requesterId;
     protected Long organizationId;
     protected Via via;
+    protected Long viaFollowupSourceId;
     protected Date createdAt;
     protected Date updatedAt;
     protected Comment comment;
@@ -112,6 +113,15 @@ public class Request implements Serializable {
 
     public void setVia(Via via) {
         this.via = via;
+    }
+
+    @JsonProperty("via_followup_source_id")
+    public Long getViaFollowupSourceId() {
+        return viaFollowupSourceId;
+    }
+
+    public void setViaFollowupSourceId(Long viaFollowupSourceId) {
+        this.viaFollowupSourceId = viaFollowupSourceId;
     }
 
     public Comment getComment() {
