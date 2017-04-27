@@ -265,10 +265,10 @@ public class Field implements Serializable {
         private String name;
         private String value;
 
-        private Option() {
+        public Option() {
         }
 
-        private Option(String name, String value) {
+        public Option(String name, String value) {
             this.name = name;
             this.value = value;
         }
