@@ -391,6 +391,42 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void suspendUser() throws Exception {
+        createClientWithTokenOrPassword();
+
+        String name = "testSuspendUser";
+        String externalId = "testSuspendUser";
+
+        // Clean up to avoid conflicts
+        for (User u: instance.lookupUserByExternalId(externalId)){
+            instance.deleteUser(u.getId());
+        }
+
+        // Create user
+        User newUser = new User(true, name);
+        newUser.setExternalId(externalId);
+        User user = instance.createOrUpdateUser(newUser);
+        assertNotNull(user);
+        assertNotNull(user.getId());
+        assertThat(user.getSuspended(), is(false));
+
+        User suspendResult = instance.suspendUser(user);
+        assertNotNull(suspendResult);
+        assertNotNull(suspendResult.getId());
+        assertThat(suspendResult.getId(), is(user.getId()));
+        assertThat(suspendResult.getSuspended(), is(true));
+
+        User unsuspendResult = instance.unsuspendUser(user.getId());
+        assertNotNull(unsuspendResult);
+        assertNotNull(unsuspendResult.getId());
+        assertThat(unsuspendResult.getId(), is(user.getId()));
+        assertThat(unsuspendResult.getSuspended(), is(false));
+
+        // Cleanup
+        instance.deleteUser(user);
+    }
+
+    @Test
     public void getUserRequests() throws Exception {
         createClientWithTokenOrPassword();
         User user = instance.getCurrentUser();
