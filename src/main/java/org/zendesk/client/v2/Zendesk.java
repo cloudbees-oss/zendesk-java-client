@@ -976,6 +976,14 @@ public class Zendesk implements Closeable {
         return new PagedIterable<Organization>(cnst("/organizations.json"),
                 handleList(Organization.class, "organizations"));
     }
+    
+    public Iterable<Organization> getOrganizationsByExternalIds(List<String> externalIds) {
+    	if (externalIds == null || externalIds.size() < 1) {
+            throw new IllegalArgumentException("At least 1 external id must be provided");
+        }
+        return new PagedIterable<Organization>(tmpl("/organizations/show_many.json{?external_ids}").set("external_ids", "" + String.join(",", externalIds)),
+                handleList(Organization.class, "organizations"));
+    }
 
     public Iterable<Organization> getOrganizationsIncrementally(Date startTime) {
         return new PagedIterable<Organization>(
