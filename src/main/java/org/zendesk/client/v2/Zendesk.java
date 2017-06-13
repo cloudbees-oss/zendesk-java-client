@@ -1551,7 +1551,7 @@ public class Zendesk implements Closeable {
     }
 
     public Translation createArticleTranslation(Long articleId, Translation translation) {
-        return complete(submit(req("POST", tmpl("/help_center/articles/{id}/translations/translations.json"),
+        return complete(submit(req("POST", tmpl("/help_center/articles/{id}/translations/translations.json").set("id", articleId),
                 JSON, json(Collections.singletonMap("translation", translation))), handle(Translation.class, "translation")));
     }
 
