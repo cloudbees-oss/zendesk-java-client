@@ -1551,6 +1551,7 @@ public class Zendesk implements Closeable {
     }
 
     public Translation createArticleTranslation(Long articleId, Translation translation) {
+        checkHasArticleId(articleId);
         return complete(submit(req("POST", tmpl("/help_center/articles/{id}/translations/translations.json").set("id", articleId),
                 JSON, json(Collections.singletonMap("translation", translation))), handle(Translation.class, "translation")));
     }
@@ -1613,6 +1614,7 @@ public class Zendesk implements Closeable {
     }
 
     public Translation createCategoryTranslation(Long categoryId, Translation translation) {
+        checkHasCategoryId(categoryId);
         return complete(submit(req("POST", tmpl("/help_center/categories/{id}/translations/translation.json").set("id", categoryId),
                 JSON, json(Collections.singletonMap("translation", translation))), handle(Translation.class, "translation")));
     }
@@ -1663,6 +1665,7 @@ public class Zendesk implements Closeable {
     }
 
     public Translation createSectionTranslation(Long sectionId, Translation translation) {
+        checkHasSectionId(sectionId);
         return complete(submit(req("POST", tmpl("/help_center/sections/{id}/translations/translation.json").set("id", sectionId),
                 JSON, json(Collections.singletonMap("translation", translation))), handle(Translation.class, "translation")));
     }
@@ -2217,6 +2220,24 @@ public class Zendesk implements Closeable {
     private static void checkHasSectionId(Article article) {
         if (article.getSectionId() == null) {
             throw new IllegalArgumentException("Article requires section id");
+        }
+    }
+
+    private static void checkHasArticleId(Long articleId) {
+        if (articleId == null) {
+            throw new IllegalArgumentException("Translation requires article id");
+        }
+    }
+
+    private static void checkHasSectionId(Long articleId) {
+        if (articleId == null) {
+            throw new IllegalArgumentException("Translation requires section id");
+        }
+    }
+
+    private static void checkHasCategoryId(Long articleId) {
+        if (articleId == null) {
+            throw new IllegalArgumentException("Translation requires category id");
         }
     }
 
