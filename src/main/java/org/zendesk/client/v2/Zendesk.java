@@ -181,7 +181,7 @@ public class Zendesk implements Closeable {
             try {
                 client.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                logger.warn("Unexpected error on client close", e);
             }
         }
         closed = true;
