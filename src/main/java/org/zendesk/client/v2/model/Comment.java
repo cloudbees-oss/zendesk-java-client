@@ -17,6 +17,8 @@ public class Comment implements Serializable {
 
     private Long id;
     private String body;
+    private String plainBody;
+    private String htmlBody;
     private Long authorId;
     private List<String> uploads;
     private List<Attachment> attachments;
@@ -41,6 +43,24 @@ public class Comment implements Serializable {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    @JsonProperty("plain_body")
+    public String getPlainBody() {
+        return plainBody;
+    }
+
+    public void setPlainBody(String plainBody) {
+        this.plainBody = plainBody;
+    }
+
+    @JsonProperty("html_body")
+    public String getHtmlBody() {
+        return htmlBody;
+    }
+
+    public void setHtmlBody(String htmlBody) {
+        this.htmlBody = htmlBody;
     }
 
     public List<String> getUploads() {
