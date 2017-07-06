@@ -261,7 +261,8 @@ public class Field implements Serializable {
         return sb.toString();
     }
 
-    public static class Option {
+    public static class Option implements Serializable {
+        private static final long serialVersionUID = -8881532430230657120L;    
         private String name;
         private String value;
 
