@@ -31,6 +31,7 @@ public class User extends Collaborator implements SearchResultEntity, Serializab
     private String timeZone;
     private Date lastLoginAt;
     private String phone;
+    private Boolean restrictedAgent;
     private String signature;
     private String details;
     private String notes;
@@ -326,4 +327,12 @@ public class User extends Collaborator implements SearchResultEntity, Serializab
         this.remotePhotoUrl = remotePhotoUrl;
     }
 
+    @JsonProperty("restricted_agent")
+    public Boolean getRestrictedAgent() {
+        return restrictedAgent;
+    }
+
+    public void setRestrictedAgent(Boolean restrictedAgent) {
+        this.restrictedAgent = restrictedAgent;
+    }
 }
