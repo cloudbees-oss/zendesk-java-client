@@ -266,7 +266,7 @@ public class Field implements Serializable {
         private String name;
         private String value;
 
-        public Option() {
+        private Option() {
         }
 
         public Option(String name, String value) {
