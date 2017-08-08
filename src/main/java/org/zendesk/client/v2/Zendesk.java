@@ -224,6 +224,25 @@ public class Zendesk implements Closeable {
                 "ticket_forms")));
     }
 
+    public Ticket importTicket(Ticket ticket) {
+        return complete(submit(req("POST", cnst("/imports/tickets.json"),
+                JSON, json(Collections.singletonMap("ticket", ticket))),
+                handle(Ticket.class, "ticket")));
+    }
+
+    public JobStatus<Ticket> importTickets(Ticket... tickets) {
+        return importTickets(Arrays.asList(tickets));
+    }
+
+    public JobStatus<Ticket> importTickets(List<Ticket> tickets) {
+        return complete(importTicketsAsync(tickets));
+    }
+
+    public ListenableFuture<JobStatus<Ticket>> importTicketsAsync(List<Ticket> tickets) {
+        return submit(req("POST", cnst("/imports/tickets/create_many.json"), JSON, json(
+                Collections.singletonMap("tickets", tickets))), handleJobStatus(Ticket.class));
+    }
+
     public Ticket getTicket(long id) {
         return complete(submit(req("GET", tmpl("/tickets/{id}.json").set("id", id)), handle(Ticket.class,
                 "ticket")));
