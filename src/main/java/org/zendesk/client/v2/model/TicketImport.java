@@ -11,7 +11,7 @@ import java.util.List;
 public class TicketImport extends Ticket {
 
     private static final long serialVersionUID = -5670864013402830387L;
-    
+
     private List<Comment> comments;
 
     public TicketImport() {

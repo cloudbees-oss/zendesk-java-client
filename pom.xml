@@ -17,13 +17,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.netflix.oss</groupId>
+  <parent>
+    <groupId>com.cloudbees</groupId>
+    <artifactId>cloudbees-oss-parent</artifactId>
+    <version>6</version>
+  </parent>
+
+  <groupId>com.cloudbees.thirdparty</groupId>
   <artifactId>zendesk-java-client</artifactId>
-  <version>0.5.5-rfernandes</version>
+  <version>0.5.5-SNAPSHOT</version>
 
   <name>zendesk-java-client</name>
-  <description>Fork of Java client for the Zendesk API</description>
-  <url>https://github.com/robert-fernandes/zendesk-java-client</url>
+  <description>Java client for the Zendesk API</description>
+  <url>https://github.com/cloudbees/zendesk-java-client</url>
   <inceptionYear>2013</inceptionYear>
   <licenses>
     <license>
@@ -35,18 +41,37 @@
 
   <developers>
     <developer>
-      <name>Robert Fernandes</name>
+      <name>Stephen Connolly</name>
+    </developer>
+    <developer>
+      <name>Johno Crawford</name>
+    </developer>
+    <developer>
+      <name>Matt Tucker</name>
+    </developer>
+    <developer>
+      <name>Yoann Dubreuil</name>
     </developer>
   </developers>
+
+  <mailingLists>
+    <mailingList>
+      <name>Zendesk Java Client User List</name>
+      <subscribe>zendesk-java-client-users+subscribe@googlegroups.com</subscribe>
+      <unsubscribe>zendesk-java-client-users+unsubscribe@googlegroups.com</unsubscribe>
+      <post>zendesk-java-client-users@googlegroups.com</post>
+      <archive>https://groups.google.com/forum/#!forum/zendesk-java-client-users</archive>
+    </mailingList>
+  </mailingLists>
 
   <prerequisites>
     <maven>3.0.4</maven>
   </prerequisites>
 
   <scm>
-    <connection>scm:git:git://github.com/robert-fernandes/zendesk-java-client.git</connection>
-    <developerConnection>scm:git:git@github.com:robert-fernandes/zendesk-java-client.git</developerConnection>
-    <url>http://github.com/robert-fernandes/zendesk-java-client/tree/master/</url>
+    <connection>scm:git:git://github.com/cloudbees/zendesk-java-client.git</connection>
+    <developerConnection>scm:git:git@github.com:cloudbees/zendesk-java-client.git</developerConnection>
+    <url>http://github.com/cloudbees/zendesk-java-client/tree/master/</url>
     <tag>HEAD</tag>
   </scm>
   <issueManagement>
@@ -111,30 +136,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.12</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>attach-sources</id>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>attach-javadocs</id>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-            </execution>
-          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
