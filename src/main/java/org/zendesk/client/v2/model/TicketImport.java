@@ -10,7 +10,7 @@ import java.util.List;
 @JsonIgnoreProperties(value = "comment", ignoreUnknown = true)
 public class TicketImport extends Ticket {
 
-    private static final long serialVersionUID = -5670864013402830387L;
+    private static final long serialVersionUID = 1L;
 
     private List<Comment> comments;
 
