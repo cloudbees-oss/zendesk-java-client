@@ -42,7 +42,8 @@ public class TicketImport extends Ticket {
 
     @Override
     public void setComment(Comment comment) {
-        throw new UnsupportedOperationException("single comment is not supported for ticket import, include in comments list instead");
+        String msg = "single comment is not supported for ticket import, include in comments list instead";
+        throw new UnsupportedOperationException(msg);
     }
 
     @Override
