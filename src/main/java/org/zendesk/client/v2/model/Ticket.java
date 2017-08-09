@@ -15,26 +15,26 @@ public class Ticket extends Request implements SearchResultEntity {
 
     private static final long serialVersionUID = 1L;
 
-    protected String externalId;
-    protected Type type;
-    protected Priority priority;
-    protected String recipient;
-    protected Long submitterId;
-    protected Long assigneeId;
-    protected Long groupId;
-    protected List<Long> collaboratorIds;
-    protected List<Collaborator> collaborators;
-    protected Long forumTopicId;
-    protected Long problemId;
-    protected boolean hasIncidents;
-    protected Date dueAt;
-    protected List<String> tags;
-    protected List<CustomFieldValue> customFields;
-    protected SatisfactionRating satisfactionRating;
-    protected List<Long> sharingAgreementIds;
-    protected List<Long> followupIds;
-    protected Long ticketFormId;
-    protected Long brandId;
+    private String externalId;
+    private Type type;
+    private Priority priority;
+    private String recipient;
+    private Long submitterId;
+    private Long assigneeId;
+    private Long groupId;
+    private List<Long> collaboratorIds;
+    private List<Collaborator> collaborators;
+    private Long forumTopicId;
+    private Long problemId;
+    private boolean hasIncidents;
+    private Date dueAt;
+    private List<String> tags;
+    private List<CustomFieldValue> customFields;
+    private SatisfactionRating satisfactionRating;
+    private List<Long> sharingAgreementIds;
+    private List<Long> followupIds;
+    private Long ticketFormId;
+    private Long brandId;
 
     public Ticket() {
     }
