@@ -41,7 +41,7 @@ Here is the status of the various API components:
 * [Ticket Audits](http://developer.zendesk.com/documentation/rest_api/ticket_audits.html) ✓
 * [Incremental Export](https://developer.zendesk.com/rest_api/docs/core/incremental_export) - Partial (tickets, users, organizations only) 
 * [Ticket Fields](http://developer.zendesk.com/documentation/rest_api/ticket_fields.html) ✓
-* [Ticket Import](http://developer.zendesk.com/documentation/rest_api/ticket_import.html) ✓ *new*
+* [Ticket Import](http://developer.zendesk.com/documentation/rest_api/ticket_import.html) ✓
 * [Ticket Metrics](http://developer.zendesk.com/documentation/rest_api/ticket_metrics.html) ✓
 * [Ticket Forms](http://developer.zendesk.com/documentation/rest_api/ticket_forms.html) *getTicketForm() and getTicketForms()*
 * [Views](http://developer.zendesk.com/documentation/rest_api/views.html)
