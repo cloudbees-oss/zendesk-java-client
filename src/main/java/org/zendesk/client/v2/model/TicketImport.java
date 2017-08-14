@@ -1,7 +1,9 @@
 package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,6 +15,7 @@ public class TicketImport extends Ticket {
     private static final long serialVersionUID = 1L;
 
     private List<Comment> comments;
+    private Date solvedAt;
 
     public TicketImport() {
     }
@@ -33,6 +36,15 @@ public class TicketImport extends Ticket {
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    @JsonProperty("solved_at")
+    public Date getSolvedAt() {
+        return solvedAt;
+    }
+
+    public void setSolvedAt(Date solvedAt) {
+        this.solvedAt = solvedAt;
     }
 
     @Override
@@ -77,8 +89,9 @@ public class TicketImport extends Ticket {
         sb.append(", followupIds=").append(getFollowupIds());
         sb.append(", ticketFormId=").append(getTicketFormId());
         sb.append(", brandId=").append(getBrandId());
-        sb.append(", createdAt=").append(getCreatedAt());
+        sb.append(", solvedAt=").append(getSolvedAt());
         sb.append(", updatedAt=").append(getUpdatedAt());
+        sb.append(", solvedAt=").append(solvedAt);
         sb.append(", comments=").append(comments);
         sb.append('}');
         return sb.toString();
