@@ -11,7 +11,7 @@ public class Target {
    private Long    id;
    private String  title;
    private String  type;
-   private boolean active;
+   private Boolean active;
    private Date    createdAt;
 
    public Long getId() {
@@ -38,11 +38,11 @@ public class Target {
       this.type = type;
    }
 
-   public boolean isActive() {
+   public Boolean isActive() {
       return active;
    }
 
-   public void setActive(boolean active) {
+   public void setActive(Boolean active) {
       this.active = active;
    }
 

@@ -16,7 +16,7 @@ public class Trigger implements Serializable {
 
    private Long         id;
    private String       title;
-   private boolean      active;
+   private Boolean      active;
    private int          position;
    private Conditions   conditions;
    private List<Action> actions;
@@ -39,11 +39,11 @@ public class Trigger implements Serializable {
       this.title = title;
    }
 
-   public boolean isActive() {
+   public Boolean isActive() {
       return active;
    }
 
-   public void setActive(boolean active) {
+   public void setActive(Boolean active) {
       this.active = active;
    }
 

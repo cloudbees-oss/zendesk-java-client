@@ -46,7 +46,7 @@ public class ArticleAttachments {
      *  its url can be referenced in the HTML body of the article.
      *  If false, the attachment is listed in the list of attachments. Default is false
      */
-    private boolean inline;
+    private Boolean inline;
 
     /**
      *  The time at which the article attachment was created
@@ -119,11 +119,11 @@ public class ArticleAttachments {
     }
 
     @JsonProperty("inline")
-    public boolean isInline() {
+    public Boolean isInline() {
         return inline;
     }
 
-    public void setInline(boolean inline) {
+    public void setInline(Boolean inline) {
         this.inline = inline;
     }
 

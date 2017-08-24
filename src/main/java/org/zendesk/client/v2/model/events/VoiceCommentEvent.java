@@ -56,7 +56,7 @@ public class VoiceCommentEvent extends PublicPrivateEvent {
         this.htmlBody = htmlBody;
     }
 
-    public boolean getTrusted() {
+    public Boolean getTrusted() {
         return trusted;
     }
 

@@ -26,7 +26,7 @@ public class Ticket extends Request implements SearchResultEntity {
     private List<Collaborator> collaborators;
     private Long forumTopicId;
     private Long problemId;
-    private boolean hasIncidents;
+    private Boolean hasIncidents;
     private Date dueAt;
     private List<String> tags;
     private List<CustomFieldValue> customFields;
@@ -133,11 +133,11 @@ public class Ticket extends Request implements SearchResultEntity {
     }
 
     @JsonProperty("has_incidents")
-    public boolean isHasIncidents() {
+    public Boolean isHasIncidents() {
         return hasIncidents;
     }
 
-    public void setHasIncidents(boolean hasIncidents) {
+    public void setHasIncidents(Boolean hasIncidents) {
         this.hasIncidents = hasIncidents;
     }
 

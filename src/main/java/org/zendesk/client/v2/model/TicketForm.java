@@ -21,11 +21,11 @@ public class TicketForm implements SearchResultEntity, Serializable {
 	@JsonProperty("raw_display_name")
 	private String rawDisplayName;
 	private int position;
-	private boolean active;
+	private Boolean active;
 	@JsonProperty("end_user_visible")
-	private boolean endUserVisible;
+	private Boolean endUserVisible;
 	@JsonProperty("default")
-	private boolean defaultForm;
+	private Boolean defaultForm;
 	@JsonProperty("ticket_field_ids")
 	private List<Long> ticketFieldIds;
 	@JsonProperty("created_at")
@@ -63,22 +63,22 @@ public class TicketForm implements SearchResultEntity, Serializable {
 	public void setPosition(int position) {
 		this.position = position;
 	}
-	public boolean isActive() {
+	public Boolean isActive() {
 		return active;
 	}
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
-	public boolean isEndUserVisible() {
+	public Boolean isEndUserVisible() {
 		return endUserVisible;
 	}
-	public void setEndUserVisible(boolean endUserVisible) {
+	public void setEndUserVisible(Boolean endUserVisible) {
 		this.endUserVisible = endUserVisible;
 	}
-	public boolean isDefaultForm() {
+	public Boolean isDefaultForm() {
 		return defaultForm;
 	}
-	public void setDefaultForm(boolean defaultForm) {
+	public void setDefaultForm(Boolean defaultForm) {
 		this.defaultForm = defaultForm;
 	}
 	public List<Long> getTicketFieldIds() {

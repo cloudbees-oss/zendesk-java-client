@@ -19,7 +19,7 @@ public class Macro implements Serializable {
 
     private int id;
     private String title;
-    private boolean active;
+    private Boolean active;
     private List<Action> actions;
     private Date createdAt;
     private Date updatedAt;
@@ -42,11 +42,11 @@ public class Macro implements Serializable {
         this.title = title;
     }
 
-    public boolean getActive() {
+    public Boolean getActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 

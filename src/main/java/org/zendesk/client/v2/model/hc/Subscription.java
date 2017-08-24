@@ -29,7 +29,7 @@ public class Subscription {
 
     /** Subscribe also to article comments. Only for section subscriptions */
     @JsonProperty("include_comments")
-    private boolean includeComments;
+    private Boolean includeComments;
 
     /** The time at which the subscription was created */
     @JsonProperty("created_at")
@@ -87,11 +87,11 @@ public class Subscription {
         this.locale = locale;
     }
 
-    public boolean isIncludeComments() {
+    public Boolean isIncludeComments() {
         return includeComments;
     }
 
-    public void setIncludeComments( boolean includeComments ) {
+    public void setIncludeComments( Boolean includeComments ) {
         this.includeComments = includeComments;
     }
 
