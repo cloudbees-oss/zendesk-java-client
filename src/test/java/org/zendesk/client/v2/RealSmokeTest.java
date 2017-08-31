@@ -303,7 +303,6 @@ public class RealSmokeTest {
     }
 
     @Test
-    @Ignore("Don't spam zendesk")
     public void createSolveTickets() throws Exception {
         createClientWithTokenOrPassword();
         assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
@@ -328,7 +327,7 @@ public class RealSmokeTest {
             assertThat(ticket.getDescription(), is(t.getComment().getBody()));
             assertThat(instance.getTicket(ticket.getId()), notNullValue());
             firstId = Math.min(ticket.getId(), firstId);
-        } while (ticket.getId() < firstId + 200L); // seed enough data for the paging tests
+        } while (ticket.getId() < firstId + 5L); // seed enough data for the paging tests
     }
 
     @Test
