@@ -133,7 +133,7 @@ public class RealSmokeTest {
     }
 
     @Test
-    @Ignore("Needs specfic ticket form instance")
+    @Ignore("Needs instance with ticket form")
     public void getTicketForm() throws Exception {
         createClientWithTokenOrPassword();
         TicketForm ticketForm = instance.getTicketForm(27562);
@@ -142,6 +142,7 @@ public class RealSmokeTest {
     }
 
     @Test
+    @Ignore("Needs instance with ticket form")
     public void getTicketForms() throws Exception {
         createClientWithTokenOrPassword();
         Iterable<TicketForm> ticketForms = instance.getTicketForms();
@@ -152,7 +153,7 @@ public class RealSmokeTest {
     }
 
     @Test
-    @Ignore("Needs specfic ticket form instance")
+    @Ignore("Needs instance with ticket form")
     public void getTicketFieldsOnForm() throws Exception {
         createClientWithTokenOrPassword();
         TicketForm ticketForm = instance.getTicketForm(27562);
@@ -786,6 +787,7 @@ public class RealSmokeTest {
     }
 
     @Test
+    @Ignore("Needs instance with custom agent roles")
     public void getCustomAgentRoles() throws Exception {
         createClientWithTokenOrPassword();
         int count = 0;
