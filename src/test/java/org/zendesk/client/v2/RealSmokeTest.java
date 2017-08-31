@@ -399,10 +399,8 @@ public class RealSmokeTest {
         int count = 5;
         for (Request r : instance.getUserRequests(user)) {
             assertThat(r.getId(), notNullValue());
-            System.out.println(r.getSubject());
             for (Comment c : instance.getRequestComments(r)) {
                 assertThat(c.getId(), notNullValue());
-                System.out.println("  " + c.getBody());
             }
             if (--count < 0) {
                 break;
