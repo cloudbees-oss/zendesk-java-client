@@ -32,6 +32,12 @@ Mailing lists
 
 * [Users list](https://groups.google.com/forum/#!forum/zendesk-java-client-users)
 
+Continuous integration
+----------------------
+
+Our project is build on https://opensource.ci.cloudbees.com : [![Build Status](https://opensource.ci.cloudbees.com/buildStatus/icon?job=zendesk-java-client/master)](https://opensource.ci.cloudbees.com/job/zendesk-java-client/job/master/)
+
+
 Status
 ------
 
