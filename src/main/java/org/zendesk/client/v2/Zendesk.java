@@ -1822,7 +1822,7 @@ public class Zendesk implements Closeable {
                 } else if (isRateLimitResponse(response)) {
                     throw new ZendeskResponseRateLimitException(response);
                 }
-                throw new ZendeskResponseException(response);
+                throw ZendeskResponseException.fromResponse(response);
             }
         };
     }
@@ -1841,7 +1841,7 @@ public class Zendesk implements Closeable {
                 if (response.getStatusCode() == 404) {
                     return null;
                 }
-                throw new ZendeskResponseException(response);
+                throw ZendeskResponseException.fromResponse(response);
             }
         };
     }
@@ -1872,7 +1872,7 @@ public class Zendesk implements Closeable {
             if (response.getStatusCode() == 404) {
                 return null;
             }
-            throw new ZendeskResponseException(response);
+            throw ZendeskResponseException.fromResponse(response);
         }
     }
 
@@ -1943,7 +1943,7 @@ public class Zendesk implements Closeable {
             } else if (isRateLimitResponse(response)) {
                 throw new ZendeskResponseRateLimitException(response);
             }
-            throw new ZendeskResponseException(response);
+            throw ZendeskResponseException.fromResponse(response);
         }
     }
 
@@ -2022,7 +2022,7 @@ public class Zendesk implements Closeable {
                 } else if (isRateLimitResponse(response)) {
                     throw new ZendeskResponseRateLimitException(response);
                 }
-                throw new ZendeskResponseException(response);
+                throw ZendeskResponseException.fromResponse(response);
             }
         };
     }
@@ -2046,7 +2046,7 @@ public class Zendesk implements Closeable {
                 } else if (isRateLimitResponse(response)) {
                     throw new ZendeskResponseRateLimitException(response);
                 }
-                throw new ZendeskResponseException(response);
+                throw ZendeskResponseException.fromResponse(response);
             }
         };
     }
@@ -2067,7 +2067,7 @@ public class Zendesk implements Closeable {
                 } else if (isRateLimitResponse(response)) {
                     throw new ZendeskResponseRateLimitException(response);
                 }
-                throw new ZendeskResponseException(response);
+                throw ZendeskResponseException.fromResponse(response);
             }
         };
     }
