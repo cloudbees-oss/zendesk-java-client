@@ -31,7 +31,7 @@ public final class ZendeskConfig {
             for(String key : systemVars.keySet()) {
                 if(key.startsWith(ZENDESK_VARIABLE_PREFIX)) {
                     // Remove the prefix and normalize the key name
-                    String newKey = key.substring(ZENDESK_VARIABLE_PREFIX.length()).toLowerCase();
+                    String newKey = key.substring(ZENDESK_VARIABLE_PREFIX.length()).toLowerCase().replaceAll("_",".");
                     result.put(newKey, systemVars.get(key));
                 }
             }
