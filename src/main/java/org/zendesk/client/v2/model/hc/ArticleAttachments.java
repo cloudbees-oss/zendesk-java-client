@@ -9,7 +9,7 @@ public class ArticleAttachments {
     /**
      *  Automatically assigned when the article attachment is created
      */
-    private int id;
+    private Long id;
 
     /**
      *  The API url of this article attachment
@@ -19,7 +19,7 @@ public class ArticleAttachments {
     /**
      *  Id of the associated article, if present
      */
-    private int articleId;
+    private Long articleId;
 
     /**
      *  The name of the file
@@ -58,11 +58,11 @@ public class ArticleAttachments {
      */
     private Date updatedAt;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -75,11 +75,11 @@ public class ArticleAttachments {
     }
 
     @JsonProperty("article_id")
-    public int getArticleId() {
+    public Long getArticleId() {
         return articleId;
     }
 
-    public void setArticleId(int articleId) {
+    public void setArticleId(Long articleId) {
         this.articleId = articleId;
     }
 
