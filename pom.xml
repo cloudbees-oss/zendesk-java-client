@@ -77,11 +77,15 @@
     <url>http://github.com/cloudbees/zendesk-java-client/tree/master/</url>
     <tag>HEAD</tag>
   </scm>
+
   <issueManagement>
-
+    <system>github</system>
+    <url>https://github.com/cloudbees/zendesk-java-client/issues</url>
   </issueManagement>
-  <ciManagement>
 
+  <ciManagement>
+    <system>jenkins</system>
+    <url>https://opensource.ci.cloudbees.com/job/zendesk-java-client/</url>
   </ciManagement>
 
   <dependencies>

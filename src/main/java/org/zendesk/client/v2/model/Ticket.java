@@ -35,6 +35,7 @@ public class Ticket extends Request implements SearchResultEntity {
     private List<Long> followupIds;
     private Long ticketFormId;
     private Long brandId;
+    private Boolean isPublic;
 
     public Ticket() {
     }
@@ -238,6 +239,15 @@ public class Ticket extends Request implements SearchResultEntity {
         this.type = type;
     }
 
+    @JsonProperty("is_public")
+    public Boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(Boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
@@ -269,6 +279,7 @@ public class Ticket extends Request implements SearchResultEntity {
         sb.append(", followupIds=").append(followupIds);
         sb.append(", ticketFormId=").append(ticketFormId);
         sb.append(", brandId=").append(brandId);
+        sb.append(", isPublic=").append(isPublic);
         sb.append(", createdAt=").append(createdAt);
         sb.append(", updatedAt=").append(updatedAt);
         sb.append('}');
