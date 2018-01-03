@@ -842,4 +842,24 @@ public class RealSmokeTest {
 
         instance.deleteUser(updateResult);
     }
+
+    @Test
+    public void createTicketForm() throws Exception {
+        createClientWithTokenOrPassword();
+        TicketForm form = new TicketForm();
+        form.setActive(true);
+        final String givenName = "Test ticket form";
+        form.setName(givenName);
+        form.setDisplayName(givenName);
+        form.setRawName(givenName);
+        form.setRawDisplayName(givenName);
+
+        final TicketForm createdForm = instance.createTicketForm(form);
+        assertNotNull(createdForm);
+        assertNotNull(createdForm.getId());
+        assertEquals(givenName, createdForm.getName());
+        assertEquals(givenName, createdForm.getDisplayName());
+        assertEquals(givenName, createdForm.getRawName());
+        assertEquals(givenName, createdForm.getRawDisplayName());
+    }
 }

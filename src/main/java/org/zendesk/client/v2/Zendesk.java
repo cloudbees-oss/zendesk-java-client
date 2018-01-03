@@ -225,6 +225,11 @@ public class Zendesk implements Closeable {
                 "ticket_forms")));
     }
 
+    public TicketForm createTicketForm(TicketForm ticketForm) {
+        return complete(submit(req("POST", cnst("/ticket_forms.json"), JSON, json(
+                Collections.singletonMap("ticket_form", ticketForm))), handle(TicketForm.class, "ticket_form")));
+    }
+
     public Ticket importTicket(TicketImport ticketImport) {
         return complete(submit(req("POST", cnst("/imports/tickets.json"),
                 JSON, json(Collections.singletonMap("ticket", ticketImport))),
