@@ -1,21 +1,23 @@
 package org.zendesk.client.v2;
 
-
 import com.damnhandy.uri.template.UriTemplate;
+import org.junit.Rule;
 import org.junit.Test;
+import org.zendesk.client.v2.junit.UTCRule;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.ZoneId;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
 public class TemplateUriTest {
 
+    @Rule
+    public UTCRule utcRule = new UTCRule();
+
     @Test
-    public void testToString_whenUriTempateConstructor_thenUriBuilt() {
+    public void testUriTempateConstructor() {
         UriTemplate uriTemplate = UriTemplate.fromTemplate("/{foo:1}{/foo}");
         TemplateUri templateUri = new TemplateUri(uriTemplate);
         templateUri.set("foo", "test");
@@ -24,7 +26,7 @@ public class TemplateUriTest {
     }
 
     @Test
-    public void testToString_whenStringConstructor_thenUriBuilt() {
+    public void testStringConstructor() {
         TemplateUri templateUri = new TemplateUri("/{foo:1}{/foo}");
         templateUri.set("foo", "test");
 
@@ -32,7 +34,7 @@ public class TemplateUriTest {
     }
 
     @Test
-    public void testToString_whenMapValues_thenUriBuilt() {
+    public void testMapValues() {
         TemplateUri templateUri = new TemplateUri("/{foo:1}{/foo}");
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("foo", "test");
@@ -43,12 +45,19 @@ public class TemplateUriTest {
     }
 
     @Test
-    public void testToString_whenDateValue_thenUriBuilt() throws ParseException {
+    public void testDateValue() throws ParseException {
         TemplateUri templateUri = new TemplateUri("/test?date={foo}");
 
-        Date date = new SimpleDateFormat("mm/dd/yyyy").parse("1/1/2017");
-        templateUri.set("foo", date);
+        Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        cal.set(Calendar.YEAR, 2018);
+        cal.set(Calendar.MONTH, Calendar.APRIL);
+        cal.set(Calendar.DAY_OF_MONTH, 20);
+        cal.set(Calendar.HOUR_OF_DAY, 16);
+        cal.set(Calendar.MINUTE, 20);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        templateUri.set("foo", cal.getTime());
 
-        assertEquals("/test?date=2017-01-01T00%3A01%3A00.000-0600", templateUri.toString());
+        assertEquals("/test?date=2018-04-20T16%3A20%3A00.000%2B0000", templateUri.toString());
     }
 }
