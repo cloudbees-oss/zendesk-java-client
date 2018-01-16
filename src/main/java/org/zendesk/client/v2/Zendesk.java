@@ -2123,7 +2123,13 @@ public class Zendesk implements Closeable {
             throw new ZendeskException(e.getMessage(), e);
         } catch (ExecutionException e) {
             if (e.getCause() instanceof ZendeskException) {
-                throw (ZendeskException) e.getCause();
+                if (e.getCause() instanceof ZendeskResponseRateLimitException) {
+                    throw new ZendeskResponseRateLimitException((ZendeskResponseRateLimitException) e.getCause());
+                }
+                if (e.getCause() instanceof ZendeskResponseException) {
+                    throw new ZendeskResponseException((ZendeskResponseException)e.getCause());
+                }
+                throw new ZendeskException(e.getCause());
             }
             throw new ZendeskException(e.getMessage(), e);
         }

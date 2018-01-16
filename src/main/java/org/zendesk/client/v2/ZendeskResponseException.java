@@ -27,6 +27,13 @@ public class ZendeskResponseException extends ZendeskException {
         this.body = body;
     }
 
+    public ZendeskResponseException(ZendeskResponseException cause) {
+        super(cause.getMessage(), cause);
+        this.statusCode = cause.getStatusCode();
+        this.statusText = cause.getStatusText();
+        this.body = cause.getBody();
+    }
+
     public int getStatusCode() {
         return statusCode;
     }
