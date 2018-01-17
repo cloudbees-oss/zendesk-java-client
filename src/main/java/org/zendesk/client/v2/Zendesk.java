@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.BoundRequestBuilder;
@@ -17,7 +18,6 @@ import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;
 import org.asynchttpclient.request.body.multipart.FilePart;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.AgentRole;
@@ -43,6 +43,7 @@ import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.TicketForm;
+import org.zendesk.client.v2.model.TicketImport;
 import org.zendesk.client.v2.model.TicketResult;
 import org.zendesk.client.v2.model.Topic;
 import org.zendesk.client.v2.model.Trigger;
@@ -225,6 +226,30 @@ public class Zendesk implements Closeable {
     public List<TicketForm> getTicketForms() {
         return complete(submit(req("GET", cnst("/ticket_forms.json")), handleList(TicketForm.class,
                 "ticket_forms")));
+    }
+
+    public TicketForm createTicketForm(TicketForm ticketForm) {
+        return complete(submit(req("POST", cnst("/ticket_forms.json"), JSON, json(
+                Collections.singletonMap("ticket_form", ticketForm))), handle(TicketForm.class, "ticket_form")));
+    }
+
+    public Ticket importTicket(TicketImport ticketImport) {
+        return complete(submit(req("POST", cnst("/imports/tickets.json"),
+                JSON, json(Collections.singletonMap("ticket", ticketImport))),
+                handle(Ticket.class, "ticket")));
+    }
+
+    public JobStatus<Ticket> importTickets(TicketImport... ticketImports) {
+        return importTickets(Arrays.asList(ticketImports));
+    }
+
+    public JobStatus<Ticket> importTickets(List<TicketImport> ticketImports) {
+        return complete(importTicketsAsync(ticketImports));
+    }
+
+    public ListenableFuture<JobStatus<Ticket>> importTicketsAsync(List<TicketImport> ticketImports) {
+        return submit(req("POST", cnst("/imports/tickets/create_many.json"), JSON, json(
+                Collections.singletonMap("tickets", ticketImports))), handleJobStatus(Ticket.class));
     }
 
     public Ticket getTicket(long id) {
@@ -723,6 +748,20 @@ public class Zendesk implements Closeable {
 
     public void deleteUser(long id) {
         complete(submit(req("DELETE", tmpl("/users/{id}.json").set("id", id)), handleStatus()));
+    }
+
+    public User suspendUser(long id) {
+        User user = new User();
+        user.setId(id);
+        user.setSuspended(true);
+        return updateUser(user);
+    }
+
+    public User unsuspendUser(long id) {
+        User user = new User();
+        user.setId(id);
+        user.setSuspended(false);
+        return updateUser(user);
     }
 
     public Iterable<User> lookupUserByEmail(String email) {
@@ -2106,7 +2145,13 @@ public class Zendesk implements Closeable {
             throw new ZendeskException(e.getMessage(), e);
         } catch (ExecutionException e) {
             if (e.getCause() instanceof ZendeskException) {
-                throw (ZendeskException) e.getCause();
+                if (e.getCause() instanceof ZendeskResponseRateLimitException) {
+                    throw new ZendeskResponseRateLimitException((ZendeskResponseRateLimitException) e.getCause());
+                }
+                if (e.getCause() instanceof ZendeskResponseException) {
+                    throw new ZendeskResponseException((ZendeskResponseException)e.getCause());
+                }
+                throw new ZendeskException(e.getCause());
             }
             throw new ZendeskException(e.getMessage(), e);
         }
@@ -2273,6 +2318,8 @@ public class Zendesk implements Closeable {
         mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.setDateFormat(new ISO8601DateFormat());
         return mapper;
     }
 
