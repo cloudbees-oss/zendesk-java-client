@@ -273,10 +273,20 @@ public class Zendesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/tickets/{id}.json").set("id", id)), handleStatus()));
     }
 
+    public ListenableFuture<JobStatus<Ticket>> createTicketDeferred(Ticket ticket) {
+        return submit(req("POST", cnst("/tickets.json?async=true"),
+                JSON, json(Collections.singletonMap("ticket", ticket))),
+                handleJobStatus(Ticket.class));
+    }
+
+    public ListenableFuture<Ticket> createTicketAsync(Ticket ticket) {
+        return submit(req("POST", cnst("/tickets.json"),
+                JSON, json(Collections.singletonMap("ticket", ticket))),
+                handle(Ticket.class, "ticket"));
+    }
+
     public Ticket createTicket(Ticket ticket) {
-        return complete(submit(req("POST", cnst("/tickets.json"),
-                        JSON, json(Collections.singletonMap("ticket", ticket))),
-                handle(Ticket.class, "ticket")));
+        return complete(createTicketAsync(ticket));
     }
 
     public JobStatus<Ticket> createTickets(Ticket... tickets) {
