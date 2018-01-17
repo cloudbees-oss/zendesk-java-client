@@ -279,6 +279,12 @@ public class Zendesk implements Closeable {
                 handle(Ticket.class, "ticket")));
     }
 
+    public ListenableFuture<JobStatus<Ticket>> createTicketAsync(Ticket ticket) {
+        return submit(req("POST", cnst("/tickets.json?async=true"),
+                JSON, json(Collections.singletonMap("ticket", ticket))),
+                handleJobStatus(Ticket.class));
+    }
+
     public JobStatus<Ticket> createTickets(Ticket... tickets) {
         return createTickets(Arrays.asList(tickets));
     }
