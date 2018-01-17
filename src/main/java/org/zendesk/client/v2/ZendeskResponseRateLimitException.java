@@ -21,6 +21,11 @@ public class ZendeskResponseRateLimitException extends ZendeskResponseException 
         }
     }
 
+    protected ZendeskResponseRateLimitException(ZendeskResponseRateLimitException e) {
+        super(e);
+        this.retryAfter = e.getRetryAfter();
+    }
+
     public Long getRetryAfter() {
         return retryAfter;
     }
