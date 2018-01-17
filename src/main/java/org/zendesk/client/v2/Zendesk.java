@@ -225,6 +225,11 @@ public class Zendesk implements Closeable {
                 "ticket_forms")));
     }
 
+    public TicketForm createTicketForm(TicketForm ticketForm) {
+        return complete(submit(req("POST", cnst("/ticket_forms.json"), JSON, json(
+                Collections.singletonMap("ticket_form", ticketForm))), handle(TicketForm.class, "ticket_form")));
+    }
+
     public Ticket importTicket(TicketImport ticketImport) {
         return complete(submit(req("POST", cnst("/imports/tickets.json"),
                 JSON, json(Collections.singletonMap("ticket", ticketImport))),
@@ -2149,7 +2154,13 @@ public class Zendesk implements Closeable {
             throw new ZendeskException(e.getMessage(), e);
         } catch (ExecutionException e) {
             if (e.getCause() instanceof ZendeskException) {
-                throw (ZendeskException) e.getCause();
+                if (e.getCause() instanceof ZendeskResponseRateLimitException) {
+                    throw new ZendeskResponseRateLimitException((ZendeskResponseRateLimitException) e.getCause());
+                }
+                if (e.getCause() instanceof ZendeskResponseException) {
+                    throw new ZendeskResponseException((ZendeskResponseException)e.getCause());
+                }
+                throw new ZendeskException(e.getCause());
             }
             throw new ZendeskException(e.getMessage(), e);
         }
