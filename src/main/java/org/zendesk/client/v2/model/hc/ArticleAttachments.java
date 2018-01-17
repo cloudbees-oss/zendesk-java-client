@@ -19,7 +19,7 @@ public class ArticleAttachments {
     /**
      *  Id of the associated article, if present
      */
-    private int articleId;
+    private Long articleId;
 
     /**
      *  The name of the file
@@ -75,11 +75,11 @@ public class ArticleAttachments {
     }
 
     @JsonProperty("article_id")
-    public int getArticleId() {
+    public Long getArticleId() {
         return articleId;
     }
 
-    public void setArticleId(int articleId) {
+    public void setArticleId(Long articleId) {
         this.articleId = articleId;
     }
 
