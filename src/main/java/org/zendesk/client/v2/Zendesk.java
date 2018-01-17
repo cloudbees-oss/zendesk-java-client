@@ -225,6 +225,11 @@ public class Zendesk implements Closeable {
                 "ticket_forms")));
     }
 
+    public TicketForm createTicketForm(TicketForm ticketForm) {
+        return complete(submit(req("POST", cnst("/ticket_forms.json"), JSON, json(
+                Collections.singletonMap("ticket_form", ticketForm))), handle(TicketForm.class, "ticket_form")));
+    }
+
     public Ticket importTicket(TicketImport ticketImport) {
         return complete(submit(req("POST", cnst("/imports/tickets.json"),
                 JSON, json(Collections.singletonMap("ticket", ticketImport))),
@@ -740,6 +745,20 @@ public class Zendesk implements Closeable {
 
     public void deleteUser(long id) {
         complete(submit(req("DELETE", tmpl("/users/{id}.json").set("id", id)), handleStatus()));
+    }
+
+    public User suspendUser(long id) {
+        User user = new User();
+        user.setId(id);
+        user.setSuspended(true);
+        return updateUser(user);
+    }
+
+    public User unsuspendUser(long id) {
+        User user = new User();
+        user.setId(id);
+        user.setSuspended(false);
+        return updateUser(user);
     }
 
     public Iterable<User> lookupUserByEmail(String email) {
