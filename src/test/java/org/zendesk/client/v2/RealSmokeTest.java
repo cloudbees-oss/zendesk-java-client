@@ -410,7 +410,7 @@ public class RealSmokeTest {
         assertNotNull(user.getId());
         assertThat(user.getSuspended(), is(false));
 
-        User suspendResult = instance.suspendUser(user);
+        User suspendResult = instance.suspendUser(user.getId());
         assertNotNull(suspendResult);
         assertNotNull(suspendResult.getId());
         assertThat(suspendResult.getId(), is(user.getId()));
