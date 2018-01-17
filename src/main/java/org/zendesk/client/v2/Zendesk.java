@@ -757,6 +757,20 @@ public class Zendesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/users/{id}.json").set("id", id)), handleStatus()));
     }
 
+    public User suspendUser(long id) {
+        User user = new User();
+        user.setId(id);
+        user.setSuspended(true);
+        return updateUser(user);
+    }
+
+    public User unsuspendUser(long id) {
+        User user = new User();
+        user.setId(id);
+        user.setSuspended(false);
+        return updateUser(user);
+    }
+
     public Iterable<User> lookupUserByEmail(String email) {
         return new PagedIterable<User>(tmpl("/users/search.json{?query}").set("query", email),
                 handleList(User.class, "users"));
