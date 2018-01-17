@@ -9,7 +9,7 @@ public class ArticleAttachments {
     /**
      *  Automatically assigned when the article attachment is created
      */
-    private int id;
+    private Long id;
 
     /**
      *  The API url of this article attachment
@@ -58,11 +58,11 @@ public class ArticleAttachments {
      */
     private Date updatedAt;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
