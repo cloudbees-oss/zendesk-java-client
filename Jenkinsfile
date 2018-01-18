@@ -13,10 +13,12 @@ pipeline {
     stages {
         stage("Build") {
             steps {
-                withMaven(
-                        mavenOpts: '-Xmx512m -Djava.awt.headless=true'
-                ) {
-                    sh "mvn clean verify -Dmaven.test.failure.ignore=true"
+                withSonarQubeEnv('sonarcloud.io') {
+                    withMaven(
+                            mavenOpts: '-Xmx512m -Djava.awt.headless=true'
+                    ) {
+                        sh "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent verify ${env.BRANCH_NAME == 'master' ? 'sonar:sonar' : ''} -Dmaven.test.failure.ignore=true"
+                    }
                 }
             }
         }
