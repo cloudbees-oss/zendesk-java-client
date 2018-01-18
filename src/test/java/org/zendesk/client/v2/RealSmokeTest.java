@@ -58,6 +58,9 @@ import org.zendesk.client.v2.model.targets.Target;
  */
 public class RealSmokeTest {
 
+    // TODO: Find a better way to manage our test environment (this is the ID of the cloudbees org)
+    private static final long CLOUDBEES_ORGANIZATION_ID = 3076488128l;
+
     private static Properties config;
 
     private Zendesk instance;
@@ -224,6 +227,18 @@ public class RealSmokeTest {
         createClientWithTokenOrPassword();
         int count = 0;
         for (Ticket t : instance.getTicketsIncrementally(new Date(0L))) {
+            assertThat(t.getId(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void getOrganizationTickets() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (Ticket t : instance.getOrganizationTickets(CLOUDBEES_ORGANIZATION_ID)) {
             assertThat(t.getId(), notNullValue());
             if (++count > 10) {
                 break;
@@ -695,6 +710,7 @@ public class RealSmokeTest {
             for (Translation t : instance.getSectionTranslations(sect.getId())) {
                 assertNotNull(t.getId());
                 assertNotNull(t.getTitle());
+                // body is not mandatory <https://developer.zendesk.com/rest_api/docs/help_center/translations.html>
                 //assertNotNull(t.getBody());
                 if (++translationCount > 3) {
                     return;
@@ -716,6 +732,7 @@ public class RealSmokeTest {
             for (Translation t: instance.getCategoryTranslations(cat.getId())) {
                 assertNotNull(t.getId());
                 assertNotNull(t.getTitle());
+                // body is not mandatory <https://developer.zendesk.com/rest_api/docs/help_center/translations.html>
                 //assertNotNull(t.getBody());
                 if (++translationCount > 3) {
                     return;
