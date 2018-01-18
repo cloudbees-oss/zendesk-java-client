@@ -17,7 +17,7 @@ pipeline {
                     withMaven(
                             mavenOpts: '-Xmx512m -Djava.awt.headless=true'
                     ) {
-                        sh "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent ${env.BRANCH_NAME == 'master' && readMavenPom().version.contains('-SNAPSHOT') ? 'deploy -DdeployAtEnd=true' : 'verify'} ${env.BRANCH_NAME == 'master' ? 'sonar:sonar' : ''} -Dmaven.test.failure.ignore=true"
+                        sh "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent ${env.BRANCH_NAME == 'master' && readMavenPom().version.contains('-SNAPSHOT') ? 'deploy -DdeployAtEnd=true' : 'verify'} ${env.BRANCH_NAME == 'master' ? 'sonar:sonar -Dsonar.organization=cloudbees' : ''} -Dmaven.test.failure.ignore=true"
                     }
                 }
             }
