@@ -21,7 +21,7 @@ public class EventTest {
     try {
       return mapper.readValue( json, Event.class );
     } catch ( Exception e ) {
-      System.out.println( e );
+      e.printStackTrace();
       return null;
     }
   }

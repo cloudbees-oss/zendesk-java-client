@@ -13,7 +13,7 @@ public class TicketResultTest {
         try {
             return mapper.readValue(json, TicketResult.class);
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
             return null;
         }
     }
