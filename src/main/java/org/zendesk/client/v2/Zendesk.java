@@ -550,9 +550,16 @@ public class Zendesk implements Closeable {
             attachmentsIds.add(item.getId());
         }
         complete(submit(req("POST", uri, JSON, json(Collections.singletonMap("attachment_ids", attachmentsIds))), handleStatus()));
-    }
+  }
 
+    /**
+     * Create upload article with inline false
+     */
   public ArticleAttachments createUploadArticle(long articleId, File file) throws IOException {
+        return createUploadArticle(articleId, file, false);
+  }
+
+  public ArticleAttachments createUploadArticle(long articleId, File file, boolean inline) throws IOException {
         BoundRequestBuilder builder = client.preparePost(tmpl("/help_center/articles/{id}/attachments.json").set("id", articleId).toString());
         if (realm != null) {
             builder.setRealm(realm);
@@ -560,7 +567,11 @@ public class Zendesk implements Closeable {
             builder.addHeader("Authorization", "Bearer " + oauthToken);
         }
         builder.setHeader("Content-Type", "multipart/form-data");
-        builder.addBodyPart(
+
+        if (inline)
+            builder.addFormParam("inline", "true");
+
+      builder.addBodyPart(
             new FilePart("file", file, "application/octet-stream", Charset.forName("UTF-8"), file.getName()));
         final Request req = builder.build();
         return complete(submit(req, handle(ArticleAttachments.class, "article_attachment")));
@@ -1622,9 +1633,7 @@ public class Zendesk implements Closeable {
      * @param attachment
      */
     public void deleteArticleAttachment(ArticleAttachments attachment) {
-        if (attachment.getId() == 0) {
-            throw new IllegalArgumentException("Attachment requires id");
-        }
+        checkHasId(attachment);
         deleteArticleAttachment(attachment.getId());
     }
 
@@ -2214,6 +2223,12 @@ public class Zendesk implements Closeable {
 
     private static void checkHasId(Attachment attachment) {
         if (attachment.getId() == null) {
+            throw new IllegalArgumentException("Attachment requires id");
+        }
+    }
+
+    private static void checkHasId(ArticleAttachments attachments) {
+        if (attachments.getId() == null) {
             throw new IllegalArgumentException("Attachment requires id");
         }
     }

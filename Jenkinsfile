@@ -1,22 +1,22 @@
 pipeline {
+    environment {
+        ZENDESK_JAVA_CLIENT_TEST_URL             = credentials('ZENDESK_JAVA_CLIENT_TEST_URL')
+        ZENDESK_JAVA_CLIENT_TEST_USERNAME        = credentials('ZENDESK_JAVA_CLIENT_TEST_USERNAME')
+        ZENDESK_JAVA_CLIENT_TEST_PASSWORD        = credentials('ZENDESK_JAVA_CLIENT_TEST_PASSWORD')
+        ZENDESK_JAVA_CLIENT_TEST_TOKEN           = credentials('ZENDESK_JAVA_CLIENT_TEST_TOKEN')
+        ZENDESK_JAVA_CLIENT_TEST_REQUESTER_EMAIL = credentials('ZENDESK_JAVA_CLIENT_TEST_REQUESTER.EMAIL')
+        ZENDESK_JAVA_CLIENT_TEST_REQUESTER_NAME  = credentials('ZENDESK_JAVA_CLIENT_TEST_REQUESTER.NAME')
+    }
     agent {
         label "standard"
     }
     stages {
         stage("Build") {
             steps {
-                withCredentials(
-                        [string(credentialsId: 'ZENDESK_JAVA_CLIENT_TEST_URL', variable: 'ZENDESK_JAVA_CLIENT_TEST_URL'),
-                         string(credentialsId: 'ZENDESK_JAVA_CLIENT_TEST_USERNAME', variable: 'ZENDESK_JAVA_CLIENT_TEST_USERNAME'),
-                         string(credentialsId: 'ZENDESK_JAVA_CLIENT_TEST_PASSWORD', variable: 'ZENDESK_JAVA_CLIENT_TEST_PASSWORD'),
-                         string(credentialsId: 'ZENDESK_JAVA_CLIENT_TEST_TOKEN', variable: 'ZENDESK_JAVA_CLIENT_TEST_TOKEN'),
-                         string(credentialsId: 'ZENDESK_JAVA_CLIENT_TEST_REQUESTER.EMAIL', variable: 'ZENDESK_JAVA_CLIENT_TEST_REQUESTER.EMAIL'),
-                         string(credentialsId: 'ZENDESK_JAVA_CLIENT_TEST_REQUESTER.NAME', variable: 'ZENDESK_JAVA_CLIENT_TEST_REQUESTER.NAME')]) {
-                    withMaven(
-                            mavenOpts: '-Xmx512m -Djava.awt.headless=true'
-                    ) {
-                        sh "mvn clean verify -Dmaven.test.failure.ignore=true"
-                    }
+                withMaven(
+                        mavenOpts: '-Xmx512m -Djava.awt.headless=true'
+                ) {
+                    sh "mvn clean verify -Dmaven.test.failure.ignore=true"
                 }
             }
         }
