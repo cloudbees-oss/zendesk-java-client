@@ -37,6 +37,7 @@ Continuous integration
 
 Our project is build on https://opensource.ci.cloudbees.com : [![Build Status](https://opensource.ci.cloudbees.com/buildStatus/icon?job=zendesk-java-client/master)](https://opensource.ci.cloudbees.com/job/zendesk-java-client/job/master/)
 
+Quality dashboard is available on [https://sonarcloud.io](https://sonarcloud.io/dashboard?id=com.cloudbees.thirdparty%3Azendesk-java-client)
 
 Status
 ------
