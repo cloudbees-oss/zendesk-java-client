@@ -2,7 +2,7 @@ package org.zendesk.client.v2;
 
 import java.io.IOException;
 
-import com.ning.http.client.Response;
+import org.asynchttpclient.Response;
 
 public class ZendeskResponseRateLimitException extends ZendeskResponseException {
 
