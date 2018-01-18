@@ -16,7 +16,7 @@ public class TwitterMonitor implements SearchResultEntity, Serializable {
    private Date    updatedAt;
    private String  avatarUrl;
    private String  name;
-   private boolean allowReply;
+   private Boolean allowReply;
 
    @JsonProperty("avatar_url")
    public String getAvatarUrl() {
@@ -36,11 +36,11 @@ public class TwitterMonitor implements SearchResultEntity, Serializable {
    }
 
    @JsonProperty("allow_reply")
-   public boolean isAllowReply() {
+   public Boolean isAllowReply() {
       return allowReply;
    }
 
-   public void setAllowReplay(boolean allowReplay) {
+   public void setAllowReplay(Boolean allowReplay) {
       this.allowReply = allowReplay;
    }
 

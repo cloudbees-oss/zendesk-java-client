@@ -33,10 +33,10 @@ public class Translation {
   private String body;
 
   /* True if the translation is outdated; false otherwise. False by default */
-  private boolean outdated;
+  private Boolean outdated;
 
   /* True if the translation is a draft; false otherwise. False by default */
-  private boolean draft;
+  private Boolean draft;
 
   /* The time at which the translation was created */
   @JsonProperty("created_at")
@@ -118,19 +118,19 @@ public class Translation {
       this.body = body;
   }
 
-  public boolean isOutdated() {
+  public Boolean isOutdated() {
       return outdated;
   }
 
-  public void setOutdated( boolean outdated ) {
+  public void setOutdated( Boolean outdated ) {
       this.outdated = outdated;
   }
 
-  public boolean isDraft() {
+  public Boolean isDraft() {
       return draft;
   }
 
-  public void setDraft( boolean draft ) {
+  public void setDraft( Boolean draft ) {
       this.draft = draft;
   }
 

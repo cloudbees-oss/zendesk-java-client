@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class CampfireTarget extends Target {
    private String  subdomain;
-   private boolean ssl;
-   private boolean preserveFormat;
+   private Boolean ssl;
+   private Boolean preserveFormat;
    private String  token;
    private String  room;
 
@@ -44,20 +44,20 @@ public class CampfireTarget extends Target {
       this.subdomain = subdomain;
    }
 
-   public boolean isSsl() {
+   public Boolean isSsl() {
       return ssl;
    }
 
-   public void setSsl(boolean ssl) {
+   public void setSsl(Boolean ssl) {
       this.ssl = ssl;
    }
 
    @JsonProperty("preserve_format")
-   public boolean isPreserveFormat() {
+   public Boolean isPreserveFormat() {
       return preserveFormat;
    }
 
-   public void setPreserveFormat(boolean preserveFormat) {
+   public void setPreserveFormat(Boolean preserveFormat) {
       this.preserveFormat = preserveFormat;
    }
 

@@ -17,13 +17,13 @@ public class Brand {
     @JsonProperty("brand_url")
     private String brandUrl;
     @JsonProperty("has_help_center")
-    private boolean hasHelpCenter;
+    private Boolean hasHelpCenter;
     @JsonProperty("help_center_state")
     private String helpCenterState;
     @JsonProperty("active")
-    private boolean isActive;
+    private Boolean isActive;
     @JsonProperty("default")
-    private boolean isDefault;
+    private Boolean isDefault;
     private Attachment logo;
     @JsonProperty("ticket_form_ids")
     private List<Long> ticketFormIds;
@@ -106,11 +106,11 @@ public class Brand {
         this.brandUrl = brandUrl;
     }
 
-    public boolean isHasHelpCenter() {
+    public Boolean isHasHelpCenter() {
         return hasHelpCenter;
     }
 
-    public void setHasHelpCenter(boolean hasHelpCenter) {
+    public void setHasHelpCenter(Boolean hasHelpCenter) {
         this.hasHelpCenter = hasHelpCenter;
     }
 
@@ -122,19 +122,19 @@ public class Brand {
         this.helpCenterState = helpCenterState;
     }
 
-    public boolean isActive() {
+    public Boolean isActive() {
         return isActive;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         isActive = active;
     }
 
-    public boolean isDefault() {
+    public Boolean isDefault() {
         return isDefault;
     }
 
-    public void setDefault(boolean aDefault) {
+    public void setDefault(Boolean aDefault) {
         isDefault = aDefault;
     }
 
