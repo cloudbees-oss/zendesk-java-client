@@ -46,8 +46,9 @@ public class CustomFieldValue implements Serializable {
 
     @Override
     public String toString() {
-        return "CustomFieldValue{" + "id=" + id +
-                ", value=" + (value == null ? "null" : Arrays.asList(value).toString()) +
+        return "CustomFieldValue{" +
+                "id=" + id +
+                ", value=" + Arrays.toString(value) +
                 '}';
     }
 }
