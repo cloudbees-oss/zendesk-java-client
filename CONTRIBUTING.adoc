@@ -2,26 +2,26 @@
 
 Truths which we believe to be self-evident (adapted from https://github.com/WhisperSystems/TextSecure/blob/master/contributing.md[TextSecure's])
 
-1. **The answer is not more options.** 
+1. **The answer is not more options.**
 If you feel compelled to add a preference that's exposed to the user, it's very possible you've made a wrong turn somewhere.
-2. **There are no power users.** 
-The idea that some users "understand" concepts better than others has proven to be, for the post part, false. 
+2. **There are no power users.**
+The idea that some users "understand" concepts better than others has proven to be, for the post part, false.
 If anything, "power users" are more dangerous than the test, and we should avoid exposing dangerous functionality to them.
-3. **If it's "like PGP," it's wrong.** 
+3. **If it's "like PGP," it's wrong.**
 PGP is our guide for what not to do.
-4. **It's an asynchronous world.** 
+4. **It's an asynchronous world.**
 We wary of anything that is anti-asynchronous: ACKs, protocol confirmations, or any protocol-level "advisory" message.
-5. **There is no such thing as time**. 
-Protocol ideas that require synchonized clocks are doomed to failure.
+5. **There is no such thing as time**.
+Protocol ideas that require synchronized clocks are doomed to failure.
 
 = Code Style Guidelines
 
 == Resulting from long experience
 
 * To the largest extent possible, all fields shall be private. Use an IDE to generate the getters and setters.
-* If a class has more than one `volatile` member field, it is probable that there are subtle race conditions. 
+* If a class has more than one `volatile` member field, it is probable that there are subtle race conditions.
 Please consider where appropriate encapsulation of the multiple fields into an immutable value object replace the multiple `volatile` member fields with a single `volatile` reference to the value object (or perhaps better yet an `AtomicReference` to allow for `compareAndSet` - if compare-and-set logic is appropriate).
-* If it is `Serializable` it shall have a `serialVersionUID` field. 
+* If it is `Serializable` it shall have a `serialVersionUID` field.
 Unless code has shipped to users, the initial value of the `serialVersionUID` field shall be `1L`.
 
 == Indentation
@@ -34,9 +34,9 @@ Unless code has shipped to users, the initial value of the `serialVersionUID` fi
 1. "hungarian"-style notation is banned (i.e. instance variable names preceded by an 'm', etc)
 2. If the field is `static final` then it shall be named in `ALL_CAPS_WITH_UNDERSCORES`.
 3. Start variable names with a lowercase letter and use camelCase rather than under_scores.
-4. Spelling and abreviations: 
-If the word is widely used in the JVM runtime, stick with the spelling/abreviation in the JVM runtime, e.g. `color` over `colour`, `sync` over `synch`, `async` over `asynch`, etc.
-5. It is acceptable to use `i`, `j`, `k` for loop indices and iterators. 
+4. Spelling and abbreviations:
+If the word is widely used in the JVM runtime, stick with the spelling/abbreviation in the JVM runtime, e.g. `color` over `colour`, `sync` over `synch`, `async` over `asynch`, etc.
+5. It is acceptable to use `i`, `j`, `k` for loop indices and iterators.
 If you need more than three, you are likely doing something wrong and as such you shall either use full descriptive names or refactor.
 6. It is acceptable to use `e` for the exception in a `try...catch` block.
 7. You shall never use `l` (i.e. lower case `L`) as a variable name.
@@ -80,13 +80,13 @@ To the greatest extent possible, please wrap lines to ensure that they do not ex
 === Imports
 
 * For code in `src/main`:
-  . `*` imports are banned. 
+  . `*` imports are banned.
   . `static` imports are strongly discouraged.
   . `static` `*` imports are discouraged unless code readability is significantly enhanced and the import is restricted to a single class.
 * For code in `src/test`:
   . `*` imports of anything other than JUnit classes and Hamcrest matchers are banned.
   . `static` imports of anything other than JUnit classes and Hamcrest matchers are strongly discouraged.
-  . `import static org.hamcrest.Matchers.*`, `import static org.junit.Assert.*`, `import static org.junit.Assume.*` are expressly encouraged and permitted. 
+  . `import static org.hamcrest.Matchers.*`, `import static org.junit.Assert.*`, `import static org.junit.Assume.*` are expressly encouraged and permitted.
     Any other `static` `*` imports are discouraged unless code readability is significantly enhanced and the import is restricted to a single class.
 
 === Annotation placement
@@ -107,8 +107,8 @@ To the greatest extent possible, please wrap lines to ensure that they do not ex
  */
 @Override
 ```
-* Getters and Setters shall have a Javadoc comment. 
-The following is prefered
+* Getters and Setters shall have a Javadoc comment.
+The following is preferred
 +
 ```
 /**
@@ -119,7 +119,7 @@ private int widgetCount;
 /**
  * Returns the count of widgets.
  *
- * @return the count of widgets. 
+ * @return the count of widgets.
  */
 public int getWidgetCount() {
     return widgetCount;
@@ -134,8 +134,8 @@ public void setWidgetCount(int widgetCount) {
     this.widgetCount = widgetCount;
 }
 ```
-* When adding a new class / interface / etc, it shall have a `@since` doc comment. 
-  The version shall be `FIXME` to indicate that the person merging the change should replace the `FIXME` with the next release version number. 
+* When adding a new class / interface / etc, it shall have a `@since` doc comment.
+  The version shall be `FIXME` to indicate that the person merging the change should replace the `FIXME` with the next release version number.
   The fields and methods within a class/interface (but not nested classes) will be assumed to have the `@since` annotation of their class/interface unless a different `@since` annotation is present.
 
 === IDE Configuration
@@ -152,7 +152,7 @@ public void setWidgetCount(int widgetCount) {
 *** Indent case statements in switch
 ** Wrapping
 *** Change all the `Never` values to `If Long`
-*** Select the checkbox for Wrap After Assignement Operators
+*** Select the checkbox for Wrap After Assignment Operators
 * IntelliJ, by and large the IDE defaults are acceptable with the following changes:
 ** Wrapping and Braces
 *** Change `Do not wrap` to `Wrap if long`
