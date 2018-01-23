@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,9 +48,7 @@ public class CreateEvent extends Event {
             }
         } else if (value instanceof String[]) {
             this.value = new ArrayList<>();
-            for (String s : (String[]) value) {
-                this.value.add(s);
-            }
+            Collections.addAll(this.value, (String[]) value);
         } else if (value instanceof Object[]) {
             this.value = new ArrayList<>();
             for (Object o : (Object[]) value) {
