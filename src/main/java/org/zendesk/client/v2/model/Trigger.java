@@ -104,8 +104,8 @@ public class Trigger implements Serializable {
    }
 
    public static class Conditions {
-      private List<Condition> all = new ArrayList<Condition>();
-      private List<Condition> any = new ArrayList<Condition>();
+      private List<Condition> all = new ArrayList<>();
+      private List<Condition> any = new ArrayList<>();
 
       public List<Condition> getAll() {
          return all;

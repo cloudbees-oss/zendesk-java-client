@@ -583,7 +583,7 @@ public class RealSmokeTest {
     public void bulkCreateMultipleJobs() throws Exception {
         createClientWithTokenOrPassword();
 
-        List<Organization> orgs = new ArrayList<Organization>(4);
+        List<Organization> orgs = new ArrayList<>(4);
         for (int i = 1; i <= 5; i++) {
             Organization org = new Organization();
             org.setExternalId("testorg" + i);

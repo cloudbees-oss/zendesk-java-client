@@ -41,17 +41,17 @@ public class CreateEvent extends Event {
         if (value == null) {
             this.value = null;
         } else if (value instanceof List) {
-            this.value = new ArrayList<String>();
+            this.value = new ArrayList<>();
             for (Object o : (List<?>) value) {
                 this.value.add(o == null || o instanceof String ? (String) o : o.toString());
             }
         } else if (value instanceof String[]) {
-            this.value = new ArrayList<String>();
+            this.value = new ArrayList<>();
             for (String s : (String[]) value) {
                 this.value.add(s);
             }
         } else if (value instanceof Object[]) {
-            this.value = new ArrayList<String>();
+            this.value = new ArrayList<>();
             for (Object o : (Object[]) value) {
                 this.value.add(o == null || o instanceof String ? (String) o : o.toString());
             }
@@ -80,7 +80,7 @@ public class CreateEvent extends Event {
         if (value == null) {
             this.value = null;
         } else {
-            this.value = new ArrayList<String>();
+            this.value = new ArrayList<>();
             this.value.add(value);
         }
     }

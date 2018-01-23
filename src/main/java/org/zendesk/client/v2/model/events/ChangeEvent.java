@@ -31,17 +31,17 @@ public class ChangeEvent extends CreateEvent {
         if (previousValue == null) {
             this.previousValue = null;
         } else if (previousValue instanceof List) {
-            this.previousValue = new ArrayList<String>();
+            this.previousValue = new ArrayList<>();
             for (Object o : (List<?>) previousValue) {
                 this.previousValue.add(o == null || o instanceof String ? (String) o : o.toString());
             }
         } else if (previousValue instanceof String[]) {
-            this.previousValue = new ArrayList<String>();
+            this.previousValue = new ArrayList<>();
             for (String s : (String[]) previousValue) {
                 this.previousValue.add(s);
             }
         } else if (previousValue instanceof Object[]) {
-            this.previousValue = new ArrayList<String>();
+            this.previousValue = new ArrayList<>();
             for (Object o : (Object[]) previousValue) {
                 this.previousValue.add(o == null || o instanceof String ? (String) o : o.toString());
             }
@@ -70,7 +70,7 @@ public class ChangeEvent extends CreateEvent {
         if (previousValue == null) {
             this.previousValue = null;
         } else {
-            this.previousValue = new ArrayList<String>();
+            this.previousValue = new ArrayList<>();
             this.previousValue.add(previousValue);
         }
     }

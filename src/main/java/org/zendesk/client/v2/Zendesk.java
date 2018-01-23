@@ -103,8 +103,7 @@ public class Zendesk implements Closeable {
     private static final Map<String, Class<? extends Target>> targetTypes = targetTypes();
 
     private static Map<String, Class<? extends SearchResultEntity>> searchResultTypes() {
-       Map<String, Class<? extends SearchResultEntity>> result = new HashMap<String, Class<? extends
-             SearchResultEntity>>();
+       Map<String, Class<? extends SearchResultEntity>> result = new HashMap<>();
        result.put("ticket", Ticket.class);
        result.put("user", User.class);
        result.put("group", Group.class);
@@ -115,7 +114,7 @@ public class Zendesk implements Closeable {
     }
 
     private static Map<String, Class<? extends Target>> targetTypes() {
-       Map<String, Class<? extends Target>> result = new HashMap<String, Class<? extends Target>>();
+       Map<String, Class<? extends Target>> result = new HashMap<>();
        result.put("url_target", UrlTarget.class);
        result.put("email_target",EmailTarget.class);
        result.put("basecamp_target", BasecampTarget.class);
@@ -205,7 +204,7 @@ public class Zendesk implements Closeable {
     }
 
     public ListenableFuture<List<JobStatus<HashMap<String, Object>>>> getJobStatusesAsync(List<JobStatus> statuses) {
-        List<String> ids = new ArrayList<String>(statuses.size());
+        List<String> ids = new ArrayList<>(statuses.size());
         for (JobStatus status : statuses) {
             ids.add(status.getId());
         }
@@ -327,7 +326,7 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Ticket> getTickets() {
-        return new PagedIterable<Ticket>(cnst("/tickets.json"), handleList(Ticket.class, "tickets"));
+        return new PagedIterable<>(cnst("/tickets.json"), handleList(Ticket.class, "tickets"));
     }
 
     /**
@@ -337,18 +336,20 @@ public class Zendesk implements Closeable {
      */
     @Deprecated
     public Iterable<Ticket> getTicketsByStatus(Status... ticketStatus) {
-        return new PagedIterable<Ticket>(tmpl("/tickets.json{?status}").set("status", statusArray(ticketStatus)),
+        return new PagedIterable<>(tmpl("/tickets.json{?status}").set("status", statusArray(ticketStatus)),
                 handleList(Ticket.class, "tickets"));
     }
 
     public Iterable<Ticket> getTicketsByExternalId(String externalId, boolean includeArchived) {
-        Iterable<Ticket> results = new PagedIterable<Ticket>(tmpl("/tickets.json{?external_id}").set("external_id", externalId),
-                handleList(Ticket.class, "tickets"));
+        Iterable<Ticket> results =
+                new PagedIterable<>(tmpl("/tickets.json{?external_id}").set("external_id", externalId),
+                        handleList(Ticket.class, "tickets"));
 
         if (!includeArchived || results.iterator().hasNext()) {
             return results;
         }
-        return new PagedIterable<Ticket>(tmpl("/search.json{?query}{&type}").set("query", "external_id:" + externalId).set("type", "ticket"),
+        return new PagedIterable<>(
+                tmpl("/search.json{?query}{&type}").set("query", "external_id:" + externalId).set("type", "ticket"),
                 handleList(Ticket.class, "results"));
     }
 
@@ -357,17 +358,17 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Ticket> getTicketsFromSearch(String searchTerm) {
-        return new PagedIterable<Ticket>(tmpl("/search.json{?query}").set("query", searchTerm + "+type:ticket"),
+        return new PagedIterable<>(tmpl("/search.json{?query}").set("query", searchTerm + "+type:ticket"),
                 handleList(Ticket.class, "results"));
     }
 
     public Iterable<Article> getArticleFromSearch(String searchTerm) {
-        return new PagedIterable<Article>(tmpl("/help_center/articles/search.json{?query}").set("query", searchTerm),
+        return new PagedIterable<>(tmpl("/help_center/articles/search.json{?query}").set("query", searchTerm),
                 handleList(Article.class, "results"));
     }
 
     public Iterable<Article> getArticleFromSearch(String searchTerm, Long sectionId) {
-        return new PagedIterable<Article>(tmpl("/help_center/articles/search.json{?section,query}")
+        return new PagedIterable<>(tmpl("/help_center/articles/search.json{?section,query}")
                 .set("query", searchTerm).set("section", sectionId), handleList(Article.class, "results"));
     }
 
@@ -382,41 +383,41 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Ticket> getRecentTickets() {
-        return new PagedIterable<Ticket>(cnst("/tickets/recent.json"), handleList(Ticket.class, "tickets"));
+        return new PagedIterable<>(cnst("/tickets/recent.json"), handleList(Ticket.class, "tickets"));
     }
 
     public Iterable<Ticket> getTicketsIncrementally(Date startTime) {
-        return new PagedIterable<Ticket>(
+        return new PagedIterable<>(
                 tmpl("/incremental/tickets.json{?start_time}").set("start_time", msToSeconds(startTime.getTime())),
                 handleIncrementalList(Ticket.class, "tickets"));
     }
 
     public Iterable<Ticket> getTicketsIncrementally(Date startTime, Date endTime) {
-        return new PagedIterable<Ticket>(
+        return new PagedIterable<>(
                 tmpl("/incremental/tickets.json{?start_time,end_time}")
-                    .set("start_time", msToSeconds(startTime.getTime()))
-                    .set("end_time", msToSeconds(endTime.getTime())),
-                    handleIncrementalList(Ticket.class, "tickets"));
+                        .set("start_time", msToSeconds(startTime.getTime()))
+                        .set("end_time", msToSeconds(endTime.getTime())),
+                handleIncrementalList(Ticket.class, "tickets"));
     }
 
     public Iterable<Ticket> getOrganizationTickets(long organizationId) {
-        return new PagedIterable<Ticket>(
+        return new PagedIterable<>(
                 tmpl("/organizations/{organizationId}/tickets.json").set("organizationId", organizationId),
                 handleList(Ticket.class, "tickets"));
     }
 
     public Iterable<Ticket> getUserRequestedTickets(long userId) {
-        return new PagedIterable<Ticket>(tmpl("/users/{userId}/tickets/requested.json").set("userId", userId),
+        return new PagedIterable<>(tmpl("/users/{userId}/tickets/requested.json").set("userId", userId),
                 handleList(Ticket.class, "tickets"));
     }
 
     public Iterable<Ticket> getUserCCDTickets(long userId) {
-        return new PagedIterable<Ticket>(tmpl("/users/{userId}/tickets/ccd.json").set("userId", userId),
+        return new PagedIterable<>(tmpl("/users/{userId}/tickets/ccd.json").set("userId", userId),
                 handleList(Ticket.class, "tickets"));
     }
 
     public Iterable<Metric> getTicketMetrics() {
-        return new PagedIterable<Metric>(cnst("/ticket_metrics.json"), handleList(Metric.class, "ticket_metrics"));
+        return new PagedIterable<>(cnst("/ticket_metrics.json"), handleList(Metric.class, "ticket_metrics"));
     }
 
     public Metric getTicketMetricByTicket(long id) {
@@ -433,7 +434,7 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Audit> getTicketAudits(Long id) {
-        return new PagedIterable<Audit>(tmpl("/tickets/{ticketId}/audits.json").set("ticketId", id),
+        return new PagedIterable<>(tmpl("/tickets/{ticketId}/audits.json").set("ticketId", id),
                 handleList(Audit.class, "audits"));
     }
 
@@ -515,8 +516,8 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<SuspendedTicket> getSuspendedTickets() {
-        return new PagedIterable<SuspendedTicket>(cnst("/suspended_tickets.json"),
-            handleList(SuspendedTicket.class, "suspended_tickets"));
+        return new PagedIterable<>(cnst("/suspended_tickets.json"),
+                handleList(SuspendedTicket.class, "suspended_tickets"));
     }
 
     public void deleteSuspendedTicket(SuspendedTicket ticket) {
@@ -548,7 +549,7 @@ public class Zendesk implements Closeable {
 
   public void associateAttachmentsToArticle(String idArticle, List<Attachment> attachments) {
         TemplateUri uri = tmpl("/help_center/articles/{article_id}/bulk_attachments.json").set("article_id", idArticle);
-        List<Long> attachmentsIds = new ArrayList<Long>();
+        List<Long> attachmentsIds = new ArrayList<>();
         for(Attachment item : attachments){
             attachmentsIds.add(item.getId());
         }
@@ -609,7 +610,7 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Target> getTargets() {
-        return new PagedIterable<Target>(cnst("/targets.json"), handleTargetList("targets"));
+        return new PagedIterable<>(cnst("/targets.json"), handleTargetList("targets"));
     }
 
     public Target getTarget(long id) {
@@ -626,7 +627,7 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Trigger> getTriggers() {
-        return new PagedIterable<Trigger>(cnst("/triggers.json"), handleList(Trigger.class, "triggers"));
+        return new PagedIterable<>(cnst("/triggers.json"), handleList(Trigger.class, "triggers"));
     }
 
     public Trigger getTrigger(long id) {
@@ -650,8 +651,8 @@ public class Zendesk implements Closeable {
 
   // Automations
   public Iterable<Automation> getAutomations() {
-    return new PagedIterable<Automation>(cnst("/automations.json"),
-        handleList(Automation.class, "automations"));
+    return new PagedIterable<>(cnst("/automations.json"),
+            handleList(Automation.class, "automations"));
   }
 
   public Automation getAutomation(long id) {
@@ -680,13 +681,13 @@ public class Zendesk implements Closeable {
 
 
     public Iterable<TwitterMonitor> getTwitterMonitors() {
-        return new PagedIterable<TwitterMonitor>(cnst("/channels/twitter/monitored_twitter_handles.json"),
-              handleList(TwitterMonitor.class, "monitored_twitter_handles"));
+        return new PagedIterable<>(cnst("/channels/twitter/monitored_twitter_handles.json"),
+                handleList(TwitterMonitor.class, "monitored_twitter_handles"));
     }
 
 
     public Iterable<User> getUsers() {
-        return new PagedIterable<User>(cnst("/users.json"), handleList(User.class, "users"));
+        return new PagedIterable<>(cnst("/users.json"), handleList(User.class, "users"));
     }
 
     public Iterable<User> getUsersByRole(String role, String... roles) {
@@ -702,21 +703,21 @@ public class Zendesk implements Closeable {
         for (final String curRole : roles) {
             uriBuilder.append("&role[]=").append(encodeUrl(curRole));
         }
-        return new PagedIterable<User>(cnst(uriBuilder.toString()), handleList(User.class, "users"));
+        return new PagedIterable<>(cnst(uriBuilder.toString()), handleList(User.class, "users"));
     }
 
     public Iterable<User> getUsersIncrementally(Date startTime) {
-        return new PagedIterable<User>(
-              tmpl("/incremental/users.json{?start_time}").set("start_time", msToSeconds(startTime.getTime())),
-              handleIncrementalList(User.class, "users"));
+        return new PagedIterable<>(
+                tmpl("/incremental/users.json{?start_time}").set("start_time", msToSeconds(startTime.getTime())),
+                handleIncrementalList(User.class, "users"));
     }
 
     public Iterable<User> getGroupUsers(long id) {
-        return new PagedIterable<User>(tmpl("/groups/{id}/users.json").set("id", id), handleList(User.class, "users"));
+        return new PagedIterable<>(tmpl("/groups/{id}/users.json").set("id", id), handleList(User.class, "users"));
     }
 
     public Iterable<User> getOrganizationUsers(long id) {
-        return new PagedIterable<User>(tmpl("/organizations/{id}/users.json").set("id", id),
+        return new PagedIterable<>(tmpl("/organizations/{id}/users.json").set("id", id),
                 handleList(User.class, "users"));
     }
 
@@ -786,12 +787,12 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<User> lookupUserByEmail(String email) {
-        return new PagedIterable<User>(tmpl("/users/search.json{?query}").set("query", email),
+        return new PagedIterable<>(tmpl("/users/search.json{?query}").set("query", email),
                 handleList(User.class, "users"));
     }
 
     public Iterable<User> lookupUserByExternalId(String externalId) {
-        return new PagedIterable<User>(tmpl("/users/search.json{?external_id}").set("external_id", externalId),
+        return new PagedIterable<>(tmpl("/users/search.json{?external_id}").set("external_id", externalId),
                 handleList(User.class, "users"));
     }
 
@@ -811,7 +812,7 @@ public class Zendesk implements Closeable {
 
     public void changeUserPassword(User user, String oldPassword, String newPassword) {
         checkHasId(user);
-        Map<String, String> req = new HashMap<String, String>();
+        Map<String, String> req = new HashMap<>();
         req.put("previous_password", oldPassword);
         req.put("password", newPassword);
         complete(submit(req("PUT", tmpl("/users/{id}/password.json").set("id", user.getId()), JSON,
@@ -933,27 +934,27 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<AgentRole> getCustomAgentRoles() {
-        return new PagedIterable<AgentRole>(cnst("/custom_roles.json"),
-            handleList(AgentRole.class, "custom_roles"));
+        return new PagedIterable<>(cnst("/custom_roles.json"),
+                handleList(AgentRole.class, "custom_roles"));
     }
 
     public Iterable<org.zendesk.client.v2.model.Request> getRequests() {
-        return new PagedIterable<org.zendesk.client.v2.model.Request>(cnst("/requests.json"),
+        return new PagedIterable<>(cnst("/requests.json"),
                 handleList(org.zendesk.client.v2.model.Request.class, "requests"));
     }
 
     public Iterable<org.zendesk.client.v2.model.Request> getOpenRequests() {
-        return new PagedIterable<org.zendesk.client.v2.model.Request>(cnst("/requests/open.json"),
+        return new PagedIterable<>(cnst("/requests/open.json"),
                 handleList(org.zendesk.client.v2.model.Request.class, "requests"));
     }
 
     public Iterable<org.zendesk.client.v2.model.Request> getSolvedRequests() {
-        return new PagedIterable<org.zendesk.client.v2.model.Request>(cnst("/requests/solved.json"),
+        return new PagedIterable<>(cnst("/requests/solved.json"),
                 handleList(org.zendesk.client.v2.model.Request.class, "requests"));
     }
 
     public Iterable<org.zendesk.client.v2.model.Request> getCCRequests() {
-        return new PagedIterable<org.zendesk.client.v2.model.Request>(cnst("/requests/ccd.json"),
+        return new PagedIterable<>(cnst("/requests/ccd.json"),
                 handleList(org.zendesk.client.v2.model.Request.class, "requests"));
     }
 
@@ -963,7 +964,7 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<org.zendesk.client.v2.model.Request> getUserRequests(long id) {
-        return new PagedIterable<org.zendesk.client.v2.model.Request>(tmpl("/users/{id}/requests.json").set("id", id),
+        return new PagedIterable<>(tmpl("/users/{id}/requests.json").set("id", id),
                 handleList(org.zendesk.client.v2.model.Request.class, "requests"));
     }
 
@@ -991,12 +992,12 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Comment> getRequestComments(long id) {
-        return new PagedIterable<Comment>(tmpl("/requests/{id}/comments.json").set("id", id),
+        return new PagedIterable<>(tmpl("/requests/{id}/comments.json").set("id", id),
                 handleList(Comment.class, "comments"));
     }
 
     public Iterable<Comment> getTicketComments(long id) {
-        return new PagedIterable<Comment>(tmpl("/tickets/{id}/comments.json").set("id", id),
+        return new PagedIterable<>(tmpl("/tickets/{id}/comments.json").set("id", id),
                 handleList(Comment.class, "comments"));
     }
 
@@ -1026,7 +1027,7 @@ public class Zendesk implements Closeable {
     }
 
     public Ticket createTicketFromTweet(long tweetId, long monitorId) {
-       Map<String,Object> map = new HashMap<String,Object>();
+       Map<String,Object> map = new HashMap<>();
        map.put("twitter_status_message_id", tweetId);
        map.put("monitored_twitter_handle_id", monitorId);
 
@@ -1036,14 +1037,15 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Organization> getOrganizations() {
-        return new PagedIterable<Organization>(cnst("/organizations.json"),
+        return new PagedIterable<>(cnst("/organizations.json"),
                 handleList(Organization.class, "organizations"));
     }
 
     public Iterable<Organization> getOrganizationsIncrementally(Date startTime) {
-        return new PagedIterable<Organization>(
-            tmpl("/incremental/organizations.json{?start_time}").set("start_time", msToSeconds(startTime.getTime())),
-            handleIncrementalList(Organization.class, "organizations"));
+        return new PagedIterable<>(
+                tmpl("/incremental/organizations.json{?start_time}")
+                        .set("start_time", msToSeconds(startTime.getTime())),
+                handleIncrementalList(Organization.class, "organizations"));
     }
 
     public Iterable<OrganizationField> getOrganizationFields() {
@@ -1056,7 +1058,7 @@ public class Zendesk implements Closeable {
         if (name == null || name.length() < 2) {
             throw new IllegalArgumentException("Name must be at least 2 characters long");
         }
-        return new PagedIterable<Organization>(tmpl("/organizations/autocomplete.json{?name}").set("name", name),
+        return new PagedIterable<>(tmpl("/organizations/autocomplete.json{?name}").set("name", name),
                 handleList(Organization.class, "organizations"));
     }
 
@@ -1104,23 +1106,24 @@ public class Zendesk implements Closeable {
         if (externalId == null || externalId.length() < 2) {
             throw new IllegalArgumentException("Name must be at least 2 characters long");
         }
-        return new PagedIterable<Organization>(
+        return new PagedIterable<>(
                 tmpl("/organizations/search.json{?external_id}").set("external_id", externalId),
                 handleList(Organization.class, "organizations"));
     }
 
     public Iterable<OrganizationMembership> getOrganizationMemberships() {
-        return new PagedIterable<OrganizationMembership>(cnst("/organization_memberships.json"),
+        return new PagedIterable<>(cnst("/organization_memberships.json"),
                 handleList(OrganizationMembership.class, "organization_memberships"));
     }
 
     public Iterable<OrganizationMembership> getOrganizationMembershipsForOrg(long organization_id) {
-            return new PagedIterable<OrganizationMembership>(tmpl("/organizations/{organization_id}/organization_memberships.json").set("organization_id", organization_id),
+            return new PagedIterable<>(tmpl("/organizations/{organization_id}/organization_memberships.json")
+                    .set("organization_id", organization_id),
                     handleList(OrganizationMembership.class, "organization_memberships"));
     }
 
     public Iterable<OrganizationMembership> getOrganizationMembershipsForUser(long user_id) {
-            return new PagedIterable<OrganizationMembership>(tmpl("/users/{user_id}/organization_memberships.json").set("user_id", user_id),
+            return new PagedIterable<>(tmpl("/users/{user_id}/organization_memberships.json").set("user_id", user_id),
                     handleList(OrganizationMembership.class, "organization_memberships"));
     }
 
@@ -1148,12 +1151,12 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Group> getGroups() {
-        return new PagedIterable<Group>(cnst("/groups.json"),
+        return new PagedIterable<>(cnst("/groups.json"),
                 handleList(Group.class, "groups"));
     }
 
     public Iterable<Group> getAssignableGroups() {
-        return new PagedIterable<Group>(cnst("/groups/assignable.json"),
+        return new PagedIterable<>(cnst("/groups/assignable.json"),
                 handleList(Group.class, "groups"));
     }
 
@@ -1205,7 +1208,7 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Macro> getMacros(){
-        return new PagedIterable<Macro>(cnst("/macros.json"),
+        return new PagedIterable<>(cnst("/macros.json"),
                 handleList(Macro.class, "macros"));
     }
 
@@ -1311,7 +1314,7 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<GroupMembership> getGroupMemberships() {
-        return new PagedIterable<GroupMembership>(cnst("/group_memberships.json"),
+        return new PagedIterable<>(cnst("/group_memberships.json"),
                 handleList(GroupMembership.class, "group_memberships"));
     }
 
@@ -1326,7 +1329,7 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<GroupMembership> getAssignableGroupMemberships() {
-        return new PagedIterable<GroupMembership>(cnst("/group_memberships/assignable.json"),
+        return new PagedIterable<>(cnst("/group_memberships/assignable.json"),
                 handleList(GroupMembership.class, "group_memberships"));
     }
 
@@ -1387,7 +1390,7 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Forum> getForums() {
-        return new PagedIterable<Forum>(cnst("/forums.json"), handleList(Forum.class, "forums"));
+        return new PagedIterable<>(cnst("/forums.json"), handleList(Forum.class, "forums"));
     }
 
     public List<Forum> getForums(long category_id) {
@@ -1417,7 +1420,7 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Topic> getTopics() {
-        return new PagedIterable<Topic>(cnst("/topics.json"), handleList(Topic.class, "topics"));
+        return new PagedIterable<>(cnst("/topics.json"), handleList(Topic.class, "topics"));
     }
 
     public List<Topic> getTopics(long forum_id) {
@@ -1501,7 +1504,7 @@ public class Zendesk implements Closeable {
     //-- END BETA
 
     public Iterable<SearchResultEntity> getSearchResults(String query) {
-        return new PagedIterable<SearchResultEntity>(tmpl("/search.json{?query}").set("query", query),
+        return new PagedIterable<>(tmpl("/search.json{?query}").set("query", query),
                 handleSearchList("results"));
     }
 
@@ -1520,7 +1523,7 @@ public class Zendesk implements Closeable {
         if (typeName == null) {
             return Collections.emptyList();
         }
-        return new PagedIterable<T>(tmpl("/search.json{?query,params}")
+        return new PagedIterable<>(tmpl("/search.json{?query,params}")
                 .set("query", query + "+type:" + typeName)
                 .set("params", params),
                 handleList(type, "results"));
@@ -1535,7 +1538,7 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<SatisfactionRating> getSatisfactionRatings() {
-        return new PagedIterable<SatisfactionRating>(cnst("/satisfaction_ratings.json"),
+        return new PagedIterable<>(cnst("/satisfaction_ratings.json"),
                 handleList(SatisfactionRating.class, "satisfaction_ratings"));
     }
 
@@ -1568,22 +1571,22 @@ public class Zendesk implements Closeable {
      * @return List of Articles.
      */
     public Iterable<Article> getArticles() {
-        return new PagedIterable<Article>(cnst("/help_center/articles.json"),
+        return new PagedIterable<>(cnst("/help_center/articles.json"),
                 handleList(Article.class, "articles"));
     }
 
     public Iterable<Article> getArticles(Category category) {
         checkHasId(category);
-        return new PagedIterable<Article>(
-            tmpl("/help_center/categories/{id}/articles.json").set("id", category.getId()),
-            handleList(Article.class, "articles"));
+        return new PagedIterable<>(
+                tmpl("/help_center/categories/{id}/articles.json").set("id", category.getId()),
+                handleList(Article.class, "articles"));
     }
 
     public Iterable<Article> getArticlesIncrementally(Date startTime) {
-      return new PagedIterable<Article>(
-          tmpl("/help_center/incremental/articles.json{?start_time}")
-              .set("start_time", msToSeconds(startTime.getTime())),
-          handleIncrementalList(Article.class, "articles"));
+      return new PagedIterable<>(
+              tmpl("/help_center/incremental/articles.json{?start_time}")
+                      .set("start_time", msToSeconds(startTime.getTime())),
+              handleIncrementalList(Article.class, "articles"));
     }
 
     public List<Article> getArticlesFromPage(int page) {
@@ -1597,9 +1600,9 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Translation> getArticleTranslations(Long articleId) {
-        return new PagedIterable<Translation>(
-            tmpl("/help_center/articles/{articleId}/translations.json").set("articleId", articleId),
-            handleList(Translation.class, "translations"));
+        return new PagedIterable<>(
+                tmpl("/help_center/articles/{articleId}/translations.json").set("articleId", articleId),
+                handleList(Translation.class, "translations"));
     }
     public Article createArticle(Article article) {
         checkHasSectionId(article);
@@ -1649,8 +1652,8 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Category> getCategories() {
-        return new PagedIterable<Category>(cnst("/help_center/categories.json"),
-            handleList(Category.class, "categories"));
+        return new PagedIterable<>(cnst("/help_center/categories.json"),
+                handleList(Category.class, "categories"));
     }
 
     public Category getCategory(long id) {
@@ -1659,9 +1662,9 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Translation> getCategoryTranslations(Long categoryId) {
-        return new PagedIterable<Translation>(
-            tmpl("/help_center/categories/{categoryId}/translations.json").set("categoryId", categoryId),
-            handleList(Translation.class, "translations"));
+        return new PagedIterable<>(
+                tmpl("/help_center/categories/{categoryId}/translations.json").set("categoryId", categoryId),
+                handleList(Translation.class, "translations"));
     }
     public Category createCategory(Category category) {
         return complete(submit(req("POST", cnst("/help_center/categories.json"),
@@ -1693,15 +1696,15 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Section> getSections() {
-        return new PagedIterable<Section>(
-            cnst("/help_center/sections.json"), handleList(Section.class, "sections"));
+        return new PagedIterable<>(
+                cnst("/help_center/sections.json"), handleList(Section.class, "sections"));
     }
 
     public Iterable<Section> getSections(Category category) {
         checkHasId(category);
-        return new PagedIterable<Section>(
-            tmpl("/help_center/categories/{id}/sections.json").set("id", category.getId()),
-            handleList(Section.class, "sections"));
+        return new PagedIterable<>(
+                tmpl("/help_center/categories/{id}/sections.json").set("id", category.getId()),
+                handleList(Section.class, "sections"));
     }
 
     public Section getSection(long id) {
@@ -1710,9 +1713,9 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Translation> getSectionTranslations(Long sectionId) {
-        return new PagedIterable<Translation>(
-            tmpl("/help_center/sections/{sectionId}/translations.json").set("sectionId", sectionId),
-            handleList(Translation.class, "translations"));
+        return new PagedIterable<>(
+                tmpl("/help_center/sections/{sectionId}/translations.json").set("sectionId", sectionId),
+                handleList(Translation.class, "translations"));
     }
     public Section createSection(Section section) {
         return complete(submit(req("POST", cnst("/help_center/sections.json"), JSON,
@@ -1749,9 +1752,9 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Subscription> getUserSubscriptions(Long userId) {
-        return new PagedIterable<Subscription>(
-            tmpl("/help_center/users/{userId}/subscriptions.json").set("userId", userId),
-            handleList(Subscription.class, "subscriptions"));
+        return new PagedIterable<>(
+                tmpl("/help_center/users/{userId}/subscriptions.json").set("userId", userId),
+                handleList(Subscription.class, "subscriptions"));
     }
 
     public Iterable<Subscription> getArticleSubscriptions(Long articleId) {
@@ -1759,9 +1762,10 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Subscription> getArticleSubscriptions(Long articleId, String locale) {
-        return new PagedIterable<Subscription>(
-            tmpl("/help_center{/locale}/articles/{articleId}/subscriptions.json").set("locale", locale).set("articleId", articleId),
-            handleList(Subscription.class, "subscriptions"));
+        return new PagedIterable<>(
+                tmpl("/help_center{/locale}/articles/{articleId}/subscriptions.json").set("locale", locale)
+                        .set("articleId", articleId),
+                handleList(Subscription.class, "subscriptions"));
     }
 
     public Iterable<Subscription> getSectionSubscriptions(Long sectionId) {
@@ -1769,9 +1773,10 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Subscription> getSectionSubscriptions(Long sectionId, String locale) {
-        return new PagedIterable<Subscription>(
-            tmpl("/help_center{/locale}/sections/{sectionId}/subscriptions.json").set("locale", locale).set("sectionId", sectionId),
-            handleList(Subscription.class, "subscriptions"));
+        return new PagedIterable<>(
+                tmpl("/help_center{/locale}/sections/{sectionId}/subscriptions.json").set("locale", locale)
+                        .set("sectionId", sectionId),
+                handleList(Subscription.class, "subscriptions"));
     }
 
     /**
@@ -1936,7 +1941,7 @@ public class Zendesk implements Closeable {
     }
 
     protected <T> ZendeskAsyncCompletionHandler<T> handle(final Class<T> clazz, final String name, final Class... typeParams) {
-        return new BasicAsyncCompletionHandler<T>(clazz, name, typeParams);
+        return new BasicAsyncCompletionHandler<>(clazz, name, typeParams);
     }
 
     protected <T> ZendeskAsyncCompletionHandler<JobStatus<T>> handleJobStatus(final Class<T> resultClass) {
@@ -1994,7 +1999,7 @@ public class Zendesk implements Closeable {
             if (isStatus2xx(response)) {
                 JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
                 setPagedProperties(responseNode, clazz);
-                List<T> values = new ArrayList<T>();
+                List<T> values = new ArrayList<>();
                 for (JsonNode node : responseNode.get(name)) {
                     values.add(mapper.convertValue(node, clazz));
                 }
@@ -2007,7 +2012,7 @@ public class Zendesk implements Closeable {
     }
 
     protected <T> PagedAsyncCompletionHandler<List<T>> handleList(final Class<T> clazz, final String name) {
-        return new PagedAsyncListCompletionHandler<T>(clazz, name);
+        return new PagedAsyncListCompletionHandler<>(clazz, name);
     }
 
     private static final long FIVE_MINUTES = TimeUnit.MINUTES.toMillis(5);
@@ -2070,7 +2075,7 @@ public class Zendesk implements Closeable {
                 if (isStatus2xx(response)) {
                     JsonNode responseNode = mapper.readTree(response.getResponseBodyAsStream()).get(name);
                     setPagedProperties(responseNode, null);
-                    List<SearchResultEntity> values = new ArrayList<SearchResultEntity>();
+                    List<SearchResultEntity> values = new ArrayList<>();
                     for (JsonNode node : responseNode) {
                         Class<? extends SearchResultEntity> clazz = searchResultTypes.get(node.get("result_type").asText());
                         if (clazz != null) {
@@ -2094,7 +2099,7 @@ public class Zendesk implements Closeable {
                 if (isStatus2xx(response)) {
                     JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
                     setPagedProperties(responseNode, null);
-                    List<Target> values = new ArrayList<Target>();
+                    List<Target> values = new ArrayList<>();
                     for (JsonNode node : responseNode.get(name)) {
                         Class<? extends Target> clazz = targetTypes.get(node.get("type").asText());
                         if (clazz != null) {
@@ -2118,7 +2123,7 @@ public class Zendesk implements Closeable {
                 logResponse(response);
                 if (isStatus2xx(response)) {
                     JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
-                    List<ArticleAttachments> values = new ArrayList<ArticleAttachments>();
+                    List<ArticleAttachments> values = new ArrayList<>();
                     for (JsonNode node : responseNode.get(name)) {
                         values.add(mapper.convertValue(node, ArticleAttachments.class));
                     }
@@ -2357,7 +2362,7 @@ public class Zendesk implements Closeable {
     }
 
     private static List<Long> idArray(long id, long... ids) {
-        List<Long> result = new ArrayList<Long>(ids.length + 1);
+        List<Long> result = new ArrayList<>(ids.length + 1);
         result.add(id);
         for (long i : ids) {
             result.add(i);
@@ -2366,7 +2371,7 @@ public class Zendesk implements Closeable {
     }
 
     private static List<String> statusArray(Status... statuses) {
-        List<String> result = new ArrayList<String>(statuses.length);
+        List<String> result = new ArrayList<>(statuses.length);
         for (Status s : statuses) {
             result.add(s.toString());
         }

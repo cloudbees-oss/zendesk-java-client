@@ -35,7 +35,7 @@ public class TemplateUriTest {
     @Test
     public void testMapValues() {
         TemplateUri templateUri = new TemplateUri("/{foo:1}{/foo}");
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put("foo", "test");
 
         templateUri.set(properties);
