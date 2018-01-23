@@ -40,7 +40,11 @@ public class AgentMacroReferenceEvent extends Event {
 
     @Override
     public String toString() {
-        // TODO A real implementation
-        return null;
+        final StringBuilder sb = new StringBuilder("AgentMacroReferenceEvent{");
+        sb.append("macroId=").append(macroId);
+        sb.append(", macroTitle='").append(macroTitle).append('\'');
+        sb.append(", via=").append(via);
+        sb.append('}');
+        return sb.toString();
     }
 }
