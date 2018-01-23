@@ -59,7 +59,7 @@ import org.zendesk.client.v2.model.targets.Target;
 public class RealSmokeTest {
 
     // TODO: Find a better way to manage our test environment (this is the ID of the cloudbees org)
-    private static final long CLOUDBEES_ORGANIZATION_ID = 3076488128l;
+    private static final long CLOUDBEES_ORGANIZATION_ID = 3076488128L;
 
     private static Properties config;
 
