@@ -2039,9 +2039,9 @@ public class Zendesk implements Closeable {
                     setNextPage(null);
                     return;
                 }
-                /**
-                 * A request after five minutes ago will result in a 422 responds from Zendesk.
-                 * Therefore, we stop pagination.
+                /*
+                  A request after five minutes ago will result in a 422 responds from Zendesk.
+                  Therefore, we stop pagination.
                  */
                 if (TimeUnit.SECONDS.toMillis(endTimeNode.asLong()) > System.currentTimeMillis() - FIVE_MINUTES) {
                     setNextPage(null);
