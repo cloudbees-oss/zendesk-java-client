@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.zendesk.client.v2.junit.UTCRule;
 
 import java.text.ParseException;
-import java.time.ZoneId;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
