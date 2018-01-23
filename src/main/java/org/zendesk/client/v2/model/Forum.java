@@ -153,14 +153,14 @@ public class Forum implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public static enum Access {
+    public enum Access {
         EVERYBODY("everybody"),
         LOGGED_IN("logged-in users"),
         AGENTS_ONLY("agents only");
 
         private final String name;
 
-        private Access(String name) {
+        Access(String name) {
             this.name = name;
         }
 

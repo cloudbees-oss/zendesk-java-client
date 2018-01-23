@@ -7,7 +7,7 @@ public enum TopicType {
 
     private final String name;
 
-    private TopicType(String name) {
+    TopicType(String name) {
         this.name = name;
     }
 
