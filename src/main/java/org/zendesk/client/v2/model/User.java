@@ -65,7 +65,7 @@ public class User extends Collaborator implements SearchResultEntity, Serializab
     public User(Boolean verified, String name, Identity... identities) {
         super(name);
         this.verified = verified;
-        this.identities = new ArrayList<Identity>(Arrays.asList(identities));
+        this.identities = new ArrayList<>(Arrays.asList(identities));
     }
 
     public User(String name, String email) {
@@ -79,7 +79,7 @@ public class User extends Collaborator implements SearchResultEntity, Serializab
 
     public User(String name, Identity... identities) {
         super(name);
-        this.identities = new ArrayList<Identity>(Arrays.asList(identities));
+        this.identities = new ArrayList<>(Arrays.asList(identities));
     }
 
     public List<Identity> getIdentities() {
