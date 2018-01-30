@@ -1,5 +1,6 @@
 package org.zendesk.client.v2.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
@@ -18,6 +19,10 @@ public class ActionTest {
         }
     }
 
+    private byte[] writeJson(Action action) throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsBytes(action);
+    }
+
     @Test
     public void testActionWithSingleValue() throws Exception {
         String json = "{ \"field\": 21337631753, \"value\": \"huuhaa\" }";
@@ -25,6 +30,7 @@ public class ActionTest {
         assertNotNull(action);
         assertEquals(1, action.getValue().length);
         assertEquals("huuhaa", action.getValue()[0]);
+        assertEquals("{\"field\":\"21337631753\",\"value\":\"huuhaa\"}", new String(writeJson(action)));
     }
 
     @Test
