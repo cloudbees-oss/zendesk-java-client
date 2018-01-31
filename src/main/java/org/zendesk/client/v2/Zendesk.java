@@ -18,6 +18,7 @@ import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;
 import org.asynchttpclient.request.body.multipart.FilePart;
+import org.asynchttpclient.request.body.multipart.StringPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.AgentRole;
@@ -573,7 +574,7 @@ public class Zendesk implements Closeable {
         builder.setHeader("Content-Type", "multipart/form-data");
 
         if (inline)
-            builder.addFormParam("inline", "true");
+            builder.addBodyPart(new StringPart("inline", "true"));
 
       builder.addBodyPart(
             new FilePart("file", file, "application/octet-stream", Charset.forName("UTF-8"), file.getName()));
