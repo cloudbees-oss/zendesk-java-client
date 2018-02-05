@@ -4,9 +4,13 @@ Zendesk Java Client
 This is a [Zendesk][zd] client implementation written in Java using AsyncHttpClient and Jackson.
 
 [![Build Status](https://opensource.ci.cloudbees.com/buildStatus/icon?job=zendesk-java-client/master)](https://opensource.ci.cloudbees.com/job/zendesk-java-client/job/master/) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.cloudbees.thirdparty/zendesk-java-client/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.cloudbees.thirdparty/zendesk-java-client/)
-[![Quality Gate](https://sonarcloud.io/api/badges/gate?key=com.cloudbees.thirdparty%3Azendesk-java-client)](https://sonarcloud.io/dashboard?id=com.cloudbees.thirdparty%3Azendesk-java-client)
-[![Coverage](https://sonarcloud.io/api/badges/measure?key=com.cloudbees.thirdparty%3Azendesk-java-client&metric=coverage)](https://sonarcloud.io/dashboard?id=com.cloudbees.thirdparty%3Azendesk-java-client)
-[![Lines](https://sonarcloud.io/api/badges/measure?key=com.cloudbees.thirdparty%3Azendesk-java-client&metric=ncloc)](https://sonarcloud.io/dashboard?id=com.cloudbees.thirdparty%3Azendesk-java-client)
+
+
+[![Quality Gate](https://sonarcloud.io/api/project_badges/quality_gate?project=com.cloudbees.thirdparty%3Azendesk-java-client)](https://sonarcloud.io/dashboard?id=com.cloudbees.thirdparty%3Azendesk-java-client)
+
+
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=com.cloudbees.thirdparty%3Azendesk-java-client&metric=coverage)](https://sonarcloud.io/dashboard?id=com.cloudbees.thirdparty%3Azendesk-java-client)
+[![Lines](https://sonarcloud.io/api/project_badges/measure?project=com.cloudbees.thirdparty%3Azendesk-java-client&metric=ncloc)](https://sonarcloud.io/dashboard?id=com.cloudbees.thirdparty%3Azendesk-java-client)
 
 Using the API
 -------------
