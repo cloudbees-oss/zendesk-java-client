@@ -4,9 +4,13 @@ Zendesk Java Client
 This is a [Zendesk][zd] client implementation written in Java using AsyncHttpClient and Jackson.
 
 [![Build Status](https://opensource.ci.cloudbees.com/buildStatus/icon?job=zendesk-java-client/master)](https://opensource.ci.cloudbees.com/job/zendesk-java-client/job/master/) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.cloudbees.thirdparty/zendesk-java-client/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.cloudbees.thirdparty/zendesk-java-client/)
-[![Quality Gate](https://sonarcloud.io/api/badges/gate?key=com.cloudbees.thirdparty%3Azendesk-java-client)](https://sonarcloud.io/dashboard?id=com.cloudbees.thirdparty%3Azendesk-java-client)
-[![Coverage](https://sonarcloud.io/api/badges/measure?key=com.cloudbees.thirdparty%3Azendesk-java-client&metric=coverage)](https://sonarcloud.io/dashboard?id=com.cloudbees.thirdparty%3Azendesk-java-client)
-[![Lines](https://sonarcloud.io/api/badges/measure?key=com.cloudbees.thirdparty%3Azendesk-java-client&metric=ncloc)](https://sonarcloud.io/dashboard?id=com.cloudbees.thirdparty%3Azendesk-java-client)
+
+
+[![Quality Gate](https://sonarcloud.io/api/project_badges/quality_gate?project=com.cloudbees.thirdparty%3Azendesk-java-client)](https://sonarcloud.io/dashboard?id=com.cloudbees.thirdparty%3Azendesk-java-client)
+
+
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=com.cloudbees.thirdparty%3Azendesk-java-client&metric=coverage)](https://sonarcloud.io/dashboard?id=com.cloudbees.thirdparty%3Azendesk-java-client)
+[![Lines](https://sonarcloud.io/api/project_badges/measure?project=com.cloudbees.thirdparty%3Azendesk-java-client&metric=ncloc)](https://sonarcloud.io/dashboard?id=com.cloudbees.thirdparty%3Azendesk-java-client)
 
 Using the API
 -------------
@@ -51,6 +55,7 @@ Here is the status of the various API components:
 * [Ticket Forms](http://developer.zendesk.com/documentation/rest_api/ticket_forms.html) *getTicketForm() and getTicketForms()*
 * [Views](http://developer.zendesk.com/documentation/rest_api/views.html)
 * [Users](http://developer.zendesk.com/documentation/rest_api/users.html) ✓
+* [User Fields](https://developer.zendesk.com/rest_api/docs/core/user_fields.html) - Partial - List User Fields (`getUserField()`)
 * [Requests](http://developer.zendesk.com/documentation/rest_api/requests.html) ✓
 * [User Identities](http://developer.zendesk.com/documentation/rest_api/user_identities.html) ✓
 * [Groups](http://developer.zendesk.com/documentation/rest_api/groups.html) ✓
