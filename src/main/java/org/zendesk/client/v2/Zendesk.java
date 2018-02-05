@@ -1497,9 +1497,9 @@ public class Zendesk implements Closeable {
 
     public List<OrganizationMembership> setOrganizationMembershipAsDefault(long user_id, OrganizationMembership organizationMembership) {
 	checkHasId(organizationMembership);
-	return complete(submit(req("POST", tmpl("/users/{uid}/organization_memberships/{gmid}/make_default.json")
-			.set("uid", user_id).set("gmid", organizationMembership.getId()), JSON, json(
-			Collections.singletonMap("group_memberships", organizationMembership))),
+	return complete(submit(req("PUT", tmpl("/users/{uid}/organization_memberships/{omid}/make_default.json")
+			.set("uid", user_id).set("omid", organizationMembership.getId()), JSON, json(
+			Collections.singletonMap("organization_memberships", organizationMembership))),
 		handleList(OrganizationMembership.class, "results")));
     }
     //-- END BETA
