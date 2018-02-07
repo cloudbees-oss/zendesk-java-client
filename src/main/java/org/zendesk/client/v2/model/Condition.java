@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.zendesk.client.v2.model;
 
 import java.io.Serializable;

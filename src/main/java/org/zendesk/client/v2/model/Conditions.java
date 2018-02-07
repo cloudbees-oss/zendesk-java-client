@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.zendesk.client.v2.model;
 
 import java.io.Serializable;
@@ -16,8 +13,8 @@ public class Conditions implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private List<Condition> all = new ArrayList<Condition>();
-  private List<Condition> any = new ArrayList<Condition>();
+  private List<Condition> all = new ArrayList<>();
+  private List<Condition> any = new ArrayList<>();
 
   public List<Condition> getAll() {
     return all;

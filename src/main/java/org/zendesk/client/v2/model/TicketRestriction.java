@@ -8,7 +8,7 @@ public enum TicketRestriction {
 
     private final String name;
 
-    private TicketRestriction(String name) {
+    TicketRestriction(String name) {
         this.name = name;
     }
 
