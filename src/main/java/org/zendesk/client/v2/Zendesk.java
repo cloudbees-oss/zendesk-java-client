@@ -1554,7 +1554,7 @@ public class Zendesk implements Closeable {
 
         StringBuilder uriTemplate = new StringBuilder("/search.json{?query"); //leave off ending curly brace
 
-        //we have to add each param name to the template so that when we call set() with a map, the entries get put in the map
+        //we have to add each param name to the template so that when we call set() with a map, the entries get put in the uri
         for (String paramName : params.keySet()) {
             uriTemplate.append(",")
                     .append(paramName);
@@ -1601,7 +1601,6 @@ public class Zendesk implements Closeable {
         return createSatisfactionRating(ticket.getId(), satisfactionRating);
     }
 
-    // TODO search with sort order
     // TODO search with query building API
 
     //////////////////////////////////////////////////////////////////////
