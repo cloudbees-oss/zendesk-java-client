@@ -899,7 +899,7 @@ public class Zendesk implements Closeable {
         checkHasId(identity);
         return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}.json")
                 .set("userId", userId)
-                .set("identityId", identity.getId()), JSON, null), handle(Identity.class, "identity")));
+                .set("identityId", identity.getId()), JSON, json(Collections.singletonMap("identity", identity))), handle(Identity.class, "identity")));
     }
 
     public Identity updateUserIdentity(User user, Identity identity) {
