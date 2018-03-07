@@ -40,6 +40,7 @@ import org.zendesk.client.v2.model.OrganizationField;
 import org.zendesk.client.v2.model.OrganizationMembership;
 import org.zendesk.client.v2.model.SatisfactionRating;
 import org.zendesk.client.v2.model.SearchResultEntity;
+import org.zendesk.client.v2.model.SearchResultPage;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
@@ -57,8 +58,14 @@ import org.zendesk.client.v2.model.hc.Category;
 import org.zendesk.client.v2.model.hc.Section;
 import org.zendesk.client.v2.model.hc.Subscription;
 import org.zendesk.client.v2.model.hc.Translation;
+import org.zendesk.client.v2.model.request.page.PageableRequest;
+import org.zendesk.client.v2.model.request.page.SearchPageableRequest;
+import org.zendesk.client.v2.model.request.page.TicketPageableRequest;
 import org.zendesk.client.v2.model.schedules.Holiday;
 import org.zendesk.client.v2.model.schedules.Schedule;
+import org.zendesk.client.v2.model.sort.Sort;
+import org.zendesk.client.v2.model.sort.search.SearchSort;
+import org.zendesk.client.v2.model.sort.ticket.TicketSort;
 import org.zendesk.client.v2.model.targets.BasecampTarget;
 import org.zendesk.client.v2.model.targets.CampfireTarget;
 import org.zendesk.client.v2.model.targets.EmailTarget;
@@ -79,6 +86,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -329,7 +337,41 @@ public class Zendesk implements Closeable {
     public Iterable<Ticket> getTickets() {
         return new PagedIterable<>(cnst("/tickets.json"), handleList(Ticket.class, "tickets"));
     }
+    
+	/**
+	 * Tickets returned are in order based on the sorting result.
+	 *
+	 * @param sort contains the field and order based on which tickets should be
+  	 *            sorted by
+	 * @return the tickets sorted based on the specification
+	 */
+	public Iterable<Ticket> getTickets(TicketSort sort) {
+		if (sort == null) {
+			throw new IllegalArgumentException("Sort can not be null.");
+		}
+		return new PagedIterable<>(tmpl("/tickets.json" + "{?" + Sort.SORT_BY + "," + Sort.SORT_ORDER + "}")
+				.set(sort.getQueryParameters()), handleList(Ticket.class, "tickets"));
+	}
 
+	/**
+	 * Returns specific page containing the specified or default number of tickets
+	 * based on the sort specification if provided.
+	 *
+	 * @param pageRequest
+	 *            the page request
+	 * @return the tickets page
+	 */
+	public SearchResultPage<Ticket> getTicketsPage(TicketPageableRequest pageRequest) {
+		if (pageRequest == null) {
+			throw new IllegalArgumentException("Page request cannot be null.");
+		}
+		Uri uri = tmpl("/tickets.json" + "{?" + PageableRequest.PAGE + "," + PageableRequest.PER_PAGE + ","
+				+ Sort.SORT_BY + "," + Sort.SORT_ORDER + "}").set(pageRequest.getQueryParameters());
+		PagedAsyncSearchResultPageCompletionHandler<Ticket> handler = new PagedAsyncSearchResultPageCompletionHandler<Ticket>(
+				Ticket.class, "tickets");
+		return completePageRequest(uri, handler);
+	}
+	
     /**
      * @deprecated This API is no longer available from the vendor. Use the {@link #getTicketsFromSearch(String)} method instead
      * @param ticketStatus
@@ -1529,6 +1571,76 @@ public class Zendesk implements Closeable {
                 .set("params", params),
                 handleList(type, "results"));
     }
+    
+	/**
+	 * Gets the search results sorted as specified.
+	 *
+	 * @param <T>
+	 *            the generic type
+	 * @param type
+	 *            the type
+	 * @param query
+	 *            the query
+	 * @param sort
+	 *            the sort
+	 * @return the search results
+	 */
+	public <T extends SearchResultEntity> Iterable<T> getSortedSearchResults(Class<T> type, String query, SearchSort sort) {
+		if (sort == null) {
+			throw new IllegalArgumentException("Sort can not be null.");
+		}
+		String typeName = null;
+		for (Map.Entry<String, Class<? extends SearchResultEntity>> entry : searchResultTypes.entrySet()) {
+			if (type.equals(entry.getValue())) {
+				typeName = entry.getKey();
+				break;
+			}
+		}
+		if (typeName == null) {
+			return Collections.emptyList();
+		}
+		return new PagedIterable<>(
+				tmpl("/search.json{?query," + Sort.SORT_BY + "," + Sort.SORT_ORDER + "}")
+						.set("query", query + "+type:" + typeName).set(sort.getQueryParameters()),
+				handleList(type, "results"));
+	}
+    
+	/**
+	 * Returns single page of the search results.
+	 *
+	 * @param <T>
+	 *            the type of the entity being searched that extends
+	 *            SearchResultEntity
+	 * @param type
+	 *            the type
+	 * @param query
+	 *            the query
+	 * @param pageRequest
+	 *            the page request
+	 * @return the search results page
+	 */
+	public <T extends SearchResultEntity> SearchResultPage<T> getSearchResultsPage(Class<T> type, String query,
+			SearchPageableRequest pageRequest) {
+		if (pageRequest == null) {
+			throw new IllegalArgumentException("Page request cannot be null.");
+		}
+
+		String typeName = null;
+		for (Map.Entry<String, Class<? extends SearchResultEntity>> entry : searchResultTypes.entrySet()) {
+			if (type.equals(entry.getValue())) {
+				typeName = entry.getKey();
+				break;
+			}
+		}
+		if (typeName == null) {
+			return new SearchResultPage<T>();
+		}
+		Uri uri = tmpl("/search.json{?query" + "," + PageableRequest.PAGE + "," + PageableRequest.PER_PAGE + ","
+				+ Sort.SORT_BY + "," + Sort.SORT_ORDER + "}").set("query", query + "+type:" + typeName).set(pageRequest.getQueryParameters());
+		PagedAsyncSearchResultPageCompletionHandler<T> handler = new PagedAsyncSearchResultPageCompletionHandler<T>(
+				type, "results");
+		return completePageRequest(uri, handler);
+	}
 
     public void notifyApp(String json) {
        complete(submit(req("POST", cnst("/apps/notify.json"), JSON, json.getBytes()), handleStatus()));
@@ -1814,6 +1926,24 @@ public class Zendesk implements Closeable {
     // Helper methods
     //////////////////////////////////////////////////////////////////////
 
+    
+	/**
+	 * Method completes the single page request.
+	 *
+	 * @param <T>
+	 *            the type of the SearchResultEntity that should be returned
+	 * @param uri
+	 *            the uri
+	 * @param handler
+	 *            the handler
+	 * @return the search result page containing the list of entities, total count
+	 *         of elements, links to previous and next page
+	 */
+	private <T extends SearchResultEntity> SearchResultPage<T> completePageRequest(Uri uri,
+			PagedAsyncSearchResultPageCompletionHandler<T> handler) {
+		return complete(submit(req("GET", uri), handler));
+	}
+    
     private byte[] json(Object object) {
         try {
             return mapper.writeValueAsBytes(object);
@@ -1957,6 +2087,7 @@ public class Zendesk implements Closeable {
     }
 
     private static final String NEXT_PAGE = "next_page";
+    private static final String PREVIOUS_PAGE = "previous_page";
     private static final String END_TIME = "end_time";
     private static final String COUNT = "count";
     private static final int INCREMENTAL_EXPORT_MAX_COUNT_BY_REQUEST = 1000;
@@ -2067,6 +2198,43 @@ public class Zendesk implements Closeable {
             }
         };
     }
+    
+	/**
+	 * The Class implements completion handler for single page requests
+	 *
+	 * @param <T> the generic type
+	 */
+	private class PagedAsyncSearchResultPageCompletionHandler<T extends SearchResultEntity>
+			extends PagedAsyncCompletionHandler<SearchResultPage<T>> {
+
+		private final Class<T> clazz;
+		private final String name;
+
+		public PagedAsyncSearchResultPageCompletionHandler(Class<T> clazz, String name) {
+			this.clazz = clazz;
+			this.name = name;
+		}
+
+		@Override
+		public SearchResultPage<T> onCompleted(Response response) throws Exception {
+			logResponse(response);
+			if (isStatus2xx(response)) {
+				JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
+				setPagedProperties(responseNode, clazz);
+				LinkedList<T> values = new LinkedList<>();
+				for (JsonNode node : responseNode.get(name)) {
+					values.add(mapper.convertValue(node, clazz));
+				}
+				return new SearchResultPage<T>(values,
+						responseNode.get(NEXT_PAGE) == null ? "" : responseNode.get(NEXT_PAGE).asText(),
+						responseNode.get(PREVIOUS_PAGE) == null ? "" : responseNode.get(PREVIOUS_PAGE).asText(),
+						responseNode.get(COUNT).asInt());
+			} else if (isRateLimitResponse(response)) {
+				throw new ZendeskResponseRateLimitException(response);
+			}
+			throw new ZendeskResponseException(response);
+		}
+	}
 
     protected PagedAsyncCompletionHandler<List<SearchResultEntity>> handleSearchList(final String name) {
         return new PagedAsyncCompletionHandler<List<SearchResultEntity>>() {
