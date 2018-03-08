@@ -4,9 +4,7 @@ import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.SearchResultEntity;
 import org.zendesk.client.v2.model.Ticket;
-import org.zendesk.client.v2.model.Topic;
 import org.zendesk.client.v2.model.User;
-import org.zendesk.client.v2.model.hc.Article;
 
 /**
  * Enumeration of the types supported to be returned as a result of the search
@@ -27,14 +25,8 @@ public enum SearchResultType {
 	GROUP("group", Group.class),
 
 	/** The organization. */
-	ORGANIZATION("organization", Organization.class),
-
-	/** The topic. */
-	TOPIC("topic", Topic.class),
-
-	/** The article. */
-	ARTICLE("article", Article.class);
-
+	ORGANIZATION("organization", Organization.class);
+	
 	/** The name. */
 	private String name;
 

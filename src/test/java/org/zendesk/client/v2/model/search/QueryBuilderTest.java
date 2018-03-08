@@ -29,8 +29,6 @@ public class QueryBuilderTest {
 		assertEquals("field<5 field>10 field:xyz \"abcd\" \"qwert\"", builder.build());
 		builder = builder.setResultType(SearchResultType.TICKET);
 		assertEquals("field<5 field>10 field:xyz \"abcd\" \"qwert\" type:ticket", builder.build());
-		builder = builder.setResultType(SearchResultType.ARTICLE);
-		assertEquals("field<5 field>10 field:xyz \"abcd\" \"qwert\" type:article", builder.build());
 	}
 
 }
