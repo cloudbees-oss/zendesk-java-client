@@ -10,6 +10,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @param <T>
  *            the SearchResultEntity type
+ *            
+ * @author tkurzawa 
+ * @since 8 March 2018
  */
 public class SearchResultPage<T extends SearchResultEntity> {
 

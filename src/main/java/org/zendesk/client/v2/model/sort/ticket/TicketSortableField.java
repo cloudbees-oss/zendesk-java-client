@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Enumeration for search request sortable fields.
+ * 
+ * @author tkurzawa 
+ * @since 8 March 2018
  */
 public enum TicketSortableField implements SortableField {
 

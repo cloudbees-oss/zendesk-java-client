@@ -6,6 +6,9 @@ import java.util.List;
 /**
  * The Class QueryBuilder allows to easily create queries to search for entities
  * with matching properties.
+ * 
+ * @author tkurzawa 
+ * @since 8 March 2018
  */
 public class QueryBuilder {
 

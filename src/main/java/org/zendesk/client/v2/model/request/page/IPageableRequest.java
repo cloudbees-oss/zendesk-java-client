@@ -3,12 +3,13 @@ package org.zendesk.client.v2.model.request.page;
 import java.util.Map;
 
 import org.zendesk.client.v2.model.sort.Sort;
-
-// TODO: Auto-generated Javadoc
 /**
  * The Interface IPageableRequest represents the request to return entities that
  * should be displayed on the specific page with per page number of elements.
  * Sort properties can be set as well.
+ * 
+ * @author tkurzawa 
+ * @since 8 March 2018
  */
 public interface IPageableRequest {
 

@@ -8,6 +8,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * The Enum TicketSearchableProperty contains the Ticket fields with matching
  * keywords that are enabled for searching/quering
+ * 
+ * @author tkurzawa 
+ * @since 8 March 2018
  */
 public enum TicketSearchableProperty implements SearchableProperty {
 

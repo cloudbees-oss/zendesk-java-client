@@ -1,10 +1,12 @@
 package org.zendesk.client.v2.model.search;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class FieldSearch represents the property that should have specific value
  * in the searched entity. It also enables the ability to specify id entity
  * should not have specified property.
+ * 
+ * @author tkurzawa 
+ * @since 8 March 2018
  */
 public class FieldSearch {
 

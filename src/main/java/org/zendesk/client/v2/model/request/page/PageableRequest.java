@@ -7,6 +7,9 @@ import org.zendesk.client.v2.model.sort.Sort;
 
 /**
  * The Class PageableRequest.
+ * 
+ * @author tkurzawa 
+ * @since 8 March 2018
  */
 public abstract class PageableRequest implements IPageableRequest {
 

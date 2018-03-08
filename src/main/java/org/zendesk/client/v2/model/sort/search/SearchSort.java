@@ -6,6 +6,9 @@ import org.zendesk.client.v2.model.sort.SortOrder;
 /**
  * The Class SearchSort represents the sort properties to be associated with the
  * search request.
+ * 
+ * @author tkurzawa 
+ * @since 8 March 2018
  */
 public class SearchSort extends Sort {
 

@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * The Enumeration for sort order.
+ * 
+ * @author tkurzawa 
+ * @since 8 March 2018
  */
 public enum SortOrder {
 

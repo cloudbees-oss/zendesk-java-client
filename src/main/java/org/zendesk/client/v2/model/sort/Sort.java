@@ -3,14 +3,13 @@ package org.zendesk.client.v2.model.sort;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO: Auto-generated Javadoc
 /**
  * 
  * The Class Sort represents the field based on which returned list of entities
  * should be sorted by and order in which entities should be sorted.
  * 
- * @author Tomasz Kurzawa (tzkurzawa@gmail.com)
- *
+ * @author tkurzawa 
+ * @since 8 March 2018
  */
 public class Sort {
 

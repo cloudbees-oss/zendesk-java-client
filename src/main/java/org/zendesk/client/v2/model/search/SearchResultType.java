@@ -11,6 +11,9 @@ import org.zendesk.client.v2.model.hc.Article;
 /**
  * Enumeration of the types supported to be returned as a result of the search
  * query.
+ * 
+ * @author tkurzawa 
+ * @since 8 March 2018
  */
 public enum SearchResultType {
 

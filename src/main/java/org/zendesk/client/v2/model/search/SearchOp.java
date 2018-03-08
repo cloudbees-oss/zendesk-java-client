@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * Enumeration contains allowed operations to be used during building of the
  * query against entity fields.
+ * 
+ * @author tkurzawa 
+ * @since 8 March 2018
  */
 public enum SearchOp {
 

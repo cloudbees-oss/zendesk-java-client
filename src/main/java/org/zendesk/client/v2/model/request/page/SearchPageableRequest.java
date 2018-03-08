@@ -4,6 +4,9 @@ import org.zendesk.client.v2.model.sort.search.SearchSort;
 
 /**
  * The Class specifies the PageableRequest for Search REST endpoint.
+ * 
+ * @author tkurzawa 
+ * @since 8 March 2018
  */
 public class SearchPageableRequest extends PageableRequest {
 
