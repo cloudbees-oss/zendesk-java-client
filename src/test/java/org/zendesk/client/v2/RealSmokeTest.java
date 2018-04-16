@@ -219,7 +219,7 @@ public class RealSmokeTest {
             assertThat(t.getId(), is(count));
             count += 2;
         }
-        assertThat(count, is(28L));
+        assertThat(count, is(30L));
     }
 
     @Test
