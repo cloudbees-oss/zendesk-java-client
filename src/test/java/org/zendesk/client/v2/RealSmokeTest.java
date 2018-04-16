@@ -213,7 +213,7 @@ public class RealSmokeTest {
     @Test
     public void getTicketsById() throws Exception {
         createClientWithTokenOrPassword();
-        long count = 22;
+        long count = 24;
         for (Ticket t : instance.getTickets(24, 26, 28)) {
             assertThat(t.getSubject(), notNullValue());
             assertThat(t.getId(), is(count));
