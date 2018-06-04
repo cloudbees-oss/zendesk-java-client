@@ -17,7 +17,7 @@ public class Macro implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private int id;
+    private long id;
     private String title;
     private boolean active;
     private List<Action> actions;
@@ -26,11 +26,11 @@ public class Macro implements Serializable {
 
     public Macro() {}
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
