@@ -269,6 +269,7 @@ public class Zendesk implements Closeable {
 
     public JobStatus permanentlyDeleteTicket(Ticket ticket) {
         checkHasId(ticket);
+        deleteTicket(ticket.getId());
         return permanentlyDeleteTicket(ticket.getId());
     }
 
@@ -277,6 +278,7 @@ public class Zendesk implements Closeable {
     }
 
     public JobStatus permanentlyDeleteTicket(long id) {
+        deleteTicket(id);
         return complete(submit(
                 req("DELETE", tmpl("/deleted_tickets/{id}.json").set("id", id)),
                 handleJobStatus(JobStatus.class))
@@ -334,6 +336,8 @@ public class Zendesk implements Closeable {
     }
 
     public JobStatus permanentlyDeleteTickets(long id, long... ids) {
+        deleteTickets(id, ids);
+
         return complete(
                 submit(
                         req("DELETE", tmpl("/deleted_tickets/destroy_many.json{?ids}").set("ids", idArray(id, ids))),
@@ -790,10 +794,12 @@ public class Zendesk implements Closeable {
 
     public User permanentlyDeleteUser(User user) {
         checkHasId(user);
+        deleteUser(user.getId());
         return permanentlyDeleteUser(user.getId());
     }
 
     public User permanentlyDeleteUser(long id) {
+        deleteUser(id);
         return complete(submit(req("DELETE", tmpl("/deleted_users/{id}.json").set("id", id)), handle(User.class)));
     }
 

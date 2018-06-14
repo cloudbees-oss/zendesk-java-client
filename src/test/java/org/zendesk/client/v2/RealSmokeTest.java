@@ -301,7 +301,6 @@ public class RealSmokeTest {
             assertThat(t2, notNullValue());
             assertThat(t2.getId(), is(ticket.getId()));
         } finally {
-            instance.deleteTicket(ticket.getId());
             instance.permanentlyDeleteTicket(ticket.getId());
         }
         assertThat(instance.getTicket(ticket.getId()), nullValue());
@@ -335,7 +334,6 @@ public class RealSmokeTest {
             assertThat(t4, notNullValue());
             assertThat(t4.getId(), is(ticket2.getId()));
         } finally {
-            instance.deleteTickets(ticket.getId(), ticket2.getId());
             instance.permanentlyDeleteTickets(ticket.getId(), ticket2.getId());
         }
         assertThat(instance.getTicket(ticket.getId()), nullValue());
@@ -485,7 +483,6 @@ public class RealSmokeTest {
         assertNotNull(user);
         assertNotNull(user.getId());
 
-        instance.deleteUser(user);
         instance.permanentlyDeleteUser(user);
 
         assertThat(instance.getUser(user.getId()).getActive(), is(false));
