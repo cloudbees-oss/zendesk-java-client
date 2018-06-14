@@ -1,56 +1,23 @@
 package org.zendesk.client.v2;
 
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeThat;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
-
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.zendesk.client.v2.model.AgentRole;
-import org.zendesk.client.v2.model.Audit;
-import org.zendesk.client.v2.model.Brand;
-import org.zendesk.client.v2.model.Collaborator;
-import org.zendesk.client.v2.model.Comment;
-import org.zendesk.client.v2.model.Field;
-import org.zendesk.client.v2.model.Group;
-import org.zendesk.client.v2.model.Identity;
-import org.zendesk.client.v2.model.JobStatus;
-import org.zendesk.client.v2.model.Organization;
-import org.zendesk.client.v2.model.Request;
-import org.zendesk.client.v2.model.Status;
-import org.zendesk.client.v2.model.SuspendedTicket;
-import org.zendesk.client.v2.model.Ticket;
-import org.zendesk.client.v2.model.TicketForm;
-import org.zendesk.client.v2.model.User;
+import org.zendesk.client.v2.model.*;
 import org.zendesk.client.v2.model.events.Event;
-import org.zendesk.client.v2.model.hc.Article;
-import org.zendesk.client.v2.model.hc.Category;
-import org.zendesk.client.v2.model.hc.Section;
-import org.zendesk.client.v2.model.hc.Subscription;
-import org.zendesk.client.v2.model.hc.Translation;
+import org.zendesk.client.v2.model.hc.*;
 import org.zendesk.client.v2.model.schedules.Holiday;
 import org.zendesk.client.v2.model.schedules.Interval;
 import org.zendesk.client.v2.model.schedules.Schedule;
 import org.zendesk.client.v2.model.targets.Target;
+
+import java.util.*;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.*;
+import static org.junit.Assume.assumeThat;
 
 /**
  * @author stephenc
@@ -318,6 +285,64 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void createPermanentlyDeleteTicket() throws Exception {
+        createClientWithTokenOrPassword();
+        assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
+        Ticket t = new Ticket(
+                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                "This is a test", new Comment("Please ignore this ticket"));
+        t.setCollaborators(Arrays.asList(new Collaborator("Bob Example", "bob@example.org"), new Collaborator("Alice Example", "alice@example.org")));
+        Ticket ticket = instance.createTicket(t);
+        System.out.println(ticket.getId() + " -> " + ticket.getUrl());
+        assertThat(ticket.getId(), notNullValue());
+
+        try {
+            Ticket t2 = instance.getTicket(ticket.getId());
+            assertThat(t2, notNullValue());
+            assertThat(t2.getId(), is(ticket.getId()));
+        } finally {
+            instance.deleteTicket(ticket.getId());
+            instance.permanentlyDeleteTicket(ticket.getId());
+        }
+        assertThat(instance.getTicket(ticket.getId()), nullValue());
+    }
+
+    @Test
+    public void createPermanentlyDeleteTickets() throws Exception {
+        createClientWithTokenOrPassword();
+        assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
+        Ticket t = new Ticket(
+                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                "This is a test", new Comment("Please ignore this ticket"));
+        t.setCollaborators(Arrays.asList(new Collaborator("Bob Example", "bob@example.org"), new Collaborator("Alice Example", "alice@example.org")));
+        Ticket t2 = new Ticket(
+                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                "This is a test_2", new Comment("Please ignore this ticket_2"));
+        t2.setCollaborators(Arrays.asList(new Collaborator("Bob Example_2", "bob@example.org"), new Collaborator("Alice Example_2", "alice@example.org")));
+        Ticket ticket = instance.createTicket(t);
+        Ticket ticket2 = instance.createTicket(t2);
+        System.out.println(ticket.getId() + " -> " + ticket.getUrl());
+        System.out.println(ticket2.getId() + " -> " + ticket2.getUrl());
+        assertThat(ticket.getId(), notNullValue());
+        assertThat(ticket2.getId(), notNullValue());
+
+        try {
+            Ticket t3 = instance.getTicket(ticket.getId());
+            assertThat(t3, notNullValue());
+            assertThat(t3.getId(), is(ticket.getId()));
+
+            Ticket t4 = instance.getTicket(ticket2.getId());
+            assertThat(t4, notNullValue());
+            assertThat(t4.getId(), is(ticket2.getId()));
+        } finally {
+            instance.deleteTickets(ticket.getId(), ticket2.getId());
+            instance.permanentlyDeleteTickets(ticket.getId(), ticket2.getId());
+        }
+        assertThat(instance.getTicket(ticket.getId()), nullValue());
+        assertThat(instance.getTicket(ticket2.getId()), nullValue());
+    }
+
+    @Test
     public void createSolveTickets() throws Exception {
         createClientWithTokenOrPassword();
         assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
@@ -437,6 +462,33 @@ public class RealSmokeTest {
         assertThat(unsuspendResult.getId(), is(user.getId()));
         assertThat(unsuspendResult.getSuspended(), is(false));
 
+        // Cleanup
+        instance.deleteUser(user);
+    }
+
+    @Test
+    public void permanentlyDeleteUser() throws Exception {
+        createClientWithTokenOrPassword();
+
+        String name = "testSuspendUser";
+        String externalId = "testSuspendUser";
+
+        // Clean up to avoid conflicts
+        for (User u: instance.lookupUserByExternalId(externalId)){
+            instance.deleteUser(u.getId());
+        }
+
+        // Create user
+        User newUser = new User(true, name);
+        newUser.setExternalId(externalId);
+        User user = instance.createOrUpdateUser(newUser);
+        assertNotNull(user);
+        assertNotNull(user.getId());
+
+        instance.deleteUser(user);
+        instance.permanentlyDeleteUser(user);
+
+        assertThat(instance.getUser(user.getId()).getActive(), is(false));
         // Cleanup
         instance.deleteUser(user);
     }

@@ -788,13 +788,13 @@ public class Zendesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/users/{id}.json").set("id", id)), handleStatus()));
     }
 
-    public JobStatus<User> permanentlyDeleteUser(User user) {
+    public User permanentlyDeleteUser(User user) {
         checkHasId(user);
         return permanentlyDeleteUser(user.getId());
     }
 
-    public JobStatus<User> permanentlyDeleteUser(long id) {
-        return complete(submit(req("DELETE", tmpl("/deleted_users/{id}.json").set("id", id)), handleJobStatus(User.class)));
+    public User permanentlyDeleteUser(long id) {
+        return complete(submit(req("DELETE", tmpl("/deleted_users/{id}.json").set("id", id)), handle(User.class)));
     }
 
     public User suspendUser(long id) {
