@@ -267,13 +267,20 @@ public class Zendesk implements Closeable {
                 handleList(User.class, "users")));
     }
 
-    public void deleteTicket(Ticket ticket) {
+    public JobStatus permanentlyDeleteTicket(Ticket ticket) {
         checkHasId(ticket);
-        deleteTicket(ticket.getId());
+        return permanentlyDeleteTicket(ticket.getId());
     }
 
     public void deleteTicket(long id) {
         complete(submit(req("DELETE", tmpl("/tickets/{id}.json").set("id", id)), handleStatus()));
+    }
+
+    public JobStatus permanentlyDeleteTicket(long id) {
+        return complete(submit(
+                req("DELETE", tmpl("/deleted_tickets/{id}.json").set("id", id)),
+                handleJobStatus(JobStatus.class))
+        );
     }
 
     public ListenableFuture<JobStatus<Ticket>> queueCreateTicketAsync(Ticket ticket) {
@@ -324,6 +331,14 @@ public class Zendesk implements Closeable {
     public void deleteTickets(long id, long... ids) {
         complete(submit(req("DELETE", tmpl("/tickets/destroy_many.json{?ids}").set("ids", idArray(id, ids))),
                 handleStatus()));
+    }
+
+    public JobStatus permanentlyDeleteTickets(long id, long... ids) {
+        return complete(
+                submit(
+                        req("DELETE", tmpl("/deleted_tickets/destroy_many.json{?ids}").set("ids", idArray(id, ids))),
+                        handleJobStatus(JobStatus.class))
+        );
     }
 
     public Iterable<Ticket> getTickets() {
@@ -771,6 +786,15 @@ public class Zendesk implements Closeable {
 
     public void deleteUser(long id) {
         complete(submit(req("DELETE", tmpl("/users/{id}.json").set("id", id)), handleStatus()));
+    }
+
+    public JobStatus<User> permanentlyDeleteUser(User user) {
+        checkHasId(user);
+        return permanentlyDeleteUser(user.getId());
+    }
+
+    public JobStatus<User> permanentlyDeleteUser(long id) {
+        return complete(submit(req("DELETE", tmpl("/deleted_users/{id}.json").set("id", id)), handleJobStatus(User.class)));
     }
 
     public User suspendUser(long id) {
