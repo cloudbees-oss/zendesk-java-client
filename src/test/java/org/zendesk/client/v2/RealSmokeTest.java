@@ -181,9 +181,11 @@ public class RealSmokeTest {
     public void getTicketsById() throws Exception {
         createClientWithTokenOrPassword();
         long count = 24;
+        final List<Long> ticketIds = Collections.unmodifiableList(Arrays.asList(24L, 26L, 28L));
+
         for (Ticket t : instance.getTickets(24, 26, 28)) {
             assertThat(t.getSubject(), notNullValue());
-            assertThat(t.getId(), is(count));
+            assertThat(ticketIds.contains(t.getId()), is(true));
             count += 2;
         }
         assertThat(count, is(30L));
