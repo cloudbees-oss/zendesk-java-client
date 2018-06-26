@@ -82,6 +82,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -97,6 +98,7 @@ public class Zendesk implements Closeable {
     private final Realm realm;
     private final String url;
     private final String oauthToken;
+    private final Map<String, String> headers;
     private final ObjectMapper mapper;
     private final Logger logger;
     private boolean closed = false;
@@ -132,7 +134,7 @@ public class Zendesk implements Closeable {
        return Collections.unmodifiableMap(result);
     }
 
-    private Zendesk(AsyncHttpClient client, String url, String username, String password) {
+    private Zendesk(AsyncHttpClient client, String url, String username, String password, Map<String, String> headers) {
         this.logger = LoggerFactory.getLogger(Zendesk.class);
         this.closeClient = client == null;
         this.oauthToken = null;
@@ -149,11 +151,12 @@ public class Zendesk implements Closeable {
             }
             this.realm = null;
         }
+        this.headers = headers;
         this.mapper = createMapper();
     }
 
 
-    private Zendesk(AsyncHttpClient client, String url, String oauthToken) {
+    private Zendesk(AsyncHttpClient client, String url, String oauthToken, Map<String, String> headers) {
         this.logger = LoggerFactory.getLogger(Zendesk.class);
         this.closeClient = client == null;
         this.realm = null;
@@ -164,6 +167,7 @@ public class Zendesk implements Closeable {
         } else {
             throw new IllegalStateException("Cannot specify token or password without specifying username");
         }
+        this.headers = headers;
 
         this.mapper = createMapper();
     }
@@ -565,12 +569,7 @@ public class Zendesk implements Closeable {
   }
 
   public ArticleAttachments createUploadArticle(long articleId, File file, boolean inline) throws IOException {
-        BoundRequestBuilder builder = client.preparePost(tmpl("/help_center/articles/{id}/attachments.json").set("id", articleId).toString());
-        if (realm != null) {
-            builder.setRealm(realm);
-        } else {
-            builder.addHeader("Authorization", "Bearer " + oauthToken);
-        }
+    RequestBuilder builder = reqBuilder("POST", tmpl("/help_center/articles/{id}/attachments.json").set("id", articleId).toString());
         builder.setHeader("Content-Type", "multipart/form-data");
 
         if (inline)
@@ -1855,27 +1854,25 @@ public class Zendesk implements Closeable {
     private static final Pattern RESTRICTED_PATTERN = Pattern.compile("%2B", Pattern.LITERAL);
 
     private Request req(String method, String url) {
-        RequestBuilder builder = new RequestBuilder(method);
-        if (realm != null) {
-            builder.setRealm(realm);
-        } else {
-            builder.addHeader("Authorization", "Bearer " + oauthToken);
-        }
-        builder.setUrl(RESTRICTED_PATTERN.matcher(url).replaceAll("+")); // replace out %2B with + due to API restriction
-        return builder.build();
+        return reqBuilder(method, url).build();
     }
 
     private Request req(String method, Uri template, String contentType, byte[] body) {
+        RequestBuilder builder = reqBuilder(method, template.toString());
+        builder.addHeader("Content-type", contentType);
+        builder.setBody(body);
+        return builder.build();
+    }
+
+    private RequestBuilder reqBuilder(String method, String url) {
         RequestBuilder builder = new RequestBuilder(method);
         if (realm != null) {
             builder.setRealm(realm);
         } else {
             builder.addHeader("Authorization", "Bearer " + oauthToken);
         }
-        builder.setUrl(RESTRICTED_PATTERN.matcher(template.toString()).replaceAll("+")); //replace out %2B with + due to API restriction
-        builder.addHeader("Content-type", contentType);
-        builder.setBody(body);
-        return builder.build();
+        headers.forEach(builder::setHeader);
+        return builder.setUrl(RESTRICTED_PATTERN.matcher(url).replaceAll("+")); // replace out %2B with + due to API restriction
     }
 
     protected ZendeskAsyncCompletionHandler<Void> handleStatus() {
@@ -2457,6 +2454,7 @@ public class Zendesk implements Closeable {
         private String password = null;
         private String token = null;
         private String oauthToken = null;
+        private Map<String, String> headers;
 
         public Builder(String url) {
             this.url = url;
@@ -2505,13 +2503,20 @@ public class Zendesk implements Closeable {
             return this;
         }
 
+        public Builder addHeader(String name, String value) {
+            Objects.requireNonNull(name, "Header name cannot be null");
+            Objects.requireNonNull(value, "Header value cannot be null");
+            headers.put(name, value);
+            return this;
+        }
+
         public Zendesk build() {
             if (token != null) {
-                return new Zendesk(client, url, username + "/token", token);
+                return new Zendesk(client, url, username + "/token", token, headers);
             } else if (oauthToken != null) {
-                return new Zendesk(client, url, oauthToken);
+                return new Zendesk(client, url, oauthToken, headers);
             }
-            return new Zendesk(client, url, username, password);
+            return new Zendesk(client, url, username, password, headers);
         }
     }
 }
