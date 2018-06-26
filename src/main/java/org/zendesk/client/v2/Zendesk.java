@@ -1719,8 +1719,9 @@ public class Zendesk implements Closeable {
                 handleList(Translation.class, "translations"));
     }
     public Section createSection(Section section) {
-        return complete(submit(req("POST", cnst("/help_center/sections.json"), JSON,
-                json(Collections.singletonMap("section", section))), handle(Section.class, "section")));
+        checkHasCategoryId(section);
+        return complete(submit(req("POST", tmpl("/help_center/categories/{id}/sections.json").set("id", section.getCategoryId()),
+                JSON, json(Collections.singletonMap("section", section))), handle(Section.class, "section")));
     }
 
     public Section updateSection(Section section) {
@@ -2317,6 +2318,12 @@ public class Zendesk implements Closeable {
     private static void checkHasCategoryId(Long articleId) {
         if (articleId == null) {
             throw new IllegalArgumentException("Translation requires category id");
+        }
+    }
+
+    private static void checkHasCategoryId(Section section) {
+        if (section.getCategoryId() == null) {
+            throw new IllegalArgumentException("Section requires category id");
         }
     }
 
