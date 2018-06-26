@@ -151,7 +151,7 @@ public class Zendesk implements Closeable {
             }
             this.realm = null;
         }
-        this.headers = headers;
+        this.headers = Collections.unmodifiableMap(headers);
         this.mapper = createMapper();
     }
 
@@ -167,7 +167,7 @@ public class Zendesk implements Closeable {
         } else {
             throw new IllegalStateException("Cannot specify token or password without specifying username");
         }
-        this.headers = headers;
+        this.headers = Collections.unmodifiableMap(headers);
 
         this.mapper = createMapper();
     }
@@ -2454,10 +2454,11 @@ public class Zendesk implements Closeable {
         private String password = null;
         private String token = null;
         private String oauthToken = null;
-        private Map<String, String> headers;
+        private final Map<String, String> headers;
 
         public Builder(String url) {
             this.url = url;
+            this.headers = new HashMap<>();
         }
 
         public Builder setClient(AsyncHttpClient client) {
