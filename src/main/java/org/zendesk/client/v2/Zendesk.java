@@ -273,6 +273,11 @@ public class Zendesk implements Closeable {
         return permanentlyDeleteTicket(ticket.getId());
     }
 
+    public void deleteTicket(Ticket ticket) {
+        checkHasId(ticket);
+        deleteTicket(ticket.getId());
+    }
+
     public void deleteTicket(long id) {
         complete(submit(req("DELETE", tmpl("/tickets/{id}.json").set("id", id)), handleStatus()));
     }
