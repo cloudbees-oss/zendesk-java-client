@@ -2,71 +2,19 @@ package org.zendesk.client.v2;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import org.asynchttpclient.AsyncCompletionHandler;
-import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.BoundRequestBuilder;
-import org.asynchttpclient.DefaultAsyncHttpClient;
-import org.asynchttpclient.ListenableFuture;
-import org.asynchttpclient.Realm;
+import org.asynchttpclient.*;
 import org.asynchttpclient.Request;
-import org.asynchttpclient.Request;
-import org.asynchttpclient.RequestBuilder;
-import org.asynchttpclient.Response;
 import org.asynchttpclient.request.body.multipart.FilePart;
 import org.asynchttpclient.request.body.multipart.StringPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zendesk.client.v2.model.AgentRole;
-import org.zendesk.client.v2.model.Attachment;
-import org.zendesk.client.v2.model.Audit;
-import org.zendesk.client.v2.model.Automation;
-import org.zendesk.client.v2.model.Brand;
-import org.zendesk.client.v2.model.Comment;
-import org.zendesk.client.v2.model.Field;
-import org.zendesk.client.v2.model.Forum;
-import org.zendesk.client.v2.model.Group;
-import org.zendesk.client.v2.model.GroupMembership;
-import org.zendesk.client.v2.model.Identity;
-import org.zendesk.client.v2.model.JobStatus;
-import org.zendesk.client.v2.model.Macro;
-import org.zendesk.client.v2.model.Metric;
-import org.zendesk.client.v2.model.Organization;
-import org.zendesk.client.v2.model.OrganizationField;
-import org.zendesk.client.v2.model.OrganizationMembership;
-import org.zendesk.client.v2.model.SatisfactionRating;
-import org.zendesk.client.v2.model.SearchResultEntity;
-import org.zendesk.client.v2.model.Status;
-import org.zendesk.client.v2.model.SuspendedTicket;
-import org.zendesk.client.v2.model.Ticket;
-import org.zendesk.client.v2.model.TicketForm;
-import org.zendesk.client.v2.model.TicketImport;
-import org.zendesk.client.v2.model.TicketResult;
-import org.zendesk.client.v2.model.Topic;
-import org.zendesk.client.v2.model.Trigger;
-import org.zendesk.client.v2.model.TwitterMonitor;
-import org.zendesk.client.v2.model.User;
-import org.zendesk.client.v2.model.UserField;
-import org.zendesk.client.v2.model.hc.Article;
-import org.zendesk.client.v2.model.hc.ArticleAttachments;
-import org.zendesk.client.v2.model.hc.Category;
-import org.zendesk.client.v2.model.hc.Section;
-import org.zendesk.client.v2.model.hc.Subscription;
-import org.zendesk.client.v2.model.hc.Translation;
+import org.zendesk.client.v2.model.*;
+import org.zendesk.client.v2.model.hc.*;
 import org.zendesk.client.v2.model.schedules.Holiday;
 import org.zendesk.client.v2.model.schedules.Schedule;
-import org.zendesk.client.v2.model.targets.BasecampTarget;
-import org.zendesk.client.v2.model.targets.CampfireTarget;
-import org.zendesk.client.v2.model.targets.EmailTarget;
-import org.zendesk.client.v2.model.targets.PivotalTarget;
-import org.zendesk.client.v2.model.targets.Target;
-import org.zendesk.client.v2.model.targets.TwitterTarget;
-import org.zendesk.client.v2.model.targets.UrlTarget;
+import org.zendesk.client.v2.model.targets.*;
 
 import java.io.Closeable;
 import java.io.File;
@@ -74,15 +22,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -270,7 +210,6 @@ public class Zendesk implements Closeable {
 
     public JobStatus permanentlyDeleteTicket(Ticket ticket) {
         checkHasId(ticket);
-        deleteTicket(ticket.getId());
         return permanentlyDeleteTicket(ticket.getId());
     }
 
@@ -800,7 +739,6 @@ public class Zendesk implements Closeable {
 
     public User permanentlyDeleteUser(User user) {
         checkHasId(user);
-        deleteUser(user.getId());
         return permanentlyDeleteUser(user.getId());
     }
 
