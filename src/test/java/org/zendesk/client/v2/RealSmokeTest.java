@@ -9,6 +9,7 @@ import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Brand;
 import org.zendesk.client.v2.model.Collaborator;
 import org.zendesk.client.v2.model.Comment;
+import org.zendesk.client.v2.model.ComplianceDeletionStatus;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.Identity;
@@ -41,15 +42,8 @@ import java.util.Properties;
 import java.util.UUID;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotEquals;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 import static org.junit.Assume.assumeThat;
 
 /**
@@ -497,6 +491,51 @@ public class RealSmokeTest {
 
         // Cleanup
         instance.deleteUser(user);
+    }
+
+    @Test
+    public void showUserComplianceDeletionStatusExpectException() throws Exception {
+        createClientWithTokenOrPassword();
+
+        final String name = "testSuspendUser";
+        final String externalId = "testSuspendUser";
+
+        User newUser = new User(true, name);
+        newUser.setExternalId(externalId);
+        User user = instance.createOrUpdateUser(newUser);
+        assertNotNull(user);
+        assertNotNull(user.getId());
+
+        try {
+            instance.getComplianceDeletionStatuses(user.getId());
+        } catch (Exception e) {
+            assertThat(e.getMessage(), is("HTTP/404: Not Found - {\"error\":\"RecordNotFound\",\"description\":\"Not found\"}"));
+        }
+
+        instance.permanentlyDeleteUser(user);
+    }
+
+    @Test
+    public void showUserComplianceDeletionStatusExpectValidCompletionStatus() throws Exception {
+        createClientWithTokenOrPassword();
+
+        final String name = "testSuspendUser";
+        final String externalId = "testSuspendUser";
+
+        User newUser = new User(true, name);
+        newUser.setExternalId(externalId);
+        User user = instance.createOrUpdateUser(newUser);
+        assertNotNull(user);
+        assertNotNull(user.getId());
+
+        instance.permanentlyDeleteUser(user);
+
+        final Iterable<ComplianceDeletionStatus> complianceDeletionStatuses = instance.getComplianceDeletionStatuses(user.getId());
+        complianceDeletionStatuses.forEach(status -> {
+            assertThat(status.getAction(), is("request_deletion"));
+            assertThat(status.getApplication(), is("all"));
+            assertThat(status.getUserId(), is(user.getId()));
+        });
     }
 
     @Test

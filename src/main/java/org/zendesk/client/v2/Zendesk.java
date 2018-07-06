@@ -15,7 +15,6 @@ import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.ListenableFuture;
 import org.asynchttpclient.Realm;
 import org.asynchttpclient.Request;
-import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;
 import org.asynchttpclient.request.body.multipart.FilePart;
@@ -28,6 +27,7 @@ import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Automation;
 import org.zendesk.client.v2.model.Brand;
 import org.zendesk.client.v2.model.Comment;
+import org.zendesk.client.v2.model.ComplianceDeletionStatus;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Forum;
 import org.zendesk.client.v2.model.Group;
@@ -434,6 +434,11 @@ public class Zendesk implements Closeable {
     public Iterable<Ticket> getUserRequestedTickets(long userId) {
         return new PagedIterable<>(tmpl("/users/{userId}/tickets/requested.json").set("userId", userId),
                 handleList(Ticket.class, "tickets"));
+    }
+
+    public Iterable<ComplianceDeletionStatus> getComplianceDeletionStatuses(long userId) {
+        return new PagedIterable<>(tmpl("/users/{userId}/compliance_deletion_statuses.json").set("userId", userId),
+                handleList(ComplianceDeletionStatus.class, "compliance_deletion_statuses"));
     }
 
     public Iterable<Ticket> getUserCCDTickets(long userId) {
