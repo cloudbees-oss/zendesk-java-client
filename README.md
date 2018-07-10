@@ -105,6 +105,7 @@ History
 
 * 0.5.x - ...
 
-* 0.6.x - Requires Java 8, Upgrade async-http-client to 2.2.0, Jackson to 2.9.3 (+ others updates), Add createTicketAsync method, Add method to inline an article attachment, Add created article,section,category translation, Add suspend user, Add ticket form creation functionality, From now custom field value is an array with multiple value due to Multi-select fields, Changed type of article attachment ID and article ID from int to Long, Include response body in stacktrace message.
+* 0.6.x - Requires Java 8, Upgrade async-http-client to 2.2.0, Jackson to 2.9.3 (+ others updates), Add createTicketAsync method, Add method to inline an article attachment, Add created article,section,category translation, Add suspend user, Add ticket form creation functionality, From now custom field value is an array with multiple value due to Multi-select fields, Changed type of article attachment ID and article ID from int to Long, Include response body in stacktrace message,
+Added permanently GDPR delete of Tickets and User
 
   [zd]: http://zendesk.com
