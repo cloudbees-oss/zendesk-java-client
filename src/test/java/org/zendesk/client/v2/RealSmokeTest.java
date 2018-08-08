@@ -1,26 +1,5 @@
 package org.zendesk.client.v2;
 
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeThat;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
-
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -30,6 +9,7 @@ import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Brand;
 import org.zendesk.client.v2.model.Collaborator;
 import org.zendesk.client.v2.model.Comment;
+import org.zendesk.client.v2.model.ComplianceDeletionStatus;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.Identity;
@@ -51,6 +31,20 @@ import org.zendesk.client.v2.model.schedules.Holiday;
 import org.zendesk.client.v2.model.schedules.Interval;
 import org.zendesk.client.v2.model.schedules.Schedule;
 import org.zendesk.client.v2.model.targets.Target;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
+import java.util.UUID;
+
+import static junit.framework.TestCase.assertEquals;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.junit.Assume.assumeThat;
 
 /**
  * @author stephenc
@@ -214,9 +208,11 @@ public class RealSmokeTest {
     public void getTicketsById() throws Exception {
         createClientWithTokenOrPassword();
         long count = 24;
+        final List<Long> ticketIds = Collections.unmodifiableList(Arrays.asList(24L, 26L, 28L));
+
         for (Ticket t : instance.getTickets(24, 26, 28)) {
             assertThat(t.getSubject(), notNullValue());
-            assertThat(t.getId(), is(count));
+            assertThat(ticketIds.contains(t.getId()), is(true));
             count += 2;
         }
         assertThat(count, is(30L));
@@ -315,6 +311,62 @@ public class RealSmokeTest {
         assertThat(ticket.getDescription(), is(t.getComment().getBody()));
         assertThat("Collaborators", ticket.getCollaboratorIds().size(), is(2));
         assertThat(instance.getTicket(ticket.getId()), nullValue());
+    }
+
+    @Test
+    public void createPermanentlyDeleteTicket() throws Exception {
+        createClientWithTokenOrPassword();
+        assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
+        Ticket t = new Ticket(
+                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                "This is a test", new Comment("Please ignore this ticket"));
+        t.setCollaborators(Arrays.asList(new Collaborator("Bob Example", "bob@example.org"), new Collaborator("Alice Example", "alice@example.org")));
+        Ticket ticket = instance.createTicket(t);
+        System.out.println(ticket.getId() + " -> " + ticket.getUrl());
+        assertThat(ticket.getId(), notNullValue());
+
+        try {
+            Ticket t2 = instance.getTicket(ticket.getId());
+            assertThat(t2, notNullValue());
+            assertThat(t2.getId(), is(ticket.getId()));
+        } finally {
+            instance.permanentlyDeleteTicket(ticket.getId());
+        }
+        assertThat(instance.getTicket(ticket.getId()), nullValue());
+    }
+
+    @Test
+    public void createPermanentlyDeleteTickets() throws Exception {
+        createClientWithTokenOrPassword();
+        assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
+        Ticket t = new Ticket(
+                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                "This is a test", new Comment("Please ignore this ticket"));
+        t.setCollaborators(Arrays.asList(new Collaborator("Bob Example", "bob@example.org"), new Collaborator("Alice Example", "alice@example.org")));
+        Ticket t2 = new Ticket(
+                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                "This is a test_2", new Comment("Please ignore this ticket_2"));
+        t2.setCollaborators(Arrays.asList(new Collaborator("Bob Example_2", "bob@example.org"), new Collaborator("Alice Example_2", "alice@example.org")));
+        Ticket ticket = instance.createTicket(t);
+        Ticket ticket2 = instance.createTicket(t2);
+        System.out.println(ticket.getId() + " -> " + ticket.getUrl());
+        System.out.println(ticket2.getId() + " -> " + ticket2.getUrl());
+        assertThat(ticket.getId(), notNullValue());
+        assertThat(ticket2.getId(), notNullValue());
+
+        try {
+            Ticket t3 = instance.getTicket(ticket.getId());
+            assertThat(t3, notNullValue());
+            assertThat(t3.getId(), is(ticket.getId()));
+
+            Ticket t4 = instance.getTicket(ticket2.getId());
+            assertThat(t4, notNullValue());
+            assertThat(t4.getId(), is(ticket2.getId()));
+        } finally {
+            instance.permanentlyDeleteTickets(ticket.getId(), ticket2.getId());
+        }
+        assertThat(instance.getTicket(ticket.getId()), nullValue());
+        assertThat(instance.getTicket(ticket2.getId()), nullValue());
     }
 
     @Test
@@ -437,6 +489,77 @@ public class RealSmokeTest {
         assertThat(unsuspendResult.getId(), is(user.getId()));
         assertThat(unsuspendResult.getSuspended(), is(false));
 
+        // Cleanup
+        instance.deleteUser(user);
+    }
+
+    @Test
+    public void showUserComplianceDeletionStatusExpectException() throws Exception {
+        createClientWithTokenOrPassword();
+
+        final String name = "testSuspendUser";
+        final String externalId = "testSuspendUser";
+
+        User newUser = new User(true, name);
+        newUser.setExternalId(externalId);
+        User user = instance.createOrUpdateUser(newUser);
+        assertNotNull(user);
+        assertNotNull(user.getId());
+
+        try {
+            instance.getComplianceDeletionStatuses(user.getId());
+        } catch (Exception e) {
+            assertThat(e.getMessage(), is("HTTP/404: Not Found - {\"error\":\"RecordNotFound\",\"description\":\"Not found\"}"));
+        }
+
+        instance.permanentlyDeleteUser(user);
+    }
+
+    @Test
+    public void showUserComplianceDeletionStatusExpectValidCompletionStatus() throws Exception {
+        createClientWithTokenOrPassword();
+
+        final String name = "testSuspendUser";
+        final String externalId = "testSuspendUser";
+
+        User newUser = new User(true, name);
+        newUser.setExternalId(externalId);
+        User user = instance.createOrUpdateUser(newUser);
+        assertNotNull(user);
+        assertNotNull(user.getId());
+
+        instance.permanentlyDeleteUser(user);
+
+        final Iterable<ComplianceDeletionStatus> complianceDeletionStatuses = instance.getComplianceDeletionStatuses(user.getId());
+        complianceDeletionStatuses.forEach(status -> {
+            assertThat(status.getAction(), is("request_deletion"));
+            assertThat(status.getApplication(), is("all"));
+            assertThat(status.getUserId(), is(user.getId()));
+        });
+    }
+
+    @Test
+    public void permanentlyDeleteUser() throws Exception {
+        createClientWithTokenOrPassword();
+
+        String name = "testSuspendUser";
+        String externalId = "testSuspendUser";
+
+        // Clean up to avoid conflicts
+        for (User u: instance.lookupUserByExternalId(externalId)){
+            instance.deleteUser(u.getId());
+        }
+
+        // Create user
+        User newUser = new User(true, name);
+        newUser.setExternalId(externalId);
+        User user = instance.createOrUpdateUser(newUser);
+        assertNotNull(user);
+        assertNotNull(user.getId());
+
+        instance.permanentlyDeleteUser(user);
+
+        assertThat(instance.getUser(user.getId()).getActive(), is(false));
         // Cleanup
         instance.deleteUser(user);
     }
