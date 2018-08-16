@@ -1,11 +1,10 @@
 ## Migration to Codeship
 
-It is a temporal file to track the migration steps od moving this project from Jenkins D@C to Codeship Basic project
+It is a temporal file to track the migration steps of moving this project from Jenkins D@C to Codeship Basic project
 
-**Note**: Codeship currently does’t trigger builds for PRs from forked repositories. We have created a RFE for that [PROD-1600](https://cloudbees.atlassian.net/browse/PROD-1600)
+**Notes**:
 
-### carlosrodlop
-
+* Codeship currently does’t trigger builds for PRs from forked repositories. We have created a RFE for that [PROD-1600](https://cloudbees.atlassian.net/browse/PROD-1600)
 * Sonar configuration needs to be move from the `Manage Jenkins > Configure system` to `Codeship Basic > Enviroment Section`
 * Maven options has been moved to Setup Commands `export MAVEN_OPTS="-Xmx512m -Djava.awt.headless=true"`
 * Sonar configuration is passed by parameters: https://docs.sonarqube.org/display/SONAR/Analysis+Parameters
@@ -16,7 +15,7 @@ It is a temporal file to track the migration steps od moving this project from J
 * To check line 13 `_ bash: [: too many arguments`
 * BUILD SUCCESS but with mvn `verify` goal default
 
-* Setup Commands
+### Setup Commands
 
 ```
 # We currently support OpenJDK 7, as well as Oracle JDK 7 & 8.
@@ -25,7 +24,7 @@ jdk_switcher use oraclejdk8
 export MAVEN_OPTS="-Xmx512m -Djava.awt.headless=true"
 ```
 
-* Pipeline
+### Pipeline
 
 ```
 export pom_version=$(xmllint --xpath '/*[local-name()="project"]/*[local-name()="version"]/text()' pom.xml)
@@ -39,4 +38,7 @@ echo "Running: mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent ${deployOr
 mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent ${deployOrVerity} sonar:sonar -Dsonar.organization=cloudbees -Dsonar.branch.name=${CI_BRANCH} -Dsonar.host.url=${SONAR_URL} -Dsonar.login=${SONAR_TOKEN} -Dmaven.test.failure.ignore=true
 ```
 
-* Enviroment Variables: `SONAR_URL` and `SONAR_TOKEN`
+### Enviroment Variables: 
+
+* `SONAR_URL`
+* `SONAR_TOKEN`
