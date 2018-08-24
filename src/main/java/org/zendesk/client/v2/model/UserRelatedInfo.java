@@ -10,6 +10,8 @@ import java.io.Serializable;
  */
 public class UserRelatedInfo implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty(value = "assigned_tickets")
     private Integer assignedTickets;
     @JsonProperty(value = "requested_tickets")
@@ -106,5 +108,21 @@ public class UserRelatedInfo implements Serializable {
 
     public void setCcdTickets(Integer ccdTickets) {
         this.ccdTickets = ccdTickets;
+    }
+
+    @Override
+    public String toString() {
+        return "UserRelatedInfo{" +
+                "assignedTickets=" + assignedTickets +
+                ", requestedTickets=" + requestedTickets +
+                ", topics=" + topics +
+                ", topicComments=" + topicComments +
+                ", votes=" + votes +
+                ", subscriptions=" + subscriptions +
+                ", entrySubscriptions=" + entrySubscriptions +
+                ", forumSubscriptions=" + forumSubscriptions +
+                ", organizationSubscriptions=" + organizationSubscriptions +
+                ", ccdTickets=" + ccdTickets +
+                '}';
     }
 }
