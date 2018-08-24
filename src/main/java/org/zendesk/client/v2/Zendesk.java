@@ -52,6 +52,7 @@ import org.zendesk.client.v2.model.Trigger;
 import org.zendesk.client.v2.model.TwitterMonitor;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.UserField;
+import org.zendesk.client.v2.model.UserRelatedInfo;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.ArticleAttachments;
 import org.zendesk.client.v2.model.hc.Category;
@@ -444,6 +445,11 @@ public class Zendesk implements Closeable {
     public Iterable<Ticket> getUserCCDTickets(long userId) {
         return new PagedIterable<>(tmpl("/users/{userId}/tickets/ccd.json").set("userId", userId),
                 handleList(Ticket.class, "tickets"));
+    }
+
+    public UserRelatedInfo getUserRelatedInfo(long userId) {
+        return complete(submit(req("GET", tmpl("/users/{userId}/related.json").set("userId", userId)),
+                handle(UserRelatedInfo.class, "user_related")));
     }
 
     public Iterable<Metric> getTicketMetrics() {
