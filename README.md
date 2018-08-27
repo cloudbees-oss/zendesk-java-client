@@ -55,8 +55,8 @@ Here is the status of the various API components:
 * [Ticket Forms](http://developer.zendesk.com/documentation/rest_api/ticket_forms.html) *getTicketForm() and getTicketForms()*
 * [Views](http://developer.zendesk.com/documentation/rest_api/views.html)
 * [Users](http://developer.zendesk.com/documentation/rest_api/users.html) ✓
+    * [User Related Information](https://developer.zendesk.com/rest_api/docs/core/users#user-related-information) ✓
 * [User Fields](https://developer.zendesk.com/rest_api/docs/core/user_fields.html) - Partial - List User Fields (`getUserField()`)
-* [User Related Information](https://developer.zendesk.com/rest_api/docs/core/users#user-related-information) ✓
 * [Requests](http://developer.zendesk.com/documentation/rest_api/requests.html) ✓
 * [User Identities](http://developer.zendesk.com/documentation/rest_api/user_identities.html) ✓
 * [Groups](http://developer.zendesk.com/documentation/rest_api/groups.html) ✓
