@@ -15,6 +15,7 @@ import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.JobStatus;
 import org.zendesk.client.v2.model.Organization;
+import org.zendesk.client.v2.model.Priority;
 import org.zendesk.client.v2.model.Request;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
@@ -41,7 +42,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
-import static junit.framework.TestCase.assertEquals;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeThat;
@@ -395,6 +395,47 @@ public class RealSmokeTest {
             assertThat(instance.getTicket(ticket.getId()), notNullValue());
             firstId = Math.min(ticket.getId(), firstId);
         } while (ticket.getId() < firstId + 5L); // seed enough data for the paging tests
+    }
+
+    @Test
+    public void testUpdateTickets() throws Exception {
+        createClientWithTokenOrPassword();
+        Ticket t = new Ticket(
+                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                "This is a test " + UUID.randomUUID().toString(), new Comment("Please ignore this ticket"));
+        Ticket ticket1 = instance.createTicket(t);
+        Ticket t2 = new Ticket(
+                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                "This is a test " + UUID.randomUUID().toString(), new Comment("Please ignore this ticket"));
+        Ticket ticket2 = instance.createTicket(t2);
+        ticket1.setPriority(Priority.HIGH);
+        ticket2.setPriority(Priority.LOW);
+        ticket1.setStatus(Status.SOLVED);
+        ticket2.setStatus(Status.SOLVED);
+
+        JobStatus<Ticket> jobstatus = instance.updateTicketsAsync(Arrays.asList(ticket1, ticket2)).toCompletableFuture().join();
+        assertThat(jobstatus.getStatus(), is(JobStatus.JobStatusEnum.queued));
+        //TODO: uncomment the rest of this test once issue #98 is resolved: https://github.com/cloudbees/zendesk-java-client/issues/98
+//        Instant startUpdateAt = Instant.now();
+//        while (instance.getJobStatus(jobstatus).getStatus() != JobStatus.JobStatusEnum.completed
+//                && startUpdateAt.plusSeconds(10).isAfter(Instant.now())) {
+//            Thread.sleep(100);
+//        }
+//        JobStatus<Ticket> completedJobStatus = instance.getJobStatus(jobstatus);
+//        assertThat(completedJobStatus.getStatus(), is(JobStatus.JobStatusEnum.completed));
+//        assertNotNull(jobstatus.getResults());
+//        assertThat(jobstatus.getResults().size(), is(2));
+//        jobstatus.getResults().forEach(ticket -> {
+//            if (ticket.getId().equals(ticket1.getId())) {
+//                assertThat(ticket.getPriority(), is(Priority.HIGH));
+//                assertThat(ticket.getStatus(), is(Status.SOLVED));
+//            } else if (ticket.getId().equals(ticket2.getId())) {
+//                assertThat(ticket.getPriority(), is(Priority.LOW));
+//                assertThat(ticket.getStatus(), is(Status.SOLVED));
+//            } else {
+//                fail("Received a different ticket back in response: " + ticket.getId());
+//            }
+//        });
     }
 
     @Test

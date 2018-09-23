@@ -327,6 +327,11 @@ public class Zendesk implements Closeable {
                 handle(Ticket.class, "ticket")));
     }
 
+    public ListenableFuture<JobStatus<Ticket>> updateTicketsAsync(List<Ticket> tickets) {
+        return submit(req("PUT", cnst("/tickets/update_many.json"), JSON, json(
+                Collections.singletonMap("tickets", tickets))), handleJobStatus(Ticket.class));
+    }
+
     public void markTicketAsSpam(Ticket ticket) {
         checkHasId(ticket);
         markTicketAsSpam(ticket.getId());
