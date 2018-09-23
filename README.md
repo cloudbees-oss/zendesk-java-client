@@ -111,4 +111,6 @@ Added permanently GDPR delete of Tickets and User
 
 * 0.7.x - The Help Center Section creation was fixed, Macro DTO was updated (Id is long), Permanent deletion of a handful of Items was added ( GDPR compliancy )
 
+* 0.8.x - New method `ListenableFuture<JobStatus<Ticket>> updateTicketsAsync(List<Ticket> tickets)` to [update many ticket at once](https://developer.zendesk.com/rest_api/docs/core/tickets#update-many-tickets) (thx @wakingrufus - PR #260), new method `UserRelatedInfo getUserRelatedInfo(long userId)` to [get User Related Information](https://developer.zendesk.com/rest_api/docs/core/users#user-related-information) (thx @caionovaes - PR #268)
+
   [zd]: http://zendesk.com
