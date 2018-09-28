@@ -1619,7 +1619,7 @@ public class Zendesk implements Closeable {
     public List<String> getHelpCenterLocales() {
         return complete(submit(
                 req("GET", cnst("/help_center/locales.json")),
-                handle(List.class, "tags")));
+                handle(List.class, "locales")));
     }
 
     /**
