@@ -1616,6 +1616,12 @@ public class Zendesk implements Closeable {
     // Action methods for Help Center
     //////////////////////////////////////////////////////////////////////
 
+    public List<String> getHelpCenterLocales() {
+        return complete(submit(
+                req("GET", cnst("/help_center/locales.json")),
+                handle(List.class, "tags")));
+    }
+
     /**
      * Get all articles from help center.
      *
