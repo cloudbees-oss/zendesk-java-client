@@ -193,11 +193,22 @@ public class Translation {
 
   @Override
   public String toString() {
-    return "Translation{" + "id=" + id + '\'' + ", url=" + url + '\'' + ", htmlUrl=" + htmlUrl + '\'' + ", sourceId="
-        + sourceId + '\'' + ", sourceType=" + sourceType + '\'' + ", locale=" + locale + '\'' + ", title=" + title
-        + '\'' + ", description=" + description + '\'' + ", name=" + name + '\'' + ", body=" + body + '\''
-        + ", outdated=" + outdated + '\'' + ", draft=" + draft + '\'' + ", createdAt=" + createdAt + '\''
-        + ", updatedAt=" + updatedAt + '\'' + ", updatedById=" + updatedById + '\'' + ", createdById=" + createdById
-        + '\'' + '}';
+    return "Translation{" + 
+    "id=" + id + '\'' + 
+    ", url=" + url + '\'' + 
+    ", htmlUrl=" + htmlUrl + '\'' + 
+    ", sourceId=" + sourceId + '\'' + 
+    ", sourceType=" + sourceType + '\'' + 
+    ", locale=" + locale + '\'' + 
+    ", title=" + title + '\'' + 
+    ", description=" + description + '\'' + 
+    ", name=" + name + '\'' + 
+    ", body=" + body + '\'' + 
+    ", outdated=" + outdated + '\'' + 
+    ", draft=" + draft + '\'' + 
+    ", createdAt=" + createdAt + '\'' + 
+    ", updatedAt=" + updatedAt + '\'' + 
+    ", updatedById=" + updatedById + '\'' + 
+    ", createdById=" + createdById + '\'' + '}';
   }
 }
