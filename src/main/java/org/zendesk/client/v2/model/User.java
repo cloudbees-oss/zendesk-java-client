@@ -47,6 +47,7 @@ public class User extends Collaborator implements SearchResultEntity, Serializab
     private List<Identity> identities;
     private String remotePhotoUrl;
     private Map<String, Object> userFields;
+    private Long roleType;
 
     public User() {
     }
@@ -334,5 +335,14 @@ public class User extends Collaborator implements SearchResultEntity, Serializab
 
     public void setRestrictedAgent(Boolean restrictedAgent) {
         this.restrictedAgent = restrictedAgent;
+    }
+
+    @JsonProperty("role_type")
+    public Long getRoleType() {
+        return roleType;
+    }
+
+    public void setRoleType(Long roleType) {
+        this.roleType = roleType;
     }
 }
