@@ -3,6 +3,7 @@ package org.zendesk.client.v2.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
+import org.zendesk.client.v2.Utils;
 
 import java.util.Arrays;
 
@@ -28,7 +29,7 @@ public class TriggerTest {
 
     @Test
     public void testTriggerWithComplexActionValues() throws Exception {
-        String json = "{\"id\":12345678,\"title\":\"Test Trigger\",\"active\":true,\"position\":45,\"conditions\":{\"all\":[],\"any\":[{\"field\":\"comment_includes_word\",\"operator\":\"includes\",\"value\":\"@triggerTest\"}]},\"actions\":[{\"field\":\"notification_target\",\"value\":[\"1234567890\",[[\"key1\",\"value1\"],[\"key2\",\"value2\"]]]}],\"createdAt\":null,\"updatedAt\":null}";
+        String json = Utils.resourceToString(getClass().getName().replace('.', '/') + "/triggerWithComplexActions.json");
         Trigger trigger = parseJson(json.getBytes());
         assertNotNull(trigger);
         assertEquals("Test Trigger", trigger.getTitle());
@@ -45,7 +46,7 @@ public class TriggerTest {
 
     @Test
     public void testTriggerWithMultilineActionValues() throws Exception {
-        String json = "{\"id\":12345678,\"title\":\"Test Trigger\",\"active\":true,\"position\":45,\"conditions\":{\"all\":[],\"any\":[{\"field\":\"comment_includes_word\",\"operator\":\"includes\",\"value\":\"@triggerTest\"}]},\"actions\":[{\"field\":\"notification_user\",\"value\":[\"09876543\",\"Trigger Target 1 {{ticket.title}}\",\"Test Multiline\\n\\n{{ticket.comments_formatted}}\\n\\n--------------------------\"]},{\"field\":\"notification_target\",\"value\":[\"98765432\",\"{\\n  \\\"color\\\":\\\"purple\\\",\\n  \\\"message_format\\\":\\\"text\\\",\\n  \\\"message\\\":\\\"Trigger Target 2 {{ticket.title}}.\\\"\\n}\"]}],\"createdAt\":null,\"updatedAt\":null}";
+        String json = Utils.resourceToString(getClass().getName().replace('.', '/') + "/triggerWithMultilineAction.json");
         Trigger trigger = parseJson(json.getBytes());
         assertNotNull(trigger);
         assertEquals("Test Trigger", trigger.getTitle());
