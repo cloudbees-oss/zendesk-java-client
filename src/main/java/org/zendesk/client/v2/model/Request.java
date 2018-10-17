@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+
+import org.zendesk.client.v2.model.Ticket.Requester;
 
 /**
  * @author stephenc
@@ -26,6 +29,10 @@ public class Request implements Serializable {
     protected Date createdAt;
     protected Date updatedAt;
     protected Comment comment;
+	protected boolean solved;
+	protected Priority priority;
+	protected List<CustomFieldValue> customFields;
+	protected Type type;
 
     @JsonProperty("created_at")
     public Date getCreatedAt() {
@@ -131,4 +138,51 @@ public class Request implements Serializable {
     public void setComment(Comment comment) {
         this.comment = comment;
     }
+
+	@JsonProperty("solved")
+	public boolean isSolved() {
+		return solved;
+	}
+
+	public void setSolved(boolean solved) {
+		this.solved = solved;
+	}
+
+	@JsonProperty("priority")
+	public Priority getPriority() {
+		return priority;
+	}
+
+	public void setPriority(Priority priority) {
+		this.priority = priority;
+	}
+
+	@JsonProperty("custom_fields")
+	public List<CustomFieldValue> getCustomFields() {
+		return customFields;
+	}
+
+	public void setCustomFields(List<CustomFieldValue> customFields) {
+		this.customFields = customFields;
+	}
+
+	public Requester getRequester() {
+		return requester;
+	}
+
+	public void setRequester(Requester requester) {
+		this.requester = requester;
+		if (requester != null) {
+			this.requesterId = null;
+		}
+	}
+
+	@JsonProperty("type")
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}
 }
