@@ -3,7 +3,7 @@ Zendesk Java Client
 
 This is a [Zendesk][zd] client implementation written in Java using AsyncHttpClient and Jackson.
 
-[![Build Status](https://opensource.ci.cloudbees.com/buildStatus/icon?job=zendesk-java-client/master)](https://opensource.ci.cloudbees.com/job/zendesk-java-client/job/master/) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.cloudbees.thirdparty/zendesk-java-client/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.cloudbees.thirdparty/zendesk-java-client/)
+[ ![Codeship Status for cloudbees/zendesk-java-client](https://app.codeship.com/projects/082070f0-835b-0136-c886-725adb0ce8d4/status?branch=master)](https://app.codeship.com/projects/302087) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.cloudbees.thirdparty/zendesk-java-client/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.cloudbees.thirdparty/zendesk-java-client/)
 
 
 [![Quality Gate](https://sonarcloud.io/api/project_badges/quality_gate?project=com.cloudbees.thirdparty%3Azendesk-java-client)](https://sonarcloud.io/dashboard?id=com.cloudbees.thirdparty%3Azendesk-java-client)
