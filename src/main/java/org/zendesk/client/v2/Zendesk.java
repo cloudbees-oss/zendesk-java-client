@@ -1736,7 +1736,7 @@ public class Zendesk implements Closeable {
 
     public Translation createCategoryTranslation(Long categoryId, Translation translation) {
         checkHasCategoryId(categoryId);
-        return complete(submit(req("POST", tmpl("/help_center/categories/{id}/translation.json").set("id", categoryId),
+        return complete(submit(req("POST", tmpl("/help_center/categories/{id}/translations.json").set("id", categoryId),
                 JSON, json(Collections.singletonMap("translation", translation))), handle(Translation.class, "translation")));
     }
 
@@ -1788,7 +1788,7 @@ public class Zendesk implements Closeable {
 
     public Translation createSectionTranslation(Long sectionId, Translation translation) {
         checkHasSectionId(sectionId);
-        return complete(submit(req("POST", tmpl("/help_center/sections/{id}/translation.json").set("id", sectionId),
+        return complete(submit(req("POST", tmpl("/help_center/sections/{id}/translations.json").set("id", sectionId),
                 JSON, json(Collections.singletonMap("translation", translation))), handle(Translation.class, "translation")));
     }
 
