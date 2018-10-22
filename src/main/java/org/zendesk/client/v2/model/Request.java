@@ -29,10 +29,10 @@ public class Request implements Serializable {
     protected Date createdAt;
     protected Date updatedAt;
     protected Comment comment;
-	protected Boolean solved;
-	protected Priority priority;
-	protected List<CustomFieldValue> customFields;
-	protected Type type;
+    protected Boolean solved;
+    protected Priority priority;
+    protected List<CustomFieldValue> customFields;
+    protected Type type;
 
     @JsonProperty("created_at")
     public Date getCreatedAt() {
@@ -139,50 +139,50 @@ public class Request implements Serializable {
         this.comment = comment;
     }
 
-	@JsonProperty("solved")
-	public Boolean getSolved() {
-		return solved;
-	}
+    @JsonProperty("solved")
+    public Boolean getSolved() {
+        return solved;
+    }
 
-	public void setSolved(Boolean solved) {
-		this.solved = solved;
-	}
+    public void setSolved(Boolean solved) {
+        this.solved = solved;
+    }
 
-	@JsonProperty("priority")
-	public Priority getPriority() {
-		return priority;
-	}
+    @JsonProperty("priority")
+    public Priority getPriority() {
+        return priority;
+    }
 
-	public void setPriority(Priority priority) {
-		this.priority = priority;
-	}
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
 
-	@JsonProperty("custom_fields")
-	public List<CustomFieldValue> getCustomFields() {
-		return customFields;
-	}
+    @JsonProperty("custom_fields")
+    public List<CustomFieldValue> getCustomFields() {
+        return customFields;
+    }
 
-	public void setCustomFields(List<CustomFieldValue> customFields) {
-		this.customFields = customFields;
-	}
+    public void setCustomFields(List<CustomFieldValue> customFields) {
+        this.customFields = customFields;
+    }
 
-	public Requester getRequester() {
-		return requester;
-	}
+    public Requester getRequester() {
+        return requester;
+    }
 
-	public void setRequester(Requester requester) {
-		this.requester = requester;
-		if (requester != null) {
-			this.requesterId = null;
-		}
-	}
+    public void setRequester(Requester requester) {
+        this.requester = requester;
+        if (requester != null) {
+            this.requesterId = null;
+        }
+    }
 
-	@JsonProperty("type")
-	public Type getType() {
-		return type;
-	}
+    @JsonProperty("type")
+    public Type getType() {
+        return type;
+    }
 
-	public void setType(Type type) {
-		this.type = type;
-	}
+    public void setType(Type type) {
+        this.type = type;
+    }
 }
