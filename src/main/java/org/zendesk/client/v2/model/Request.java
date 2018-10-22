@@ -29,7 +29,7 @@ public class Request implements Serializable {
     protected Date createdAt;
     protected Date updatedAt;
     protected Comment comment;
-	protected boolean solved;
+	protected Boolean solved;
 	protected Priority priority;
 	protected List<CustomFieldValue> customFields;
 	protected Type type;
@@ -140,11 +140,11 @@ public class Request implements Serializable {
     }
 
 	@JsonProperty("solved")
-	public boolean isSolved() {
+	public Boolean getSolved() {
 		return solved;
 	}
 
-	public void setSolved(boolean solved) {
+	public void setSolved(Boolean solved) {
 		this.solved = solved;
 	}
 
