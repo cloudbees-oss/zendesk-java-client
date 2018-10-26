@@ -47,6 +47,12 @@ public class User extends Collaborator implements SearchResultEntity, Serializab
     private List<Identity> identities;
     private String remotePhotoUrl;
     private Map<String, Object> userFields;
+    private Boolean chatOnly;
+    private Boolean sharedPhoneNumber;
+    private Long defaultGroupId;
+    private Long roleType;
+    private Boolean twoFactorAuthEnabled;
+    private Boolean reportCsv;
 
     public User() {
     }
@@ -335,4 +341,59 @@ public class User extends Collaborator implements SearchResultEntity, Serializab
     public void setRestrictedAgent(Boolean restrictedAgent) {
         this.restrictedAgent = restrictedAgent;
     }
+
+    @JsonProperty("chat_only")
+    public Boolean getChatOnly() {
+        return chatOnly;
+    }
+
+    public void setChatOnly(Boolean chatOnly) {
+        this.chatOnly = chatOnly;
+    }
+
+    @JsonProperty("shared_phone_number")
+    public Boolean getSharedPhoneNumber() {
+        return sharedPhoneNumber;
+    }
+
+    public void setSharedPhoneNumber(Boolean sharedPhoneNumber) {
+        this.sharedPhoneNumber = sharedPhoneNumber;
+    }
+
+    @JsonProperty("default_group_id")
+    public Long getDefaultGroupId() {
+        return defaultGroupId;
+    }
+
+    public void setDefaultGroupId(Long defaultGroupId) {
+        this.defaultGroupId = defaultGroupId;
+    }
+
+    @JsonProperty("role_type")
+    public Long getRoleType() {
+        return roleType;
+    }
+
+    public void setRoleType(Long roleType) {
+        this.roleType = roleType;
+    }
+
+    @JsonProperty("two_factor_auth_enabled")
+    public Boolean getTwoFactorAuthEnabled() {
+        return twoFactorAuthEnabled;
+    }
+
+    public void setTwoFactorAuthEnabled(Boolean twoFactorAuthEnabled) {
+        this.twoFactorAuthEnabled = twoFactorAuthEnabled;
+    }
+
+    @JsonProperty("report_csv")
+    public Boolean getReportCsv() {
+        return reportCsv;
+    }
+
+    public void setReportCsv(Boolean reportCsv) {
+        this.reportCsv = reportCsv;
+    }
+
 }
