@@ -27,6 +27,7 @@ import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Automation;
 import org.zendesk.client.v2.model.Brand;
 import org.zendesk.client.v2.model.Comment;
+import org.zendesk.client.v2.model.ComplianceDeletionStatus;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Forum;
 import org.zendesk.client.v2.model.Group;
@@ -51,6 +52,7 @@ import org.zendesk.client.v2.model.Trigger;
 import org.zendesk.client.v2.model.TwitterMonitor;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.UserField;
+import org.zendesk.client.v2.model.UserRelatedInfo;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.ArticleAttachments;
 import org.zendesk.client.v2.model.hc.Category;
@@ -267,6 +269,11 @@ public class Zendesk implements Closeable {
                 handleList(User.class, "users")));
     }
 
+    public JobStatus permanentlyDeleteTicket(Ticket ticket) {
+        checkHasId(ticket);
+        return permanentlyDeleteTicket(ticket.getId());
+    }
+
     public void deleteTicket(Ticket ticket) {
         checkHasId(ticket);
         deleteTicket(ticket.getId());
@@ -274,6 +281,14 @@ public class Zendesk implements Closeable {
 
     public void deleteTicket(long id) {
         complete(submit(req("DELETE", tmpl("/tickets/{id}.json").set("id", id)), handleStatus()));
+    }
+
+    public JobStatus permanentlyDeleteTicket(long id) {
+        deleteTicket(id);
+        return complete(submit(
+                req("DELETE", tmpl("/deleted_tickets/{id}.json").set("id", id)),
+                handleJobStatus(JobStatus.class))
+        );
     }
 
     public ListenableFuture<JobStatus<Ticket>> queueCreateTicketAsync(Ticket ticket) {
@@ -312,6 +327,11 @@ public class Zendesk implements Closeable {
                 handle(Ticket.class, "ticket")));
     }
 
+    public ListenableFuture<JobStatus<Ticket>> updateTicketsAsync(List<Ticket> tickets) {
+        return submit(req("PUT", cnst("/tickets/update_many.json"), JSON, json(
+                Collections.singletonMap("tickets", tickets))), handleJobStatus(Ticket.class));
+    }
+
     public void markTicketAsSpam(Ticket ticket) {
         checkHasId(ticket);
         markTicketAsSpam(ticket.getId());
@@ -324,6 +344,16 @@ public class Zendesk implements Closeable {
     public void deleteTickets(long id, long... ids) {
         complete(submit(req("DELETE", tmpl("/tickets/destroy_many.json{?ids}").set("ids", idArray(id, ids))),
                 handleStatus()));
+    }
+
+    public JobStatus permanentlyDeleteTickets(long id, long... ids) {
+        deleteTickets(id, ids);
+
+        return complete(
+                submit(
+                        req("DELETE", tmpl("/deleted_tickets/destroy_many.json{?ids}").set("ids", idArray(id, ids))),
+                        handleJobStatus(JobStatus.class))
+        );
     }
 
     public Iterable<Ticket> getTickets() {
@@ -412,9 +442,19 @@ public class Zendesk implements Closeable {
                 handleList(Ticket.class, "tickets"));
     }
 
+    public Iterable<ComplianceDeletionStatus> getComplianceDeletionStatuses(long userId) {
+        return new PagedIterable<>(tmpl("/users/{userId}/compliance_deletion_statuses.json").set("userId", userId),
+                handleList(ComplianceDeletionStatus.class, "compliance_deletion_statuses"));
+    }
+
     public Iterable<Ticket> getUserCCDTickets(long userId) {
         return new PagedIterable<>(tmpl("/users/{userId}/tickets/ccd.json").set("userId", userId),
                 handleList(Ticket.class, "tickets"));
+    }
+
+    public UserRelatedInfo getUserRelatedInfo(long userId) {
+        return complete(submit(req("GET", tmpl("/users/{userId}/related.json").set("userId", userId)),
+                handle(UserRelatedInfo.class, "user_related")));
     }
 
     public Iterable<Metric> getTicketMetrics() {
@@ -771,6 +811,16 @@ public class Zendesk implements Closeable {
 
     public void deleteUser(long id) {
         complete(submit(req("DELETE", tmpl("/users/{id}.json").set("id", id)), handleStatus()));
+    }
+
+    public User permanentlyDeleteUser(User user) {
+        checkHasId(user);
+        return permanentlyDeleteUser(user.getId());
+    }
+
+    public User permanentlyDeleteUser(long id) {
+        deleteUser(id);
+        return complete(submit(req("DELETE", tmpl("/deleted_users/{id}.json").set("id", id)), handle(User.class)));
     }
 
     public User suspendUser(long id) {
