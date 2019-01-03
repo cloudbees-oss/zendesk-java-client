@@ -52,6 +52,7 @@ import org.zendesk.client.v2.model.Trigger;
 import org.zendesk.client.v2.model.TwitterMonitor;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.UserField;
+import org.zendesk.client.v2.model.UserRelatedInfo;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.ArticleAttachments;
 import org.zendesk.client.v2.model.hc.Category;
@@ -330,6 +331,11 @@ public class Zendesk implements Closeable {
                 handle(Ticket.class, "ticket")));
     }
 
+    public ListenableFuture<JobStatus<Ticket>> updateTicketsAsync(List<Ticket> tickets) {
+        return submit(req("PUT", cnst("/tickets/update_many.json"), JSON, json(
+                Collections.singletonMap("tickets", tickets))), handleJobStatus(Ticket.class));
+    }
+
     public void markTicketAsSpam(Ticket ticket) {
         checkHasId(ticket);
         markTicketAsSpam(ticket.getId());
@@ -448,6 +454,11 @@ public class Zendesk implements Closeable {
     public Iterable<Ticket> getUserCCDTickets(long userId) {
         return new PagedIterable<>(tmpl("/users/{userId}/tickets/ccd.json").set("userId", userId),
                 handleList(Ticket.class, "tickets"));
+    }
+
+    public UserRelatedInfo getUserRelatedInfo(long userId) {
+        return complete(submit(req("GET", tmpl("/users/{userId}/related.json").set("userId", userId)),
+                handle(UserRelatedInfo.class, "user_related")));
     }
 
     public Iterable<Metric> getTicketMetrics() {
