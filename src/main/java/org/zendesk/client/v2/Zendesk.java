@@ -1,13 +1,28 @@
 package org.zendesk.client.v2;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import static com.damnhandy.uri.template.UriTemplate.buildFromTemplate;
+import static com.damnhandy.uri.template.UriTemplateBuilder.var;
+import static java.util.Optional.ofNullable;
+
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.BoundRequestBuilder;
@@ -53,6 +68,7 @@ import org.zendesk.client.v2.model.TwitterMonitor;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.UserField;
 import org.zendesk.client.v2.model.UserRelatedInfo;
+import org.zendesk.client.v2.model.agregator.Page;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.ArticleAttachments;
 import org.zendesk.client.v2.model.hc.Category;
@@ -68,25 +84,19 @@ import org.zendesk.client.v2.model.targets.PivotalTarget;
 import org.zendesk.client.v2.model.targets.Target;
 import org.zendesk.client.v2.model.targets.TwitterTarget;
 import org.zendesk.client.v2.model.targets.UrlTarget;
+import org.zendesk.client.v2.search.PageCondition;
+import org.zendesk.client.v2.search.SearchCriteriaBuilder;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
+import com.damnhandy.uri.template.UriTemplate;
+import com.damnhandy.uri.template.UriTemplateBuilder;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 /**
  * @author stephenc
@@ -109,6 +119,7 @@ public class Zendesk implements Closeable {
        Map<String, Class<? extends SearchResultEntity>> result = new HashMap<>();
        result.put("ticket", Ticket.class);
        result.put("user", User.class);
+       result.put("comment", Comment.class);
        result.put("group", Group.class);
        result.put("organization", Organization.class);
        result.put("topic", Topic.class);
@@ -1048,8 +1059,40 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Comment> getTicketComments(long id) {
-        return new PagedIterable<>(tmpl("/tickets/{id}/comments.json").set("id", id),
-                handleList(Comment.class, "comments"));
+        return getTicketComments(id, false);
+    }
+
+    public List<Comment> getTicketComments(long id, boolean includeUsers) {
+        UriTemplateBuilder templateBuilder = buildFromTemplate(url)
+                .literal("/tickets")
+                .path(var("id"))
+                .literal("/comments.json");
+
+        if (includeUsers) {
+            templateBuilder.literal("?include=users");
+        }
+
+        PagedAsyncListCompletionMultiHandler handler = new PagedAsyncListCompletionMultiHandler()
+                .addHandler(User.class, "users")
+                .addHandler(Comment.class, "comments");
+
+        PagedIterable iterable = new PagedIterable(tmpl(templateBuilder.build().set("id", id)), handler);
+
+        List<Comment> comments = new ArrayList<>();
+        Map<Long, User> users = new HashMap<>();
+
+        for (Object item: iterable) {
+            if (item instanceof Comment) {
+                comments.add((Comment) item);
+            } else {
+                User user = (User) item;
+                users.put(user.getId(), user);
+            }
+        }
+
+        comments.forEach(c -> c.setAuthor(users.get(c.getAuthorId())));
+
+        return comments;
     }
 
     public Comment getRequestComment(org.zendesk.client.v2.model.Request request, Comment comment) {
@@ -1559,6 +1602,14 @@ public class Zendesk implements Closeable {
                 handleSearchList("results"));
     }
 
+    public <T extends SearchResultEntity> Page<T> getSearchResults(Class<T> type, SearchCriteriaBuilder builder) {
+        PagedIterable<T> pagedIterable = new PagedIterable<>(tmpl(builder.build()), handleList(type, "results"));
+        return new Page<>(pagedIterable::getCount,
+                ofNullable(builder.getPageCondition())
+                        .map(PageCondition::getPerPage)
+                        .orElse(null), pagedIterable);
+    }
+
     public <T extends SearchResultEntity> Iterable<T> getSearchResults(Class<T> type, String query) {
         return getSearchResults(type, query, null);
     }
@@ -2014,6 +2065,7 @@ public class Zendesk implements Closeable {
 
     private abstract class PagedAsyncCompletionHandler<T> extends ZendeskAsyncCompletionHandler<T> {
         private String nextPage;
+        private Integer count;
 
         public void setPagedProperties(JsonNode responseNode, Class<?> clazz) {
             JsonNode node = responseNode.get(NEXT_PAGE);
@@ -2026,6 +2078,10 @@ public class Zendesk implements Closeable {
             } else {
                 this.nextPage = node.asText();
             }
+
+            ofNullable(responseNode.get(COUNT))
+                    .map(JsonNode::asInt)
+                    .ifPresent(this::setCount);
         }
 
         public String getNextPage() {
@@ -2034,6 +2090,36 @@ public class Zendesk implements Closeable {
 
         public void setNextPage(String nextPage) {
             this.nextPage = nextPage;
+        }
+
+        public Integer getCount() {
+            return count;
+        }
+
+        public PagedAsyncCompletionHandler<T> setCount(Integer count) {
+            this.count = count;
+            return this;
+        }
+    }
+
+    private class PagedAsyncListCompletionMultiHandler extends PagedAsyncCompletionHandler<List> {
+
+        List<PagedAsyncListCompletionHandler<List>> handlers = new ArrayList<>();
+        List result = new ArrayList();
+
+        private PagedAsyncListCompletionMultiHandler addHandler(Class<? extends SearchResultEntity> clazz, String name) {
+            handlers.add(new PagedAsyncListCompletionHandler(clazz, name));
+            return this;
+        }
+
+        @Override
+        public List onCompleted(Response response) throws Exception {
+
+            for (PagedAsyncListCompletionHandler handler : handlers) {
+                result.addAll(handler.onCompleted(response));
+            }
+
+            return result;
         }
     }
 
@@ -2060,6 +2146,14 @@ public class Zendesk implements Closeable {
                 throw new ZendeskResponseRateLimitException(response);
             }
             throw new ZendeskResponseException(response);
+        }
+
+        public Class<T> getClazz() {
+            return clazz;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 
@@ -2190,6 +2284,10 @@ public class Zendesk implements Closeable {
 
     private TemplateUri tmpl(String template) {
         return new TemplateUri(url + template);
+    }
+
+    private TemplateUri tmpl(UriTemplate template) {
+        return new TemplateUri(template);
     }
 
     private Uri cnst(String template) {
@@ -2496,6 +2594,10 @@ public class Zendesk implements Closeable {
             public void remove() {
                 throw new UnsupportedOperationException();
             }
+        }
+
+        private Integer getCount() {
+            return handler.getCount();
         }
 
     }
