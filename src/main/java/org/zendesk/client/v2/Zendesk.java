@@ -85,6 +85,7 @@ import org.zendesk.client.v2.model.targets.Target;
 import org.zendesk.client.v2.model.targets.TwitterTarget;
 import org.zendesk.client.v2.model.targets.UrlTarget;
 import org.zendesk.client.v2.search.PageCondition;
+import org.zendesk.client.v2.search.PaginationBuilder;
 import org.zendesk.client.v2.search.SearchCriteriaBuilder;
 
 import com.damnhandy.uri.template.UriTemplate;
@@ -451,6 +452,19 @@ public class Zendesk implements Closeable {
     public Iterable<Ticket> getUserRequestedTickets(long userId) {
         return new PagedIterable<>(tmpl("/users/{userId}/tickets/requested.json").set("userId", userId),
                 handleList(Ticket.class, "tickets"));
+    }
+
+    public Page<Ticket> getUserRequestedTickets(long userId, PaginationBuilder builder) {
+
+        String pagination = builder.build().replaceFirst("&", "?");
+        PagedIterable<Ticket> tickets = new PagedIterable<>(
+                tmpl("/users/{userId}/tickets/requested.json" + pagination).set("userId", userId),
+                handleList(Ticket.class, "tickets"));
+
+
+        return new Page<>(tickets::getCount,
+                ofNullable(builder.getPageCondition()).map(PageCondition::getPerPage).orElse(null),
+                tickets);
     }
 
     public Iterable<ComplianceDeletionStatus> getComplianceDeletionStatuses(long userId) {

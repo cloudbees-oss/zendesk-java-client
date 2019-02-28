@@ -1,17 +1,15 @@
 package org.zendesk.client.v2.search;
 
-import static java.util.Optional.ofNullable;
+import java.util.Objects;
 
-public class SearchCriteriaBuilder {
+public class SearchCriteriaBuilder extends PaginationBuilder {
 
     private QueryCondition queryCondition;
-    private SortingCondition sortingCondition = new SortingCondition();
-    private PageCondition pageCondition = new PageCondition();
 
     private SearchCriteriaBuilder() {
     }
 
-    public static SearchCriteriaBuilder searchCriteria() {
+    public static SearchCriteriaBuilder create() {
         return new SearchCriteriaBuilder();
     }
 
@@ -20,48 +18,17 @@ public class SearchCriteriaBuilder {
         return this;
     }
 
-    public SearchCriteriaBuilder sortOrder(SortingCondition.SortOrder sortOrder) {
-        sortingCondition.setSortOrder(sortOrder);
-        return this;
-    }
-
-    public SearchCriteriaBuilder sortBy(SortingCondition.SortBy sortBy) {
-        sortingCondition.setSortBy(sortBy);
-        return this;
-    }
-
-    public SearchCriteriaBuilder page(Integer page) {
-        pageCondition.setPage(page);
-        return this;
-    }
-
-    public SearchCriteriaBuilder perPage(Integer perPage) {
-        pageCondition.setPerPage(perPage);
-        return this;
-    }
-
     public QueryCondition getQueryCondition() {
         return queryCondition;
     }
 
-    public SortingCondition getSortingCondition() {
-        return sortingCondition;
-    }
-
-    public PageCondition getPageCondition() {
-        return pageCondition;
-    }
-
     public String build() {
+        Objects.requireNonNull(queryCondition);
 
-        StringBuilder query = new StringBuilder();
-
-        ofNullable(queryCondition).ifPresent(c -> query.append("/search.json?query=").append(c.apply()));
-        ofNullable(sortingCondition.getSortBy()).ifPresent(c -> query.append("&sort_by=").append(c));
-        ofNullable(sortingCondition.getSortOrder()).ifPresent(c -> query.append("&sort_order=").append(c));
-        ofNullable(pageCondition.getPage()).ifPresent(c -> query.append("&page=").append(c));
-        ofNullable(pageCondition.getPerPage()).ifPresent(c -> query.append("&per_page=").append(c));
-
-        return query.toString();
+        return new StringBuilder()
+                .append("/search.json?query=")
+                .append(queryCondition.apply())
+                .append(super.build())
+                .toString();
     }
 }
