@@ -53,7 +53,7 @@ import static org.junit.Assume.assumeThat;
 public class RealSmokeTest {
 
     // TODO: Find a better way to manage our test environment (this is the ID of the cloudbees org)
-    private static final long CLOUDBEES_ORGANIZATION_ID = 3076488128L;
+    private static final long CLOUDBEES_ORGANIZATION_ID = 360507899132L;
 
     private static Properties config;
 
@@ -208,9 +208,9 @@ public class RealSmokeTest {
     public void getTicketsById() throws Exception {
         createClientWithTokenOrPassword();
         long count = 24;
-        final List<Long> ticketIds = Collections.unmodifiableList(Arrays.asList(24L, 26L, 28L));
+        final List<Long> ticketIds = Collections.unmodifiableList(Arrays.asList(22L, 24L, 26L));
 
-        for (Ticket t : instance.getTickets(24, 26, 28)) {
+        for (Ticket t : instance.getTickets(22, 24, 26)) {
             assertThat(t.getSubject(), notNullValue());
             assertThat(ticketIds.contains(t.getId()), is(true));
             count += 2;
