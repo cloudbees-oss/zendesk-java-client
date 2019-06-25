@@ -95,3 +95,5 @@ History
 -------
 
 * See [releases](https://github.com/cloudbees/zendesk-java-client/releases)
+
+  [zd]: http://zendesk.com
