@@ -17,7 +17,6 @@ public class Collaborator implements Serializable {
 
     protected Collaborator(String name) {
         this.name = name;
-        this.email = email;
     }
 
     public Collaborator(String name, String email) {
