@@ -1,5 +1,6 @@
 package org.zendesk.client.v2;
 
+import org.hamcrest.core.IsCollectionContaining;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -38,12 +39,22 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
 
 /**
@@ -814,6 +825,47 @@ public class RealSmokeTest {
                 break;
             }
         }
+    }
+
+    @Test
+    public void getArticleFromSomeLabels() throws Exception {
+        createClientWithTokenOrPassword();
+        /*
+         Given 3 articles
+            Article 1 with title "SomeLabelOne" and label "SomeLabelA"
+            Article 2 with title "SomeLabelTwo" and labels "SomeLabelB" and "SomeLabelC"
+            Article 3 with title "SomeLabelThree" and label "SomeLabelD"
+         When a search by labels "SomeLabelA", "SomeLabelB"
+         Then we get Article 1 and Article 2 but not Article 3
+            because Article 1 and 2 have at least one of the labels, Article 3 has none
+         */
+        Iterable<Article> result = instance.getArticleFromSomeLabels(Arrays.asList("SomeLabelA", "SomeLabelB"));
+        Set<String> actualTitles = extractTitles(result);
+        assertThat(actualTitles.size(), is(2));
+        assertThat(actualTitles, IsCollectionContaining.hasItems("SomeLabelOne", "SomeLabelTwo"));
+    }
+
+    @Test
+    public void getArticleFromAllLabels() throws Exception {
+        createClientWithTokenOrPassword();
+        /*
+         Given 2 articles
+            Article 1 with title "AllLabelOne" and label "AllLabelA"
+            Article 2 with title "AllLabelTwo" and labels "AllLabelA" and "AllLabelB"
+         When a search by labels "AllLabelA", "AllLabelB"
+         Then we get Article 2 but not Article 1
+            because Article 2 has both labels and Article 1 has only one
+         */
+        Iterable<Article> result = instance.getArticleFromAllLabels(Arrays.asList("AllLabelA", "AllLabelB"));
+        Set<String> actualTitles = extractTitles(result);
+        assertThat(actualTitles.size(), is(1));
+        assertThat(actualTitles, IsCollectionContaining.hasItems("AllLabelOne"));
+    }
+
+    private Set<String> extractTitles(Iterable<Article> iter) {
+        Set<String> result = new HashSet<>();
+        iter.forEach(article -> result.add(article.getTitle()));
+        return result;
     }
 
     @Test
