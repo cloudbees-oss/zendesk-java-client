@@ -859,7 +859,7 @@ public class RealSmokeTest {
         Iterable<Article> result = instance.getArticleFromAllLabels(Arrays.asList("AllLabelA", "AllLabelB"));
         Set<String> actualTitles = extractTitles(result);
         assertThat(actualTitles.size(), is(1));
-        assertThat(actualTitles, IsCollectionContaining.hasItems("AllLabelOne"));
+        assertThat(actualTitles, IsCollectionContaining.hasItems("AllLabelTwo"));
     }
 
     private Set<String> extractTitles(Iterable<Article> iter) {
