@@ -14,4 +14,8 @@ build
 .classpath
 .project
 
+# vs studio files
+.vscode/
+.gradle/
+
 .DS_Store

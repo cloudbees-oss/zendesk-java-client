@@ -94,23 +94,6 @@ Here is the status of the various API components:
 History
 -------
 
-* 0.0.x - Initial release series
-
-* 0.1.x - Switched from `Integer` as the id type to `Long` due to reports of overflow
-
-* 0.2.x - At request of [Zendesk][zd], renamed `ZenDesk` to `Zendesk`
-
-* 0.3.x - Fixed infinite loop with PagedIterable, updated async-http-client dependency to 1.9.x.
-
-* 0.4.x - Few API breakage (in particular changed userId to Long in Identity), updated async-http-client dependency to latest.
-
-* 0.5.x - ...
-
-* 0.6.x - Requires Java 8, Upgrade async-http-client to 2.2.0, Jackson to 2.9.3 (+ others updates), Add createTicketAsync method, Add method to inline an article attachment, Add created article,section,category translation, Add suspend user, Add ticket form creation functionality, From now custom field value is an array with multiple value due to Multi-select fields, Changed type of article attachment ID and article ID from int to Long, Include response body in stacktrace message,
-Added permanently GDPR delete of Tickets and User
-
-* 0.7.x - The Help Center Section creation was fixed, Macro DTO was updated (Id is long), Permanent deletion of a handful of Items was added ( GDPR compliancy )
-
-* 0.8.x - New method `ListenableFuture<JobStatus<Ticket>> updateTicketsAsync(List<Ticket> tickets)` to [update many ticket at once](https://developer.zendesk.com/rest_api/docs/core/tickets#update-many-tickets) (thx @wakingrufus - PR #260), new method `UserRelatedInfo getUserRelatedInfo(long userId)` to [get User Related Information](https://developer.zendesk.com/rest_api/docs/core/users#user-related-information) (thx @caionovaes - PR #268)
+* See [releases](https://github.com/cloudbees/zendesk-java-client/releases)
 
   [zd]: http://zendesk.com

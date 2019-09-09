@@ -19,7 +19,7 @@ public class Translation {
   @JsonProperty("source_id")
   private Long sourceId;
 
-  /* The type of the item that has this translation. Can be Article, Section, orCategory */
+  /* The type of the item that has this translation. Can be Article, Section, orCategory */
   @JsonProperty("source_type")
   private String sourceType;
 
