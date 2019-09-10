@@ -828,7 +828,7 @@ public class RealSmokeTest {
     }
 
     @Test
-    public void getArticleFromSomeLabels() throws Exception {
+    public void getArticlesFromAnyLabels() throws Exception {
         createClientWithTokenOrPassword();
         /*
          Given 3 articles
@@ -839,14 +839,14 @@ public class RealSmokeTest {
          Then we get Article 1 and Article 2 but not Article 3
             because Article 1 and 2 have at least one of the labels, Article 3 has none
          */
-        Iterable<Article> result = instance.getArticleFromSomeLabels(Arrays.asList("SomeLabelA", "SomeLabelB"));
+        Iterable<Article> result = instance.getArticlesFromAnyLabels(Arrays.asList("SomeLabelA", "SomeLabelB"));
         Set<String> actualTitles = extractTitles(result);
         assertThat(actualTitles.size(), is(2));
         assertThat(actualTitles, IsCollectionContaining.hasItems("SomeLabelOne", "SomeLabelTwo"));
     }
 
     @Test
-    public void getArticleFromAllLabels() throws Exception {
+    public void getArticlesFromAllLabels() throws Exception {
         createClientWithTokenOrPassword();
         /*
          Given 2 articles
@@ -856,7 +856,7 @@ public class RealSmokeTest {
          Then we get Article 2 but not Article 1
             because Article 2 has both labels and Article 1 has only one
          */
-        Iterable<Article> result = instance.getArticleFromAllLabels(Arrays.asList("AllLabelA", "AllLabelB"));
+        Iterable<Article> result = instance.getArticlesFromAllLabels(Arrays.asList("AllLabelA", "AllLabelB"));
         Set<String> actualTitles = extractTitles(result);
         assertThat(actualTitles.size(), is(1));
         assertThat(actualTitles, IsCollectionContaining.hasItems("AllLabelTwo"));
