@@ -53,8 +53,8 @@ import org.zendesk.client.v2.model.TwitterMonitor;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.UserField;
 import org.zendesk.client.v2.model.UserRelatedInfo;
-import org.zendesk.client.v2.model.dynamic.Item;
-import org.zendesk.client.v2.model.dynamic.Variant;
+import org.zendesk.client.v2.model.dynamic.DynamicContentItem;
+import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.ArticleAttachments;
 import org.zendesk.client.v2.model.hc.Category;
@@ -1615,26 +1615,26 @@ public class Zendesk implements Closeable {
     // Action methods for Dynamic Content - Items and Variants
     //////////////////////////////////////////////////////////////////////
 
-    public Iterable<Item> getItems() {
-        return new PagedIterable<>(cnst("/dynamic_content/items.json"), handleList(Item.class, "items"));
+    public Iterable<DynamicContentItem> getDynamicContentItems() {
+        return new PagedIterable<>(cnst("/dynamic_content/items.json"), handleList(DynamicContentItem.class, "items"));
     }
 
-    public Item getItem(long id) {
-        return complete(submit(req("GET", tmpl("/dynamic_content/items/{id}.json").set("id", id)), handle(Item.class, "item")));
+    public DynamicContentItem getDynamicContentItem(long id) {
+        return complete(submit(req("GET", tmpl("/dynamic_content/items/{id}.json").set("id", id)), handle(DynamicContentItem.class, "item")));
     }
 
-    public Item createItem(Item item) {
+    public DynamicContentItem createDynamicContentItem(DynamicContentItem item) {
         return complete(submit(req("POST", cnst("/dynamic_content/items.json"), JSON, json(
-            Collections.singletonMap("item", item))), handle(Item.class, "item")));
+            Collections.singletonMap("item", item))), handle(DynamicContentItem.class, "item")));
     }
 
-    public Item updateItem(Item item) {
+    public DynamicContentItem updateDynamicContentItem(DynamicContentItem item) {
         checkHasId(item);
         return complete(submit(req("PUT", tmpl("/dynamic_content/items/{id}.json").set("id", item.getId()),
-                JSON, json(Collections.singletonMap("item", item))), handle(Item.class, "item")));
+                JSON, json(Collections.singletonMap("item", item))), handle(DynamicContentItem.class, "item")));
     }
 
-    public void deleteItem(Item item) {
+    public void deleteDynamicContentItem(DynamicContentItem item) {
         checkHasId(item);
         complete(submit(req("DELETE", tmpl("/dynamic_content/items/{id}.json").set("id", item.getId())),
                 handleStatus()));
@@ -1642,32 +1642,32 @@ public class Zendesk implements Closeable {
 
     /** VARIANTS */
 
-    public Iterable<Variant> getVariants(Item item) {
+    public Iterable<DynamicContentItemVariant> getDynamicContentItemVariants(DynamicContentItem item) {
         checkHasId(item);
         return new PagedIterable<>(
                 tmpl("/dynamic_content/items/{id}/variants.json").set("id", item.getId()),
-                handleList(Variant.class, "variants"));
+                handleList(DynamicContentItemVariant.class, "variants"));
     }
 
-    public Variant getVariant(Long itemId, long id) {
+    public DynamicContentItemVariant getDynamicContentItemVariant(Long itemId, long id) {
         return complete(submit(req("GET", tmpl("/dynamic_content/items/{itemId}/variants/{id}.json").set("itemId", itemId).set("id", id)),
-                handle(Variant.class, "variant")));
+                handle(DynamicContentItemVariant.class, "variant")));
     }
 
-    public Variant createVariant(Long itemId, Variant variant) {
+    public DynamicContentItemVariant createDynamicContentItemVariant(Long itemId, DynamicContentItemVariant variant) {
         checkHasItemId(itemId);
         return complete(submit(req("POST", tmpl("/dynamic_content/items/{id}/variants.json").set("id", itemId),
-                JSON, json(Collections.singletonMap("variant", variant))), handle(Variant.class, "variant")));
+                JSON, json(Collections.singletonMap("variant", variant))), handle(DynamicContentItemVariant.class, "variant")));
     }
 
-    public Variant updateVariant(Long itemId, Variant variant) {
+    public DynamicContentItemVariant updateDynamicContentItemVariant(Long itemId, DynamicContentItemVariant variant) {
         checkHasItemId(itemId);
         checkHasId(variant);
         return complete(submit(req("PUT", tmpl("/dynamic_content/items/{itemId}/variants/{id}.json").set("itemId", itemId).set("id", variant.getId()),
-                JSON, json(Collections.singletonMap("variant", variant))), handle(Variant.class, "variant")));
+                JSON, json(Collections.singletonMap("variant", variant))), handle(DynamicContentItemVariant.class, "variant")));
     }
 
-    public void deleteVariant(Long itemId, Variant variant) {
+    public void deleteDynamicContentItemVariant(Long itemId, DynamicContentItemVariant variant) {
         checkHasItemId(itemId);
         checkHasId(variant);
         complete(submit(req("DELETE", tmpl("/dynamic_content/items/{itemId}/variants/{id}.json").set("itemId", itemId).set("id", variant.getId())), handleStatus()));
@@ -2417,13 +2417,13 @@ public class Zendesk implements Closeable {
         }
     }
 
-    private static void checkHasId(Item item) {
+    private static void checkHasId(DynamicContentItem item) {
         if (item.getId() == null) {
             throw new IllegalArgumentException("Item requires id");
         }
     }
 
-    private static void checkHasId(Variant variant) {
+    private static void checkHasId(DynamicContentItemVariant variant) {
         if (variant.getId() == null) {
             throw new IllegalArgumentException("Variant requires id");
         }

@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-public class Item implements Serializable {
+public class DynamicContentItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,13 +39,13 @@ public class Item implements Serializable {
     private Date updatedAt;
 
     /** All variants within this item */
-    private List<Variant> variants;
+    private List<DynamicContentItemVariant> variants;
 
-    public Item() {
+    public DynamicContentItem() {
     }
 
-    public Item(Long id, String url, String name, String placeholder, Long defaultLocaleId, Boolean outdated,
-            Date createdAt, Date updatedAt, List<Variant> variants) {
+    public DynamicContentItem(Long id, String url, String name, String placeholder, Long defaultLocaleId, Boolean outdated,
+            Date createdAt, Date updatedAt, List<DynamicContentItemVariant> variants) {
         this.id = id;
         this.url = url;
         this.name = name;
@@ -125,55 +125,55 @@ public class Item implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public List<Variant> getVariants() {
+    public List<DynamicContentItemVariant> getVariants() {
         return this.variants;
     }
 
-    public void setVariants(List<Variant> variants) {
+    public void setVariants(List<DynamicContentItemVariant> variants) {
         this.variants = variants;
     }
 
-    public Item id(Long id) {
+    public DynamicContentItem id(Long id) {
         this.id = id;
         return this;
     }
 
-    public Item url(String url) {
+    public DynamicContentItem url(String url) {
         this.url = url;
         return this;
     }
 
-    public Item name(String name) {
+    public DynamicContentItem name(String name) {
         this.name = name;
         return this;
     }
 
-    public Item placeholder(String placeholder) {
+    public DynamicContentItem placeholder(String placeholder) {
         this.placeholder = placeholder;
         return this;
     }
 
-    public Item defaultLocaleId(Long defaultLocaleId) {
+    public DynamicContentItem defaultLocaleId(Long defaultLocaleId) {
         this.defaultLocaleId = defaultLocaleId;
         return this;
     }
 
-    public Item outdated(Boolean outdated) {
+    public DynamicContentItem outdated(Boolean outdated) {
         this.outdated = outdated;
         return this;
     }
 
-    public Item createdAt(Date createdAt) {
+    public DynamicContentItem createdAt(Date createdAt) {
         this.createdAt = createdAt;
         return this;
     }
 
-    public Item updatedAt(Date updatedAt) {
+    public DynamicContentItem updatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }
 
-    public Item variants(List<Variant> variants) {
+    public DynamicContentItem variants(List<DynamicContentItemVariant> variants) {
         this.variants = variants;
         return this;
     }
@@ -182,10 +182,10 @@ public class Item implements Serializable {
     public boolean equals(Object o) {
         if (o == this)
             return true;
-        if (!(o instanceof Item)) {
+        if (!(o instanceof DynamicContentItem)) {
             return false;
         }
-        Item item = (Item) o;
+        DynamicContentItem item = (DynamicContentItem) o;
         return Objects.equals(id, item.id) && Objects.equals(url, item.url) && Objects.equals(name, item.name)
                 && Objects.equals(placeholder, item.placeholder)
                 && Objects.equals(defaultLocaleId, item.defaultLocaleId) && Objects.equals(outdated, item.outdated)

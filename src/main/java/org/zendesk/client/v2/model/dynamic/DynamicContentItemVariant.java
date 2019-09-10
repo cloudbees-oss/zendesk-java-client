@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-public class Variant implements Serializable {
+public class DynamicContentItemVariant implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -41,10 +41,10 @@ public class Variant implements Serializable {
     @JsonProperty("updated_at")
     private Date updatedAt;
 
-    public Variant() {
+    public DynamicContentItemVariant() {
     }
 
-    public Variant(Long id, String url, String content, Long localeId, Boolean outdated, Boolean active, Boolean isDefault, Date createdAt, Date updatedAt) {
+    public DynamicContentItemVariant(Long id, String url, String content, Long localeId, Boolean outdated, Boolean active, Boolean isDefault, Date createdAt, Date updatedAt) {
         this.id = id;
         this.url = url;
         this.content = content;
@@ -140,47 +140,47 @@ public class Variant implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public Variant id(Long id) {
+    public DynamicContentItemVariant id(Long id) {
         this.id = id;
         return this;
     }
 
-    public Variant url(String url) {
+    public DynamicContentItemVariant url(String url) {
         this.url = url;
         return this;
     }
 
-    public Variant content(String content) {
+    public DynamicContentItemVariant content(String content) {
         this.content = content;
         return this;
     }
 
-    public Variant localeId(Long localeId) {
+    public DynamicContentItemVariant localeId(Long localeId) {
         this.localeId = localeId;
         return this;
     }
 
-    public Variant outdated(Boolean outdated) {
+    public DynamicContentItemVariant outdated(Boolean outdated) {
         this.outdated = outdated;
         return this;
     }
 
-    public Variant active(Boolean active) {
+    public DynamicContentItemVariant active(Boolean active) {
         this.active = active;
         return this;
     }
 
-    public Variant isDefault(Boolean isDefault) {
+    public DynamicContentItemVariant isDefault(Boolean isDefault) {
         this.isDefault = isDefault;
         return this;
     }
 
-    public Variant createdAt(Date createdAt) {
+    public DynamicContentItemVariant createdAt(Date createdAt) {
         this.createdAt = createdAt;
         return this;
     }
 
-    public Variant updatedAt(Date updatedAt) {
+    public DynamicContentItemVariant updatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }
@@ -189,10 +189,10 @@ public class Variant implements Serializable {
     public boolean equals(Object o) {
         if (o == this)
             return true;
-        if (!(o instanceof Variant)) {
+        if (!(o instanceof DynamicContentItemVariant)) {
             return false;
         }
-        Variant variant = (Variant) o;
+        DynamicContentItemVariant variant = (DynamicContentItemVariant) o;
         return Objects.equals(id, variant.id) && Objects.equals(url, variant.url) && Objects.equals(content, variant.content) && Objects.equals(localeId, variant.localeId) && Objects.equals(outdated, variant.outdated) && Objects.equals(active, variant.active) && Objects.equals(isDefault, variant.isDefault) && Objects.equals(createdAt, variant.createdAt) && Objects.equals(updatedAt, variant.updatedAt);
     }
 

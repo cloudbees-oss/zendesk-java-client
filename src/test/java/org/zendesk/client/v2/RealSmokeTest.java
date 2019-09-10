@@ -22,6 +22,8 @@ import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.User;
+import org.zendesk.client.v2.model.dynamic.DynamicContentItem;
+import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
 import org.zendesk.client.v2.model.events.Event;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.Category;
@@ -1083,5 +1085,38 @@ public class RealSmokeTest {
         assertEquals(givenName, createdForm.getDisplayName());
         assertEquals(givenName, createdForm.getRawName());
         assertEquals(givenName, createdForm.getRawDisplayName());
+    }
+
+    @Test
+    public void getDynamicContentItems() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (DynamicContentItem i : instance.getDynamicContentItems()) {
+            assertThat(i.getName(), notNullValue());
+            assertThat(i.getId(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+
+            DynamicContentItem item = instance.getDynamicContentItem(i.getId());
+            assertThat(item, notNullValue());
+            assertEquals(i.getId(), item.getId());
+
+            Iterable<DynamicContentItemVariant> variants = instance.getDynamicContentItemVariants(item);
+            assertThat(variants, notNullValue());
+
+            int secondaryCount = 0;
+            for (DynamicContentItemVariant v : variants) {
+                assertThat(v.getId(), notNullValue());
+                assertThat(v.getContent(), notNullValue());
+
+                DynamicContentItemVariant fetch = instance.getDynamicContentItemVariant(i.getId(), v.getId());
+                assertEquals(v.getId(), fetch.getId());
+
+                if (++secondaryCount > 10) {
+                  break;
+                }
+            }
+        }
     }
 }
