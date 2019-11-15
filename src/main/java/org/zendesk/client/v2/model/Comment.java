@@ -1,17 +1,17 @@
 package org.zendesk.client.v2.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * @author stephenc
  * @since 09/04/2013 15:09
  */
-public class Comment implements Serializable {
+public class Comment implements SearchResultEntity, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -19,6 +19,7 @@ public class Comment implements Serializable {
     private String body;
     private String htmlBody;
     private Long authorId;
+    private User author;
     private List<String> uploads;
     private List<Attachment> attachments;
     private Date createdAt;
@@ -76,6 +77,15 @@ public class Comment implements Serializable {
 
     public void setAuthorId(Long authorId) {
         this.authorId = authorId;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public Comment setAuthor(User author) {
+        this.author = author;
+        return this;
     }
 
     @JsonProperty("created_at")
