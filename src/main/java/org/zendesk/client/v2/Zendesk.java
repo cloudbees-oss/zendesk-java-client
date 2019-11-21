@@ -1048,8 +1048,15 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Comment> getTicketComments(long id) {
-        return new PagedIterable<>(tmpl("/tickets/{id}/comments.json").set("id", id),
-                handleList(Comment.class, "comments"));
+        return getTicketComments(id, SortOrder.ASCENDING);
+    }
+
+    public Iterable<Comment> getTicketComments(long id, SortOrder order) {
+        return new PagedIterable<>(
+              tmpl("/tickets/{id}/comments.json?sort_order={order}")
+                .set("id", id)
+                .set("order", order.getQueryParameter()),
+              handleList(Comment.class, "comments"));
     }
 
     public Comment getRequestComment(org.zendesk.client.v2.model.Request request, Comment comment) {
