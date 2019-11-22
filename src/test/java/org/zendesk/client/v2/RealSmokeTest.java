@@ -52,6 +52,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -1105,5 +1106,55 @@ public class RealSmokeTest {
         assertEquals(givenName, createdForm.getDisplayName());
         assertEquals(givenName, createdForm.getRawName());
         assertEquals(givenName, createdForm.getRawDisplayName());
+    }
+
+    @Test
+    public void getTicketCommentsShouldBeAscending() throws Exception {
+        createClientWithTokenOrPassword();
+
+        Ticket t = new Ticket(
+              new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+              "This is an automated test ticket", new Comment("1"));
+        Ticket ticket = null;
+        try {
+            ticket = instance.createTicket(t);
+            instance.createComment(ticket.getId(), new Comment("2"));
+            Iterable<Comment> ticketCommentsIt = instance.getTicketComments(ticket.getId());
+            List<Comment> comments = new ArrayList<>();
+            ticketCommentsIt.forEach(comments::add);
+
+            assertThat(comments.size(), is(2));
+            assertThat(comments.get(0).getBody(), containsString("1"));
+            assertThat(comments.get(1).getBody(), containsString("2"));
+        } finally {
+            if (ticket != null) {
+                instance.deleteTicket(ticket.getId());
+            }
+        }
+    }
+
+    @Test
+    public void getTicketCommentsDescending() throws Exception {
+        createClientWithTokenOrPassword();
+
+        Ticket t = new Ticket(
+              new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+              "This is an automated test ticket", new Comment("1"));
+        Ticket ticket = null;
+        try {
+            ticket = instance.createTicket(t);
+            instance.createComment(ticket.getId(), new Comment("2"));
+            Iterable<Comment> ticketCommentsIt = instance.getTicketComments(ticket.getId(), SortOrder.DESCENDING);
+            List<Comment> comments = new ArrayList<>();
+            ticketCommentsIt.forEach(comments::add);
+
+            assertThat(comments.size(), is(2));
+            assertThat(comments.get(0).getBody(), containsString("2"));
+            assertThat(comments.get(1).getBody(), containsString("1"));
+        } finally {
+            if (ticket != null) {
+                instance.deleteTicket(ticket.getId());
+            }
+        }
     }
 }
