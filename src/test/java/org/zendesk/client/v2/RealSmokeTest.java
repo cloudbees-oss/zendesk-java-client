@@ -859,7 +859,8 @@ public class RealSmokeTest {
             for (Translation t : instance.getArticleTranslations(art.getId())) {
                 assertNotNull(t.getId());
                 assertNotNull(t.getTitle());
-                assertNotNull(t.getBody());
+                // body is not mandatory <https://developer.zendesk.com/rest_api/docs/help_center/translations.html>
+                //assertNotNull(t.getBody());
                 if (++translationCount > 3) {
                     return;
                 }
