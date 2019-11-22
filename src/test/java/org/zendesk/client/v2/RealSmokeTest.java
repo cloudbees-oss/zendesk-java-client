@@ -4,6 +4,8 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.AgentRole;
 import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Brand;
@@ -41,12 +43,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -60,6 +64,8 @@ import static org.junit.Assume.assumeThat;
  * @since 04/04/2013 13:57
  */
 public class RealSmokeTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RealSmokeTest.class);
 
     // TODO: Find a better way to manage our test environment (this is the PUBLIC_FORM_ID of the cloudbees org)
     private static final long CLOUDBEES_ORGANIZATION_ID = 360507899132L;
@@ -577,10 +583,25 @@ public class RealSmokeTest {
 
         instance.permanentlyDeleteUser(user);
 
-        final Iterable<ComplianceDeletionStatus> complianceDeletionStatuses = instance.getComplianceDeletionStatuses(user.getId());
+        // https://developer.zendesk.com/rest_api/docs/support/users#show-compliance-deletion-statuses
+        // The deletion is going through different states ( request_deletion -> started -> complete )
+        // for different applications and they are described in compliance_deletion_statuses
+
+        final Iterable<ComplianceDeletionStatus> complianceDeletionStatuses =
+                instance.getComplianceDeletionStatuses(user.getId());
+
+        // Let's validate
+
+        assertThat("There is at least one entry",
+                StreamSupport.stream(complianceDeletionStatuses.spliterator(), false).count(), greaterThan(0L));
+
+        assertTrue("There is at least an entry for the application \"all\"",
+                StreamSupport.stream(complianceDeletionStatuses.spliterator(), false)
+                        .anyMatch(complianceDeletionStatus -> "all".equals(complianceDeletionStatus.getApplication())));
+
         complianceDeletionStatuses.forEach(status -> {
-            assertThat(status.getAction(), is("request_deletion"));
-            assertThat(status.getApplication(), is("all"));
+            LOGGER.info("Compliance Deletion Status : {}", status);
+            // All entries are about this user
             assertThat(status.getUserId(), is(user.getId()));
         });
     }
