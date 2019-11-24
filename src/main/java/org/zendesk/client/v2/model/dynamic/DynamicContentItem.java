@@ -200,7 +200,7 @@ public class DynamicContentItem implements Serializable {
 
     @Override
     public String toString() {
-        return "{" +
+        return "DynamicContentItem{" +
         " id='" + getId() + "'" +
         ", url='" + getUrl() + "'" +
         ", name='" + getName() + "'" +

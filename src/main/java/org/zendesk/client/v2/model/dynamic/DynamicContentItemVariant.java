@@ -203,7 +203,7 @@ public class DynamicContentItemVariant implements Serializable {
 
     @Override
     public String toString() {
-        return "{" +
+        return "DynamicContentItemVariant{" +
             " id='" + getId() + "'" +
             ", url='" + getUrl() + "'" +
             ", content='" + getContent() + "'" +
