@@ -29,11 +29,9 @@ public class NotificationEvent extends CcEvent {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("NotificationEvent");
-        sb.append("{body='").append(body).append('\'');
-        sb.append(", subject='").append(subject).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "NotificationEvent" +
+                "{body='" + body + '\'' +
+                ", subject='" + subject + '\'' +
+                '}';
     }
 }

@@ -106,14 +106,12 @@ public class Comment implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Comment{");
-        sb.append("id=").append(id);
-        sb.append(", body='").append(body).append('\'');
-        sb.append(", authorId=").append(authorId);
-        sb.append(", attachments=").append(attachments);
-        sb.append(", createdAt=").append(createdAt);
-        sb.append(", uploads=").append(uploads);
-        sb.append('}');
-        return sb.toString();
+        return "Comment{" + "id=" + id +
+                ", body='" + body + '\'' +
+                ", authorId=" + authorId +
+                ", attachments=" + attachments +
+                ", createdAt=" + createdAt +
+                ", uploads=" + uploads +
+                '}';
     }
 }

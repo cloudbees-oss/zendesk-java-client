@@ -21,22 +21,20 @@ public class PivotalTarget extends Target {
 
    @Override
    public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("UrlTarget");
-      sb.append("{id=").append(getId());
-      sb.append(", title=").append(getTitle());
-      sb.append(", type=").append(getType());
-      sb.append(", active=").append(isActive());
-      sb.append(", createdAt=").append(getCreatedAt());
-      sb.append(", token=").append(token);
-      sb.append(", projectId=").append(projectId);
-      sb.append(", storyType=").append(storyType);
-      sb.append(", storyTitle=").append(storyTitle);
-      sb.append(", requestedBy=").append(requestedBy);
-      sb.append(", ownerBy=").append(ownerBy);
-      sb.append(", storyLabels=").append(storyLabels);
-      sb.append('}');
-      return sb.toString();
+      return "UrlTarget" +
+              "{id=" + getId() +
+              ", title=" + getTitle() +
+              ", type=" + getType() +
+              ", active=" + isActive() +
+              ", createdAt=" + getCreatedAt() +
+              ", token=" + token +
+              ", projectId=" + projectId +
+              ", storyType=" + storyType +
+              ", storyTitle=" + storyTitle +
+              ", requestedBy=" + requestedBy +
+              ", ownerBy=" + ownerBy +
+              ", storyLabels=" + storyLabels +
+              '}';
    }
 
    public String getToken() {

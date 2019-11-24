@@ -52,13 +52,11 @@ public class FacebookEvent extends Event {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("FacebookEvent");
-        sb.append("{body='").append(body).append('\'');
-        sb.append(", page=").append(page);
-        sb.append(", communication=").append(communication);
-        sb.append(", ticketVia='").append(ticketVia).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "FacebookEvent" +
+                "{body='" + body + '\'' +
+                ", page=" + page +
+                ", communication=" + communication +
+                ", ticketVia='" + ticketVia + '\'' +
+                '}';
     }
 }

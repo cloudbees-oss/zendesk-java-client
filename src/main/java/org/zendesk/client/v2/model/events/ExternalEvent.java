@@ -38,12 +38,10 @@ public class ExternalEvent extends Event {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("ExternalEvent");
-        sb.append("{body='").append(body).append('\'');
-        sb.append(", resource='").append(resource).append('\'');
-        sb.append(", success='").append(success).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "ExternalEvent" +
+                "{body='" + body + '\'' +
+                ", resource='" + resource + '\'' +
+                ", success='" + success + '\'' +
+                '}';
     }
 }

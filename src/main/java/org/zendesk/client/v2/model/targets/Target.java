@@ -56,15 +56,13 @@ public class Target {
 
    @Override
    public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("Target");
-      sb.append("{id=").append(id);
-      sb.append(", title=").append(title);
-      sb.append(", type=").append(type);
-      sb.append(", active=").append(active);
-      sb.append(", createdAt=").append(createdAt);
-      sb.append('}');
-      return sb.toString();
+      return "Target" +
+              "{id=" + id +
+              ", title=" + title +
+              ", type=" + type +
+              ", active=" + active +
+              ", createdAt=" + createdAt +
+              '}';
    }
 
 }

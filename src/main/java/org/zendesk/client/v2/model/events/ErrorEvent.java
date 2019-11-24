@@ -21,10 +21,8 @@ public class ErrorEvent extends Event {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("ErrorEvent");
-        sb.append("{message='").append(message).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "ErrorEvent" +
+                "{message='" + message + '\'' +
+                '}';
     }
 }

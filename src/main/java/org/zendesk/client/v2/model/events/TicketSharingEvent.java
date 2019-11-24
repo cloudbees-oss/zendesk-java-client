@@ -32,11 +32,9 @@ public class TicketSharingEvent extends Event {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("TicketSharingEvent");
-        sb.append("{action='").append(action).append('\'');
-        sb.append(", agreementId=").append(agreementId);
-        sb.append('}');
-        return sb.toString();
+        return "TicketSharingEvent" +
+                "{action='" + action + '\'' +
+                ", agreementId=" + agreementId +
+                '}';
     }
 }

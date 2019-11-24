@@ -32,11 +32,9 @@ public class Via implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("Via");
-        sb.append("{channel='").append(channel).append('\'');
-        sb.append(", source=").append(source);
-        sb.append('}');
-        return sb.toString();
+        return "Via" +
+                "{channel='" + channel + '\'' +
+                ", source=" + source +
+                '}';
     }
 }

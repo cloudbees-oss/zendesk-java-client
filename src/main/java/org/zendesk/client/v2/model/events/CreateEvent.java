@@ -86,11 +86,9 @@ public class CreateEvent extends Event {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("CreateEvent");
-        sb.append("{fieldName='").append(fieldName).append('\'');
-        sb.append(", value=").append(value);
-        sb.append('}');
-        return sb.toString();
+        return "CreateEvent" +
+                "{fieldName='" + fieldName + '\'' +
+                ", value=" + value +
+                '}';
     }
 }

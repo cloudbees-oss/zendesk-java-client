@@ -32,11 +32,9 @@ public class PushEvent extends Event {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("PushEvent");
-        sb.append("{value='").append(value).append('\'');
-        sb.append(", valueReference='").append(valueReference).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "PushEvent" +
+                "{value='" + value + '\'' +
+                ", valueReference='" + valueReference + '\'' +
+                '}';
     }
 }

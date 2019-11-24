@@ -250,40 +250,38 @@ public class Ticket extends Request implements SearchResultEntity {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("Ticket");
-        sb.append("{assigneeId=").append(assigneeId);
-        sb.append(", id=").append(id);
-        sb.append(", url='").append(url).append('\'');
-        sb.append(", externalId='").append(externalId).append('\'');
-        sb.append(", type='").append(type).append('\'');
-        sb.append(", subject='").append(subject).append('\'');
-        sb.append(", description='").append(description).append('\'');
-        sb.append(", priority='").append(priority).append('\'');
-        sb.append(", status='").append(status).append('\'');
-        sb.append(", recipient='").append(recipient).append('\'');
-        sb.append(", requesterId=").append(requesterId);
-        sb.append(", submitterId=").append(submitterId);
-        sb.append(", organizationId=").append(organizationId);
-        sb.append(", groupId=").append(groupId);
-        sb.append(", collaboratorIds=").append(collaboratorIds);
-        sb.append(", forumTopicId=").append(forumTopicId);
-        sb.append(", problemId=").append(problemId);
-        sb.append(", hasIncidents=").append(hasIncidents);
-        sb.append(", dueAt=").append(dueAt);
-        sb.append(", tags=").append(tags);
-        sb.append(", via=").append(via);
-        sb.append(", customFields=").append(customFields);
-        sb.append(", satisfactionRating=").append(satisfactionRating);
-        sb.append(", sharingAgreementIds=").append(sharingAgreementIds);
-        sb.append(", followupIds=").append(followupIds);
-        sb.append(", ticketFormId=").append(ticketFormId);
-        sb.append(", brandId=").append(brandId);
-        sb.append(", isPublic=").append(isPublic);
-        sb.append(", createdAt=").append(createdAt);
-        sb.append(", updatedAt=").append(updatedAt);
-        sb.append('}');
-        return sb.toString();
+        return "Ticket" +
+                "{assigneeId=" + assigneeId +
+                ", id=" + id +
+                ", url='" + url + '\'' +
+                ", externalId='" + externalId + '\'' +
+                ", type='" + type + '\'' +
+                ", subject='" + subject + '\'' +
+                ", description='" + description + '\'' +
+                ", priority='" + priority + '\'' +
+                ", status='" + status + '\'' +
+                ", recipient='" + recipient + '\'' +
+                ", requesterId=" + requesterId +
+                ", submitterId=" + submitterId +
+                ", organizationId=" + organizationId +
+                ", groupId=" + groupId +
+                ", collaboratorIds=" + collaboratorIds +
+                ", forumTopicId=" + forumTopicId +
+                ", problemId=" + problemId +
+                ", hasIncidents=" + hasIncidents +
+                ", dueAt=" + dueAt +
+                ", tags=" + tags +
+                ", via=" + via +
+                ", customFields=" + customFields +
+                ", satisfactionRating=" + satisfactionRating +
+                ", sharingAgreementIds=" + sharingAgreementIds +
+                ", followupIds=" + followupIds +
+                ", ticketFormId=" + ticketFormId +
+                ", brandId=" + brandId +
+                ", isPublic=" + isPublic +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 
     public static class Requester {
@@ -336,13 +334,11 @@ public class Ticket extends Request implements SearchResultEntity {
 
         @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("Requester");
-            sb.append("{localeId=").append(localeId);
-            sb.append(", name='").append(name).append('\'');
-            sb.append(", email='").append(email).append('\'');
-            sb.append('}');
-            return sb.toString();
+            return "Requester" +
+                    "{localeId=" + localeId +
+                    ", name='" + name + '\'' +
+                    ", email='" + email + '\'' +
+                    '}';
         }
     }
 

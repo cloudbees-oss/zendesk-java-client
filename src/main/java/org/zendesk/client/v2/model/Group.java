@@ -75,14 +75,12 @@ public class Group implements SearchResultEntity, Serializable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Group{");
-        sb.append("id=").append(id);
-        sb.append(", url='").append(url).append('\'');
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", deleted=").append(deleted);
-        sb.append(", createdAt=").append(createdAt);
-        sb.append(", updatedAt=").append(updatedAt);
-        sb.append('}');
-        return sb.toString();
+        return "Group{" + "id=" + id +
+                ", url='" + url + '\'' +
+                ", name='" + name + '\'' +
+                ", deleted=" + deleted +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

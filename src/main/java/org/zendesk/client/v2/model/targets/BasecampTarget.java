@@ -90,23 +90,21 @@ public class BasecampTarget extends Target {
 
    @Override
    public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("UrlTarget");
-      sb.append("{id=").append(getId());
-      sb.append(", title=").append(getTitle());
-      sb.append(", type=").append(getType());
-      sb.append(", active=").append(isActive());
-      sb.append(", createdAt=").append(getCreatedAt());
-      sb.append(", targetUrl=").append(targetUrl);
-      sb.append(", token=").append(token);
-      sb.append(", projectId=").append(projectId);
-      sb.append(", resource=").append(resource);
-      sb.append(", messageId=").append(messageId);
-      sb.append(", todoListId=").append(todoListId);
-      sb.append(", username=").append(username);
-      sb.append(", password=").append(password);
-      sb.append('}');
-      return sb.toString();
+      return "UrlTarget" +
+              "{id=" + getId() +
+              ", title=" + getTitle() +
+              ", type=" + getType() +
+              ", active=" + isActive() +
+              ", createdAt=" + getCreatedAt() +
+              ", targetUrl=" + targetUrl +
+              ", token=" + token +
+              ", projectId=" + projectId +
+              ", resource=" + resource +
+              ", messageId=" + messageId +
+              ", todoListId=" + todoListId +
+              ", username=" + username +
+              ", password=" + password +
+              '}';
    }
 
 }

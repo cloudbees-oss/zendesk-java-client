@@ -89,18 +89,16 @@ public class Trigger implements Serializable {
 
    @Override
    public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("Trigger");
-      sb.append("{id=").append(id);
-      sb.append(", title=").append(title);
-      sb.append(", active=").append(active);
-      sb.append(", position=").append(position);
-      sb.append(", active=").append(active);
-      sb.append(", conditions=").append(conditions);
-      sb.append(", actions=").append(actions);
-      sb.append(", updatedAt=").append(updatedAt);
-      sb.append('}');
-      return sb.toString();
+      return "Trigger" +
+              "{id=" + id +
+              ", title=" + title +
+              ", active=" + active +
+              ", position=" + position +
+              ", active=" + active +
+              ", conditions=" + conditions +
+              ", actions=" + actions +
+              ", updatedAt=" + updatedAt +
+              '}';
    }
 
    public static class Conditions {
@@ -125,12 +123,10 @@ public class Trigger implements Serializable {
 
       @Override
       public String toString() {
-         final StringBuilder sb = new StringBuilder();
-         sb.append("Conditions");
-         sb.append("{all=").append(all);
-         sb.append(", any=").append(any);
-         sb.append('}');
-         return sb.toString();
+         return "Conditions" +
+                 "{all=" + all +
+                 ", any=" + any +
+                 '}';
       }
    }
 
@@ -173,13 +169,11 @@ public class Trigger implements Serializable {
 
       @Override
       public String toString() {
-         final StringBuilder sb = new StringBuilder();
-         sb.append("Condition");
-         sb.append("{field=").append(field);
-         sb.append(", operator=").append(operator);
-         sb.append(", value=").append(value);
-         sb.append('}');
-         return sb.toString();
+         return "Condition" +
+                 "{field=" + field +
+                 ", operator=" + operator +
+                 ", value=" + value +
+                 '}';
       }
 
    }

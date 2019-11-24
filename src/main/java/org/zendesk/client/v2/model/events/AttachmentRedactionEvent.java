@@ -36,11 +36,9 @@ public class AttachmentRedactionEvent extends Event {
 
   @Override
   public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("AttachmentRedactionEvent");
-      sb.append("{attachmentId=").append(attachmentId);
-      sb.append(", commentId=").append(commentId);
-      sb.append('}');
-      return sb.toString();
+    return "AttachmentRedactionEvent" +
+            "{attachmentId=" + attachmentId +
+            ", commentId=" + commentId +
+            '}';
   }
 }

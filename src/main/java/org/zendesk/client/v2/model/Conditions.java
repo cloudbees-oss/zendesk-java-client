@@ -34,12 +34,10 @@ public class Conditions implements Serializable {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("Conditions");
-    sb.append("{all=").append(all);
-    sb.append(", any=").append(any);
-    sb.append('}');
-    return sb.toString();
+    return "Conditions" +
+            "{all=" + all +
+            ", any=" + any +
+            '}';
   }
 
 }
