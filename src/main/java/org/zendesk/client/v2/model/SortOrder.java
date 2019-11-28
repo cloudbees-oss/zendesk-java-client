@@ -6,16 +6,15 @@ package org.zendesk.client.v2.model;
  * @author rbolles on 2/7/18.
  */
 public enum SortOrder {
-    ASCENDING("asc"),
-    DESCING("desc");
+    ASCENDING("asc"), DESCENDING("desc");
 
-    private final String name;
+    private final String queryParameter;
 
-    SortOrder(String name) {
-        this.name = name;
+    SortOrder(String queryParameter) {
+        this.queryParameter = queryParameter;
     }
 
-    public String getName() {
-        return name;
+    public String getQueryParameter() {
+        return queryParameter;
     }
 }

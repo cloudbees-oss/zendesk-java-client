@@ -1584,7 +1584,7 @@ public class Zendesk implements Closeable {
     }
 
     /**
-     * Use {@link #getSearchResults(Class, String, Map)} instead.
+     * @deprecated Use {@link #getSearchResults(Class, String, Map)} instead.
      */
     @Deprecated
     public <T extends SearchResultEntity> Iterable<T> getSearchResults(Class<T> type, String query, String params) {
@@ -1603,7 +1603,7 @@ public class Zendesk implements Closeable {
     public <T extends SearchResultEntity> Iterable<T> getSearchResults(Class<T> type, String query, String sortBy, SortOrder sortOrder) {
         Map<String, Object> paramsMap = new HashMap<>(2);
         paramsMap.put("sort_by", sortBy);
-        paramsMap.put("sort_order", sortOrder.getName());
+        paramsMap.put("sort_order", sortOrder.getQueryParameter());
 
         return getSearchResults(type, query, paramsMap);
     }

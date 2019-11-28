@@ -20,6 +20,7 @@ import org.zendesk.client.v2.model.JobStatus;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.Priority;
 import org.zendesk.client.v2.model.Request;
+import org.zendesk.client.v2.model.SortOrder;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
