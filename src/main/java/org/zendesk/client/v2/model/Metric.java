@@ -254,7 +254,7 @@ public class Metric implements Serializable {
         @JsonProperty("business")
         protected Long businessMinutes;
 
-        public ZendeskComboMinutes() {};
+        public ZendeskComboMinutes() {}
 
         public Long getCalendarMinutes() {
             return calendarMinutes;
