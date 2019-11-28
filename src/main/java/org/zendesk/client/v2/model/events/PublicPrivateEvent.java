@@ -20,10 +20,8 @@ abstract class PublicPrivateEvent extends Event {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("PublicPrivateEvent");
-        sb.append("{publicComment=").append(publicComment);
-        sb.append('}');
-        return sb.toString();
+        return "PublicPrivateEvent" +
+                "{publicComment=" + publicComment +
+                '}';
     }
 }

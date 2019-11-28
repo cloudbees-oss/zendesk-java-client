@@ -19,21 +19,19 @@ public class CampfireTarget extends Target {
 
    @Override
    public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("UrlTarget");
-      sb.append("{id=").append(getId());
-      sb.append(", title=").append(getTitle());
-      sb.append(", type=").append(getType());
-      sb.append(", active=").append(isActive());
-      sb.append(", createdAt=").append(getCreatedAt());
-      sb.append(", subdomain=").append(subdomain);
-      sb.append(", token=").append(token);
-      sb.append(", ssl=").append(ssl);
-      sb.append(", preserveFormat=").append(preserveFormat);
-      sb.append(", token=").append(token);
-      sb.append(", room=").append(room);
-      sb.append('}');
-      return sb.toString();
+      return "UrlTarget" +
+              "{id=" + getId() +
+              ", title=" + getTitle() +
+              ", type=" + getType() +
+              ", active=" + isActive() +
+              ", createdAt=" + getCreatedAt() +
+              ", subdomain=" + subdomain +
+              ", token=" + token +
+              ", ssl=" + ssl +
+              ", preserveFormat=" + preserveFormat +
+              ", token=" + token +
+              ", room=" + room +
+              '}';
    }
 
    public String getSubdomain() {

@@ -23,10 +23,8 @@ public class CommentPrivacyChangeEvent extends PublicPrivateEvent {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("CommentPrivacyChangeEvent");
-        sb.append("{commentId=").append(commentId);
-        sb.append('}');
-        return sb.toString();
+        return "CommentPrivacyChangeEvent" +
+                "{commentId=" + commentId +
+                '}';
     }
 }

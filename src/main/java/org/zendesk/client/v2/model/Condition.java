@@ -48,13 +48,11 @@ public class Condition implements Serializable {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("Condition");
-    sb.append("{field=").append(field);
-    sb.append(", operator=").append(operator);
-    sb.append(", value=").append(value);
-    sb.append('}');
-    return sb.toString();
+    return "Condition" +
+            "{field=" + field +
+            ", operator=" + operator +
+            ", value=" + value +
+            '}';
   }
 
 }

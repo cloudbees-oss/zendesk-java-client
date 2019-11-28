@@ -41,12 +41,10 @@ public class SatisfactionRatingEvent extends Event {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("SatisfactionRatingEvent");
-        sb.append("{assigneeId=").append(assigneeId);
-        sb.append(", score='").append(score).append('\'');
-        sb.append(", body='").append(body).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "SatisfactionRatingEvent" +
+                "{assigneeId=" + assigneeId +
+                ", score='" + score + '\'' +
+                ", body='" + body + '\'' +
+                '}';
     }
 }

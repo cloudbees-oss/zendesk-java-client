@@ -92,17 +92,15 @@ public class VoiceCommentEvent extends PublicPrivateEvent {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("VoiceCommentEvent");
-        sb.append("{attachments=").append(attachments);
-        sb.append(", data=").append(data);
-        sb.append(", formattedFrom='").append(formattedFrom).append('\'');
-        sb.append(", formattedTo='").append(formattedTo).append('\'');
-        sb.append(", body='").append(body).append('\'');
-        sb.append(", htmlBody='").append(htmlBody).append('\'');
-        sb.append(", trusted=").append(trusted);
-        sb.append(", authorId=").append(authorId);
-        sb.append('}');
-        return sb.toString();
+        return "VoiceCommentEvent" +
+                "{attachments=" + attachments +
+                ", data=" + data +
+                ", formattedFrom='" + formattedFrom + '\'' +
+                ", formattedTo='" + formattedTo + '\'' +
+                ", body='" + body + '\'' +
+                ", htmlBody='" + htmlBody + '\'' +
+                ", trusted=" + trusted +
+                ", authorId=" + authorId +
+                '}';
     }
 }

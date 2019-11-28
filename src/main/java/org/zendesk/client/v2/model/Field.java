@@ -237,28 +237,26 @@ public class Field implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("Field");
-        sb.append("{active=").append(active);
-        sb.append(", id=").append(id);
-        sb.append(", url='").append(url).append('\'');
-        sb.append(", type='").append(type).append('\'');
-        sb.append(", title='").append(title).append('\'');
-        sb.append(", description='").append(description).append('\'');
-        sb.append(", position=").append(position);
-        sb.append(", required=").append(required);
-        sb.append(", collapsedForAgents=").append(collapsedForAgents);
-        sb.append(", regexpForValidation='").append(regexpForValidation).append('\'');
-        sb.append(", titleInPortal='").append(titleInPortal).append('\'');
-        sb.append(", visibleInPortal=").append(visibleInPortal);
-        sb.append(", editableInPortal=").append(editableInPortal);
-        sb.append(", requiredInPortal=").append(requiredInPortal);
-        sb.append(", tag='").append(tag).append('\'');
-        sb.append(", createdAt=").append(createdAt);
-        sb.append(", updatedAt=").append(updatedAt);
-        sb.append(", customFieldOptions=").append(customFieldOptions);
-        sb.append('}');
-        return sb.toString();
+        return "Field" +
+                "{active=" + active +
+                ", id=" + id +
+                ", url='" + url + '\'' +
+                ", type='" + type + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", position=" + position +
+                ", required=" + required +
+                ", collapsedForAgents=" + collapsedForAgents +
+                ", regexpForValidation='" + regexpForValidation + '\'' +
+                ", titleInPortal='" + titleInPortal + '\'' +
+                ", visibleInPortal=" + visibleInPortal +
+                ", editableInPortal=" + editableInPortal +
+                ", requiredInPortal=" + requiredInPortal +
+                ", tag='" + tag + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", customFieldOptions=" + customFieldOptions +
+                '}';
     }
 
     public static class Option implements Serializable {
@@ -292,12 +290,10 @@ public class Field implements Serializable {
 
         @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("Option");
-            sb.append("{name='").append(name).append('\'');
-            sb.append(", value='").append(value).append('\'');
-            sb.append('}');
-            return sb.toString();
+            return "Option" +
+                    "{name='" + name + '\'' +
+                    ", value='" + value + '\'' +
+                    '}';
         }
     }
 }

@@ -14,17 +14,15 @@ public class TwitterTarget extends Target {
 
    @Override
    public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("UrlTarget");
-      sb.append("{id=").append(getId());
-      sb.append(", title=").append(getTitle());
-      sb.append(", type=").append(getType());
-      sb.append(", active=").append(isActive());
-      sb.append(", createdAt=").append(getCreatedAt());
-      sb.append(", token=").append(token);
-      sb.append(", secret=").append(secret);
-      sb.append('}');
-      return sb.toString();
+      return "UrlTarget" +
+              "{id=" + getId() +
+              ", title=" + getTitle() +
+              ", type=" + getType() +
+              ", active=" + isActive() +
+              ", createdAt=" + getCreatedAt() +
+              ", token=" + token +
+              ", secret=" + secret +
+              '}';
    }
 
    public String getToken() {

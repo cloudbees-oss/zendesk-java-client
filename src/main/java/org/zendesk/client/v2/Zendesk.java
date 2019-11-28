@@ -27,6 +27,7 @@ import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Automation;
 import org.zendesk.client.v2.model.Brand;
 import org.zendesk.client.v2.model.Comment;
+import org.zendesk.client.v2.model.ComplianceDeletionStatus;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Forum;
 import org.zendesk.client.v2.model.Group;
@@ -52,6 +53,9 @@ import org.zendesk.client.v2.model.Trigger;
 import org.zendesk.client.v2.model.TwitterMonitor;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.UserField;
+import org.zendesk.client.v2.model.UserRelatedInfo;
+import org.zendesk.client.v2.model.dynamic.DynamicContentItem;
+import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.ArticleAttachments;
 import org.zendesk.client.v2.model.hc.Category;
@@ -268,6 +272,11 @@ public class Zendesk implements Closeable {
                 handleList(User.class, "users")));
     }
 
+    public JobStatus permanentlyDeleteTicket(Ticket ticket) {
+        checkHasId(ticket);
+        return permanentlyDeleteTicket(ticket.getId());
+    }
+
     public void deleteTicket(Ticket ticket) {
         checkHasId(ticket);
         deleteTicket(ticket.getId());
@@ -275,6 +284,14 @@ public class Zendesk implements Closeable {
 
     public void deleteTicket(long id) {
         complete(submit(req("DELETE", tmpl("/tickets/{id}.json").set("id", id)), handleStatus()));
+    }
+
+    public JobStatus permanentlyDeleteTicket(long id) {
+        deleteTicket(id);
+        return complete(submit(
+                req("DELETE", tmpl("/deleted_tickets/{id}.json").set("id", id)),
+                handleJobStatus(JobStatus.class))
+        );
     }
 
     public ListenableFuture<JobStatus<Ticket>> queueCreateTicketAsync(Ticket ticket) {
@@ -313,6 +330,11 @@ public class Zendesk implements Closeable {
                 handle(Ticket.class, "ticket")));
     }
 
+    public ListenableFuture<JobStatus<Ticket>> updateTicketsAsync(List<Ticket> tickets) {
+        return submit(req("PUT", cnst("/tickets/update_many.json"), JSON, json(
+                Collections.singletonMap("tickets", tickets))), handleJobStatus(Ticket.class));
+    }
+
     public void markTicketAsSpam(Ticket ticket) {
         checkHasId(ticket);
         markTicketAsSpam(ticket.getId());
@@ -325,6 +347,16 @@ public class Zendesk implements Closeable {
     public void deleteTickets(long id, long... ids) {
         complete(submit(req("DELETE", tmpl("/tickets/destroy_many.json{?ids}").set("ids", idArray(id, ids))),
                 handleStatus()));
+    }
+
+    public JobStatus permanentlyDeleteTickets(long id, long... ids) {
+        deleteTickets(id, ids);
+
+        return complete(
+                submit(
+                        req("DELETE", tmpl("/deleted_tickets/destroy_many.json{?ids}").set("ids", idArray(id, ids))),
+                        handleJobStatus(JobStatus.class))
+        );
     }
 
     public Iterable<Ticket> getTickets() {
@@ -413,9 +445,19 @@ public class Zendesk implements Closeable {
                 handleList(Ticket.class, "tickets"));
     }
 
+    public Iterable<ComplianceDeletionStatus> getComplianceDeletionStatuses(long userId) {
+        return new PagedIterable<>(tmpl("/users/{userId}/compliance_deletion_statuses.json").set("userId", userId),
+                handleList(ComplianceDeletionStatus.class, "compliance_deletion_statuses"));
+    }
+
     public Iterable<Ticket> getUserCCDTickets(long userId) {
         return new PagedIterable<>(tmpl("/users/{userId}/tickets/ccd.json").set("userId", userId),
                 handleList(Ticket.class, "tickets"));
+    }
+
+    public UserRelatedInfo getUserRelatedInfo(long userId) {
+        return complete(submit(req("GET", tmpl("/users/{userId}/related.json").set("userId", userId)),
+                handle(UserRelatedInfo.class, "user_related")));
     }
 
     public Iterable<Metric> getTicketMetrics() {
@@ -774,6 +816,16 @@ public class Zendesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/users/{id}.json").set("id", id)), handleStatus()));
     }
 
+    public User permanentlyDeleteUser(User user) {
+        checkHasId(user);
+        return permanentlyDeleteUser(user.getId());
+    }
+
+    public User permanentlyDeleteUser(long id) {
+        deleteUser(id);
+        return complete(submit(req("DELETE", tmpl("/deleted_users/{id}.json").set("id", id)), handle(User.class)));
+    }
+
     public User suspendUser(long id) {
         User user = new User();
         user.setId(id);
@@ -900,7 +952,7 @@ public class Zendesk implements Closeable {
         checkHasId(identity);
         return complete(submit(req("PUT", tmpl("/users/{userId}/identities/{identityId}.json")
                 .set("userId", userId)
-                .set("identityId", identity.getId()), JSON, null), handle(Identity.class, "identity")));
+                .set("identityId", identity.getId()), JSON, json(Collections.singletonMap("identity", identity))), handle(Identity.class, "identity")));
     }
 
     public Identity updateUserIdentity(User user, Identity identity) {
@@ -999,8 +1051,15 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Comment> getTicketComments(long id) {
-        return new PagedIterable<>(tmpl("/tickets/{id}/comments.json").set("id", id),
-                handleList(Comment.class, "comments"));
+        return getTicketComments(id, SortOrder.ASCENDING);
+    }
+
+    public Iterable<Comment> getTicketComments(long id, SortOrder order) {
+        return new PagedIterable<>(
+              tmpl("/tickets/{id}/comments.json?sort_order={order}")
+                .set("id", id)
+                .set("order", order.getQueryParameter()),
+              handleList(Comment.class, "comments"));
     }
 
     public Comment getRequestComment(org.zendesk.client.v2.model.Request request, Comment comment) {
@@ -1601,11 +1660,79 @@ public class Zendesk implements Closeable {
         return createSatisfactionRating(ticket.getId(), satisfactionRating);
     }
 
+    //////////////////////////////////////////////////////////////////////
+    // Action methods for Dynamic Content - Items and Variants
+    //////////////////////////////////////////////////////////////////////
+
+    public Iterable<DynamicContentItem> getDynamicContentItems() {
+        return new PagedIterable<>(cnst("/dynamic_content/items.json"), handleList(DynamicContentItem.class, "items"));
+    }
+
+    public DynamicContentItem getDynamicContentItem(long id) {
+        return complete(submit(req("GET", tmpl("/dynamic_content/items/{id}.json").set("id", id)), handle(DynamicContentItem.class, "item")));
+    }
+
+    public DynamicContentItem createDynamicContentItem(DynamicContentItem item) {
+        return complete(submit(req("POST", cnst("/dynamic_content/items.json"), JSON, json(
+            Collections.singletonMap("item", item))), handle(DynamicContentItem.class, "item")));
+    }
+
+    public DynamicContentItem updateDynamicContentItem(DynamicContentItem item) {
+        checkHasId(item);
+        return complete(submit(req("PUT", tmpl("/dynamic_content/items/{id}.json").set("id", item.getId()),
+                JSON, json(Collections.singletonMap("item", item))), handle(DynamicContentItem.class, "item")));
+    }
+
+    public void deleteDynamicContentItem(DynamicContentItem item) {
+        checkHasId(item);
+        complete(submit(req("DELETE", tmpl("/dynamic_content/items/{id}.json").set("id", item.getId())),
+                handleStatus()));
+    }
+
+    /** VARIANTS */
+
+    public Iterable<DynamicContentItemVariant> getDynamicContentItemVariants(DynamicContentItem item) {
+        checkHasId(item);
+        return new PagedIterable<>(
+                tmpl("/dynamic_content/items/{id}/variants.json").set("id", item.getId()),
+                handleList(DynamicContentItemVariant.class, "variants"));
+    }
+
+    public DynamicContentItemVariant getDynamicContentItemVariant(Long itemId, long id) {
+        return complete(submit(req("GET", tmpl("/dynamic_content/items/{itemId}/variants/{id}.json").set("itemId", itemId).set("id", id)),
+                handle(DynamicContentItemVariant.class, "variant")));
+    }
+
+    public DynamicContentItemVariant createDynamicContentItemVariant(Long itemId, DynamicContentItemVariant variant) {
+        checkHasItemId(itemId);
+        return complete(submit(req("POST", tmpl("/dynamic_content/items/{id}/variants.json").set("id", itemId),
+                JSON, json(Collections.singletonMap("variant", variant))), handle(DynamicContentItemVariant.class, "variant")));
+    }
+
+    public DynamicContentItemVariant updateDynamicContentItemVariant(Long itemId, DynamicContentItemVariant variant) {
+        checkHasItemId(itemId);
+        checkHasId(variant);
+        return complete(submit(req("PUT", tmpl("/dynamic_content/items/{itemId}/variants/{id}.json").set("itemId", itemId).set("id", variant.getId()),
+                JSON, json(Collections.singletonMap("variant", variant))), handle(DynamicContentItemVariant.class, "variant")));
+    }
+
+    public void deleteDynamicContentItemVariant(Long itemId, DynamicContentItemVariant variant) {
+        checkHasItemId(itemId);
+        checkHasId(variant);
+        complete(submit(req("DELETE", tmpl("/dynamic_content/items/{itemId}/variants/{id}.json").set("itemId", itemId).set("id", variant.getId())), handleStatus()));
+    }
+
     // TODO search with query building API
 
     //////////////////////////////////////////////////////////////////////
     // Action methods for Help Center
     //////////////////////////////////////////////////////////////////////
+
+    public List<String> getHelpCenterLocales() {
+        return complete(submit(
+                req("GET", cnst("/help_center/locales.json")),
+                handle(List.class, "locales")));
+    }
 
     /**
      * Get all articles from help center.
@@ -1721,7 +1848,7 @@ public class Zendesk implements Closeable {
 
     public Translation createCategoryTranslation(Long categoryId, Translation translation) {
         checkHasCategoryId(categoryId);
-        return complete(submit(req("POST", tmpl("/help_center/categories/{id}/translation.json").set("id", categoryId),
+        return complete(submit(req("POST", tmpl("/help_center/categories/{id}/translations.json").set("id", categoryId),
                 JSON, json(Collections.singletonMap("translation", translation))), handle(Translation.class, "translation")));
     }
 
@@ -1760,8 +1887,9 @@ public class Zendesk implements Closeable {
                 handleList(Translation.class, "translations"));
     }
     public Section createSection(Section section) {
-        return complete(submit(req("POST", cnst("/help_center/sections.json"), JSON,
-                json(Collections.singletonMap("section", section))), handle(Section.class, "section")));
+        checkHasCategoryId(section);
+        return complete(submit(req("POST", tmpl("/help_center/categories/{id}/sections.json").set("id", section.getCategoryId()),
+                JSON, json(Collections.singletonMap("section", section))), handle(Section.class, "section")));
     }
 
     public Section updateSection(Section section) {
@@ -1772,7 +1900,7 @@ public class Zendesk implements Closeable {
 
     public Translation createSectionTranslation(Long sectionId, Translation translation) {
         checkHasSectionId(sectionId);
-        return complete(submit(req("POST", tmpl("/help_center/sections/{id}/translation.json").set("id", sectionId),
+        return complete(submit(req("POST", tmpl("/help_center/sections/{id}/translations.json").set("id", sectionId),
                 JSON, json(Collections.singletonMap("translation", translation))), handle(Translation.class, "translation")));
     }
 
@@ -2337,6 +2465,24 @@ public class Zendesk implements Closeable {
         }
     }
 
+    private static void checkHasId(DynamicContentItem item) {
+        if (item.getId() == null) {
+            throw new IllegalArgumentException("Item requires id");
+        }
+    }
+
+    private static void checkHasId(DynamicContentItemVariant variant) {
+        if (variant.getId() == null) {
+            throw new IllegalArgumentException("Variant requires id");
+        }
+    }
+
+    private static void checkHasItemId(Long itemId) {
+        if (itemId == null) {
+            throw new IllegalArgumentException("Variant requires item id");
+        }
+    }
+
     private static void checkHasSectionId(Article article) {
         if (article.getSectionId() == null) {
             throw new IllegalArgumentException("Article requires section id");
@@ -2358,6 +2504,12 @@ public class Zendesk implements Closeable {
     private static void checkHasCategoryId(Long articleId) {
         if (articleId == null) {
             throw new IllegalArgumentException("Translation requires category id");
+        }
+    }
+
+    private static void checkHasCategoryId(Section section) {
+        if (section.getCategoryId() == null) {
+            throw new IllegalArgumentException("Section requires category id");
         }
     }
 

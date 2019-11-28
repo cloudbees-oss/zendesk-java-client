@@ -43,12 +43,10 @@ public class TweetEvent extends Event {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("TweetEvent");
-        sb.append("{body='").append(body).append('\'');
-        sb.append(", directMessage=").append(directMessage);
-        sb.append(", recipients=").append(recipients);
-        sb.append('}');
-        return sb.toString();
+        return "TweetEvent" +
+                "{body='" + body + '\'' +
+                ", directMessage=" + directMessage +
+                ", recipients=" + recipients +
+                '}';
     }
 }

@@ -17,7 +17,7 @@ public class Macro implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private int id;
+    private long id;
     private String title;
     private boolean active;
     private List<Action> actions;
@@ -26,11 +26,11 @@ public class Macro implements Serializable {
 
     public Macro() {}
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -78,14 +78,12 @@ public class Macro implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Macro{");
-        sb.append("id=").append(id);
-        sb.append(", title='").append(title).append('\'');
-        sb.append(", active='").append(active).append('\'');
-        sb.append(", actions=").append(actions);
-        sb.append(", createdAt=").append(createdAt);
-        sb.append(", updatedAt=").append(updatedAt);
-        sb.append('}');
-        return sb.toString();
+        return "Macro{" + "id=" + id +
+                ", title='" + title + '\'' +
+                ", active='" + active + '\'' +
+                ", actions=" + actions +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

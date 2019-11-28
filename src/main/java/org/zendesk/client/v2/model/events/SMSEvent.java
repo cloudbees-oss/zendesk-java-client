@@ -42,12 +42,10 @@ public class SMSEvent extends Event {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("SMSEvent");
-        sb.append("{body='").append(body).append('\'');
-        sb.append(", phoneNumber='").append(phoneNumber).append('\'');
-        sb.append(", recipientId=").append(recipientId);
-        sb.append('}');
-        return sb.toString();
+        return "SMSEvent" +
+                "{body='" + body + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", recipientId=" + recipientId +
+                '}';
     }
 }

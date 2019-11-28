@@ -26,10 +26,8 @@ public class CommentRedactionEvent extends Event {
 
   @Override
   public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("CommentRedactionEvent");
-      sb.append("{commentId=").append(commentId);
-      sb.append('}');
-      return sb.toString();
+      return "CommentRedactionEvent" +
+              "{commentId=" + commentId +
+              '}';
   }
 }

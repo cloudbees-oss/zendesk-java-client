@@ -16,11 +16,9 @@ public class UnknownEvent extends Event {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("UnknownEvent");
-        sb.append("{id=").append(getId());
-        sb.append(", type=\"").append(getType()).append("\"");
-        sb.append('}');
-        return sb.toString();
+        return "UnknownEvent" +
+                "{id=" + getId() +
+                ", type=\"" + getType() + "\"" +
+                '}';
     }
 }

@@ -1,46 +1,31 @@
 package org.zendesk.client.v2;
 
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeThat;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
-
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.AgentRole;
 import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Brand;
 import org.zendesk.client.v2.model.Collaborator;
 import org.zendesk.client.v2.model.Comment;
+import org.zendesk.client.v2.model.ComplianceDeletionStatus;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.JobStatus;
 import org.zendesk.client.v2.model.Organization;
+import org.zendesk.client.v2.model.Priority;
 import org.zendesk.client.v2.model.Request;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.User;
+import org.zendesk.client.v2.model.dynamic.DynamicContentItem;
+import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
 import org.zendesk.client.v2.model.events.Event;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.Category;
@@ -52,14 +37,42 @@ import org.zendesk.client.v2.model.schedules.Interval;
 import org.zendesk.client.v2.model.schedules.Schedule;
 import org.zendesk.client.v2.model.targets.Target;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
+import java.util.UUID;
+import java.util.stream.StreamSupport;
+
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeThat;
+
 /**
  * @author stephenc
  * @since 04/04/2013 13:57
  */
 public class RealSmokeTest {
 
-    // TODO: Find a better way to manage our test environment (this is the ID of the cloudbees org)
-    private static final long CLOUDBEES_ORGANIZATION_ID = 3076488128L;
+    private static final Logger LOGGER = LoggerFactory.getLogger(RealSmokeTest.class);
+
+    // TODO: Find a better way to manage our test environment (this is the PUBLIC_FORM_ID of the cloudbees org)
+    private static final long CLOUDBEES_ORGANIZATION_ID = 360507899132L;
+    private static final long PUBLIC_FORM_ID = 360000434032L;
 
     private static Properties config;
 
@@ -136,16 +149,14 @@ public class RealSmokeTest {
     }
 
     @Test
-    @Ignore("Needs instance with ticket form")
     public void getTicketForm() throws Exception {
         createClientWithTokenOrPassword();
-        TicketForm ticketForm = instance.getTicketForm(27562);
+        TicketForm ticketForm = instance.getTicketForm(PUBLIC_FORM_ID);
         assertThat(ticketForm, notNullValue());
         assertTrue(ticketForm.isEndUserVisible());
     }
 
     @Test
-    @Ignore("Needs instance with ticket form")
     public void getTicketForms() throws Exception {
         createClientWithTokenOrPassword();
         Iterable<TicketForm> ticketForms = instance.getTicketForms();
@@ -156,10 +167,9 @@ public class RealSmokeTest {
     }
 
     @Test
-    @Ignore("Needs instance with ticket form")
     public void getTicketFieldsOnForm() throws Exception {
         createClientWithTokenOrPassword();
-        TicketForm ticketForm = instance.getTicketForm(27562);
+        TicketForm ticketForm = instance.getTicketForm(PUBLIC_FORM_ID);
         for(Long id :ticketForm.getTicketFieldIds()){
             Field f = instance.getTicketField(id);
             assertNotNull(f);
@@ -183,7 +193,6 @@ public class RealSmokeTest {
     }
 
     @Test
-    @Ignore("Needs test data setup correctly")
     public void getTicketsPagesRequests() throws Exception {
         createClientWithTokenOrPassword();
         int count = 0;
@@ -197,29 +206,31 @@ public class RealSmokeTest {
     }
 
     @Test
-    @Ignore("Needs test data setup correctly")
     public void getRecentTickets() throws Exception {
         createClientWithTokenOrPassword();
         int count = 0;
         for (Ticket t : instance.getRecentTickets()) {
             assertThat(t.getSubject(), notNullValue());
-            if (++count > 150) {
+            if (++count > 10) {
                 break;
             }
         }
-        assertThat(count, is(151));
+        // Recent tickets are always < 5
+        assertThat(count, lessThanOrEqualTo(5));
     }
 
     @Test
     public void getTicketsById() throws Exception {
         createClientWithTokenOrPassword();
-        long count = 22;
+        long count = 24;
+        final List<Long> ticketIds = Collections.unmodifiableList(Arrays.asList(22L, 24L, 26L));
+
         for (Ticket t : instance.getTickets(22, 24, 26)) {
             assertThat(t.getSubject(), notNullValue());
-            assertThat(t.getId(), is(count));
+            assertThat(ticketIds.contains(t.getId()), is(true));
             count += 2;
         }
-        assertThat(count, is(28L));
+        assertThat(count, is(30L));
     }
 
     @Test
@@ -318,6 +329,64 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void createPermanentlyDeleteTicket() throws Exception {
+        createClientWithTokenOrPassword();
+        assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
+        Ticket t = new Ticket(
+                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                "This is a test", new Comment("Please ignore this ticket"));
+        t.setCollaborators(Arrays.asList(new Collaborator("Bob Example", "bob@example.org"), new Collaborator("Alice Example", "alice@example.org")));
+        Ticket ticket = instance.createTicket(t);
+        System.out.println(ticket.getId() + " -> " + ticket.getUrl());
+        assertThat(ticket.getId(), notNullValue());
+
+        try {
+            Ticket t2 = instance.getTicket(ticket.getId());
+            assertThat(t2, notNullValue());
+            assertThat(t2.getId(), is(ticket.getId()));
+        } finally {
+            instance.permanentlyDeleteTicket(ticket.getId());
+        }
+        assertThat(instance.getTicket(ticket.getId()), nullValue());
+    }
+
+    @Test
+    @Ignore("This test isn't stable in the CI env. Not sure why, it's working locally.")
+    // TODO: Fix this test
+    public void createPermanentlyDeleteTickets() throws Exception {
+        createClientWithTokenOrPassword();
+        assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
+        Ticket t = new Ticket(
+                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                "This is a test", new Comment("Please ignore this ticket"));
+        t.setCollaborators(Arrays.asList(new Collaborator("Bob Example", "bob@example.org"), new Collaborator("Alice Example", "alice@example.org")));
+        Ticket t2 = new Ticket(
+                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                "This is a test_2", new Comment("Please ignore this ticket_2"));
+        t2.setCollaborators(Arrays.asList(new Collaborator("Bob Example_2", "bob@example.org"), new Collaborator("Alice Example_2", "alice@example.org")));
+        Ticket ticket = instance.createTicket(t);
+        Ticket ticket2 = instance.createTicket(t2);
+        System.out.println(ticket.getId() + " -> " + ticket.getUrl());
+        System.out.println(ticket2.getId() + " -> " + ticket2.getUrl());
+        assertThat(ticket.getId(), notNullValue());
+        assertThat(ticket2.getId(), notNullValue());
+
+        try {
+            Ticket t3 = instance.getTicket(ticket.getId());
+            assertThat(t3, notNullValue());
+            assertThat(t3.getId(), is(ticket.getId()));
+
+            Ticket t4 = instance.getTicket(ticket2.getId());
+            assertThat(t4, notNullValue());
+            assertThat(t4.getId(), is(ticket2.getId()));
+        } finally {
+            instance.permanentlyDeleteTickets(ticket.getId(), ticket2.getId());
+        }
+        assertThat(instance.getTicket(ticket.getId()), nullValue());
+        assertThat(instance.getTicket(ticket2.getId()), nullValue());
+    }
+
+    @Test
     public void createSolveTickets() throws Exception {
         createClientWithTokenOrPassword();
         assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
@@ -343,6 +412,47 @@ public class RealSmokeTest {
             assertThat(instance.getTicket(ticket.getId()), notNullValue());
             firstId = Math.min(ticket.getId(), firstId);
         } while (ticket.getId() < firstId + 5L); // seed enough data for the paging tests
+    }
+
+    @Test
+    public void testUpdateTickets() throws Exception {
+        createClientWithTokenOrPassword();
+        Ticket t = new Ticket(
+                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                "This is a test " + UUID.randomUUID().toString(), new Comment("Please ignore this ticket"));
+        Ticket ticket1 = instance.createTicket(t);
+        Ticket t2 = new Ticket(
+                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                "This is a test " + UUID.randomUUID().toString(), new Comment("Please ignore this ticket"));
+        Ticket ticket2 = instance.createTicket(t2);
+        ticket1.setPriority(Priority.HIGH);
+        ticket2.setPriority(Priority.LOW);
+        ticket1.setStatus(Status.SOLVED);
+        ticket2.setStatus(Status.SOLVED);
+
+        JobStatus<Ticket> jobstatus = instance.updateTicketsAsync(Arrays.asList(ticket1, ticket2)).toCompletableFuture().join();
+        assertThat(jobstatus.getStatus(), is(JobStatus.JobStatusEnum.queued));
+        //TODO: uncomment the rest of this test once issue #98 is resolved: https://github.com/cloudbees/zendesk-java-client/issues/98
+//        Instant startUpdateAt = Instant.now();
+//        while (instance.getJobStatus(jobstatus).getStatus() != JobStatus.JobStatusEnum.completed
+//                && startUpdateAt.plusSeconds(10).isAfter(Instant.now())) {
+//            Thread.sleep(100);
+//        }
+//        JobStatus<Ticket> completedJobStatus = instance.getJobStatus(jobstatus);
+//        assertThat(completedJobStatus.getStatus(), is(JobStatus.JobStatusEnum.completed));
+//        assertNotNull(jobstatus.getResults());
+//        assertThat(jobstatus.getResults().size(), is(2));
+//        jobstatus.getResults().forEach(ticket -> {
+//            if (ticket.getId().equals(ticket1.getId())) {
+//                assertThat(ticket.getPriority(), is(Priority.HIGH));
+//                assertThat(ticket.getStatus(), is(Status.SOLVED));
+//            } else if (ticket.getId().equals(ticket2.getId())) {
+//                assertThat(ticket.getPriority(), is(Priority.LOW));
+//                assertThat(ticket.getStatus(), is(Status.SOLVED));
+//            } else {
+//                fail("Received a different ticket back in response: " + ticket.getId());
+//            }
+//        });
     }
 
     @Test
@@ -379,8 +489,6 @@ public class RealSmokeTest {
     }
 
     @Test
-    @Ignore("Failing and I don't know why")
-    // TODO: Fix this test
     public void updateUserIdentity() throws Exception {
         createClientWithTokenOrPassword();
         User user = instance.getCurrentUser();
@@ -437,6 +545,92 @@ public class RealSmokeTest {
         assertThat(unsuspendResult.getId(), is(user.getId()));
         assertThat(unsuspendResult.getSuspended(), is(false));
 
+        // Cleanup
+        instance.deleteUser(user);
+    }
+
+    @Test
+    public void showUserComplianceDeletionStatusExpectException() throws Exception {
+        createClientWithTokenOrPassword();
+
+        final String name = "testSuspendUser";
+        final String externalId = "testSuspendUser";
+
+        User newUser = new User(true, name);
+        newUser.setExternalId(externalId);
+        User user = instance.createOrUpdateUser(newUser);
+        assertNotNull(user);
+        assertNotNull(user.getId());
+
+        try {
+            instance.getComplianceDeletionStatuses(user.getId());
+        } catch (Exception e) {
+            assertThat(e.getMessage(), is("HTTP/404: Not Found - {\"error\":\"RecordNotFound\",\"description\":\"Not found\"}"));
+        }
+
+        instance.permanentlyDeleteUser(user);
+    }
+
+    @Test
+    public void showUserComplianceDeletionStatusExpectValidCompletionStatus() throws Exception {
+        createClientWithTokenOrPassword();
+
+        final String name = "testSuspendUser";
+        final String externalId = "testSuspendUser";
+
+        User newUser = new User(true, name);
+        newUser.setExternalId(externalId);
+        User user = instance.createOrUpdateUser(newUser);
+        assertNotNull(user);
+        assertNotNull(user.getId());
+
+        instance.permanentlyDeleteUser(user);
+
+        // https://developer.zendesk.com/rest_api/docs/support/users#show-compliance-deletion-statuses
+        // The deletion is going through different states ( request_deletion -> started -> complete )
+        // for different applications and they are described in compliance_deletion_statuses
+
+        final Iterable<ComplianceDeletionStatus> complianceDeletionStatuses =
+                instance.getComplianceDeletionStatuses(user.getId());
+
+        // Let's validate
+
+        assertThat("There is at least one entry",
+                StreamSupport.stream(complianceDeletionStatuses.spliterator(), false).count(), greaterThan(0L));
+
+        assertTrue("There is at least an entry for the application \"all\"",
+                StreamSupport.stream(complianceDeletionStatuses.spliterator(), false)
+                        .anyMatch(complianceDeletionStatus -> "all".equals(complianceDeletionStatus.getApplication())));
+
+        complianceDeletionStatuses.forEach(status -> {
+            LOGGER.info("Compliance Deletion Status : {}", status);
+            // All entries are about this user
+            assertThat(status.getUserId(), is(user.getId()));
+        });
+    }
+
+    @Test
+    public void permanentlyDeleteUser() throws Exception {
+        createClientWithTokenOrPassword();
+
+        String name = "testSuspendUser";
+        String externalId = "testSuspendUser";
+
+        // Clean up to avoid conflicts
+        for (User u: instance.lookupUserByExternalId(externalId)){
+            instance.deleteUser(u.getId());
+        }
+
+        // Create user
+        User newUser = new User(true, name);
+        newUser.setExternalId(externalId);
+        User user = instance.createOrUpdateUser(newUser);
+        assertNotNull(user);
+        assertNotNull(user.getId());
+
+        instance.permanentlyDeleteUser(user);
+
+        assertThat(instance.getUser(user.getId()).getActive(), is(false));
         // Cleanup
         instance.deleteUser(user);
     }
@@ -689,7 +883,8 @@ public class RealSmokeTest {
             for (Translation t : instance.getArticleTranslations(art.getId())) {
                 assertNotNull(t.getId());
                 assertNotNull(t.getTitle());
-                assertNotNull(t.getBody());
+                // body is not mandatory <https://developer.zendesk.com/rest_api/docs/help_center/translations.html>
+                //assertNotNull(t.getBody());
                 if (++translationCount > 3) {
                     return;
                 }
@@ -837,7 +1032,6 @@ public class RealSmokeTest {
     }
 
     @Test
-    @Ignore("Needs instance with custom agent roles")
     public void getCustomAgentRoles() throws Exception {
         createClientWithTokenOrPassword();
         int count = 0;
@@ -897,7 +1091,6 @@ public class RealSmokeTest {
     }
 
     @Test
-    @Ignore("Needs instance with admin roles")
     public void createTicketForm() throws Exception {
         createClientWithTokenOrPassword();
         TicketForm form = new TicketForm();
@@ -915,5 +1108,88 @@ public class RealSmokeTest {
         assertEquals(givenName, createdForm.getDisplayName());
         assertEquals(givenName, createdForm.getRawName());
         assertEquals(givenName, createdForm.getRawDisplayName());
+    }
+
+    @Test
+    public void getDynamicContentItems() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (DynamicContentItem i : instance.getDynamicContentItems()) {
+            assertThat(i.getName(), notNullValue());
+            assertThat(i.getId(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+
+            DynamicContentItem item = instance.getDynamicContentItem(i.getId());
+            assertThat(item, notNullValue());
+            assertEquals(i.getId(), item.getId());
+
+            Iterable<DynamicContentItemVariant> variants = instance.getDynamicContentItemVariants(item);
+            assertThat(variants, notNullValue());
+
+            int secondaryCount = 0;
+            for (DynamicContentItemVariant v : variants) {
+                assertThat(v.getId(), notNullValue());
+                assertThat(v.getContent(), notNullValue());
+
+                DynamicContentItemVariant fetch = instance.getDynamicContentItemVariant(i.getId(), v.getId());
+                assertEquals(v.getId(), fetch.getId());
+
+                if (++secondaryCount > 10) {
+                  break;
+                }
+            }
+        }
+    }
+
+    @Test
+    public void getTicketCommentsShouldBeAscending() throws Exception {
+        createClientWithTokenOrPassword();
+
+        Ticket t = new Ticket(
+              new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+              "This is an automated test ticket", new Comment("1"));
+        Ticket ticket = null;
+        try {
+            ticket = instance.createTicket(t);
+            instance.createComment(ticket.getId(), new Comment("2"));
+            Iterable<Comment> ticketCommentsIt = instance.getTicketComments(ticket.getId());
+            List<Comment> comments = new ArrayList<>();
+            ticketCommentsIt.forEach(comments::add);
+
+            assertThat(comments.size(), is(2));
+            assertThat(comments.get(0).getBody(), containsString("1"));
+            assertThat(comments.get(1).getBody(), containsString("2"));
+        } finally {
+            if (ticket != null) {
+                instance.deleteTicket(ticket.getId());
+            }
+        }
+    }
+
+    @Test
+    public void getTicketCommentsDescending() throws Exception {
+        createClientWithTokenOrPassword();
+
+        Ticket t = new Ticket(
+              new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+              "This is an automated test ticket", new Comment("1"));
+        Ticket ticket = null;
+        try {
+            ticket = instance.createTicket(t);
+            instance.createComment(ticket.getId(), new Comment("2"));
+            Iterable<Comment> ticketCommentsIt = instance.getTicketComments(ticket.getId(), SortOrder.DESCENDING);
+            List<Comment> comments = new ArrayList<>();
+            ticketCommentsIt.forEach(comments::add);
+
+            assertThat(comments.size(), is(2));
+            assertThat(comments.get(0).getBody(), containsString("2"));
+            assertThat(comments.get(1).getBody(), containsString("1"));
+        } finally {
+            if (ticket != null) {
+                instance.deleteTicket(ticket.getId());
+            }
+        }
     }
 }

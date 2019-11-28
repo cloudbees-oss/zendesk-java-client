@@ -76,10 +76,8 @@ public class ChangeEvent extends CreateEvent {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("ChangeEvent");
-        sb.append("{previousValue=").append(previousValue);
-        sb.append('}');
-        return sb.toString();
+        return "ChangeEvent" +
+                "{previousValue=" + previousValue +
+                '}';
     }
 }

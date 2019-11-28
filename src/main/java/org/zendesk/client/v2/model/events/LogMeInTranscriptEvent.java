@@ -20,10 +20,8 @@ public class LogMeInTranscriptEvent extends Event {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("LogMeInTranscriptEvent");
-        sb.append("{body='").append(body).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "LogMeInTranscriptEvent" +
+                "{body='" + body + '\'' +
+                '}';
     }
 }

@@ -90,18 +90,16 @@ public class TwitterMonitor implements SearchResultEntity, Serializable {
 
    @Override
    public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("TwitterMonitor");
-      sb.append("{screenName='").append(screenName).append('\'');
-      sb.append(", id=").append(id);
-      sb.append(", twitterUserId='").append(twitterUserId).append('\'');
-      sb.append(", createdAt='").append(createdAt).append('\'');
-      sb.append(", updatedAt='").append(updatedAt).append('\'');
-      sb.append(", avatarUrl='").append(avatarUrl).append('\'');
-      sb.append(", name='").append(name).append('\'');
-      sb.append(", allowReply=").append(allowReply);
-      sb.append('}');
-      return sb.toString();
+      return "TwitterMonitor" +
+              "{screenName='" + screenName + '\'' +
+              ", id=" + id +
+              ", twitterUserId='" + twitterUserId + '\'' +
+              ", createdAt='" + createdAt + '\'' +
+              ", updatedAt='" + updatedAt + '\'' +
+              ", avatarUrl='" + avatarUrl + '\'' +
+              ", name='" + name + '\'' +
+              ", allowReply=" + allowReply +
+              '}';
    }
 
 }

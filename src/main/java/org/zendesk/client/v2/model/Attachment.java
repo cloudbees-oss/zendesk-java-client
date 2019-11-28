@@ -22,16 +22,14 @@ public class Attachment extends Photo {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("Attachment");
-        sb.append("{id=").append(getId());
-        sb.append(", fileName='").append(getFileName()).append('\'');
-        sb.append(", contentType='").append(getContentType()).append('\'');
-        sb.append(", contentUrl='").append(getContentUrl()).append('\'');
-        sb.append(", size=").append(getSize());
-        sb.append(", thumbnails=").append(thumbnails);
-        sb.append('}');
-        return sb.toString();
+        return "Attachment" +
+                "{id=" + getId() +
+                ", fileName='" + getFileName() + '\'' +
+                ", contentType='" + getContentType() + '\'' +
+                ", contentUrl='" + getContentUrl() + '\'' +
+                ", size=" + getSize() +
+                ", thumbnails=" + thumbnails +
+                '}';
     }
 
     public static class Upload {
@@ -56,12 +54,10 @@ public class Attachment extends Photo {
 
         @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("Upload");
-            sb.append("{token='").append(token).append('\'');
-            sb.append(", attachments=").append(attachments);
-            sb.append('}');
-            return sb.toString();
+            return "Upload" +
+                    "{token='" + token + '\'' +
+                    ", attachments=" + attachments +
+                    '}';
         }
     }
 }

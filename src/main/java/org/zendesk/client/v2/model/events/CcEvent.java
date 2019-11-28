@@ -33,11 +33,9 @@ public class CcEvent extends Event {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("CcEvent");
-        sb.append("{recipients=").append(recipients);
-        sb.append(", via=").append(via);
-        sb.append('}');
-        return sb.toString();
+        return "CcEvent" +
+                "{recipients=" + recipients +
+                ", via=" + via +
+                '}';
     }
 }

@@ -146,21 +146,19 @@ public class Organization implements SearchResultEntity, Serializable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Organization{");
-        sb.append("id=").append(id);
-        sb.append(", externalId='").append(externalId).append('\'');
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", createdAt=").append(createdAt);
-        sb.append(", updatedAt=").append(updatedAt);
-        sb.append(", domainNames=").append(domainNames);
-        sb.append(", details='").append(details).append('\'');
-        sb.append(", notes='").append(notes).append('\'');
-        sb.append(", groupId=").append(groupId);
-        sb.append(", sharedTickets=").append(sharedTickets);
-        sb.append(", sharedComments=").append(sharedComments);
-        sb.append(", tags=").append(tags);
-        sb.append(", organizationFields=").append(organizationFields);
-        sb.append('}');
-        return sb.toString();
+        return "Organization{" + "id=" + id +
+                ", externalId='" + externalId + '\'' +
+                ", name='" + name + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", domainNames=" + domainNames +
+                ", details='" + details + '\'' +
+                ", notes='" + notes + '\'' +
+                ", groupId=" + groupId +
+                ", sharedTickets=" + sharedTickets +
+                ", sharedComments=" + sharedComments +
+                ", tags=" + tags +
+                ", organizationFields=" + organizationFields +
+                '}';
     }
 }

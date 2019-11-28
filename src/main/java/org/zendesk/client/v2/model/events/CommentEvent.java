@@ -53,7 +53,7 @@ public class CommentEvent extends PublicPrivateEvent {
         this.htmlBody = htmlBody;
     }
 
-    public boolean getTrusted() {
+    public Boolean getTrusted() {
         return trusted;
     }
 
@@ -63,14 +63,12 @@ public class CommentEvent extends PublicPrivateEvent {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("CommentEvent");
-        sb.append("{attachments=").append(attachments);
-        sb.append(", body='").append(body).append('\'');
-        sb.append(", htmlBody='").append(htmlBody).append('\'');
-        sb.append(", trusted=").append(trusted);
-        sb.append(", authorId=").append(authorId);
-        sb.append('}');
-        return sb.toString();
+        return "CommentEvent" +
+                "{attachments=" + attachments +
+                ", body='" + body + '\'' +
+                ", htmlBody='" + htmlBody + '\'' +
+                ", trusted=" + trusted +
+                ", authorId=" + authorId +
+                '}';
     }
 }

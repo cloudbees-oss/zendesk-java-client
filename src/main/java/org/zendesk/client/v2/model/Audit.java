@@ -86,17 +86,15 @@ public class Audit implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("Audit");
-        sb.append("{authorId=").append(authorId);
-        sb.append(", id=").append(id);
-        sb.append(", ticketId=").append(ticketId);
-        sb.append(", metadata=").append(metadata);
-        sb.append(", via=").append(via);
-        sb.append(", createdAt=").append(createdAt);
-        sb.append(", events=").append(events);
-        sb.append('}');
-        return sb.toString();
+        return "Audit" +
+                "{authorId=" + authorId +
+                ", id=" + id +
+                ", ticketId=" + ticketId +
+                ", metadata=" + metadata +
+                ", via=" + via +
+                ", createdAt=" + createdAt +
+                ", events=" + events +
+                '}';
     }
 
 }

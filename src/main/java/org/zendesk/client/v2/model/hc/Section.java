@@ -12,6 +12,9 @@ public class Section {
     /** The name of the section */
     private String name;
 
+    /** The description of the section */
+    private String description;
+
     /** The locale in which the section is displayed */
     private String locale;
 
@@ -62,6 +65,14 @@ public class Section {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getLocale() {
@@ -149,6 +160,7 @@ public class Section {
         return "Section{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
                 ", locale='" + locale + '\'' +
                 ", sourceLocale='" + sourceLocale + '\'' +
                 ", url='" + url + '\'' +
