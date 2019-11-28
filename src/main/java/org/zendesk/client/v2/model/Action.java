@@ -14,7 +14,7 @@ public class Action {
 
     @JsonFormat(with = {JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY,
             JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED})
-    private String[] value;
+    private Object[] value;
 
     public Action() {
     }
@@ -32,11 +32,11 @@ public class Action {
         this.field = field;
     }
 
-    public String[] getValue() {
+    public Object[] getValue() {
         return value;
     }
 
-    public void setValue(String[] value) {
+    public void setValue(Object[] value) {
         this.value = value;
     }
 
