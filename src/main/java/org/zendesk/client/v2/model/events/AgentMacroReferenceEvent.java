@@ -1,8 +1,7 @@
 package org.zendesk.client.v2.model.events;
 
-import org.zendesk.client.v2.model.Via;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.zendesk.client.v2.model.Via;
 
 public class AgentMacroReferenceEvent extends Event {
 

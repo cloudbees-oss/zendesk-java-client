@@ -1,9 +1,9 @@
 package org.zendesk.client.v2.model.hc;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Date;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Section {
     /** Automatically assigned when creating subscriptions */

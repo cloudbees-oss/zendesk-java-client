@@ -1,10 +1,10 @@
 package org.zendesk.client.v2.model;
 
-import java.io.Serializable;
-import java.util.Arrays;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * @author stephenc

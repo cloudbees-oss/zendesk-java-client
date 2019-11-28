@@ -1,8 +1,8 @@
 package org.zendesk.client.v2.model.schedules;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.io.Serializable;
 
 public class Interval implements Serializable {
 

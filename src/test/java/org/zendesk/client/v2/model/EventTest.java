@@ -1,9 +1,6 @@
 package org.zendesk.client.v2.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.zendesk.client.v2.model.events.AgentMacroReferenceEvent;
 import org.zendesk.client.v2.model.events.AttachmentRedactionEvent;
@@ -12,7 +9,9 @@ import org.zendesk.client.v2.model.events.Event;
 import org.zendesk.client.v2.model.events.OrganizationActivityEvent;
 import org.zendesk.client.v2.model.events.UnknownEvent;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class EventTest {
 

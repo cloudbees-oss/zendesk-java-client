@@ -1,8 +1,8 @@
 package org.zendesk.client.v2.model.hc;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.Date;
 
 public class Translation {
   /* Automatically assigned when a translation is created */
