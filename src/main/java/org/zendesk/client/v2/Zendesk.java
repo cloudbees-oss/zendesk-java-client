@@ -76,7 +76,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -628,7 +628,7 @@ public class Zendesk implements Closeable {
             builder.addBodyPart(new StringPart("inline", "true"));
 
       builder.addBodyPart(
-            new FilePart("file", file, "application/octet-stream", Charset.forName("UTF-8"), file.getName()));
+            new FilePart("file", file, "application/octet-stream", StandardCharsets.UTF_8, file.getName()));
         final Request req = builder.build();
         return complete(submit(req, handle(ArticleAttachments.class, "article_attachment")));
     }
