@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
@@ -2074,7 +2074,7 @@ public class Zendesk implements Closeable {
             public T onCompleted(Response response) throws Exception {
                 logResponse(response);
                 if (isStatus2xx(response)) {
-                    return (T) mapper.reader(clazz).readValue(response.getResponseBodyAsStream());
+                    return (T) mapper.readerFor(clazz).readValue(response.getResponseBodyAsStream());
                 } else if (isRateLimitResponse(response)) {
                     throw new ZendeskResponseRateLimitException(response);
                 }
@@ -2585,7 +2585,7 @@ public class Zendesk implements Closeable {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.setDateFormat(new ISO8601DateFormat());
+        mapper.setDateFormat(new StdDateFormat());
         return mapper;
     }
 

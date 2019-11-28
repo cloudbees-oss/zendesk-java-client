@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -31,8 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SearchTest {
 
     private static final String MOCK_URL_FORMATTED_STRING = "http://localhost:%d";
-    private static final String MOCK_API_TOKEN = RandomStringUtils.randomAlphabetic(15);
-    private static final String MOCK_USERNAME = RandomStringUtils.randomAlphabetic(10).toLowerCase() + "@cloudbees.com";
+    public static final RandomStringGenerator RANDOM_STRING_GENERATOR =
+            new RandomStringGenerator.Builder().withinRange('a', 'z').build();
+    private static final String MOCK_API_TOKEN = RANDOM_STRING_GENERATOR.generate(15);
+    private static final String MOCK_USERNAME = RANDOM_STRING_GENERATOR.generate(10).toLowerCase() + "@cloudbees.com";
 
     @ClassRule
     public static WireMockClassRule zendeskApiClass = new WireMockClassRule(options()

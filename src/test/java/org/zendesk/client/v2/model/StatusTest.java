@@ -22,7 +22,7 @@ public class StatusTest {
     @Test
     public void deserializeFromLowercase() throws Exception {
         ObjectMapper mapper = Zendesk.createMapper();
-        ObjectReader reader = mapper.reader(Status.class);
+        ObjectReader reader = mapper.readerFor(Status.class);
         assertThat(reader.readValue("\"" + Status.PENDING.name().toLowerCase() + "\""), is((Object)Status.PENDING));
     }
 }
