@@ -41,6 +41,7 @@ import org.zendesk.client.v2.model.OrganizationField;
 import org.zendesk.client.v2.model.OrganizationMembership;
 import org.zendesk.client.v2.model.SatisfactionRating;
 import org.zendesk.client.v2.model.SearchResultEntity;
+import org.zendesk.client.v2.model.SortOrder;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
@@ -1569,10 +1570,36 @@ public class Zendesk implements Closeable {
     }
 
     public <T extends SearchResultEntity> Iterable<T> getSearchResults(Class<T> type, String query) {
-        return getSearchResults(type, query, null);
+        return getSearchResults(type, query, Collections.emptyMap());
     }
 
+    /**
+     * Use {@link #getSearchResults(Class, String, Map)} instead.
+     */
+    @Deprecated
     public <T extends SearchResultEntity> Iterable<T> getSearchResults(Class<T> type, String query, String params) {
+        /*
+            preserving backwards compatabile logic, this method will continue to do what it did before, which is "wrong"
+            in that you can't really specify things like sort order via this method
+         */
+
+        Map<String, Object> paramsMap = new HashMap<>(1);
+        paramsMap.put("params", params);
+
+        return getSearchResults(type, query, paramsMap);
+    }
+
+
+    public <T extends SearchResultEntity> Iterable<T> getSearchResults(Class<T> type, String query, String sortBy, SortOrder sortOrder) {
+        Map<String, Object> paramsMap = new HashMap<>(2);
+        paramsMap.put("sort_by", sortBy);
+        paramsMap.put("sort_order", sortOrder.getName());
+
+        return getSearchResults(type, query, paramsMap);
+    }
+
+
+    public <T extends SearchResultEntity> Iterable<T> getSearchResults(Class<T> type, String query, Map<String, Object> params) {
         String typeName = null;
         for (Map.Entry<String, Class<? extends SearchResultEntity>> entry : searchResultTypes.entrySet()) {
             if (type.equals(entry.getValue())) {
@@ -1583,10 +1610,25 @@ public class Zendesk implements Closeable {
         if (typeName == null) {
             return Collections.emptyList();
         }
-        return new PagedIterable<>(tmpl("/search.json{?query,params}")
-                .set("query", query + "+type:" + typeName)
-                .set("params", params),
-                handleList(type, "results"));
+
+        StringBuilder uriTemplate = new StringBuilder("/search.json{?query"); //leave off ending curly brace
+
+        //we have to add each param name to the template so that when we call set() with a map, the entries get put in the uri
+        for (String paramName : params.keySet()) {
+            uriTemplate.append(",")
+                    .append(paramName);
+        }
+
+        uriTemplate.append("}");
+
+        TemplateUri templateUri = tmpl(uriTemplate.toString())
+                .set("query", query + "+type:" + typeName);
+
+        if(params != null) {
+            templateUri.set(params);
+        }
+
+        return new PagedIterable<>(templateUri, handleList(type, "results"));
     }
 
     public void notifyApp(String json) {
@@ -1680,7 +1722,6 @@ public class Zendesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/dynamic_content/items/{itemId}/variants/{id}.json").set("itemId", itemId).set("id", variant.getId())), handleStatus()));
     }
 
-    // TODO search with sort order
     // TODO search with query building API
 
     //////////////////////////////////////////////////////////////////////
