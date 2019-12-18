@@ -1787,6 +1787,17 @@ public class Zendesk implements Closeable {
                 JSON, json(Collections.singletonMap("article", article))), handle(Article.class, "article")));
     }
 
+    public Article createArticle(Article article, boolean notifySubscribers) {
+        checkHasSectionId(article);
+
+        Map map = new HashMap<String, Object>();
+        map.put("article", article);
+        map.put("notify_subscribers", notifySubscribers ? String.valueOf("true") : String.valueOf("false"));
+
+        return complete(submit(req("POST", tmpl("/help_center/sections/{id}/articles.json").set("id", article.getSectionId()),
+                JSON, json(Collections.unmodifiableMap(map))), handle(Article.class, "article")));
+    }
+
     public Article updateArticle(Article article) {
         checkHasId(article);
         return complete(submit(req("PUT", tmpl("/help_center/articles/{id}.json").set("id", article.getId()),
