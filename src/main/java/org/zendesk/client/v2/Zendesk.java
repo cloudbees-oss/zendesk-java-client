@@ -2065,8 +2065,9 @@ public class Zendesk implements Closeable {
             } else if (request.getByteData() != null) {
                 logger.debug("Request {} {} {} {} bytes", request.getMethod(), request.getUrl(),
                         request.getHeaders().get("Content-type"), request.getByteData().length);
-                // For debug
+                // For plain text payload debug
                 logger.debug("Request payload\n {}", new String(request.getByteData(), Charset.defaultCharset()));
+                //////////////////
 
             } else {
                 logger.debug("Request {} {}", request.getMethod(), request.getUrl());

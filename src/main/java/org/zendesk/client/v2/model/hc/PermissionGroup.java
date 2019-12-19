@@ -18,11 +18,11 @@ public class PermissionGroup implements SearchResultEntity {
     private List<Long> publish;
     /** When the permission group was created */
     @JsonProperty("created_at")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss Z")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss Z")
     private Date createdAt;
     /** When the permission group was last updated */
     @JsonProperty("updated_at")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss Z")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss Z")
     private Date updatedAt;
     /** Whether the permission group is built-in. Built-in permission groups cannot be modified */
     @JsonProperty("built_in")
