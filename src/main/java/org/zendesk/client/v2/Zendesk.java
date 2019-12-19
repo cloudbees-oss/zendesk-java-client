@@ -55,12 +55,7 @@ import org.zendesk.client.v2.model.UserField;
 import org.zendesk.client.v2.model.UserRelatedInfo;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItem;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
-import org.zendesk.client.v2.model.hc.Article;
-import org.zendesk.client.v2.model.hc.ArticleAttachments;
-import org.zendesk.client.v2.model.hc.Category;
-import org.zendesk.client.v2.model.hc.Section;
-import org.zendesk.client.v2.model.hc.Subscription;
-import org.zendesk.client.v2.model.hc.Translation;
+import org.zendesk.client.v2.model.hc.*;
 import org.zendesk.client.v2.model.schedules.Holiday;
 import org.zendesk.client.v2.model.schedules.Schedule;
 import org.zendesk.client.v2.model.targets.BasecampTarget;
@@ -76,6 +71,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1735,6 +1731,58 @@ public class Zendesk implements Closeable {
     //////////////////////////////////////////////////////////////////////
     // Action methods for Help Center
     //////////////////////////////////////////////////////////////////////
+    /**
+     * Get all permission groups
+     *
+     * @return List of Permission Groups
+     */
+    public Iterable<PermissionGroup> getPermissionGroups() {
+        return new PagedIterable<>(cnst("/guide/permission_groups.json"),
+                handleList(PermissionGroup.class, "permission_groups"));
+    }
+    /**
+     * Get permission group by id
+     *
+     * @param id
+     */
+    public PermissionGroup getPermissionGroup(long id) {
+        return complete(submit(req("GET", tmpl("/guide/permission_groups/{id}.json").set("id", id)),
+                handle(PermissionGroup.class, "permission_group")));
+    }
+    /**
+     * Create permission group
+     *
+     * @param permissionGroup
+     */
+    public PermissionGroup createPermissionGroup(PermissionGroup permissionGroup) {
+        return complete(submit(req("POST", tmpl("/guide/permission_groups.json"),
+                JSON, json(Collections.singletonMap("permission_group", permissionGroup))), handle(PermissionGroup.class, "permission_group")));
+    }
+    /**
+     * Update permission group
+     * @param permissionGroup
+     */
+    public PermissionGroup updatePermissionGroup(PermissionGroup permissionGroup) {
+        checkHasId(permissionGroup);
+        return complete(submit(req("PUT", tmpl("/guide/permission_groups/{id}.json").set("id", permissionGroup.getId()),
+                JSON, json(Collections.singletonMap("permission_group", permissionGroup))), handle(PermissionGroup.class, "permission_group")));
+    }
+    /**
+     * Delete permission group
+     * @param permissionGroup
+     */
+    public void deletePermissionGroup(PermissionGroup permissionGroup) {
+        checkHasId(permissionGroup);
+        deletePermissionGroup(permissionGroup.getId());
+    }
+    /**
+     * Delete permission group
+     * @param id
+     */
+    public void deletePermissionGroup(long id) {
+        complete(submit(req("DELETE", tmpl("/guide/permission_groups/{id}.json").set("id", id)),
+                handleStatus()));
+    }
 
     public List<String> getHelpCenterLocales() {
         return complete(submit(
@@ -2017,6 +2065,9 @@ public class Zendesk implements Closeable {
             } else if (request.getByteData() != null) {
                 logger.debug("Request {} {} {} {} bytes", request.getMethod(), request.getUrl(),
                         request.getHeaders().get("Content-type"), request.getByteData().length);
+                // For debug
+                logger.debug("Request payload\n {}", new String(request.getByteData(), Charset.defaultCharset()));
+
             } else {
                 logger.debug("Request {} {}", request.getMethod(), request.getUrl());
             }
@@ -2563,6 +2614,12 @@ public class Zendesk implements Closeable {
     private static void checkHasId(Holiday holiday) {
         if (holiday == null || holiday.getId() == null) {
             throw new IllegalArgumentException("Holiday requires id");
+        }
+    }
+
+    private static void checkHasId(PermissionGroup permissionGroup) {
+        if (permissionGroup.getId() == null) {
+            throw new IllegalArgumentException("PermissionGroup requires id");
         }
     }
 
