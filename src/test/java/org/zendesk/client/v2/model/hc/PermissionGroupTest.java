@@ -12,6 +12,10 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+/**
+ * Testing Permission Groups
+ * @author Maxim Savenko (maxim.savenko@gmail.com)
+ */
 public class PermissionGroupTest {
 
     private PermissionGroup parseJson(byte[] json) {

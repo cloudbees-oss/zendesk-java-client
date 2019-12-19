@@ -7,6 +7,12 @@ import org.zendesk.client.v2.model.SearchResultEntity;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Management Permission Group
+ * A management permission group defines which agents can create, update, archive, and publish articles.
+ * https://developer.zendesk.com/rest_api/docs/help_center/permission_groups
+ * @author Maxim Savenko (maxim.savenko@gmail.com)
+ */
 public class PermissionGroup implements SearchResultEntity {
     /** Automatically assigned when the permission group is created */
     private Long id;
