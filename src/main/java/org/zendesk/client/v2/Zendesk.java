@@ -61,6 +61,8 @@ import org.zendesk.client.v2.model.hc.Category;
 import org.zendesk.client.v2.model.hc.Section;
 import org.zendesk.client.v2.model.hc.Subscription;
 import org.zendesk.client.v2.model.hc.Translation;
+import org.zendesk.client.v2.model.hc.PermissionGroup;
+import org.zendesk.client.v2.model.hc.UserSegment;
 import org.zendesk.client.v2.model.schedules.Holiday;
 import org.zendesk.client.v2.model.schedules.Schedule;
 import org.zendesk.client.v2.model.targets.BasecampTarget;
@@ -1735,6 +1737,162 @@ public class Zendesk implements Closeable {
     //////////////////////////////////////////////////////////////////////
     // Action methods for Help Center
     //////////////////////////////////////////////////////////////////////
+    /**
+     * Get all permission groups
+     *
+     * @return List of Permission Groups
+     */
+    public Iterable<PermissionGroup> getPermissionGroups() {
+        return new PagedIterable<>(cnst("/guide/permission_groups.json"),
+                handleList(PermissionGroup.class, "permission_groups"));
+    }
+    /**
+     * Get permission group by id
+     *
+     * @param id
+     */
+    public PermissionGroup getPermissionGroup(long id) {
+        return complete(submit(req("GET", tmpl("/guide/permission_groups/{id}.json").set("id", id)),
+                handle(PermissionGroup.class, "permission_group")));
+    }
+    /**
+     * Create permission group
+     *
+     * @param permissionGroup
+     */
+    public PermissionGroup createPermissionGroup(PermissionGroup permissionGroup) {
+        return complete(submit(req("POST", tmpl("/guide/permission_groups.json"),
+                JSON, json(Collections.singletonMap("permission_group", permissionGroup))), handle(PermissionGroup.class, "permission_group")));
+    }
+    /**
+     * Update permission group
+     *
+     * @param permissionGroup
+     */
+    public PermissionGroup updatePermissionGroup(PermissionGroup permissionGroup) {
+        checkHasId(permissionGroup);
+        return complete(submit(req("PUT", tmpl("/guide/permission_groups/{id}.json").set("id", permissionGroup.getId()),
+                JSON, json(Collections.singletonMap("permission_group", permissionGroup))), handle(PermissionGroup.class, "permission_group")));
+    }
+    /**
+     * Delete permission group
+     *
+     * @param permissionGroup
+     */
+    public void deletePermissionGroup(PermissionGroup permissionGroup) {
+        checkHasId(permissionGroup);
+        deletePermissionGroup(permissionGroup.getId());
+    }
+    /**
+     * Delete permission group
+     *
+     * @param id
+     */
+    public void deletePermissionGroup(long id) {
+        complete(submit(req("DELETE", tmpl("/guide/permission_groups/{id}.json").set("id", id)),
+                handleStatus()));
+    }
+    /**
+     * Get user segments
+     *
+     * @return List of User Segments
+     */
+    public Iterable<UserSegment> getUserSegments() {
+        return new PagedIterable<>(cnst("/help_center/user_segments.json"),
+                handleList(UserSegment.class, "user_segments"));
+    }
+    /**
+     * Returns the list of user segments that a particular user belongs to
+     *
+     * @return List of User Segments
+     */
+    public Iterable<UserSegment> getUserSegments(long id) {
+        return new PagedIterable<>(tmpl("/help_center/users/{id}/user_segments.json").set("id", id),
+                handleList(UserSegment.class, "user_segments"));
+    }
+    /**
+     * Request only user segments applicable on the account's current Guide plan
+     *
+     * @return List of User Segments
+     */
+    public Iterable<UserSegment> getUserSegmentsApplicable() {
+        return new PagedIterable<>(cnst("/help_center/user_segments/applicable.json"),
+                handleList(UserSegment.class, "user_segments"));
+    }
+    /**
+     * Get user segment by id
+     *
+     * @param id
+     */
+    public UserSegment getUserSegment(long id) {
+        return complete(submit(req("GET", tmpl("/help_center/user_segments/{id}.json").set("id", id)),
+                handle(UserSegment.class, "user_segment")));
+    }
+
+    /**
+     * List Sections using a User Segment
+     *
+     * @param userSegment
+     * @return List of Sections
+     */
+    public Iterable<Section> getSections(UserSegment userSegment) {
+        checkHasId(userSegment);
+        return new PagedIterable<>(
+                tmpl("/help_center/user_segments/{id}/sections.json").set("id", userSegment.getId()),
+                handleList(Section.class, "sections"));
+    }
+
+    /**
+     * List Topics using a User Segment
+     *
+     * @param userSegment
+     * @return List of Topics
+     */
+    public Iterable<Topic> getTopics(UserSegment userSegment) {
+        checkHasId(userSegment);
+        return new PagedIterable<>(
+                tmpl("/help_center/user_segments/{id}/topics.json").set("id", userSegment.getId()),
+                handleList(Topic.class, "topics"));
+    }
+
+    /**
+     * Create User Segment
+     *
+     * @param userSegment
+     */
+    public UserSegment createUserSegment(UserSegment userSegment) {
+        return complete(submit(req("POST", tmpl("/help_center/user_segments.json"),
+                JSON, json(Collections.singletonMap("user_segment", userSegment))), handle(UserSegment.class, "user_segment")));
+    }
+    /**
+     * Update User Segment
+     *
+     * @param userSegment
+     */
+    public UserSegment updateUserSegment(UserSegment userSegment) {
+        checkHasId(userSegment);
+        return complete(submit(req("PUT", tmpl("/help_center/user_segments/{id}.json").set("id", userSegment.getId()),
+                JSON, json(Collections.singletonMap("user_segment", userSegment))), handle(UserSegment.class, "user_segment")));
+    }
+    /**
+     * Delete User Segment
+     *
+     * @param userSegment
+     */
+    public void deleteUserSegment(UserSegment userSegment) {
+        checkHasId(userSegment);
+        deleteUserSegment(userSegment.getId());
+    }
+
+    /**
+     * Delete User Segment
+     *
+     * @param id
+     */
+    public void deleteUserSegment(long id) {
+        complete(submit(req("DELETE", tmpl("/help_center/user_segments/{id}.json").set("id", id)),
+                handleStatus()));
+    }
 
     public List<String> getHelpCenterLocales() {
         return complete(submit(
@@ -1785,6 +1943,17 @@ public class Zendesk implements Closeable {
         checkHasSectionId(article);
         return complete(submit(req("POST", tmpl("/help_center/sections/{id}/articles.json").set("id", article.getSectionId()),
                 JSON, json(Collections.singletonMap("article", article))), handle(Article.class, "article")));
+    }
+
+    public Article createArticle(Article article, boolean notifySubscribers) {
+        checkHasSectionId(article);
+
+        Map map = new HashMap<String, Object>();
+        map.put("article", article);
+        map.put("notify_subscribers", notifySubscribers ? String.valueOf("true") : String.valueOf("false"));
+
+        return complete(submit(req("POST", tmpl("/help_center/sections/{id}/articles.json").set("id", article.getSectionId()),
+                JSON, json(Collections.unmodifiableMap(map))), handle(Article.class, "article")));
     }
 
     public Article updateArticle(Article article) {
@@ -2552,6 +2721,18 @@ public class Zendesk implements Closeable {
     private static void checkHasId(Holiday holiday) {
         if (holiday == null || holiday.getId() == null) {
             throw new IllegalArgumentException("Holiday requires id");
+        }
+    }
+
+    private static void checkHasId(PermissionGroup permissionGroup) {
+        if (permissionGroup.getId() == null) {
+            throw new IllegalArgumentException("PermissionGroup requires id");
+        }
+    }
+
+    private static void checkHasId(UserSegment userSegment) {
+        if (userSegment.getId() == null) {
+            throw new IllegalArgumentException("UserSegment requires id");
         }
     }
 
