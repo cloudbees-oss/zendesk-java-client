@@ -1979,12 +1979,18 @@ public class Zendesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/help_center/articles/{id}.json").set("id", article.getId())),
                 handleStatus()));
     }
-
+    /**
+     * Delete translation
+     * @param translation
+     */
     public void deleteTranslation(Translation translation) {
         checkHasId(translation);
         deleteTranslation(translation.getId());
     }
-
+    /**
+     * Delete translation
+     * @param translationId
+     */
     public void deleteTranslation(Long translationId) {
         complete(submit(req("DELETE", tmpl("/help_center/translations/{id}.json").set("id", translationId)),
                 handleStatus()));
