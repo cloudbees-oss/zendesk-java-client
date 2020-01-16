@@ -1980,6 +1980,16 @@ public class Zendesk implements Closeable {
                 handleStatus()));
     }
 
+    public void deleteTranslation(Translation translation) {
+        checkHasId(translation);
+        deleteTranslation(translation.getId());
+    }
+
+    public void deleteTranslation(Long translationId) {
+        complete(submit(req("DELETE", tmpl("/help_center/translations/{id}.json").set("id", translationId)),
+                handleStatus()));
+    }
+
     /**
      * Delete attachment from article.
      * @param attachment
