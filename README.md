@@ -74,7 +74,7 @@ Here is the status of the various API components:
 * [Help Center Categories](https://developer.zendesk.com/rest_api/docs/help_center/categories) ✓
 * [Help Center Sections](https://developer.zendesk.com/rest_api/docs/help_center/sections) ✓
 * [Help Center Articles](https://developer.zendesk.com/rest_api/docs/help_center/articles) ✓
-* [Help Center Translations](https://developer.zendesk.com/rest_api/docs/help_center/translations) - Partial (List Translations, Update Translation)
+* [Help Center Translations](https://developer.zendesk.com/rest_api/docs/help_center/translations) - Partial (List Translations, Update Translation, Delete Translation)
 * [Help Center Subscriptions](https://developer.zendesk.com/rest_api/docs/help_center/subscriptions)
 * [Help Center Management Permission Groups](https://developer.zendesk.com/rest_api/docs/help_center/permission_groups)
 * [Help Center User Segments](https://developer.zendesk.com/rest_api/docs/help_center/user_segments)
