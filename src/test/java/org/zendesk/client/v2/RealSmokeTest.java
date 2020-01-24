@@ -1,5 +1,31 @@
 package org.zendesk.client.v2;
 
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeThat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.StreamSupport;
 import org.hamcrest.core.IsCollectionContaining;
 import org.junit.After;
 import org.junit.BeforeClass;
@@ -17,6 +43,7 @@ import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.JobStatus;
+import org.zendesk.client.v2.model.JobStatus.JobStatusEnum;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.Priority;
 import org.zendesk.client.v2.model.Request;
@@ -38,33 +65,6 @@ import org.zendesk.client.v2.model.schedules.Holiday;
 import org.zendesk.client.v2.model.schedules.Interval;
 import org.zendesk.client.v2.model.schedules.Schedule;
 import org.zendesk.client.v2.model.targets.Target;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.StreamSupport;
-
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeThat;
 
 /**
  * @author stephenc
@@ -775,6 +775,40 @@ public class RealSmokeTest {
             assertNotNull(org.getId());
             instance.deleteOrganization(org);
         }
+    }
+
+    @Test(timeout = 10000)
+    public void createOrUpdateUsers() throws Exception {
+        createClientWithTokenOrPassword();
+
+        User user1 = new User();
+        user1.setEmail("example@example.com");
+        user1.setName("Chuck Norris");
+
+        User user2 = new User();
+        user2.setEmail("example+user2$example.com");
+        user2.setName("Norris Chuck");
+
+        JobStatus<User> result = instance.createUsers(user1, user2);
+        assertNotNull(result);
+        assertNotNull(result.getId());
+        assertNotNull(result.getStatus());
+
+        while (result.getStatus() != JobStatusEnum.completed) {
+            result = instance.getJobStatus(result);
+            assertNotNull(result);
+            assertNotNull(result.getId());
+            assertNotNull(result.getStatus());
+        }
+        List<User> resultUsers = result.getResults();
+
+        assertEquals(2, resultUsers.size());
+        for (User user : resultUsers){
+            assertNotNull(user.getId());
+            instance.deleteUser(user);
+        };
+
+
     }
 
     @Test(timeout = 10000)
