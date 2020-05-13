@@ -1910,6 +1910,11 @@ public class Zendesk implements Closeable {
                 handleList(Article.class, "articles"));
     }
 
+    public Iterable<Article> getArticles(String locale) {
+        return new PagedIterable<>(tmpl("/help_center/{locale}/articles.json").set("locale", locale),
+                                   handleList(Article.class, "articles"));
+    }
+
     public Iterable<Article> getArticles(Category category) {
         checkHasId(category);
         return new PagedIterable<>(
