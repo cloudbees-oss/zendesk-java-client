@@ -363,7 +363,6 @@ public class Zendesk implements Closeable {
     }
 
     public JobStatus permanentlyDeleteTickets(long id, long... ids) {
-        deleteTickets(id, ids);
 
         return complete(
                 submit(
