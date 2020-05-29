@@ -1290,6 +1290,14 @@ public class Zendesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/organization_memberships/{id}.json").set("id", id)), handleStatus()));
     }
 
+    /**
+     * https://developer.zendesk.com/rest_api/docs/support/organization_memberships#bulk-delete-memberships
+     */
+    public void deleteOrganizationMemberships(long id, long... ids) {
+        complete(submit(req("DELETE", tmpl("/organization_memberships/destroy_many.json{?ids}").set("ids", idArray(id, ids))),
+                handleStatus()));
+    }
+
     public Iterable<Group> getGroups() {
         return new PagedIterable<>(cnst("/groups.json"),
                 handleList(Group.class, "groups"));
