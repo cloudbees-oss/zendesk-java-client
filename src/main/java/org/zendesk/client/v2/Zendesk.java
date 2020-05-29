@@ -2402,6 +2402,11 @@ public class Zendesk implements Closeable {
             @Override
             public JobStatus<T> onCompleted(Response response) throws Exception {
                 JobStatus<T> result = super.onCompleted(response);
+                if (result == null) {
+                    // null is when we receive a 404 response.
+                    // For an async job we trigger an error
+                    throw new ZendeskResponseException(response);
+                }
                 result.setResultsClass(resultClass);
                 return result;
             }
