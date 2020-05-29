@@ -1264,6 +1264,28 @@ public class Zendesk implements Closeable {
                                 organizationMembership))), handle(OrganizationMembership.class, "organization_membership")));
     }
 
+    /**
+     * https://developer.zendesk.com/rest_api/docs/support/organization_memberships#create-many-memberships
+     */
+    public JobStatus<OrganizationMembership> createOrganizationMemberships(OrganizationMembership... organizationMemberships) {
+        return createOrganizationMemberships(Arrays.asList(organizationMemberships));
+    }
+
+    /**
+     * https://developer.zendesk.com/rest_api/docs/support/organization_memberships#create-many-memberships
+     */
+    public JobStatus createOrganizationMemberships(List<OrganizationMembership> organizationMemberships) {
+        return complete(createOrganizationMembershipsAsync(organizationMemberships));
+    }
+
+    /**
+     * https://developer.zendesk.com/rest_api/docs/support/organization_memberships#create-many-memberships
+     */
+    public ListenableFuture<JobStatus<OrganizationMembership>> createOrganizationMembershipsAsync(List<OrganizationMembership> organizationMemberships) {
+        return submit(req("POST", cnst("/organization_memberships/create_many.json"), JSON, json(
+                Collections.singletonMap("organization_memberships", organizationMemberships))), handleJobStatus(OrganizationMembership.class));
+    }
+
     public void deleteOrganizationMembership(long id) {
         complete(submit(req("DELETE", tmpl("/organization_memberships/{id}.json").set("id", id)), handleStatus()));
     }
