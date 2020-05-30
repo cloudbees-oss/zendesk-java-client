@@ -310,7 +310,6 @@ public class Zendesk implements Closeable {
     }
 
     public JobStatus permanentlyDeleteTicket(long id) {
-        deleteTicket(id);
         return complete(submit(
                 req("DELETE", tmpl("/deleted_tickets/{id}.json").set("id", id)),
                 handleJobStatus(JobStatus.class))
