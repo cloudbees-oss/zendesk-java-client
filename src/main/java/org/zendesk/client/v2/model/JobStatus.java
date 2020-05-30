@@ -1,9 +1,11 @@
 package org.zendesk.client.v2.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 import java.util.List;
 
-public class JobStatus<T> implements Serializable {
+public class JobStatus implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -13,8 +15,7 @@ public class JobStatus<T> implements Serializable {
     private Integer progress;
     private JobStatusEnum status;
     private String message;
-    private List<T> results;
-    private Class<T> resultsClass;
+    private List<JobResult> results;
 
     public String getId() {
         return id;
@@ -64,20 +65,14 @@ public class JobStatus<T> implements Serializable {
         this.message = message;
     }
 
-    public List<T> getResults() {
+    @JsonFormat(with = {JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY,
+            JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED})
+    public List<JobResult> getResults() {
         return results;
     }
 
-    public void setResults(List<T> results) {
+    public void setResults(List<JobResult> results) {
         this.results = results;
-    }
-
-    public Class<T> getResultsClass() {
-        return resultsClass;
-    }
-
-    public void setResultsClass(Class<T> resultsClass) {
-        this.resultsClass = resultsClass;
     }
 
     @Override
