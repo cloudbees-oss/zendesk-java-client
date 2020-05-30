@@ -2896,6 +2896,7 @@ public class Zendesk implements Closeable {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.setDateFormat(new StdDateFormat());
+        mapper.enable(DeserializationFeature.USE_LONG_FOR_INTS);
         return mapper;
     }
 
