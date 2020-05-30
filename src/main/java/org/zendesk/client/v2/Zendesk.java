@@ -27,6 +27,7 @@ import org.zendesk.client.v2.model.Automation;
 import org.zendesk.client.v2.model.Brand;
 import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.ComplianceDeletionStatus;
+import org.zendesk.client.v2.model.DeletedTicket;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Forum;
 import org.zendesk.client.v2.model.Group;
@@ -280,6 +281,23 @@ public class Zendesk implements Closeable {
     public JobStatus permanentlyDeleteTicket(Ticket ticket) {
         checkHasId(ticket);
         return permanentlyDeleteTicket(ticket.getId());
+    }
+
+    /**
+     * https://developer.zendesk.com/rest_api/docs/support/tickets#list-deleted-tickets
+     */
+    public Iterable<DeletedTicket> getDeletedTickets() {
+        return new PagedIterable<>(cnst("/deleted_tickets.json"), handleList(DeletedTicket.class, "deleted_tickets"));
+    }
+
+    /**
+     * https://developer.zendesk.com/rest_api/docs/support/tickets#list-deleted-tickets
+     */
+    public Iterable<DeletedTicket> getDeletedTickets(String sortBy, SortOrder sortOrder) {
+        return new PagedIterable<>(tmpl("/deleted_tickets.json?sort_by={sortBy}&sort_order={sortOrder}")
+                .set("sortBy", sortBy)
+                .set("sortOrder", sortOrder.getQueryParameter()),
+                handleList(DeletedTicket.class, "deleted_tickets"));
     }
 
     public void deleteTicket(Ticket ticket) {
