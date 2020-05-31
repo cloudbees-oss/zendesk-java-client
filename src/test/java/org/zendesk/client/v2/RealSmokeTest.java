@@ -1,5 +1,6 @@
 package org.zendesk.client.v2;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.IsCollectionContaining;
 import org.junit.After;
@@ -31,6 +32,7 @@ import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.TicketForm;
+import org.zendesk.client.v2.model.Type;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItem;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
@@ -47,6 +49,7 @@ import org.zendesk.client.v2.model.targets.Target;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -353,6 +356,31 @@ public class RealSmokeTest {
         assertThat(ticket.getDescription(), is(t.getComment().getBody()));
         assertThat("Collaborators", ticket.getCollaboratorIds().size(), is(2));
         assertThat(instance.getTicket(ticket.getId()), nullValue());
+    }
+
+    // https://github.com/cloudbees/zendesk-java-client/issues/94
+    @Test
+    public void createTaskTicketWithDueDate() throws Exception {
+        // given
+        createClientWithTokenOrPassword();
+
+        Date dueDate = Calendar.getInstance().getTime();
+        Ticket t = newTestTicket();
+        t.setType(Type.TASK);
+        t.setDueAt(dueDate);
+
+        // when
+        Ticket ticket = instance.createTicket(t);
+
+        try {
+            // then
+            assertThat("The ticket now has an ID", ticket.getId(), notNullValue());
+            assertThat("The Due Date must be the same (rounded at the second)",
+                    DateUtils.truncate(ticket.getDueAt(),Calendar.SECOND) ,
+                    is(DateUtils.truncate(dueDate,Calendar.SECOND)));
+        } finally {
+            instance.deleteTicket(ticket.getId());
+        }
     }
 
     @Test
