@@ -435,12 +435,21 @@ public class Zendesk implements Closeable {
         return new PagedIterable<>(cnst("/tickets/recent.json"), handleList(Ticket.class, "tickets"));
     }
 
+    /**
+     * https://developer.zendesk.com/rest_api/docs/support/incremental_export
+     */
     public Iterable<Ticket> getTicketsIncrementally(Date startTime) {
         return new PagedIterable<>(
                 tmpl("/incremental/tickets.json{?start_time}").set("start_time", msToSeconds(startTime.getTime())),
                 handleIncrementalList(Ticket.class, "tickets"));
     }
 
+    /**
+     * https://developer.zendesk.com/rest_api/docs/support/incremental_export
+     *
+     * @deprecated incremental export does not support an end_time parameter
+     */
+    @Deprecated
     public Iterable<Ticket> getTicketsIncrementally(Date startTime, Date endTime) {
         return new PagedIterable<>(
                 tmpl("/incremental/tickets.json{?start_time,end_time}")
