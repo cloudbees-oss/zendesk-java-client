@@ -1,6 +1,7 @@
 package org.zendesk.client.v2;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.IsCollectionContaining;
 import org.junit.After;
@@ -32,6 +33,7 @@ import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.TicketForm;
+import org.zendesk.client.v2.model.TicketImport;
 import org.zendesk.client.v2.model.Type;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItem;
@@ -547,6 +549,93 @@ public class RealSmokeTest {
             });
         } finally {
             instance.deleteTickets(firstElement(ticketsIds), otherElements(ticketsIds));
+        }
+    }
+
+    @Test
+    public void importTicket() throws Exception {
+
+        createClientWithTokenOrPassword();
+
+        // given
+        final TicketImport ticketImport = newTestTicketImport();
+
+        // when
+        Ticket importedTicket = instance.importTicket(ticketImport);
+
+        try {
+            // then
+            assertThat("The imported ticket has an ID", importedTicket.getId(), notNullValue());
+            assertThat("The imported ticket has a subject", importedTicket.getSubject(),
+                    CoreMatchers.containsString("[zendesk-java-client] This is a test"));
+            assertThat("The imported ticket is closed", importedTicket.getStatus(), is(Status.CLOSED));
+            assertThat("The imported ticket has a createdAt value", importedTicket.getCreatedAt(), notNullValue());
+            assertThat("The imported ticket has an updatedAt value", importedTicket.getUpdatedAt(), notNullValue());
+            assertThat("The imported ticket has tags", importedTicket.getTags(),
+                    containsInAnyOrder("zendesk-java-client", "smoke-test"));
+        } finally {
+            // cleanup
+            instance.deleteTicket(importedTicket);
+        }
+    }
+
+    @Test
+    public void importTickets() throws Exception {
+
+        createClientWithTokenOrPassword();
+
+        // given
+        final TicketImport[] ticketsToImport = newTestTicketImports();
+
+        // when
+        JobStatus status = waitJobCompletion(instance.importTickets(ticketsToImport));
+        final Long[] createdTicketsIds =
+                status.getResults().stream().map(JobResult::getId).toArray(Long[]::new);
+
+        try {
+            final List<Ticket> createdTickets =
+                    instance.getTickets(firstElement(createdTicketsIds), otherElements(createdTicketsIds));
+
+            assertThat("We have the same number of tickets", status.getResults(), hasSize(ticketsToImport.length));
+
+            status.getResults().forEach(jobResult -> {
+                assertThat("The job result has an account_id entry", jobResult.getAccountId(), notNullValue());
+                assertThat("The job result has no action entry", jobResult.getAction(), nullValue());
+                assertThat("The job result has no details entry", jobResult.getDetails(), nullValue());
+                assertThat("The job result has no email entry", jobResult.getEmail(), nullValue());
+                assertThat("The job result has no error entry", jobResult.getError(), nullValue());
+                assertThat("The job result has no external_id entry", jobResult.getExternalId(), nullValue());
+                assertThat("The job result has an id entry", jobResult.getId(), notNullValue());
+                assertThat("The job result has an index entry", jobResult.getIndex(), notNullValue());
+                assertThat("The job result has no status entry", jobResult.getStatus(), nullValue());
+                assertThat("The job result has no success entry", jobResult.getSuccess(), nullValue());
+            });
+
+            assertThat("All tickets are created (we verify that all titles are present)",
+                    createdTickets
+                            .stream()
+                            .map(Ticket::getSubject)
+                            .collect(Collectors.toList()),
+                    containsInAnyOrder(
+                            Arrays.stream(ticketsToImport)
+                                    .map(Ticket::getSubject)
+                                    .toArray()));
+            createdTickets.forEach(importedTicket -> {
+                assertThat("The imported ticket has an ID", importedTicket.getId(), notNullValue());
+                assertThat("The imported ticket has a subject", importedTicket.getSubject(),
+                        CoreMatchers.containsString("[zendesk-java-client] This is a test"));
+                assertThat("The imported ticket is closed", importedTicket.getStatus(), is(Status.CLOSED));
+                assertThat("The imported ticket has a createdAt value", importedTicket.getCreatedAt(), notNullValue());
+                assertThat("The imported ticket has an updatedAt value", importedTicket.getUpdatedAt(), notNullValue());
+                assertThat("The imported ticket has tags", importedTicket.getTags(),
+                        containsInAnyOrder("zendesk-java-client", "smoke-test"));
+
+            });
+
+            // then
+        } finally {
+            // cleanup
+            instance.deleteTickets(firstElement(createdTicketsIds), otherElements(createdTicketsIds));
         }
     }
 
@@ -1695,6 +1784,38 @@ public class RealSmokeTest {
                 new Collaborator("Alice Example", "alice@example.org")));
         ticket.setTags(Arrays.asList("zendesk-java-client", "smoke-test"));
         return ticket;
+    }
+
+    /**
+     * Creates several new ticketImport (2 min, 5 max)
+     */
+    private TicketImport[] newTestTicketImports() {
+        final ArrayList<TicketImport> ticketImports = new ArrayList<>();
+        for (int i = 0; i < 2 + RANDOM.nextInt(3); i++) {
+            ticketImports.add(newTestTicketImport());
+        }
+        return ticketImports.toArray(new TicketImport[0]);
+    }
+
+    /**
+     * Creates a new ticketImport
+     */
+    private TicketImport newTestTicketImport() {
+        assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
+        assumeThat("Must have a requester name", config.getProperty("requester.name"), notNullValue());
+        Date now = Calendar.getInstance().getTime();
+        final TicketImport ticketImport = new TicketImport(
+                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+                "[zendesk-java-client] This is a test " + UUID.randomUUID().toString(),
+                Collections.singletonList(new Comment(TICKET_COMMENT1)));
+        ticketImport.setCollaborators(Arrays.asList(new Collaborator("Bob Example", "bob@example.org"),
+                new Collaborator("Alice Example", "alice@example.org")));
+        ticketImport.setTags(Arrays.asList("zendesk-java-client", "smoke-test"));
+        ticketImport.setStatus(Status.CLOSED);
+        ticketImport.setCreatedAt(now);
+        ticketImport.setUpdatedAt(now);
+        ticketImport.setSolvedAt(now);
+        return ticketImport;
     }
 
     /**
