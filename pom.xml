@@ -72,9 +72,9 @@
   </prerequisites>
 
   <scm>
-    <connection>scm:git:git://github.com/cloudbees/zendesk-java-client.git</connection>
-    <developerConnection>scm:git:git@github.com:cloudbees/zendesk-java-client.git</developerConnection>
-    <url>http://github.com/cloudbees/zendesk-java-client/tree/master/</url>
+    <connection>scm:git:git://github.com/cloudbees-oss/zendesk-java-client.git</connection>
+    <developerConnection>scm:git:git@github.com:cloudbees-oss/zendesk-java-client.git</developerConnection>
+    <url>http://github.com/cloudbees-oss/zendesk-java-client/tree/master/</url>
     <tag>HEAD</tag>
   </scm>
 
