@@ -827,6 +827,11 @@ public class Zendesk implements Closeable {
                 Collections.singletonMap("user", user))), handle(User.class, "user")));
     }
 
+    public User mergeUsers(long userIdThatWillRemain, long userIdThatWillBeMerged) {
+        return complete(submit(req("PUT", tmpl("/users/{id}/merge.json").set("id", userIdThatWillBeMerged), JSON, json(
+                Collections.singletonMap("user", Collections.singletonMap("id", userIdThatWillRemain)))), handle(User.class, "user")));
+    }
+
     public JobStatus createUsers(User... users) {
         return createUsers(Arrays.asList(users));
     }
