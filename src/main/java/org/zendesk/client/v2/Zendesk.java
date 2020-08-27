@@ -27,6 +27,7 @@ import org.zendesk.client.v2.model.Automation;
 import org.zendesk.client.v2.model.Brand;
 import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.ComplianceDeletionStatus;
+import org.zendesk.client.v2.model.DeletedTicket;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Forum;
 import org.zendesk.client.v2.model.Group;
@@ -202,25 +203,27 @@ public class Zendesk implements Closeable {
     // Action methods
     //////////////////////////////////////////////////////////////////////
 
-    public <T> JobStatus<T> getJobStatus(JobStatus<T> status) {
+    public JobStatus getJobStatus(JobStatus status) {
         return complete(getJobStatusAsync(status));
     }
 
-    public <T> ListenableFuture<JobStatus<T>> getJobStatusAsync(JobStatus<T> status) {
-        return submit(req("GET", tmpl("/job_statuses/{id}.json").set("id", status.getId())), handleJobStatus(status.getResultsClass()));
+    public ListenableFuture<JobStatus> getJobStatusAsync(JobStatus status) {
+        return submit(req("GET", tmpl("/job_statuses/{id}.json").set("id", status.getId())),
+                handleJobStatus());
     }
 
-    public List<JobStatus<HashMap<String, Object>>> getJobStatuses(List<JobStatus> statuses) {
+    public List<JobStatus> getJobStatuses(List<JobStatus> statuses) {
         return complete(getJobStatusesAsync(statuses));
     }
 
-    public ListenableFuture<List<JobStatus<HashMap<String, Object>>>> getJobStatusesAsync(List<JobStatus> statuses) {
+    public ListenableFuture<List<JobStatus>> getJobStatusesAsync(List<JobStatus> statuses) {
         List<String> ids = new ArrayList<>(statuses.size());
         for (JobStatus status : statuses) {
             ids.add(status.getId());
         }
-        Class<JobStatus<HashMap<String, Object>>> clazz = (Class<JobStatus<HashMap<String, Object>>>)(Object)JobStatus.class;
-        return submit(req("GET", tmpl("/job_statuses/show_many.json{?ids}").set("ids", ids)), handleList(clazz, "job_statuses"));
+        Class<JobStatus> clazz = (Class<JobStatus>) (Object) JobStatus.class;
+        return submit(req("GET", tmpl("/job_statuses/show_many.json{?ids}").set("ids", ids)),
+                handleList(clazz, "job_statuses"));
     }
 
     public List<Brand> getBrands(){
@@ -249,17 +252,17 @@ public class Zendesk implements Closeable {
                 handle(Ticket.class, "ticket")));
     }
 
-    public JobStatus<Ticket> importTickets(TicketImport... ticketImports) {
+    public JobStatus importTickets(TicketImport... ticketImports) {
         return importTickets(Arrays.asList(ticketImports));
     }
 
-    public JobStatus<Ticket> importTickets(List<TicketImport> ticketImports) {
+    public JobStatus importTickets(List<TicketImport> ticketImports) {
         return complete(importTicketsAsync(ticketImports));
     }
 
-    public ListenableFuture<JobStatus<Ticket>> importTicketsAsync(List<TicketImport> ticketImports) {
+    public ListenableFuture<JobStatus> importTicketsAsync(List<TicketImport> ticketImports) {
         return submit(req("POST", cnst("/imports/tickets/create_many.json"), JSON, json(
-                Collections.singletonMap("tickets", ticketImports))), handleJobStatus(Ticket.class));
+                Collections.singletonMap("tickets", ticketImports))), handleJobStatus());
     }
 
     public Ticket getTicket(long id) {
@@ -277,9 +280,21 @@ public class Zendesk implements Closeable {
                 handleList(User.class, "users")));
     }
 
-    public JobStatus permanentlyDeleteTicket(Ticket ticket) {
-        checkHasId(ticket);
-        return permanentlyDeleteTicket(ticket.getId());
+    /**
+     * https://developer.zendesk.com/rest_api/docs/support/tickets#list-deleted-tickets
+     */
+    public Iterable<DeletedTicket> getDeletedTickets() {
+        return new PagedIterable<>(cnst("/deleted_tickets.json"), handleList(DeletedTicket.class, "deleted_tickets"));
+    }
+
+    /**
+     * https://developer.zendesk.com/rest_api/docs/support/tickets#list-deleted-tickets
+     */
+    public Iterable<DeletedTicket> getDeletedTickets(String sortBy, SortOrder sortOrder) {
+        return new PagedIterable<>(tmpl("/deleted_tickets.json?sort_by={sortBy}&sort_order={sortOrder}")
+                .set("sortBy", sortBy)
+                .set("sortOrder", sortOrder.getQueryParameter()),
+                handleList(DeletedTicket.class, "deleted_tickets"));
     }
 
     public void deleteTicket(Ticket ticket) {
@@ -291,18 +306,22 @@ public class Zendesk implements Closeable {
         complete(submit(req("DELETE", tmpl("/tickets/{id}.json").set("id", id)), handleStatus()));
     }
 
+    public JobStatus permanentlyDeleteTicket(Ticket ticket) {
+        checkHasId(ticket);
+        return permanentlyDeleteTicket(ticket.getId());
+    }
+
     public JobStatus permanentlyDeleteTicket(long id) {
-        deleteTicket(id);
         return complete(submit(
                 req("DELETE", tmpl("/deleted_tickets/{id}.json").set("id", id)),
-                handleJobStatus(JobStatus.class))
+                handleJobStatus())
         );
     }
 
-    public ListenableFuture<JobStatus<Ticket>> queueCreateTicketAsync(Ticket ticket) {
+    public ListenableFuture<JobStatus> queueCreateTicketAsync(Ticket ticket) {
         return submit(req("POST", cnst("/tickets.json?async=true"),
                 JSON, json(Collections.singletonMap("ticket", ticket))),
-                handleJobStatus(Ticket.class));
+                handleJobStatus());
     }
 
     public ListenableFuture<Ticket> createTicketAsync(Ticket ticket) {
@@ -315,17 +334,17 @@ public class Zendesk implements Closeable {
         return complete(createTicketAsync(ticket));
     }
 
-    public JobStatus<Ticket> createTickets(Ticket... tickets) {
+    public JobStatus createTickets(Ticket... tickets) {
         return createTickets(Arrays.asList(tickets));
     }
 
-    public JobStatus<Ticket> createTickets(List<Ticket> tickets) {
+    public JobStatus createTickets(List<Ticket> tickets) {
         return complete(createTicketsAsync(tickets));
     }
 
-    public ListenableFuture<JobStatus<Ticket>> createTicketsAsync(List<Ticket> tickets) {
+    public ListenableFuture<JobStatus> createTicketsAsync(List<Ticket> tickets) {
         return submit(req("POST", cnst("/tickets/create_many.json"), JSON, json(
-                Collections.singletonMap("tickets", tickets))), handleJobStatus(Ticket.class));
+                Collections.singletonMap("tickets", tickets))), handleJobStatus());
     }
 
     public Ticket updateTicket(Ticket ticket) {
@@ -335,9 +354,17 @@ public class Zendesk implements Closeable {
                 handle(Ticket.class, "ticket")));
     }
 
-    public ListenableFuture<JobStatus<Ticket>> updateTicketsAsync(List<Ticket> tickets) {
+    public JobStatus updateTickets(Ticket... tickets) {
+        return updateTickets(Arrays.asList(tickets));
+    }
+
+    public JobStatus updateTickets(List<Ticket> tickets) {
+        return complete(updateTicketsAsync(tickets));
+    }
+
+    public ListenableFuture<JobStatus> updateTicketsAsync(List<Ticket> tickets) {
         return submit(req("PUT", cnst("/tickets/update_many.json"), JSON, json(
-                Collections.singletonMap("tickets", tickets))), handleJobStatus(Ticket.class));
+                Collections.singletonMap("tickets", tickets))), handleJobStatus());
     }
 
     public void markTicketAsSpam(Ticket ticket) {
@@ -355,12 +382,10 @@ public class Zendesk implements Closeable {
     }
 
     public JobStatus permanentlyDeleteTickets(long id, long... ids) {
-        deleteTickets(id, ids);
-
         return complete(
                 submit(
                         req("DELETE", tmpl("/deleted_tickets/destroy_many.json{?ids}").set("ids", idArray(id, ids))),
-                        handleJobStatus(JobStatus.class))
+                        handleJobStatus())
         );
     }
 
@@ -793,12 +818,17 @@ public class Zendesk implements Closeable {
                 Collections.singletonMap("user", user))), handle(User.class, "user")));
     }
 
-    public JobStatus<User> createUsers(User... users) {
+    public JobStatus createUsers(User... users) {
         return createUsers(Arrays.asList(users));
     }
 
-    public JobStatus<User> createUsers(List<User> users) {
+    public JobStatus createUsers(List<User> users) {
         return complete(createUsersAsync(users));
+    }
+
+    public ListenableFuture<JobStatus> createUsersAsync(List<User> users) {
+        return submit(req("POST", cnst("/users/create_many.json"), JSON, json(
+                Collections.singletonMap("users", users))), handleJobStatus());
     }
 
     public User createOrUpdateUser(User user) {
@@ -806,15 +836,36 @@ public class Zendesk implements Closeable {
                 Collections.singletonMap("user", user))), handle(User.class, "user")));
     }
 
-    public ListenableFuture<JobStatus<User>> createUsersAsync(List<User> users) {
-        return submit(req("POST", cnst("/users/create_many.json"), JSON, json(
-                Collections.singletonMap("users", users))), handleJobStatus(User.class));
+    public JobStatus createOrUpdateUsers(User... users) {
+        return createOrUpdateUsers(Arrays.asList(users));
+    }
+
+    public JobStatus createOrUpdateUsers(List<User> users) {
+        return complete(createOrUpdateUsersAsync(users));
+    }
+
+    public ListenableFuture<JobStatus> createOrUpdateUsersAsync(List<User> users) {
+        return submit(req("POST", cnst("/users/create_or_update_many.json"), JSON, json(
+                Collections.singletonMap("users", users))), handleJobStatus());
     }
 
     public User updateUser(User user) {
         checkHasId(user);
         return complete(submit(req("PUT", tmpl("/users/{id}.json").set("id", user.getId()), JSON, json(
                 Collections.singletonMap("user", user))), handle(User.class, "user")));
+    }
+
+    public JobStatus updateUsers(User... users) {
+        return updateUsers(Arrays.asList(users));
+    }
+
+    public JobStatus updateUsers(List<User> users) {
+        return complete(updateUsersAsync(users));
+    }
+
+    public ListenableFuture<JobStatus> updateUsersAsync(List<User> users) {
+        return submit(req("PUT", cnst("/users/update_many.json"), JSON, json(
+                Collections.singletonMap("users", users))), handleJobStatus());
     }
 
     public void deleteUser(User user) {
@@ -1145,7 +1196,7 @@ public class Zendesk implements Closeable {
                 Collections.singletonMap("organization", organization))), handle(Organization.class, "organization")));
     }
 
-    public JobStatus<Organization> createOrganizations(Organization... organizations) {
+    public JobStatus createOrganizations(Organization... organizations) {
         return createOrganizations(Arrays.asList(organizations));
     }
 
@@ -1153,15 +1204,28 @@ public class Zendesk implements Closeable {
         return complete(createOrganizationsAsync(organizations));
     }
 
-    public ListenableFuture<JobStatus<Organization>> createOrganizationsAsync(List<Organization> organizations) {
+    public ListenableFuture<JobStatus> createOrganizationsAsync(List<Organization> organizations) {
         return submit(req("POST", cnst("/organizations/create_many.json"), JSON, json(
-                Collections.singletonMap("organizations", organizations))), handleJobStatus(Organization.class));
+                Collections.singletonMap("organizations", organizations))), handleJobStatus());
     }
 
     public Organization updateOrganization(Organization organization) {
         checkHasId(organization);
         return complete(submit(req("PUT", tmpl("/organizations/{id}.json").set("id", organization.getId()), JSON, json(
                 Collections.singletonMap("organization", organization))), handle(Organization.class, "organization")));
+    }
+
+    public JobStatus updateOrganizations(Organization... organizations) {
+        return updateOrganizations(Arrays.asList(organizations));
+    }
+
+    public JobStatus updateOrganizations(List<Organization> organizations) {
+        return complete(updateOrganizationsAsync(organizations));
+    }
+
+    public ListenableFuture<JobStatus> updateOrganizationsAsync(List<Organization> organizations) {
+        return submit(req("PUT", cnst("/organizations/update_many.json"), JSON, json(
+                Collections.singletonMap("organizations", organizations))), handleJobStatus());
     }
 
     public void deleteOrganization(Organization organization) {
@@ -1217,8 +1281,39 @@ public class Zendesk implements Closeable {
                                 organizationMembership))), handle(OrganizationMembership.class, "organization_membership")));
     }
 
+    /**
+     * https://developer.zendesk.com/rest_api/docs/support/organization_memberships#create-many-memberships
+     */
+    public JobStatus createOrganizationMemberships(OrganizationMembership... organizationMemberships) {
+        return createOrganizationMemberships(Arrays.asList(organizationMemberships));
+    }
+
+    /**
+     * https://developer.zendesk.com/rest_api/docs/support/organization_memberships#create-many-memberships
+     */
+    public JobStatus createOrganizationMemberships(List<OrganizationMembership> organizationMemberships) {
+        return complete(createOrganizationMembershipsAsync(organizationMemberships));
+    }
+
+    /**
+     * https://developer.zendesk.com/rest_api/docs/support/organization_memberships#create-many-memberships
+     */
+    public ListenableFuture<JobStatus> createOrganizationMembershipsAsync(
+            List<OrganizationMembership> organizationMemberships) {
+        return submit(req("POST", cnst("/organization_memberships/create_many.json"), JSON, json(
+                Collections.singletonMap("organization_memberships", organizationMemberships))), handleJobStatus());
+    }
+
     public void deleteOrganizationMembership(long id) {
         complete(submit(req("DELETE", tmpl("/organization_memberships/{id}.json").set("id", id)), handleStatus()));
+    }
+
+    /**
+     * https://developer.zendesk.com/rest_api/docs/support/organization_memberships#bulk-delete-memberships
+     */
+    public void deleteOrganizationMemberships(long id, long... ids) {
+        complete(submit(req("DELETE", tmpl("/organization_memberships/destroy_many.json{?ids}").set("ids", idArray(id, ids))),
+                handleStatus()));
     }
 
     public Iterable<Group> getGroups() {
@@ -2320,12 +2415,16 @@ public class Zendesk implements Closeable {
         return new BasicAsyncCompletionHandler<>(clazz, name, typeParams);
     }
 
-    protected <T> ZendeskAsyncCompletionHandler<JobStatus<T>> handleJobStatus(final Class<T> resultClass) {
-        return new BasicAsyncCompletionHandler<JobStatus<T>>(JobStatus.class, "job_status", resultClass) {
+    protected ZendeskAsyncCompletionHandler<JobStatus> handleJobStatus() {
+        return new BasicAsyncCompletionHandler<JobStatus>(JobStatus.class, "job_status") {
             @Override
-            public JobStatus<T> onCompleted(Response response) throws Exception {
-                JobStatus<T> result = super.onCompleted(response);
-                result.setResultsClass(resultClass);
+            public JobStatus onCompleted(Response response) throws Exception {
+                JobStatus result = super.onCompleted(response);
+                if (result == null) {
+                    // null is when we receive a 404 response.
+                    // For an async job we trigger an error
+                    throw new ZendeskResponseException(response);
+                }
                 return result;
             }
         };
@@ -2798,6 +2897,7 @@ public class Zendesk implements Closeable {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.setDateFormat(new StdDateFormat());
+        mapper.enable(DeserializationFeature.USE_LONG_FOR_INTS);
         return mapper;
     }
 
