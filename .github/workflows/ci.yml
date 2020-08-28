@@ -21,7 +21,7 @@ jobs:
         with:
           java-version: 1.8
       - name: Build with Maven
-        run: mvn --show-version verify sonar:sonar --file pom.xml -Dsonar.organization=cloudbees -Dsonar.host.url=${SONAR_URL} -Dsonar.login=${SONAR_TOKEN} -Pcoverage
+        run: mvn --show-version --no-transfer-progress verify sonar:sonar --file pom.xml -Dsonar.organization=cloudbees -Dsonar.host.url=${SONAR_URL} -Dsonar.login=${SONAR_TOKEN} -Pcoverage
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
