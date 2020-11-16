@@ -157,7 +157,7 @@
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <!-- use 2.9.0 for Java 7 projects -->
-      <version>3.17.2</version>
+      <version>3.18.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
