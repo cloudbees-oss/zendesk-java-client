@@ -93,6 +93,8 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * @author stephenc
@@ -611,6 +613,15 @@ public class Zendesk implements Closeable {
     public Iterable<SuspendedTicket> getSuspendedTickets() {
         return new PagedIterable<>(cnst("/suspended_tickets.json"),
                 handleList(SuspendedTicket.class, "suspended_tickets"));
+    }
+
+    public Iterable<Ticket> recoverSuspendedTickets(List<SuspendedTicket> tickets) {
+        List<Long> ids = new ArrayList<>();
+        for (SuspendedTicket ticket : tickets) {
+            ids.add(ticket.getId());
+        }
+        return complete(submit(req("PUT", tmpl("/suspended_tickets/recover_many.json{?ids}").set("ids", ids)),
+                handleList(Ticket.class, "tickets")));
     }
 
     public void deleteSuspendedTicket(SuspendedTicket ticket) {
