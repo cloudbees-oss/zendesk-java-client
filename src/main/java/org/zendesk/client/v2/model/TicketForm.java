@@ -32,6 +32,8 @@ public class TicketForm implements SearchResultEntity, Serializable {
     private Date createdAt;
 	@JsonProperty("updated_at")
     private Date updatedAt;
+	@JsonProperty("end_user_conditions")
+	private List<EndUserCondition> endUserConditions;
 
 	public String getName() {
 		return name;
@@ -104,5 +106,68 @@ public class TicketForm implements SearchResultEntity, Serializable {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public List<EndUserCondition> getEndUserConditions() {
+		return endUserConditions;
+	}
+
+	public void setEndUserConditions(List<EndUserCondition> endUserConditions) {
+		this.endUserConditions = endUserConditions;
+	}
+
+	public static class EndUserCondition implements Serializable {
+		private static final long serialVersionUID = 1L;
+		@JsonProperty("parent_field_id")
+		private String parentFieldId;
+		private String value;
+		@JsonProperty("child_fields")
+		private List<ChildField> childFields;
+
+		public String getParentFieldId() {
+			return parentFieldId;
+		}
+
+		public void setParentFieldId(String parentFieldId) {
+			this.parentFieldId = parentFieldId;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
+
+		public List<ChildField> getChildFields() {
+			return childFields;
+		}
+
+		public void setChildFields(List<ChildField> childFields) {
+			this.childFields = childFields;
+		}
+	}
+
+	public static class ChildField implements Serializable {
+		private static final long serialVersionUID = 1L;
+		private String id;
+		private boolean isRequired;
+
+		public String getId() {
+			return id;
+		}
+
+		public void setId(String id) {
+			this.id = id;
+		}
+
+		public boolean isRequired() {
+			return isRequired;
+		}
+
+		public void setRequired(boolean required) {
+			isRequired = required;
+		}
 	}
 }
