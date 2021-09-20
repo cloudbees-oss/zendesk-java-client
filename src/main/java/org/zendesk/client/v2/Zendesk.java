@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
@@ -1751,14 +1753,24 @@ public class Zendesk implements Closeable {
 
         return new PagedIterable<>(templateUri, handleList(type, "results"));
     }
-
+    
+    /**
+     * Search API implementation with pagination support. 
+     * 
+     * @param String  query string used filter a type given by searchType
+     * @param Map<String, Object> additional parameters other than filter string like per_page, page etc
+     * @param String name of any field of the searchType
+     * @param SortOrder
+     * @param Class<?> type of search entity like Ticket, User etc
+     * @param Class<T> page return type to which the search result will be deserialized 
+     */
     public <T> Optional<T> getSearchPageResults(
-        final String query,
-        final Map<String, Object> queryParams,
-        final String sortBy,
-        final SortOrder sortOrder,
-        final Class<?> searchType,
-        final Class<T> pageType
+        @NotNull final String query,
+        @Nullable final Map<String, Object> queryParams,
+        @Nullable final String sortBy,
+        @Nullable final SortOrder sortOrder,
+        @NotNull final Class<?> searchType,
+        @NotNull final Class<T> pageType
         ) {
 
       final Map<String, Object> paramsMap = new HashMap<>();
@@ -1800,11 +1812,19 @@ public class Zendesk implements Closeable {
       return Optional.of(complete(submit(req("GET", templateUri.toString()), handle(pageType))));
     }
     
+    /**
+     * Ticket Search API implementation with pagination support. 
+     * 
+     * @param String  query string used filter a type given by searchType
+     * @param Map<String, Object> additional parameters other than filter string like per_page, page etc
+     * @param String name of any field of the searchType
+     * @param SortOrder
+     */
     public Optional<TicketPage> getSearchTicketPageResults(
-        final String query,
-        final Map<String, Object> queryParams,
-        final String sortBy,
-        final SortOrder sortOrder) {
+        @NotNull final String query,
+        @Nullable final Map<String, Object> queryParams,
+        @Nullable final String sortBy,
+        @Nullable final SortOrder sortOrder) {
   
      return getSearchPageResults(query, queryParams, sortBy, sortOrder, Ticket.class, TicketPage.class);
     }
