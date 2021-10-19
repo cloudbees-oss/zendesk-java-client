@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
@@ -1744,13 +1742,13 @@ public class Zendesk implements Closeable {
      * @param Class<?> type of search entity like Ticket, User etc
      * @param Class<T> page return type to which the search result will be deserialized 
      */
-    public <T> Optional<T> getSearchPageResults(
-        @NotNull final String query,
-        @Nullable final Map<String, Object> queryParams,
-        @Nullable final String sortBy,
-        @Nullable final SortOrder sortOrder,
-        @NotNull final Class<?> searchType,
-        @NotNull final Class<T> pageType
+    public <T> Optional<T> getSearchResults(
+         final Class<?> searchType,
+         final Class<T> pageType,
+         final String query,
+         final Map<String, Object> queryParams,
+         final String sortBy,
+         final SortOrder sortOrder
         ) {
 
       String typeName = getTypeName(searchType);
@@ -1783,13 +1781,13 @@ public class Zendesk implements Closeable {
      * @param String name of any field of the searchType
      * @param SortOrder
      */
-    public Optional<TicketPage> getSearchTicketPageResults(
-        @NotNull final String query,
-        @Nullable final Map<String, Object> queryParams,
-        @Nullable final String sortBy,
-        @Nullable final SortOrder sortOrder) {
+    public Optional<TicketPage> getSearchTicketResults(
+        final String query,
+        final Map<String, Object> queryParams,
+        final String sortBy,
+        final SortOrder sortOrder) {
   
-     return getSearchPageResults(query, queryParams, sortBy, sortOrder, Ticket.class, TicketPage.class);
+     return getSearchResults(Ticket.class, TicketPage.class, query, queryParams, sortBy, sortOrder);
     }
     
     public void notifyApp(String json) {
@@ -2945,7 +2943,7 @@ public class Zendesk implements Closeable {
         return result;
     }
     
-    private static String getTypeName(@NotNull final Class<?> type) {
+    private static String getTypeName(final Class<?> type) {
       String typeName = null;
       for (final Map.Entry<String, Class<? extends SearchResultEntity>> entry : searchResultTypes.entrySet()) {
           if (type.equals(entry.getValue())) {
