@@ -1060,10 +1060,8 @@ public class RealSmokeTest {
         createClientWithTokenOrPassword();
 
         // Clean up to avoid conflicts
-        for (Organization t : instance.getOrganizations()) {
-            if ("testorg".equals(t.getExternalId())) {
-                instance.deleteOrganization(t);
-            }
+        for (Organization t : instance.lookupOrganizationsByExternalId("testorg")) {
+            instance.deleteOrganization(t);
         }
 
         Organization org = new Organization();
