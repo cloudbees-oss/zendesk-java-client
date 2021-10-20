@@ -77,6 +77,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
@@ -116,21 +117,21 @@ public class RealSmokeTest {
     public static void loadConfig() {
         config = ZendeskConfig.load();
         assumeThat("We have a configuration", config, notNullValue());
-        assertThat("Configuration has an url", config.getProperty("url"), notNullValue());
+        assumeThat("Configuration has an url", config.getProperty("url"), not(isEmptyString()));
     }
 
     public void assumeHaveToken() {
-        assumeThat("We have a username", config.getProperty("username"), notNullValue());
-        assumeThat("We have a token", config.getProperty("token"), notNullValue());
+        assumeThat("We have a username", config.getProperty("username"), not(isEmptyString()));
+        assumeThat("We have a token", config.getProperty("token"), not(isEmptyString()));
     }
 
     public void assumeHavePassword() {
-        assumeThat("We have a username", config.getProperty("username"), notNullValue());
-        assumeThat("We have a password", config.getProperty("password"), notNullValue());
+        assumeThat("We have a username", config.getProperty("username"), not(isEmptyString()));
+        assumeThat("We have a password", config.getProperty("password"), not(isEmptyString()));
     }
 
     public void assumeHaveTokenOrPassword() {
-        assumeThat("We have a username", config.getProperty("username"), notNullValue());
+        assumeThat("We have a username", config.getProperty("username"), not(isEmptyString()));
         assumeThat("We have a token or password", config.getProperty("token") != null || config.getProperty("password") != null, is(
                 true));
     }
