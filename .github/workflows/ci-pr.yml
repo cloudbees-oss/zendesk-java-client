@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-java@v2.3.1
         with:
           distribution: 'adopt'
-          java-version: 1.8
+          java-version: 8
       - name: Build with Maven
         run: mvn --show-version --no-transfer-progress verify --file pom.xml -Pcoverage
         env:
