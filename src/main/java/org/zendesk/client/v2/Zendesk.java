@@ -47,6 +47,7 @@ import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.TicketImport;
+import org.zendesk.client.v2.model.TicketPage;
 import org.zendesk.client.v2.model.TicketResult;
 import org.zendesk.client.v2.model.Topic;
 import org.zendesk.client.v2.model.Trigger;
@@ -90,6 +91,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -1719,37 +1721,75 @@ public class Zendesk implements Closeable {
 
 
     public <T extends SearchResultEntity> Iterable<T> getSearchResults(Class<T> type, String query, Map<String, Object> params) {
-        String typeName = null;
-        for (Map.Entry<String, Class<? extends SearchResultEntity>> entry : searchResultTypes.entrySet()) {
-            if (type.equals(entry.getValue())) {
-                typeName = entry.getKey();
-                break;
-            }
-        }
+        String typeName = getTypeName(type);
+        
         if (typeName == null) {
             return Collections.emptyList();
         }
 
-        StringBuilder uriTemplate = new StringBuilder("/search.json{?query"); //leave off ending curly brace
-
-        //we have to add each param name to the template so that when we call set() with a map, the entries get put in the uri
-        for (String paramName : params.keySet()) {
-            uriTemplate.append(",")
-                    .append(paramName);
-        }
-
-        uriTemplate.append("}");
-
-        TemplateUri templateUri = tmpl(uriTemplate.toString())
-                .set("query", query + "+type:" + typeName);
-
-        if(params != null) {
-            templateUri.set(params);
-        }
+        TemplateUri templateUri = getSearchUri(params, query, typeName);
 
         return new PagedIterable<>(templateUri, handleList(type, "results"));
     }
+    
+    /**
+     * Search API implementation with pagination support. 
+     * 
+     * @param String  query string used filter a type given by searchType
+     * @param Map<String, Object> additional parameters other than filter string like per_page, page etc
+     * @param String name of any field of the searchType
+     * @param SortOrder
+     * @param Class<?> type of search entity like Ticket, User etc
+     * @param Class<T> page return type to which the search result will be deserialized 
+     */
+    public <T> Optional<T> getSearchResults(
+         final Class<?> searchType,
+         final Class<T> pageType,
+         final String query,
+         final Map<String, Object> queryParams,
+         final String sortBy,
+         final SortOrder sortOrder
+        ) {
 
+      String typeName = getTypeName(searchType);
+      
+      if (typeName == null) {
+        return Optional.empty();
+      }
+      
+      final Map<String, Object> paramsMap = new HashMap<>();
+      
+      if(queryParams != null) {
+        paramsMap.putAll(queryParams);
+      }
+      
+      if(sortBy!=null && sortOrder!=null) {
+        paramsMap.put("sort_by", sortBy);
+        paramsMap.put("sort_order", sortOrder.getQueryParameter());
+      }
+
+      final TemplateUri templateUri = getSearchUri(paramsMap, query, typeName);
+      
+      return Optional.of(complete(submit(req("GET", templateUri.toString()), handle(pageType))));
+    }
+    
+    /**
+     * Ticket Search API implementation with pagination support. 
+     * 
+     * @param String  query string used filter a type given by searchType
+     * @param Map<String, Object> additional parameters other than filter string like per_page, page etc
+     * @param String name of any field of the searchType
+     * @param SortOrder
+     */
+    public Optional<TicketPage> getSearchTicketResults(
+        final String query,
+        final Map<String, Object> queryParams,
+        final String sortBy,
+        final SortOrder sortOrder) {
+  
+     return getSearchResults(Ticket.class, TicketPage.class, query, queryParams, sortBy, sortOrder);
+    }
+    
     public void notifyApp(String json) {
        complete(submit(req("POST", cnst("/apps/notify.json"), JSON, json.getBytes()), handleStatus()));
     }
@@ -2902,7 +2942,40 @@ public class Zendesk implements Closeable {
         }
         return result;
     }
+    
+    private static String getTypeName(final Class<?> type) {
+      String typeName = null;
+      for (final Map.Entry<String, Class<? extends SearchResultEntity>> entry : searchResultTypes.entrySet()) {
+          if (type.equals(entry.getValue())) {
+              typeName = entry.getKey();
+              break;
+          }
+      }
+      return typeName;
+    }
 
+    private TemplateUri getSearchUri(Map<String, Object> params, String query , String typeName) {
+     
+      StringBuilder uriTemplate = new StringBuilder("/search.json{?query"); //leave off ending curly brace
+
+      //we have to add each param name to the template so that when we call set() with a map, the entries get put in the uri
+      for (String paramName : params.keySet()) {
+          uriTemplate.append(",")
+                  .append(paramName);
+      }
+
+      uriTemplate.append("}");
+
+      TemplateUri templateUri = tmpl(uriTemplate.toString())
+              .set("query", query + "+type:" + typeName);
+
+      if(params != null) {
+          templateUri.set(params);
+      }
+
+      return templateUri;
+    }
+    
     public static ObjectMapper createMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
