@@ -615,6 +615,26 @@ public class Zendesk implements Closeable {
                 handleList(SuspendedTicket.class, "suspended_tickets"));
     }
 
+    /**
+     * Recover Multiple Suspended Tickets. <a href="https://developer.zendesk.com/rest_api/docs/support/suspended_tickets#recover-multiple-suspended-tickets">Accepts up to 100 ticket ids.</a>
+     * 
+     * @throws IllegalArgumentException when the number of tickets exceeds 100
+     * @param tickets tickets to be recovered
+     * @return recovered tickets
+     */
+    public Iterable<Ticket> recoverSuspendedTickets(List<SuspendedTicket> tickets) {
+        if (100 < tickets.size()) {
+            throw new IllegalArgumentException("This endpoint accepts up to 100 tickets. Provided " + tickets.size() + " tickets.\n" +
+                    "https://developer.zendesk.com/rest_api/docs/support/suspended_tickets#recover-multiple-suspended-tickets");
+        }
+        List<Long> ids = new ArrayList<>();
+        for (SuspendedTicket ticket : tickets) {
+            ids.add(ticket.getId());
+        }
+        return complete(submit(req("PUT", tmpl("/suspended_tickets/recover_many.json{?ids}").set("ids", ids)),
+                handleList(Ticket.class, "tickets")));
+    }
+
     public void deleteSuspendedTicket(SuspendedTicket ticket) {
         checkHasId(ticket);
         deleteSuspendedTicket(ticket.getId());
