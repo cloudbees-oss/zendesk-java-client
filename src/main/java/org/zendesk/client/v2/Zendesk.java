@@ -60,10 +60,10 @@ import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.ArticleAttachments;
 import org.zendesk.client.v2.model.hc.Category;
+import org.zendesk.client.v2.model.hc.PermissionGroup;
 import org.zendesk.client.v2.model.hc.Section;
 import org.zendesk.client.v2.model.hc.Subscription;
 import org.zendesk.client.v2.model.hc.Translation;
-import org.zendesk.client.v2.model.hc.PermissionGroup;
 import org.zendesk.client.v2.model.hc.UserSegment;
 import org.zendesk.client.v2.model.schedules.Holiday;
 import org.zendesk.client.v2.model.schedules.Schedule;
@@ -1754,13 +1754,13 @@ public class Zendesk implements Closeable {
     
     /**
      * Search API implementation with pagination support. 
-     * 
-     * @param String  query string used filter a type given by searchType
-     * @param Map<String, Object> additional parameters other than filter string like per_page, page etc
-     * @param String name of any field of the searchType
-     * @param SortOrder
-     * @param Class<?> type of search entity like Ticket, User etc
-     * @param Class<T> page return type to which the search result will be deserialized 
+     *
+     * @param searchType type of search entity like Ticket, User etc
+     * @param pageType page return type to which the search result will be deserialized
+     * @param query string used filter a type given by searchType
+     * @param queryParams additional parameters other than filter string like per_page, page etc
+     * @param sortBy name of any field of the searchType
+     * @param sortOrder sort order
      */
     public <T> Optional<T> getSearchResults(
          final Class<?> searchType,
@@ -1796,10 +1796,10 @@ public class Zendesk implements Closeable {
     /**
      * Ticket Search API implementation with pagination support. 
      * 
-     * @param String  query string used filter a type given by searchType
-     * @param Map<String, Object> additional parameters other than filter string like per_page, page etc
-     * @param String name of any field of the searchType
-     * @param SortOrder
+     * @param query string used filter a type given by searchType
+     * @param queryParams additional parameters other than filter string like per_page, page etc
+     * @param sortBy name of any field of the searchType
+     * @param sortOrder sort order
      */
     public Optional<TicketPage> getSearchTicketResults(
         final String query,

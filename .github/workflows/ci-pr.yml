@@ -23,6 +23,6 @@ jobs:
           distribution: 'adopt'
           java-version: 8
       - name: Build with Maven
-        run: mvn --show-version --no-transfer-progress verify --file pom.xml -Pcoverage
+        run: mvn --show-version --no-transfer-progress verify --file pom.xml -Pcoverage,cloudbees-oss-release -Dgpg.skip=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
