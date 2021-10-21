@@ -41,6 +41,7 @@ import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
 import org.zendesk.client.v2.model.events.Event;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.Category;
+import org.zendesk.client.v2.model.hc.PermissionGroup;
 import org.zendesk.client.v2.model.hc.Section;
 import org.zendesk.client.v2.model.hc.Subscription;
 import org.zendesk.client.v2.model.hc.Translation;
@@ -77,9 +78,10 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
@@ -1243,6 +1245,49 @@ public class RealSmokeTest {
                 break;
             }
         }
+    }
+
+    @Test
+    public void getPermissionGroups() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (PermissionGroup pg : instance.getPermissionGroups()) {
+            assertThat(pg.getId(), notNullValue());
+            assertThat(pg.getName(), notNullValue());
+            assertThat(pg.getBuiltIn(), notNullValue());
+            assertThat(pg.getCreatedAt(), notNullValue());
+            assertThat(pg.getUpdatedAt(), notNullValue());
+            if (++count > 1) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void permissionGroupCRUD() throws Exception {
+        createClientWithTokenOrPassword();
+        PermissionGroup pg = new PermissionGroup();
+        pg.setName("[zendesk-java-client] This is a creation test " + UUID.randomUUID());
+        pg = instance.createPermissionGroup(pg);
+        Long pgId = pg.getId();
+        try {
+            assertThat(pg.getId(), notNullValue());
+            assertThat(pg.getName(), containsString("[zendesk-java-client] This is a creation test"));
+            assertThat(pg.getCreatedAt(), notNullValue());
+            assertThat(pg.getUpdatedAt(), notNullValue());
+            assertThat(pg.getCreatedAt(), is(pg.getUpdatedAt()));
+            pg.setName("[zendesk-java-client] This is an update test" + UUID.randomUUID());
+            pg = instance.updatePermissionGroup(pg);
+            assertThat(pg.getId(), is(pgId));
+            assertThat(pg.getName(), containsString("[zendesk-java-client] This is an update test"));
+            assertThat(pg.getCreatedAt(), notNullValue());
+            assertThat(pg.getUpdatedAt(), notNullValue());
+            assertThat(pg.getCreatedAt(), lessThanOrEqualTo(pg.getUpdatedAt()));
+        } finally {
+            instance.deletePermissionGroup(pg);
+        }
+        PermissionGroup ghost = instance.getPermissionGroup(pgId);
+        assertThat(ghost, nullValue());
     }
 
     @Test
