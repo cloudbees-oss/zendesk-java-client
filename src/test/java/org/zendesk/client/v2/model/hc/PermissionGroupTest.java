@@ -35,8 +35,8 @@ public class PermissionGroupTest {
                 "    \"name\": \"ApiGroup\",\n" +
                 "    \"built_in\": false,\n" +
                 "    \"publish\": [360001413871],\n" +
-                "    \"created_at\": \"2019-06-10 12:39:23 +0000\",\n" +
-                "    \"updated_at\": \"2019-06-10 12:39:23 +0000\",\n" +
+                "    \"created_at\": \"2019-06-10T12:39:25Z\",\n" +
+                "    \"updated_at\": \"2020-11-04T11:30:42Z\",\n" +
                 "    \"edit\": [360001413871]\n" +
                 "}";
         PermissionGroup pg = parseJson(json.getBytes());
@@ -51,10 +51,11 @@ public class PermissionGroupTest {
         assertEquals(ids, pg.getPublish());
         assertEquals(ids, pg.getEdit());
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss Z");
-        Date date = simpleDateFormat.parse("2019-06-10 12:39:23 +0000");
-        assertEquals(date, pg.getCreatedAt());
-        assertEquals(date, pg.getUpdatedAt());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+        Date created = simpleDateFormat.parse("2019-06-10 12:39:25 +0000");
+        assertEquals(created, pg.getCreatedAt());
+        Date updated = simpleDateFormat.parse("2020-11-04 11:30:42 +0000");
+        assertEquals(updated, pg.getUpdatedAt());
     }
 
 }
