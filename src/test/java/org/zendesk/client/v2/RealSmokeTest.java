@@ -17,6 +17,7 @@ import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Brand;
 import org.zendesk.client.v2.model.Collaborator;
 import org.zendesk.client.v2.model.Comment;
+import org.zendesk.client.v2.model.CommentType;
 import org.zendesk.client.v2.model.ComplianceDeletionStatus;
 import org.zendesk.client.v2.model.DeletedTicket;
 import org.zendesk.client.v2.model.Field;
@@ -1646,14 +1647,18 @@ public class RealSmokeTest {
         Ticket ticket = null;
         try {
             ticket = instance.createTicket(t);
-            instance.createComment(ticket.getId(), new Comment(TICKET_COMMENT2));
+            final Comment comment = new Comment(TICKET_COMMENT2);
+            comment.setType(CommentType.COMMENT);
+            instance.createComment(ticket.getId(), comment);
             Iterable<Comment> ticketCommentsIt = instance.getTicketComments(ticket.getId());
             List<Comment> comments = new ArrayList<>();
             ticketCommentsIt.forEach(comments::add);
 
             assertThat(comments.size(), is(2));
             assertThat(comments.get(0).getBody(), containsString(TICKET_COMMENT1));
+            assertThat(comments.get(0).getType(), is(CommentType.COMMENT));
             assertThat(comments.get(1).getBody(), containsString(TICKET_COMMENT2));
+            assertThat(comments.get(1).getType(), is(CommentType.COMMENT));
         } finally {
             if (ticket != null) {
                 instance.deleteTicket(ticket.getId());
@@ -1669,14 +1674,18 @@ public class RealSmokeTest {
         Ticket ticket = null;
         try {
             ticket = instance.createTicket(t);
-            instance.createComment(ticket.getId(), new Comment(TICKET_COMMENT2));
+            final Comment comment = new Comment(TICKET_COMMENT2);
+            comment.setType(CommentType.COMMENT);
+            instance.createComment(ticket.getId(), comment);
             Iterable<Comment> ticketCommentsIt = instance.getTicketComments(ticket.getId(), SortOrder.DESCENDING);
             List<Comment> comments = new ArrayList<>();
             ticketCommentsIt.forEach(comments::add);
 
             assertThat(comments.size(), is(2));
             assertThat(comments.get(0).getBody(), containsString(TICKET_COMMENT2));
+            assertThat(comments.get(0).getType(), is(CommentType.COMMENT));
             assertThat(comments.get(1).getBody(), containsString(TICKET_COMMENT1));
+            assertThat(comments.get(1).getType(), is(CommentType.COMMENT));
         } finally {
             if (ticket != null) {
                 instance.deleteTicket(ticket.getId());
