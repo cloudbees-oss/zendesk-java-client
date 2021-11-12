@@ -248,6 +248,15 @@ public class Zendesk implements Closeable {
                 Collections.singletonMap("ticket_form", ticketForm))), handle(TicketForm.class, "ticket_form")));
     }
 
+    public void deleteTicketForm(TicketForm ticketForm) {
+        checkHasId(ticketForm);
+        deleteTicketForm(ticketForm.getId());
+    }
+
+    public void deleteTicketForm(long id) {
+        complete(submit(req("DELETE", tmpl("/ticket_forms/{id}.json").set("id", id)), handleStatus()));
+    }
+
     public Ticket importTicket(TicketImport ticketImport) {
         return complete(submit(req("POST", cnst("/imports/tickets.json"),
                 JSON, json(Collections.singletonMap("ticket", ticketImport))),
@@ -2751,6 +2760,12 @@ public class Zendesk implements Closeable {
     private static void checkHasId(Ticket ticket) {
         if (ticket.getId() == null) {
             throw new IllegalArgumentException("Ticket requires id");
+        }
+    }
+
+    private static void checkHasId(TicketForm ticketForm) {
+        if (ticketForm.getId() == null) {
+            throw new IllegalArgumentException("TicketForm requires id");
         }
     }
 
