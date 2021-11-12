@@ -1877,7 +1877,7 @@ public class RealSmokeTest {
         assertNotNull(result.getId());
         assertNotNull(result.getStatus());
 
-        // Let's wait for its completion (30 seconds max)
+        // Let's wait for its completion (2 minutes max)
         await().until(() ->
                 instance.getJobStatus(result).getStatus() == JobStatus.JobStatusEnum.completed);
 
