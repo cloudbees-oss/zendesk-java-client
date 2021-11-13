@@ -166,3 +166,21 @@ public void setWidgetCount(int widgetCount) {
 **** import all other imports
 **** blank line
 **** import static all other imports
+
+== Integration Tests
+
+This library has a set of integration tests in the class `src/test/java/org/zendesk/client/v2/RealSmokeTest.java`. These tests are used to validate the API calls with a real Zendesk instance. The project never got access to a specific sandbox provided by @zendesk thus we are using the sandbox used by CloudBees.
+
+Some of these tests are sadly relying on some specific data of this instance (ex: https://github.com/cloudbees-oss/zendesk-java-client/blob/master/src/test/java/org/zendesk/client/v2/RealSmokeTest.java#L102-L103) and thus you cannot expect to execute all of them in a different instance.
+
+To execute these tests you have to pass several settings in the file `src/test/resources/zendesk.properties`:
+
+```
+url=#A ZENDESK SANDBOX URL#
+username=#A EMAIL OF AN ACCOUNT HAVING ACCESS TO THE INSTANCE#
+password=#THE PASSWORD OF THE ACCOUNT#
+token=#A TOKEN TO ACCESS TO THE INSTANCE#
+requester.email=#A EMAIL - can be like username - TO CREATE THE REPORTER#
+requester.name=#A NAME FOR THE REPORTER#
+```
+
