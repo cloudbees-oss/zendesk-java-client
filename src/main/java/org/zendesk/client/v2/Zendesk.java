@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.util.StdDateFormat;
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
+import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.asynchttpclient.ListenableFuture;
 import org.asynchttpclient.Realm;
 import org.asynchttpclient.Request;
@@ -102,6 +103,8 @@ import java.util.regex.Pattern;
  */
 public class Zendesk implements Closeable {
     private static final String JSON = "application/json; charset=UTF-8";
+    private static final DefaultAsyncHttpClientConfig DEFAULT_ASYNC_HTTP_CLIENT_CONFIG =
+            new DefaultAsyncHttpClientConfig.Builder().setFollowRedirect(true).build();
     private final boolean closeClient;
     private final AsyncHttpClient client;
     private final Realm realm;
@@ -147,7 +150,7 @@ public class Zendesk implements Closeable {
         this.logger = LoggerFactory.getLogger(Zendesk.class);
         this.closeClient = client == null;
         this.oauthToken = null;
-        this.client = client == null ? new DefaultAsyncHttpClient() : client;
+        this.client = client == null ? new DefaultAsyncHttpClient(DEFAULT_ASYNC_HTTP_CLIENT_CONFIG) : client;
         this.url = url.endsWith("/") ? url + "api/v2" : url + "/api/v2";
         if (username != null) {
             this.realm = new Realm.Builder(username, password)
@@ -169,7 +172,7 @@ public class Zendesk implements Closeable {
         this.logger = LoggerFactory.getLogger(Zendesk.class);
         this.closeClient = client == null;
         this.realm = null;
-        this.client = client == null ? new DefaultAsyncHttpClient() : client;
+        this.client = client == null ? new DefaultAsyncHttpClient(DEFAULT_ASYNC_HTTP_CLIENT_CONFIG) : client;
         this.url = url.endsWith("/") ? url + "api/v2" : url + "/api/v2";
         if (oauthToken != null) {
             this.oauthToken = oauthToken;
