@@ -1,6 +1,7 @@
 package org.zendesk.client.v2;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.awaitility.Awaitility;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.IsCollectionContaining;
@@ -82,7 +83,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
@@ -121,6 +121,9 @@ public class RealSmokeTest {
         config = ZendeskConfig.load();
         assumeThat("We have a configuration", config, notNullValue());
         assumeThat("Configuration has an url", config.getProperty("url"), not(isEmptyString()));
+        Awaitility.setDefaultTimeout(2, TimeUnit.MINUTES);
+        Awaitility.setDefaultPollDelay(10, TimeUnit.SECONDS);
+        Awaitility.setDefaultPollInterval(20, TimeUnit.SECONDS);
     }
 
     public void assumeHaveToken() {
@@ -1889,8 +1892,8 @@ public class RealSmokeTest {
         assertNotNull(result.getId());
         assertNotNull(result.getStatus());
 
-        // Let's wait for its completion (5 seconds max)
-        await().atMost(10, TimeUnit.SECONDS).until(() ->
+        // Let's wait for its completion (2 minutes max)
+        await().until(() ->
                 instance.getJobStatus(result).getStatus() == JobStatus.JobStatusEnum.completed);
 
         // Let's validate and return the completed result
@@ -1909,7 +1912,7 @@ public class RealSmokeTest {
      */
     private void waitTicketDeleted(long ticketId) {
         // Wait for the confirmation
-        await().atMost(10, TimeUnit.SECONDS).until(() -> StreamSupport
+        await().until(() -> StreamSupport
                 .stream(instance.getDeletedTickets("id", SortOrder.DESCENDING).spliterator(), false)
                 .map(DeletedTicket::getId)
                 .collect(Collectors.toList())
@@ -1923,7 +1926,7 @@ public class RealSmokeTest {
      */
     private void waitTicketsDeleted(Long[] ticketsIds) {
         // Wait for the confirmation
-        await().atMost(10, TimeUnit.SECONDS).until(() -> StreamSupport
+        await().until(() -> StreamSupport
                 .stream(instance.getDeletedTickets("id", SortOrder.DESCENDING).spliterator(), false)
                 .map(DeletedTicket::getId)
                 .collect(Collectors.toList())
