@@ -114,7 +114,7 @@ public class RealSmokeTest {
      * Global timeout applied on each test to avoid to wait forever if something goes wrong with the remote server
      */
     @Rule
-    public Timeout globalTimeout = Timeout.seconds(30);
+    public Timeout globalTimeout = Timeout.seconds(60);
 
     @BeforeClass
     public static void loadConfig() {
