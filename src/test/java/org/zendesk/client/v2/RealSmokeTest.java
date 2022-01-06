@@ -82,7 +82,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
@@ -120,26 +120,26 @@ public class RealSmokeTest {
     public static void loadConfig() {
         config = ZendeskConfig.load();
         assumeThat("We have a configuration", config, notNullValue());
-        assumeThat("Configuration has an url", config.getProperty("url"), not(isEmptyString()));
+        assumeThat("Configuration has an url", config.getProperty("url"), not(isEmptyOrNullString()));
         Awaitility.setDefaultTimeout(2, TimeUnit.MINUTES);
         Awaitility.setDefaultPollDelay(10, TimeUnit.SECONDS);
         Awaitility.setDefaultPollInterval(20, TimeUnit.SECONDS);
     }
 
     public void assumeHaveToken() {
-        assumeThat("We have a username", config.getProperty("username"), not(isEmptyString()));
-        assumeThat("We have a token", config.getProperty("token"), not(isEmptyString()));
+        assumeThat("We have a username", config.getProperty("username"), not(isEmptyOrNullString()));
+        assumeThat("We have a token", config.getProperty("token"), not(isEmptyOrNullString()));
     }
 
     public void assumeHavePassword() {
-        assumeThat("We have a username", config.getProperty("username"), not(isEmptyString()));
-        assumeThat("We have a password", config.getProperty("password"), not(isEmptyString()));
+        assumeThat("We have a username", config.getProperty("username"), not(isEmptyOrNullString()));
+        assumeThat("We have a password", config.getProperty("password"), not(isEmptyOrNullString()));
     }
 
     public void assumeHaveTokenOrPassword() {
-        assumeThat("We have a username", config.getProperty("username"), not(isEmptyString()));
-        assumeThat("We have a token or password", config.getProperty("token") != null || config.getProperty("password") != null, is(
-                true));
+        assumeThat("We have a username", config.getProperty("username"), not(isEmptyOrNullString()));
+        assumeThat("We have a token or password", config.getProperty("token") != null
+                || config.getProperty("password") != null, is(true));
     }
 
     @After
@@ -1592,25 +1592,41 @@ public class RealSmokeTest {
     @Test
     public void createTicketForm() throws Exception {
         createClientWithTokenOrPassword();
-        TicketForm form = new TicketForm();
+        String givenName = "Test create ticket form";
+        TicketForm form = newTicketForm(givenName);
         TicketForm createdForm = null;
-        form.setActive(true);
-        final String givenName = "Test ticket form";
-        form.setName(givenName);
-        form.setDisplayName(givenName);
-        form.setRawName(givenName);
-        form.setRawDisplayName(givenName);
         try {
             createdForm = instance.createTicketForm(form);
-            assertNotNull(createdForm);
-            assertNotNull(createdForm.getId());
-            assertEquals(givenName, createdForm.getName());
-            assertEquals(givenName, createdForm.getDisplayName());
-            assertEquals(givenName, createdForm.getRawName());
-            assertEquals(givenName, createdForm.getRawDisplayName());
+            checkFields(createdForm, givenName);
         } finally {
             if (createdForm != null) {
                 instance.deleteTicketForm(createdForm);
+            }
+        }
+    }
+
+    @Test
+    public void updateTicketForm() throws Exception {
+        createClientWithTokenOrPassword();
+
+        String name1 = "Test update ticket form 1";
+        TicketForm form1 = newTicketForm(name1);
+
+        String name2 = "Test update ticket form 2";
+        TicketForm form2 = newTicketForm(name2);
+
+        TicketForm updatedForm = null;
+        try {
+            updatedForm = instance.createTicketForm(form1);
+            checkFields(updatedForm, name1);
+
+            form2.setId(updatedForm.getId());
+
+            updatedForm = instance.updateTicketForm(form2);
+            checkFields(updatedForm, name2);
+        } finally {
+            if (updatedForm != null) {
+                instance.deleteTicketForm(updatedForm);
             }
         }
     }
@@ -1944,4 +1960,32 @@ public class RealSmokeTest {
                 .toArray();
     }
 
+    /**
+     * Creates a new ticket form
+     * @param givenName provided name of the form
+     * @return created form object
+     */
+    private TicketForm newTicketForm(String givenName) {
+        TicketForm form = new TicketForm();
+        form.setActive(true);
+        form.setName(givenName);
+        form.setDisplayName(givenName);
+        form.setRawName(givenName);
+        form.setRawDisplayName(givenName);
+        return form;
+    }
+
+    /**
+     * Verifies field on the ticket form
+     * @param form the ticket form to verify fields in
+     * @param name expected name of the form
+     */
+    private void checkFields(TicketForm form, String name) {
+        assertNotNull(form);
+        assertNotNull(form.getId());
+        assertEquals(name, form.getName());
+        assertEquals(name, form.getDisplayName());
+        assertEquals(name, form.getRawName());
+        assertEquals(name, form.getRawDisplayName());
+    }
 }
