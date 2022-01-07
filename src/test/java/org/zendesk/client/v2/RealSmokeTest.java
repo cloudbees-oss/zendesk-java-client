@@ -70,6 +70,7 @@ import java.util.stream.StreamSupport;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -138,8 +139,8 @@ public class RealSmokeTest {
 
     public void assumeHaveTokenOrPassword() {
         assumeThat("We have a username", config.getProperty("username"), not(isEmptyOrNullString()));
-        assumeThat("We have a token or password", config.getProperty("token") != null
-                || config.getProperty("password") != null, is(true));
+        assumeThat("We have a token or password", config.getProperty("token") != null || config.getProperty("password") != null, is(
+              true));
     }
 
     @After
@@ -154,16 +155,16 @@ public class RealSmokeTest {
     public void createClientWithToken() throws Exception {
         assumeHaveToken();
         instance = new Zendesk.Builder(config.getProperty("url"))
-                .setUsername(config.getProperty("username"))
-                .setToken(config.getProperty("token"))
-                .build();
+              .setUsername(config.getProperty("username"))
+              .setToken(config.getProperty("token"))
+              .build();
     }
 
     @Test
     public void createClientWithTokenOrPassword() throws Exception {
         assumeHaveTokenOrPassword();
         final Zendesk.Builder builder = new Zendesk.Builder(config.getProperty("url"))
-                .setUsername(config.getProperty("username"));
+              .setUsername(config.getProperty("username"));
         if (config.getProperty("token") != null) {
             builder.setToken(config.getProperty("token"));
         } else if (config.getProperty("password") != null) {
@@ -177,7 +178,7 @@ public class RealSmokeTest {
         createClientWithTokenOrPassword();
         List<Brand> brands = instance.getBrands();
         assertTrue(brands.iterator().hasNext());
-        for(Brand brand : brands){
+        for (Brand brand : brands) {
             assertThat(brand, notNullValue());
         }
     }
@@ -202,8 +203,8 @@ public class RealSmokeTest {
         createClientWithTokenOrPassword();
         Iterable<TicketForm> ticketForms = instance.getTicketForms();
         assertTrue(ticketForms.iterator().hasNext());
-        for(TicketForm ticketForm : ticketForms){
-        	assertThat(ticketForm, notNullValue());
+        for (TicketForm ticketForm : ticketForms) {
+            assertThat(ticketForm, notNullValue());
         }
     }
 
@@ -211,7 +212,7 @@ public class RealSmokeTest {
     public void getTicketFieldsOnForm() throws Exception {
         createClientWithTokenOrPassword();
         TicketForm ticketForm = instance.getTicketForm(PUBLIC_FORM_ID);
-        for(Long id :ticketForm.getTicketFieldIds()){
+        for (Long id : ticketForm.getTicketFieldIds()) {
             Field f = instance.getTicketField(id);
             assertNotNull(f);
         }
@@ -325,9 +326,9 @@ public class RealSmokeTest {
     public void createClientWithPassword() throws Exception {
         assumeHavePassword();
         instance = new Zendesk.Builder(config.getProperty("url"))
-                .setUsername(config.getProperty("username"))
-                .setPassword(config.getProperty("password"))
-                .build();
+              .setUsername(config.getProperty("username"))
+              .setPassword(config.getProperty("password"))
+              .build();
         Ticket t = instance.getTicket(1);
         assertThat(t, notNullValue());
     }
@@ -335,7 +336,7 @@ public class RealSmokeTest {
     @Test
     public void createAnonymousClient() {
         instance = new Zendesk.Builder(config.getProperty("url"))
-                .build();
+              .build();
         assertThat("An instance is created", instance, Matchers.notNullValue());
     }
 
@@ -355,7 +356,7 @@ public class RealSmokeTest {
             List<User> ticketCollaborators = instance.getTicketCollaborators(ticket.getId());
             assertThat("Collaborators", ticketCollaborators.size(), is(2));
             assertThat("First Collaborator", ticketCollaborators.get(0).getEmail(),
-                    anyOf(is("alice@example.org"), is("bob@example.org")));
+                  anyOf(is("alice@example.org"), is("bob@example.org")));
         } finally {
             instance.deleteTicket(ticket.getId());
         }
@@ -385,8 +386,8 @@ public class RealSmokeTest {
             // then
             assertThat("The ticket now has an ID", ticket.getId(), notNullValue());
             assertThat("The Due Date must be the same (rounded at the second)",
-                    DateUtils.truncate(ticket.getDueAt(),Calendar.SECOND) ,
-                    is(DateUtils.truncate(dueDate,Calendar.SECOND)));
+                  DateUtils.truncate(ticket.getDueAt(), Calendar.SECOND),
+                  is(DateUtils.truncate(dueDate, Calendar.SECOND)));
         } finally {
             instance.deleteTicket(ticket.getId());
         }
@@ -424,8 +425,8 @@ public class RealSmokeTest {
         waitTicketsDeleted(ticketsIds);
         // We permanently delete them
         JobStatus jobStatus =
-                waitJobCompletion(
-                        instance.permanentlyDeleteTickets(firstElement(ticketsIds), otherElements(ticketsIds)));
+              waitJobCompletion(
+                    instance.permanentlyDeleteTickets(firstElement(ticketsIds), otherElements(ticketsIds)));
         // then
         assertThat("Job is completed", jobStatus.getStatus(), is(JobStatus.JobStatusEnum.completed));
         jobStatus.getResults().forEach(jobResult -> {
@@ -441,7 +442,7 @@ public class RealSmokeTest {
             assertThat("The job result has a success entry", jobResult.getSuccess(), is(TRUE));
         });
         assumeThat("We cannot find them anymore",
-                instance.getTickets(firstElement(ticketsIds), otherElements(ticketsIds)), empty());
+              instance.getTickets(firstElement(ticketsIds), otherElements(ticketsIds)), empty());
     }
 
     @Test
@@ -480,10 +481,10 @@ public class RealSmokeTest {
 
         // then
         final Long[] createdTicketsIds =
-                status.getResults().stream().map(JobResult::getId).toArray(Long[]::new);
+              status.getResults().stream().map(JobResult::getId).toArray(Long[]::new);
         try {
             final List<Ticket> createdTickets =
-                    instance.getTickets(firstElement(createdTicketsIds), otherElements(createdTicketsIds));
+                  instance.getTickets(firstElement(createdTicketsIds), otherElements(createdTicketsIds));
 
             assertThat("We have the same number of tickets", status.getResults(), hasSize(ticketsToCreate.length));
 
@@ -501,16 +502,16 @@ public class RealSmokeTest {
             });
 
             assertThat("All tickets are created (we verify that all titles are present)",
-                    createdTickets
-                            .stream()
-                            .map(Ticket::getSubject)
-                            .collect(Collectors.toList()),
-                    containsInAnyOrder(
-                            Arrays.stream(ticketsToCreate)
-                                    .map(Ticket::getSubject)
-                                    .toArray()));
+                  createdTickets
+                        .stream()
+                        .map(Ticket::getSubject)
+                        .collect(Collectors.toList()),
+                  containsInAnyOrder(
+                        Arrays.stream(ticketsToCreate)
+                              .map(Ticket::getSubject)
+                              .toArray()));
             createdTickets.stream().map(Ticket::getId).forEach(id ->
-                    assertThat("A unique ID must be set", id, notNullValue()));
+                  assertThat("A unique ID must be set", id, notNullValue()));
         } finally {
             // cleanup
             instance.deleteTickets(firstElement(createdTicketsIds), otherElements(createdTicketsIds));
@@ -540,8 +541,8 @@ public class RealSmokeTest {
             assertThat("The good number of tickets were processed", status.getTotal(), is(ticketsIds.length));
             assertThat("We have a result for each ticket", status.getResults(), hasSize(ticketsIds.length));
             assertThat("Each ticket has a result",
-                    status.getResults().stream().map(JobResult::getId).collect(Collectors.toList()),
-                    containsInAnyOrder(ticketsIds));
+                  status.getResults().stream().map(JobResult::getId).collect(Collectors.toList()),
+                  containsInAnyOrder(ticketsIds));
             status.getResults().forEach(jobResult -> {
                 assertThat("The job result has no account_id entry", jobResult.getAccountId(), nullValue());
                 assertThat("The job result has an action entry", jobResult.getAction(), is("update"));
@@ -574,12 +575,12 @@ public class RealSmokeTest {
             // then
             assertThat("The imported ticket has an ID", importedTicket.getId(), notNullValue());
             assertThat("The imported ticket has a subject", importedTicket.getSubject(),
-                    CoreMatchers.containsString("[zendesk-java-client] This is a test"));
+                  CoreMatchers.containsString("[zendesk-java-client] This is a test"));
             assertThat("The imported ticket is closed", importedTicket.getStatus(), is(Status.CLOSED));
             assertThat("The imported ticket has a createdAt value", importedTicket.getCreatedAt(), notNullValue());
             assertThat("The imported ticket has an updatedAt value", importedTicket.getUpdatedAt(), notNullValue());
             assertThat("The imported ticket has tags", importedTicket.getTags(),
-                    containsInAnyOrder("zendesk-java-client", "smoke-test"));
+                  containsInAnyOrder("zendesk-java-client", "smoke-test"));
         } finally {
             // cleanup
             instance.deleteTicket(importedTicket);
@@ -597,11 +598,11 @@ public class RealSmokeTest {
         // when
         JobStatus status = waitJobCompletion(instance.importTickets(ticketsToImport));
         final Long[] createdTicketsIds =
-                status.getResults().stream().map(JobResult::getId).toArray(Long[]::new);
+              status.getResults().stream().map(JobResult::getId).toArray(Long[]::new);
 
         try {
             final List<Ticket> createdTickets =
-                    instance.getTickets(firstElement(createdTicketsIds), otherElements(createdTicketsIds));
+                  instance.getTickets(firstElement(createdTicketsIds), otherElements(createdTicketsIds));
 
             assertThat("We have the same number of tickets", status.getResults(), hasSize(ticketsToImport.length));
 
@@ -619,23 +620,23 @@ public class RealSmokeTest {
             });
 
             assertThat("All tickets are created (we verify that all titles are present)",
-                    createdTickets
-                            .stream()
-                            .map(Ticket::getSubject)
-                            .collect(Collectors.toList()),
-                    containsInAnyOrder(
-                            Arrays.stream(ticketsToImport)
-                                    .map(Ticket::getSubject)
-                                    .toArray()));
+                  createdTickets
+                        .stream()
+                        .map(Ticket::getSubject)
+                        .collect(Collectors.toList()),
+                  containsInAnyOrder(
+                        Arrays.stream(ticketsToImport)
+                              .map(Ticket::getSubject)
+                              .toArray()));
             createdTickets.forEach(importedTicket -> {
                 assertThat("The imported ticket has an ID", importedTicket.getId(), notNullValue());
                 assertThat("The imported ticket has a subject", importedTicket.getSubject(),
-                        CoreMatchers.containsString("[zendesk-java-client] This is a test"));
+                      CoreMatchers.containsString("[zendesk-java-client] This is a test"));
                 assertThat("The imported ticket is closed", importedTicket.getStatus(), is(Status.CLOSED));
                 assertThat("The imported ticket has a createdAt value", importedTicket.getCreatedAt(), notNullValue());
                 assertThat("The imported ticket has an updatedAt value", importedTicket.getUpdatedAt(), notNullValue());
                 assertThat("The imported ticket has tags", importedTicket.getTags(),
-                        containsInAnyOrder("zendesk-java-client", "smoke-test"));
+                      containsInAnyOrder("zendesk-java-client", "smoke-test"));
 
             });
 
@@ -661,7 +662,7 @@ public class RealSmokeTest {
         createClientWithTokenOrPassword();
         String requesterEmail = config.getProperty("requester.email");
         assumeThat("Must have a requester email", requesterEmail, notNullValue());
-        for (User user : instance.getSearchResults(User.class, "requester:"+requesterEmail)) {
+        for (User user : instance.getSearchResults(User.class, "requester:" + requesterEmail)) {
             assertThat(user.getEmail(), is(requesterEmail));
         }
     }
@@ -677,10 +678,10 @@ public class RealSmokeTest {
 
         // then
         final Long[] createdUsersIds =
-                status.getResults().stream().map(JobResult::getId).toArray(Long[]::new);
+              status.getResults().stream().map(JobResult::getId).toArray(Long[]::new);
         try {
             final List<User> createdUsers =
-                    Arrays.stream(createdUsersIds).map(instance::getUser).collect(Collectors.toList());
+                  Arrays.stream(createdUsersIds).map(instance::getUser).collect(Collectors.toList());
 
             assertThat("We have the same number of users", status.getResults(), hasSize(usersToCreate.length));
 
@@ -698,16 +699,16 @@ public class RealSmokeTest {
             });
 
             assertThat("All users are created (we verify that all names are present)",
-                    createdUsers
-                            .stream()
-                            .map(User::getName)
-                            .collect(Collectors.toList()),
-                    containsInAnyOrder(
-                            Arrays.stream(usersToCreate)
-                                    .map(User::getName)
-                                    .toArray()));
+                  createdUsers
+                        .stream()
+                        .map(User::getName)
+                        .collect(Collectors.toList()),
+                  containsInAnyOrder(
+                        Arrays.stream(usersToCreate)
+                              .map(User::getName)
+                              .toArray()));
             createdUsers.stream().map(User::getId).forEach(id ->
-                    assertThat("A unique ID must be set", id, notNullValue()));
+                  assertThat("A unique ID must be set", id, notNullValue()));
         } finally {
             // cleanup
             Arrays.stream(createdUsersIds).forEach(instance::deleteUser);
@@ -734,8 +735,8 @@ public class RealSmokeTest {
             assertThat("The good number of users were processed", status.getTotal(), is(usersIds.length));
             assertThat("We have a result for each user", status.getResults(), hasSize(usersIds.length));
             assertThat("Each user has a result",
-                    status.getResults().stream().map(JobResult::getId).collect(Collectors.toList()),
-                    containsInAnyOrder(usersIds));
+                  status.getResults().stream().map(JobResult::getId).collect(Collectors.toList()),
+                  containsInAnyOrder(usersIds));
             status.getResults().forEach(jobResult -> {
                 assertThat("The job result has no account_id entry", jobResult.getAccountId(), nullValue());
                 assertThat("The job result has an action entry", jobResult.getAction(), is("update"));
@@ -772,18 +773,18 @@ public class RealSmokeTest {
             // We update them
             allUsers.forEach(user -> user.setNotes("This user was updated"));
             final JobStatus status =
-                    waitJobCompletion(instance.createOrUpdateUsers(allUsers));
+                  waitJobCompletion(instance.createOrUpdateUsers(allUsers));
 
             // then
             assertThat("Job is completed", status.getStatus(), is(JobStatus.JobStatusEnum.completed));
             assertThat("The good number of users were processed", status.getTotal(), is(allUsers.size()));
             assertThat("We have a result for each user", status.getResults(), hasSize(allUsers.size()));
             assertThat("Each existing user has a result",
-                    status.getResults()
-                            .stream()
-                            .map(JobResult::getId)
-                            .collect(Collectors.toList()),
-                    hasItems(existingUsersIds));
+                  status.getResults()
+                        .stream()
+                        .map(JobResult::getId)
+                        .collect(Collectors.toList()),
+                  hasItems(existingUsersIds));
             status.getResults().forEach(jobResult -> {
                 assertThat("The job result has no account_id entry", jobResult.getAccountId(), nullValue());
                 assertThat("The job result has an action entry", jobResult.getAction(), nullValue());
@@ -797,26 +798,26 @@ public class RealSmokeTest {
                 assertThat("The job result has a success entry", jobResult.getSuccess(), nullValue());
             });
             assertThat("Existing users are updated",
-                    status.getResults()
-                            .stream()
-                            .filter(jobResult -> Objects.equals(jobResult.getStatus(), "Updated"))
-                            .map(JobResult::getId)
-                            .collect(Collectors.toList()),
-                    containsInAnyOrder(existingUsersIds)
+                  status.getResults()
+                        .stream()
+                        .filter(jobResult -> Objects.equals(jobResult.getStatus(), "Updated"))
+                        .map(JobResult::getId)
+                        .collect(Collectors.toList()),
+                  containsInAnyOrder(existingUsersIds)
             );
             assertThat("New users are created",
-                    status.getResults()
-                            .stream()
-                            .filter(jobResult -> Objects.equals(jobResult.getStatus(), "Created"))
-                            .map(JobResult::getExternalId)
-                            .collect(Collectors.toList()),
-                    containsInAnyOrder(newUsers.stream().map(User::getExternalId).toArray())
+                  status.getResults()
+                        .stream()
+                        .filter(jobResult -> Objects.equals(jobResult.getStatus(), "Created"))
+                        .map(JobResult::getExternalId)
+                        .collect(Collectors.toList()),
+                  containsInAnyOrder(newUsers.stream().map(User::getExternalId).toArray())
             );
             newUsersIds = status.getResults()
-                    .stream()
-                    .filter(jobResult -> Objects.equals(jobResult.getStatus(), "Created"))
-                    .map(JobResult::getId)
-                    .toArray(Long[]::new);
+                  .stream()
+                  .filter(jobResult -> Objects.equals(jobResult.getStatus(), "Created"))
+                  .map(JobResult::getId)
+                  .toArray(Long[]::new);
         } finally {
             // cleanup
             Arrays.stream(existingUsersIds).forEach(instance::deleteUser);
@@ -872,7 +873,7 @@ public class RealSmokeTest {
         String externalId = "testSuspendUser";
 
         // Clean up to avoid conflicts
-        for (User u: instance.lookupUserByExternalId(externalId)){
+        for (User u : instance.lookupUserByExternalId(externalId)) {
             instance.deleteUser(u.getId());
         }
 
@@ -942,16 +943,16 @@ public class RealSmokeTest {
         // for different applications and they are described in compliance_deletion_statuses
 
         final Iterable<ComplianceDeletionStatus> complianceDeletionStatuses =
-                instance.getComplianceDeletionStatuses(user.getId());
+              instance.getComplianceDeletionStatuses(user.getId());
 
         // Let's validate
 
         assertThat("There is at least one entry",
-                StreamSupport.stream(complianceDeletionStatuses.spliterator(), false).count(), greaterThan(0L));
+              StreamSupport.stream(complianceDeletionStatuses.spliterator(), false).count(), greaterThan(0L));
 
         assertTrue("There is at least an entry for the application \"all\"",
-                StreamSupport.stream(complianceDeletionStatuses.spliterator(), false)
-                        .anyMatch(complianceDeletionStatus -> "all".equals(complianceDeletionStatus.getApplication())));
+              StreamSupport.stream(complianceDeletionStatuses.spliterator(), false)
+                    .anyMatch(complianceDeletionStatus -> "all".equals(complianceDeletionStatus.getApplication())));
 
         complianceDeletionStatuses.forEach(status -> {
             LOGGER.info("Compliance Deletion Status : {}", status);
@@ -968,7 +969,7 @@ public class RealSmokeTest {
         String externalId = "testSuspendUser";
 
         // Clean up to avoid conflicts
-        for (User u: instance.lookupUserByExternalId(externalId)){
+        for (User u : instance.lookupUserByExternalId(externalId)) {
             instance.deleteUser(u.getId());
         }
 
@@ -1093,10 +1094,10 @@ public class RealSmokeTest {
 
         // then
         final Long[] createdOrgsIds =
-                status.getResults().stream().map(JobResult::getId).toArray(Long[]::new);
+              status.getResults().stream().map(JobResult::getId).toArray(Long[]::new);
         try {
             final List<Organization> createdOrgs =
-                    Arrays.stream(createdOrgsIds).map(instance::getOrganization).collect(Collectors.toList());
+                  Arrays.stream(createdOrgsIds).map(instance::getOrganization).collect(Collectors.toList());
 
             assertThat("We have the same number of organizations", status.getResults(), hasSize(orgsToCreate.length));
 
@@ -1114,16 +1115,16 @@ public class RealSmokeTest {
             });
 
             assertThat("All organizations are created (we verify that all names are present)",
-                    createdOrgs
-                            .stream()
-                            .map(Organization::getName)
-                            .collect(Collectors.toList()),
-                    containsInAnyOrder(
-                            Arrays.stream(orgsToCreate)
-                                    .map(Organization::getName)
-                                    .toArray()));
+                  createdOrgs
+                        .stream()
+                        .map(Organization::getName)
+                        .collect(Collectors.toList()),
+                  containsInAnyOrder(
+                        Arrays.stream(orgsToCreate)
+                              .map(Organization::getName)
+                              .toArray()));
             createdOrgs.stream().map(Organization::getId).forEach(id ->
-                    assertThat("A unique ID must be set", id, notNullValue()));
+                  assertThat("A unique ID must be set", id, notNullValue()));
         } finally {
             // cleanup
             Arrays.stream(createdOrgsIds).forEach(instance::deleteOrganization);
@@ -1144,15 +1145,15 @@ public class RealSmokeTest {
             // We update them
             organizations.forEach(organization -> organization.setNotes("This organization was updated"));
             final JobStatus status =
-                    waitJobCompletion(instance.updateOrganizations(organizations));
+                  waitJobCompletion(instance.updateOrganizations(organizations));
 
             // then
             assertThat("Job is completed", status.getStatus(), is(JobStatus.JobStatusEnum.completed));
             assertThat("The good number of organizations were processed", status.getTotal(), is(orgsIds.length));
             assertThat("We have a result for each organization", status.getResults(), hasSize(orgsIds.length));
             assertThat("Each organization has a result",
-                    status.getResults().stream().map(JobResult::getId).collect(Collectors.toList()),
-                    containsInAnyOrder(orgsIds));
+                  status.getResults().stream().map(JobResult::getId).collect(Collectors.toList()),
+                  containsInAnyOrder(orgsIds));
             status.getResults().forEach(jobResult -> {
                 assertThat("The job result has no account_id entry", jobResult.getAccountId(), nullValue());
                 assertThat("The job result has an action entry", jobResult.getAction(), is("update"));
@@ -1194,29 +1195,29 @@ public class RealSmokeTest {
         });
         // We add them in others orgs too
         Arrays.stream(otherElements(orgsIds)).forEach(orgId -> {
-                    users.forEach(user -> {
-                        OrganizationMembership organizationMembership = new OrganizationMembership();
-                        organizationMembership.setOrganizationId(orgId);
-                        organizationMembership.setUserId(user.getId());
-                        organizationMembership.setDefault(FALSE);
-                        organizationMemberships.add(organizationMembership);
-                    });
-                }
+                  users.forEach(user -> {
+                      OrganizationMembership organizationMembership = new OrganizationMembership();
+                      organizationMembership.setOrganizationId(orgId);
+                      organizationMembership.setUserId(user.getId());
+                      organizationMembership.setDefault(FALSE);
+                      organizationMemberships.add(organizationMembership);
+                  });
+              }
         );
 
         // when
         // We create them
         final JobStatus status =
-                waitJobCompletion(instance.createOrganizationMemberships(organizationMemberships));
+              waitJobCompletion(instance.createOrganizationMemberships(organizationMemberships));
 
         // then
         final Long[] orgMembershipsIds =
-                status.getResults().stream().map(JobResult::getId).toArray(Long[]::new);
+              status.getResults().stream().map(JobResult::getId).toArray(Long[]::new);
 
         try {
 
             assertThat("We have the same number of memberships", status.getResults(),
-                    hasSize(organizationMemberships.size()));
+                  hasSize(organizationMemberships.size()));
 
             status.getResults().forEach(jobResult -> {
                 assertThat("The job result has no account_id entry", jobResult.getAccountId(), nullValue());
@@ -1423,7 +1424,7 @@ public class RealSmokeTest {
             if (++categoryCount > 10) {
                 break;
             }
-            for (Translation t: instance.getCategoryTranslations(cat.getId())) {
+            for (Translation t : instance.getCategoryTranslations(cat.getId())) {
                 assertNotNull(t.getId());
                 assertNotNull(t.getTitle());
                 // body is not mandatory <https://developer.zendesk.com/rest_api/docs/help_center/translations.html>
@@ -1438,7 +1439,7 @@ public class RealSmokeTest {
     @Test
     public void getArticlesIncrementally() throws Exception {
         createClientWithTokenOrPassword();
-        final long ONE_WEEK = 7*24*60*60*1000;
+        final long ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
         int count = 0;
         try {
             for (Article t : instance.getArticlesIncrementally(new Date(new Date().getTime() - ONE_WEEK))) {
@@ -1557,7 +1558,7 @@ public class RealSmokeTest {
         String externalId = "testCreateOrUpdateUser";
 
         // Clean up to avoid conflicts
-        for (User u: instance.lookupUserByExternalId(externalId)){
+        for (User u : instance.lookupUserByExternalId(externalId)) {
             instance.deleteUser(u.getId());
         }
 
@@ -1658,7 +1659,7 @@ public class RealSmokeTest {
                 assertEquals(v.getId(), fetch.getId());
 
                 if (++secondaryCount > 10) {
-                  break;
+                    break;
                 }
             }
         }
@@ -1718,6 +1719,32 @@ public class RealSmokeTest {
         }
     }
 
+    @Test
+    public void getTicketsFromSearch() throws Exception {
+        createClientWithTokenOrPassword();
+
+        Ticket t = newTestTicket();
+        t.setRequester(new Ticket.Requester("a name", "email+alias@acme.org"));
+        Ticket ticket = null;
+        try {
+            ticket = instance.createTicket(t);
+            // according to the doc, it takes about 1 minute for the ticket to be indexed
+            // running several time, it seems that the actual value is around 30-40s
+            Awaitility.with()
+                  .pollDelay(20, SECONDS).and()
+                  .pollInterval(10, SECONDS).await()
+                  .timeout(90, SECONDS)
+                  .until(() -> {
+                      Iterable<Ticket> tickets = instance.getTicketsFromSearch("requester:email+alias@acme.org");
+                      return StreamSupport.stream(tickets.spliterator(), false).findAny().isPresent();
+                  });
+        } finally {
+            if (ticket != null) {
+                instance.deleteTicket(ticket.getId());
+            }
+        }
+    }
+
     // UTILITIES
 
     /**
@@ -1728,17 +1755,17 @@ public class RealSmokeTest {
     private List<Organization> createTestOrganizationsInZendesk() {
         final Organization[] orgsToCreate = newTestOrganizations();
         final Long[] createdOrgsIds = waitJobCompletion(instance.createOrganizations(orgsToCreate))
-                .getResults()
-                .stream()
-                .map(JobResult::getId)
-                .toArray(Long[]::new);
+              .getResults()
+              .stream()
+              .map(JobResult::getId)
+              .toArray(Long[]::new);
         assumeThat("All created organizations should have an ID", createdOrgsIds.length, is(orgsToCreate.length));
         final List<Organization> createdOrganizations = Arrays.stream(createdOrgsIds)
-                .map(instance::getOrganization)
-                .collect(Collectors.toList());
+              .map(instance::getOrganization)
+              .collect(Collectors.toList());
         assumeThat("All created organizations are found in zendesk",
-                createdOrganizations.stream().map(Organization::getId).collect(Collectors.toList()),
-                containsInAnyOrder(createdOrgsIds));
+              createdOrganizations.stream().map(Organization::getId).collect(Collectors.toList()),
+              containsInAnyOrder(createdOrgsIds));
         LOGGER.info("Test organizations: {}", Arrays.toString(createdOrgsIds));
         return createdOrganizations;
     }
@@ -1775,17 +1802,17 @@ public class RealSmokeTest {
     private List<User> createTestUsersInZendesk() {
         final User[] usersToCreate = newTestUsers();
         final Long[] createdUsersIds = waitJobCompletion(instance.createUsers(usersToCreate))
-                .getResults()
-                .stream()
-                .map(JobResult::getId)
-                .toArray(Long[]::new);
+              .getResults()
+              .stream()
+              .map(JobResult::getId)
+              .toArray(Long[]::new);
         assumeThat("All created users should have an ID", createdUsersIds.length, is(usersToCreate.length));
         final List<User> createdUsers = Arrays.stream(createdUsersIds)
-                .map(instance::getUser)
-                .collect(Collectors.toList());
+              .map(instance::getUser)
+              .collect(Collectors.toList());
         assumeThat("All created users are found in zendesk",
-                createdUsers.stream().map(User::getId).collect(Collectors.toList()),
-                containsInAnyOrder(createdUsersIds));
+              createdUsers.stream().map(User::getId).collect(Collectors.toList()),
+              containsInAnyOrder(createdUsersIds));
         LOGGER.info("Test users: {}", Arrays.toString(createdUsersIds));
         return createdUsers;
     }
@@ -1823,16 +1850,16 @@ public class RealSmokeTest {
     private List<Ticket> createTestTicketsInZendesk() {
         final Ticket[] ticketsToCreate = newTestTickets();
         final Long[] createdTicketsIds = waitJobCompletion(instance.createTickets(ticketsToCreate))
-                .getResults()
-                .stream()
-                .map(JobResult::getId)
-                .toArray(Long[]::new);
+              .getResults()
+              .stream()
+              .map(JobResult::getId)
+              .toArray(Long[]::new);
         assumeThat("All created tickets should have an ID", createdTicketsIds.length, is(ticketsToCreate.length));
         final List<Ticket> createdTickets =
-                instance.getTickets(firstElement(createdTicketsIds), otherElements(createdTicketsIds));
+              instance.getTickets(firstElement(createdTicketsIds), otherElements(createdTicketsIds));
         assumeThat("All created tickets are found in zendesk",
-                createdTickets.stream().map(Ticket::getId).collect(Collectors.toList()),
-                containsInAnyOrder(createdTicketsIds));
+              createdTickets.stream().map(Ticket::getId).collect(Collectors.toList()),
+              containsInAnyOrder(createdTicketsIds));
         LOGGER.info("Test tickets: {}", Arrays.toString(createdTicketsIds));
         return createdTickets;
     }
@@ -1855,11 +1882,11 @@ public class RealSmokeTest {
         assumeThat("Must have a requester email", config.getProperty("requester.email"), notNullValue());
         assumeThat("Must have a requester name", config.getProperty("requester.name"), notNullValue());
         final Ticket ticket = new Ticket(
-                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
-                "[zendesk-java-client] This is a test " + UUID.randomUUID().toString(),
-                new Comment(TICKET_COMMENT1));
+              new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+              "[zendesk-java-client] This is a test " + UUID.randomUUID().toString(),
+              new Comment(TICKET_COMMENT1));
         ticket.setCollaborators(Arrays.asList(new Collaborator("Bob Example", "bob@example.org"),
-                new Collaborator("Alice Example", "alice@example.org")));
+              new Collaborator("Alice Example", "alice@example.org")));
         ticket.setTags(Arrays.asList("zendesk-java-client", "smoke-test"));
         return ticket;
     }
@@ -1883,11 +1910,11 @@ public class RealSmokeTest {
         assumeThat("Must have a requester name", config.getProperty("requester.name"), notNullValue());
         Date now = Calendar.getInstance().getTime();
         final TicketImport ticketImport = new TicketImport(
-                new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
-                "[zendesk-java-client] This is a test " + UUID.randomUUID().toString(),
-                Collections.singletonList(new Comment(TICKET_COMMENT1)));
+              new Ticket.Requester(config.getProperty("requester.name"), config.getProperty("requester.email")),
+              "[zendesk-java-client] This is a test " + UUID.randomUUID().toString(),
+              Collections.singletonList(new Comment(TICKET_COMMENT1)));
         ticketImport.setCollaborators(Arrays.asList(new Collaborator("Bob Example", "bob@example.org"),
-                new Collaborator("Alice Example", "alice@example.org")));
+              new Collaborator("Alice Example", "alice@example.org")));
         ticketImport.setTags(Arrays.asList("zendesk-java-client", "smoke-test"));
         ticketImport.setStatus(Status.CLOSED);
         ticketImport.setCreatedAt(now);
@@ -1910,7 +1937,7 @@ public class RealSmokeTest {
 
         // Let's wait for its completion (2 minutes max)
         await().until(() ->
-                instance.getJobStatus(result).getStatus() == JobStatus.JobStatusEnum.completed);
+              instance.getJobStatus(result).getStatus() == JobStatus.JobStatusEnum.completed);
 
         // Let's validate and return the completed result
         final JobStatus completedResult = instance.getJobStatus(result);
@@ -1929,10 +1956,10 @@ public class RealSmokeTest {
     private void waitTicketDeleted(long ticketId) {
         // Wait for the confirmation
         await().until(() -> StreamSupport
-                .stream(instance.getDeletedTickets("id", SortOrder.DESCENDING).spliterator(), false)
-                .map(DeletedTicket::getId)
-                .collect(Collectors.toList())
-                .contains(ticketId));
+              .stream(instance.getDeletedTickets("id", SortOrder.DESCENDING).spliterator(), false)
+              .map(DeletedTicket::getId)
+              .collect(Collectors.toList())
+              .contains(ticketId));
     }
 
     /**
@@ -1943,10 +1970,10 @@ public class RealSmokeTest {
     private void waitTicketsDeleted(Long[] ticketsIds) {
         // Wait for the confirmation
         await().until(() -> StreamSupport
-                .stream(instance.getDeletedTickets("id", SortOrder.DESCENDING).spliterator(), false)
-                .map(DeletedTicket::getId)
-                .collect(Collectors.toList())
-                .containsAll(Arrays.asList(ticketsIds)));
+              .stream(instance.getDeletedTickets("id", SortOrder.DESCENDING).spliterator(), false)
+              .map(DeletedTicket::getId)
+              .collect(Collectors.toList())
+              .containsAll(Arrays.asList(ticketsIds)));
     }
 
     private long firstElement(Long[] array) {
@@ -1955,9 +1982,9 @@ public class RealSmokeTest {
 
     private long[] otherElements(Long[] array) {
         return Arrays.stream(Arrays.copyOfRange(array, 1, array.length))
-                .filter(Objects::nonNull)
-                .mapToLong(Long::longValue)
-                .toArray();
+              .filter(Objects::nonNull)
+              .mapToLong(Long::longValue)
+              .toArray();
     }
 
     /**

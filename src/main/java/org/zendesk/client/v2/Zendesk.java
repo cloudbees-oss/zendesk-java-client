@@ -443,7 +443,7 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Ticket> getTicketsFromSearch(String searchTerm) {
-        return new PagedIterable<>(tmpl("/search.json{?query}").set("query", searchTerm + "+type:ticket"),
+        return new PagedIterable<>(tmpl("/search.json{?query}").set("query", searchTerm + " type:ticket"),
                 handleList(Ticket.class, "results"));
     }
 
@@ -2416,8 +2416,6 @@ public class Zendesk implements Closeable {
         return req(method, template.toString());
     }
 
-    private static final Pattern RESTRICTED_PATTERN = Pattern.compile("%2B", Pattern.LITERAL);
-
     private Request req(String method, String url) {
         return reqBuilder(method, url).build();
     }
@@ -2437,7 +2435,7 @@ public class Zendesk implements Closeable {
             builder.addHeader("Authorization", "Bearer " + oauthToken);
         }
         headers.forEach(builder::setHeader);
-        return builder.setUrl(RESTRICTED_PATTERN.matcher(url).replaceAll("+")); // replace out %2B with + due to API restriction
+        return builder.setUrl(url);
     }
 
     protected ZendeskAsyncCompletionHandler<Void> handleStatus() {
@@ -3012,7 +3010,7 @@ public class Zendesk implements Closeable {
       uriTemplate.append("}");
 
       TemplateUri templateUri = tmpl(uriTemplate.toString())
-              .set("query", query + "+type:" + typeName);
+              .set("query", query + " type:" + typeName);
 
       if(params != null) {
           templateUri.set(params);
