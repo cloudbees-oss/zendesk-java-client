@@ -249,6 +249,8 @@ public class Metric implements Serializable {
 
     public class ZendeskComboMinutes implements Serializable {
 
+        private static final long serialVersionUID = 295719113530420878L;
+
         @JsonProperty("calendar")
         protected Long calendarMinutes;
         @JsonProperty("business")
