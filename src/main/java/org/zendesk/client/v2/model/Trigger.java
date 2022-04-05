@@ -22,6 +22,7 @@ public class Trigger implements Serializable {
    private List<Action> actions;
    private Date         createdAt;
    private Date         updatedAt;
+   private String       categoryId;
 
    public Long getId() {
       return id;
@@ -29,6 +30,14 @@ public class Trigger implements Serializable {
 
    public void setId(Long id) {
       this.id = id;
+   }
+
+   public String getCategoryId() {
+      return categoryId;
+   }
+
+   public void setCategoryId(String categoryId) {
+      this.categoryId = categoryId;
    }
 
    public String getTitle() {
@@ -91,6 +100,7 @@ public class Trigger implements Serializable {
    public String toString() {
       return "Trigger" +
               "{id=" + id +
+              ", categoryId=" + categoryId +
               ", title=" + title +
               ", active=" + active +
               ", position=" + position +
