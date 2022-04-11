@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.rules.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zendesk.client.v2.model.Action;
 import org.zendesk.client.v2.model.AgentRole;
 import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.Brand;
@@ -36,6 +37,7 @@ import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.TicketImport;
+import org.zendesk.client.v2.model.Trigger;
 import org.zendesk.client.v2.model.Type;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItem;
@@ -232,6 +234,143 @@ public class RealSmokeTest {
                 firstTargetId = target.getId();
             }
         }
+    }
+
+    @Test
+    public void getTriggers() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (Trigger t : instance.getTriggers()) {
+            assertThat(t.getTitle(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void getTriggersWithParameters() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (Trigger t : instance.getTriggers(null,true,"title",SortOrder.ASCENDING)) {
+            assertThat(t.getTitle(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void getActiveTriggers() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (Trigger t : instance.getActiveTriggers()) {
+            assertThat(t.getTitle(), notNullValue());
+            assertTrue(t.isActive());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void createTrigger() throws Exception {
+        createClientWithTokenOrPassword();
+        Trigger trigger = createTestTrigger();
+        try {
+            trigger = instance.createTrigger(trigger);
+            assertThat(trigger.getId(), notNullValue());
+        } finally {
+            if (trigger.getId() != null) {
+                instance.deleteTrigger(trigger.getId());
+            }
+        }
+    }
+
+    @Test
+    public void updateTrigger() throws Exception {
+        createClientWithTokenOrPassword();
+        Trigger trigger = createTestTrigger();
+        try {
+            trigger = instance.createTrigger(trigger);
+            assertThat(trigger.getId(), notNullValue());
+            trigger.setTitle(trigger.getTitle() + " Updated");
+            trigger = instance.updateTrigger(trigger.getId(), trigger);
+            assertTrue(trigger.getTitle().contains("Updated"));
+        } finally {
+            if (trigger.getId() != null) {
+                instance.deleteTrigger(trigger.getId());
+            }
+        }
+    }
+
+    @Test
+    public void searchTrigger() throws Exception {
+        createClientWithTokenOrPassword();
+        List<Trigger> triggers = new ArrayList<>();
+        final String title = "[zendesk-java-client] SearchTriggerTest " + UUID.randomUUID();
+        for (int i = 0; i < 3; i++) {
+            triggers.add(instance.createTrigger(createTestTrigger(title + " " + i)));
+        }
+        // It's taking a while before the search returns them
+        Awaitility.with()
+                .pollDelay(45, SECONDS).and()
+                .pollInterval(5, SECONDS).await()
+                .timeout(60, SECONDS)
+                .until(() -> StreamSupport.stream(instance.searchTriggers(title).spliterator(), false).count()==3L);
+        try {
+            assertThat(StreamSupport.stream(instance.searchTriggers(title).spliterator(), false).count(),
+                    is(3L));
+        } finally {
+            triggers.stream().map(Trigger::getId).forEach(instance::deleteTrigger);
+        }
+    }
+
+    @Test
+    public void searchTriggerWithParameters() throws Exception {
+        createClientWithTokenOrPassword();
+        List<Trigger> triggers = new ArrayList<>();
+        final String title = "[zendesk-java-client] SearchTriggerTestWithParams " + UUID.randomUUID();
+        for (int i = 0; i < 3; i++) {
+            triggers.add(instance.createTrigger(createTestTrigger(title + " " + i)));
+        }
+        // It's taking a while before the search returns them
+        Awaitility.with()
+                .pollDelay(45, SECONDS).and()
+                .pollInterval(5, SECONDS).await()
+                .timeout(60, SECONDS)
+                .until(() -> StreamSupport.stream(instance.searchTriggers(title).spliterator(), false).count()==3L);
+        try {
+            assertThat(StreamSupport.stream(
+                            instance.searchTriggers(title, true, "title", SortOrder.ASCENDING)
+                                    .spliterator(),
+                            false).count(),
+                    is(3L));
+        } finally {
+            triggers.stream().map(Trigger::getId).forEach(instance::deleteTrigger);
+        }
+    }
+
+    private Trigger createTestTrigger() {
+        return createTestTrigger("[zendesk-java-client] Test trigger: " + UUID.randomUUID());
+    }
+
+    private Trigger createTestTrigger(String title) {
+        Trigger.Condition condition = new Trigger.Condition();
+        condition.setField("status");
+        condition.setOperator("is");
+        condition.setValue("solved");
+        Trigger.Conditions conditions = new Trigger.Conditions();
+        conditions.setAll(Collections.singletonList(condition));
+        Trigger trigger = new Trigger();
+        trigger.setTitle(title);
+        trigger.setActive(true);
+        trigger.setConditions(conditions);
+        Action action = new Action();
+        action.setField("status");
+        action.setValue(new String[]{"solved"});
+        trigger.setActions(Collections.singletonList(action));
+        return trigger;
     }
 
     @Test

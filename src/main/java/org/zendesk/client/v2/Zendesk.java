@@ -759,22 +759,54 @@ public class Zendesk implements Closeable {
         return new PagedIterable<>(cnst("/triggers.json"), handleList(Trigger.class, "triggers"));
     }
 
+    public Iterable<Trigger> getTriggers(String categoryId, boolean active, String sortBy, SortOrder sortOrder) {
+        return new PagedIterable<>(
+                tmpl("/triggers.json{?category_id,active,sort_by,sort_order}")
+                        .set("category_id", categoryId)
+                        .set("active", active)
+                        .set("sort_by", sortBy)
+                        .set("sort_order", sortOrder.getQueryParameter()),
+                handleList(Trigger.class, "triggers"));
+    }
+
+    public Iterable<Trigger> getActiveTriggers() {
+        return new PagedIterable<>(cnst("/triggers/active.json"), handleList(Trigger.class, "triggers"));
+    }
+
+    public Iterable<Trigger> searchTriggers(String query) {
+        return new PagedIterable<>(tmpl("/triggers/search.json{?query}").set("query", query),
+                handleList(Trigger.class, "triggers"));
+    }
+
+    public Iterable<Trigger> searchTriggers(String query, boolean active, String sortBy, SortOrder sortOrder) {
+        return new PagedIterable<>(
+                tmpl("/triggers/search.json{?query,active,sort_by,sort_order}")
+                        .set("query", query)
+                        .set("active", active)
+                        .set("sort_by", sortBy)
+                        .set("sort_order", sortOrder.getQueryParameter()),
+                handleList(Trigger.class, "triggers"));
+    }
+
     public Trigger getTrigger(long id) {
-       return complete(submit(req("GET", tmpl("/triggers/{id}.json").set("id", id)), handle(Trigger.class, "trigger")));
+        return complete(
+                submit(req("GET", tmpl("/triggers/{id}.json").set("id", id)), handle(Trigger.class, "trigger")));
     }
 
     public Trigger createTrigger(Trigger trigger) {
-        return complete(submit(req("POST", cnst("/triggers.json"), JSON, json(Collections.singletonMap("trigger", trigger))),
-              handle(Trigger.class, "trigger")));
+        return complete(
+                submit(req("POST", cnst("/triggers.json"), JSON, json(Collections.singletonMap("trigger", trigger))),
+                        handle(Trigger.class, "trigger")));
     }
 
     public Trigger updateTrigger(Long triggerId, Trigger trigger) {
-      return complete(submit(req("PUT", tmpl("/triggers/{id}.json").set("id", triggerId), JSON, json(Collections.singletonMap("trigger", trigger))),
-            handle(Trigger.class, "trigger")));
-  }
+        return complete(submit(req("PUT", tmpl("/triggers/{id}.json").set("id", triggerId), JSON,
+                        json(Collections.singletonMap("trigger", trigger))),
+                handle(Trigger.class, "trigger")));
+    }
 
     public void deleteTrigger(long triggerId) {
-       complete(submit(req("DELETE", tmpl("/triggers/{id}.json").set("id", triggerId)), handleStatus()));
+        complete(submit(req("DELETE", tmpl("/triggers/{id}.json").set("id", triggerId)), handleStatus()));
     }
 
 
