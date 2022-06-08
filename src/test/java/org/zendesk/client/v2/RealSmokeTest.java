@@ -35,6 +35,7 @@ import org.zendesk.client.v2.model.SortOrder;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
+import org.zendesk.client.v2.model.TicketCount;
 import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.TicketImport;
 import org.zendesk.client.v2.model.Trigger;
@@ -104,6 +105,7 @@ public class RealSmokeTest {
 
     // TODO: Find a better way to manage our test environment (this is the PUBLIC_FORM_ID of the cloudbees org)
     private static final long CLOUDBEES_ORGANIZATION_ID = 360507899132L;
+    private static final long USER_ID = 381626101132L; // Pierre B
     private static final long PUBLIC_FORM_ID = 360000434032L;
     private static final Random RANDOM = new Random();
     private static final String TICKET_COMMENT1 = "Please ignore this ticket";
@@ -183,6 +185,42 @@ public class RealSmokeTest {
         for (Brand brand : brands) {
             assertThat(brand, notNullValue());
         }
+    }
+
+    @Test
+    public void getTicketsCount() throws Exception {
+        createClientWithTokenOrPassword();
+        TicketCount ticketCount = instance.getTicketsCount();
+        assertThat(ticketCount, notNullValue());
+        assertThat(ticketCount.getValue(), greaterThan(0L));
+        assertThat(ticketCount.getRefreshedAt(), notNullValue());
+    }
+
+    @Test
+    public void getTicketsCountForOrganization() throws Exception {
+        createClientWithTokenOrPassword();
+        TicketCount ticketCount = instance.getTicketsCountForOrganization(CLOUDBEES_ORGANIZATION_ID);
+        assertThat(ticketCount, notNullValue());
+        assertThat(ticketCount.getValue(), greaterThan(0L));
+        assertThat(ticketCount.getRefreshedAt(), notNullValue());
+    }
+
+    @Test
+    public void getCcdTicketsCountForUser() throws Exception {
+        createClientWithTokenOrPassword();
+        TicketCount ticketCount = instance.getCcdTicketsCountForUser(USER_ID);
+        assertThat(ticketCount, notNullValue());
+        assertThat(ticketCount.getValue(), greaterThan(0L));
+        assertThat(ticketCount.getRefreshedAt(), notNullValue());
+    }
+
+    @Test
+    public void getAssignedTicketsCountForUser() throws Exception {
+        createClientWithTokenOrPassword();
+        TicketCount ticketCount = instance.getAssignedTicketsCountForUser(USER_ID);
+        assertThat(ticketCount, notNullValue());
+        assertThat(ticketCount.getValue(), greaterThan(0L));
+        assertThat(ticketCount.getRefreshedAt(), notNullValue());
     }
 
     @Test

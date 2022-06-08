@@ -46,6 +46,7 @@ import org.zendesk.client.v2.model.SortOrder;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Ticket;
+import org.zendesk.client.v2.model.TicketCount;
 import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.TicketImport;
 import org.zendesk.client.v2.model.TicketPage;
@@ -284,6 +285,42 @@ public class Zendesk implements Closeable {
     public ListenableFuture<JobStatus> importTicketsAsync(List<TicketImport> ticketImports) {
         return submit(req("POST", cnst("/imports/tickets/create_many.json"), JSON, json(
                 Collections.singletonMap("tickets", ticketImports))), handleJobStatus());
+    }
+
+    public TicketCount getTicketsCount(){
+        return complete(
+                submit(
+                        req("GET", cnst("/tickets/count.json")),
+                        handle(TicketCount.class, "count")
+                )
+        );
+    }
+
+    public TicketCount getTicketsCountForOrganization(long id){
+        return complete(
+                submit(
+                        req("GET", tmpl("/organizations/{id}/tickets/count.json").set("id", id)),
+                        handle(TicketCount.class, "count")
+                )
+        );
+    }
+
+    public TicketCount getCcdTicketsCountForUser(long id){
+        return complete(
+                submit(
+                        req("GET", tmpl("/users/{id}/tickets/ccd/count.json").set("id", id)),
+                        handle(TicketCount.class, "count")
+                )
+        );
+    }
+
+    public TicketCount getAssignedTicketsCountForUser(long id){
+        return complete(
+                submit(
+                        req("GET", tmpl("/users/{id}/tickets/assigned/count.json").set("id", id)),
+                        handle(TicketCount.class, "count")
+                )
+        );
     }
 
     public Ticket getTicket(long id) {
