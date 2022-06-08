@@ -510,6 +510,12 @@ public class Zendesk implements Closeable {
                 handleList(Ticket.class, "tickets"));
     }
 
+    public Iterable<org.zendesk.client.v2.model.Request> getOrganizationRequests(long organizationId) {
+        return new PagedIterable<>(
+                tmpl("/organizations/{organizationId}/requests.json").set("organizationId", organizationId),
+                handleList(org.zendesk.client.v2.model.Request.class, "requests"));
+    }
+
     public Iterable<Ticket> getUserRequestedTickets(long userId) {
         return new PagedIterable<>(tmpl("/users/{userId}/tickets/requested.json").set("userId", userId),
                 handleList(Ticket.class, "tickets"));
