@@ -439,6 +439,18 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void getOrganizationRequests() throws Exception {
+        createClientWithTokenOrPassword();
+        int count = 0;
+        for (Request request : instance.getOrganizationRequests(CLOUDBEES_ORGANIZATION_ID)) {
+            assertThat(request.getId(), notNullValue());
+            if (++count > 10) {
+                break;
+            }
+        }
+    }
+
+    @Test
     public void getTicketAudits() throws Exception {
         createClientWithTokenOrPassword();
         for (Audit a : instance.getTicketAudits(1L)) {
