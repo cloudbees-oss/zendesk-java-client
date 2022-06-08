@@ -42,4 +42,11 @@ public class ActionTest {
         assertEquals("huu", action.getValue()[0]);
         assertEquals("haa", action.getValue()[1]);
     }
+
+    @Test
+    public void testToString() {
+        String json = "{ \"field\": 21337631753, \"value\": \"huuhaa\" }";
+        Action action = parseJson(json.getBytes());
+        assertEquals("Action{field=\'21337631753\', value=[huuhaa]}", action.toString());
+    }
 }
