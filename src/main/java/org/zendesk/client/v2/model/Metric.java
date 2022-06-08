@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class Metric implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -847290591071406141L;
 
     @JsonProperty("id")
     protected Long id;
@@ -247,7 +247,9 @@ public class Metric implements Serializable {
                 '}';
     }
 
-    public class ZendeskComboMinutes {
+    public class ZendeskComboMinutes implements Serializable {
+
+        private static final long serialVersionUID = 295719113530420878L;
 
         @JsonProperty("calendar")
         protected Long calendarMinutes;
