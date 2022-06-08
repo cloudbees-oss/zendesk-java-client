@@ -1191,6 +1191,21 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void getOrganizationsById() throws Exception {
+        createClientWithTokenOrPassword();
+
+        Long[] orgIds = StreamSupport.stream(instance.getOrganizations().spliterator(), false)
+                .limit(5)
+                .map(Organization::getId)
+                .toArray(Long[]::new);
+
+        for (Organization org : instance.getOrganizations(orgIds[0], orgIds[1], orgIds[2], orgIds[3], orgIds[4])) {
+            assertThat(org.getId(), notNullValue());
+            assertThat(org.getName(), notNullValue());
+        }
+    }
+
+    @Test
     public void getOrganizationsIncrementally() throws Exception {
         createClientWithTokenOrPassword();
         int count = 0;
