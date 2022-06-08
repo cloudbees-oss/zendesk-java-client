@@ -1298,6 +1298,11 @@ public class Zendesk implements Closeable {
                 handleList(Organization.class, "organizations"));
     }
 
+    public List<Organization> getOrganizations(long id, long... ids) {
+        return complete(submit(req("GET", tmpl("/organizations/show_many.json{?ids}").set("ids", idArray(id, ids))),
+                handleList(Organization.class, "organizations")));
+    }
+
     public Iterable<Organization> getOrganizationsIncrementally(Date startTime) {
         return new PagedIterable<>(
                 tmpl("/incremental/organizations.json{?start_time}")
