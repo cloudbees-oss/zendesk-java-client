@@ -915,8 +915,8 @@ public class Zendesk implements Closeable {
                 handleList(User.class, "users")));
     }
 
-    public List<User> getUsersByExternalIds(long external_id, long... external_ids) {
-        return complete(submit(req("GET", tmpl("/users/show_many.json{?external_ids}").set("external_ids", idArray(external_id, external_ids))),
+    public List<User> getUsersByExternalIds(long externalId, long... externalIds) {
+        return complete(submit(req("GET", tmpl("/users/show_many.json{?external_ids}").set("external_ids", idArray(externalId, externalIds))),
                 handleList(User.class, "users")));
     }
 
