@@ -873,6 +873,11 @@ public class Zendesk implements Closeable {
         return new PagedIterable<>(cnst(uriBuilder.toString()), handleList(User.class, "users"));
     }
 
+    public List<User> getUsers(long id, long... ids) {
+        return complete(submit(req("GET", tmpl("/users/show_many.json{?ids}").set("ids", idArray(id, ids))),
+                handleList(User.class, "users")));
+    }
+
     public Iterable<User> getUsersIncrementally(Date startTime) {
         return new PagedIterable<>(
                 tmpl("/incremental/users.json{?start_time}").set("start_time", msToSeconds(startTime.getTime())),

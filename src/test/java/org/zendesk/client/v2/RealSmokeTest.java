@@ -1167,6 +1167,21 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void getUsersById() throws Exception {
+        createClientWithTokenOrPassword();
+
+        Long[] usersIds = StreamSupport.stream(instance.getUsers().spliterator(), false)
+                .limit(5)
+                .map(User::getId)
+                .toArray(Long[]::new);
+
+        for (User user : instance.getUsers(usersIds[0], usersIds[1], usersIds[2], usersIds[3], usersIds[4])) {
+            assertThat(user.getId(), notNullValue());
+            assertThat(user.getName(), notNullValue());
+        }
+    }
+    
+    @Test
     public void getUsersIncrementally() throws Exception {
         createClientWithTokenOrPassword();
         int count = 0;
