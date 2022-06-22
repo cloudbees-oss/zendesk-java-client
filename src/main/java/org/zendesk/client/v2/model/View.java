@@ -8,12 +8,8 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class View implements Serializable {
 
-<<<<<<< HEAD
-    private static final long serialVersionUID = 1L;
-=======
     private static final long serialVersionUID = 8162172428393948830L;
 
->>>>>>> 954b71b... Add basic View support - List the Views; List the tickets in a View
     private long id;
     private String title;
     private boolean active;
@@ -23,10 +19,6 @@ public class View implements Serializable {
     private String description;
     private Conditions conditions;
     private boolean watchable;
-<<<<<<< HEAD
-    private String rawTitle;
-=======
->>>>>>> 954b71b... Add basic View support - List the Views; List the tickets in a View
 
     public void setId(long id) {
         this.id = id;
@@ -109,19 +101,6 @@ public class View implements Serializable {
         return this.watchable;
     }
 
-<<<<<<< HEAD
-    public void setRawTitle(String rawTitle) {
-        this.rawTitle = rawTitle;
-    }
-
-    @JsonProperty("raw_title")
-    public String getRawTitle() {
-        return this.rawTitle;
-    }
-
-=======
->>>>>>> 954b71b... Add basic View support - List the Views; List the tickets in a View
-    //TODO: fix this.
     public String toString() {
         return "View " +
             "{id=" + id +
@@ -133,10 +112,6 @@ public class View implements Serializable {
             ", description=" + description +
             ", conditions=" + conditions +
             ", watchable=" + watchable +
-<<<<<<< HEAD
-            ", rawTitle=" + rawTitle +
-=======
->>>>>>> 954b71b... Add basic View support - List the Views; List the tickets in a View
             "}";
     }
 }
