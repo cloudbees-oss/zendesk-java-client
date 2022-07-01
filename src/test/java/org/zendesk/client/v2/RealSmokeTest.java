@@ -41,6 +41,7 @@ import org.zendesk.client.v2.model.TicketImport;
 import org.zendesk.client.v2.model.Trigger;
 import org.zendesk.client.v2.model.Type;
 import org.zendesk.client.v2.model.User;
+import org.zendesk.client.v2.model.View;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItem;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
 import org.zendesk.client.v2.model.events.Event;
@@ -63,6 +64,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
@@ -107,6 +109,7 @@ public class RealSmokeTest {
     private static final long CLOUDBEES_ORGANIZATION_ID = 360507899132L;
     private static final long USER_ID = 381626101132L; // Pierre B
     private static final long PUBLIC_FORM_ID = 360000434032L;
+    private static final long UNRESOLVED_TICKETS_VIEW_ID = 360094600471L;
     private static final Random RANDOM = new Random();
     private static final String TICKET_COMMENT1 = "Please ignore this ticket";
     private static final String TICKET_COMMENT2 = "Yes ignore this ticket";
@@ -1962,6 +1965,31 @@ public class RealSmokeTest {
                 instance.deleteTicket(ticket.getId());
             }
         }
+    }
+
+    @Test
+    public void getUnresolvedViewReturnsANewlyCreatedTicket() throws Exception {
+        createClientWithTokenOrPassword();
+        Ticket ticket = instance.createTicket(newTestTicket());
+        try {
+            assertThat(ticket.getId(), notNullValue());
+
+            Optional<Ticket> maybeTicket = StreamSupport.stream(instance.getView(UNRESOLVED_TICKETS_VIEW_ID).spliterator(), false)
+                    .filter(t -> Objects.equals(t.getId(), ticket.getId()))
+                    .findFirst();
+            assertTrue(maybeTicket.isPresent());
+        } finally {
+            instance.deleteTicket(ticket.getId());
+        }
+    }
+
+    @Test
+    public void getViewReturnsTheUnresolvedView() throws Exception {
+        createClientWithTokenOrPassword();
+        Optional<View> maybeView = StreamSupport.stream(instance.getViews().spliterator(),false)
+                .filter(v -> Objects.equals(v.getId(), UNRESOLVED_TICKETS_VIEW_ID))
+                .findFirst();
+        assertTrue(maybeView.isPresent());
     }
 
     // UTILITIES
