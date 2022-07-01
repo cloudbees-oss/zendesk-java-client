@@ -57,6 +57,7 @@ import org.zendesk.client.v2.model.TwitterMonitor;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.UserField;
 import org.zendesk.client.v2.model.UserRelatedInfo;
+import org.zendesk.client.v2.model.View;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItem;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
 import org.zendesk.client.v2.model.hc.Article;
@@ -853,7 +854,18 @@ public class Zendesk implements Closeable {
     }
 
 
-  // Automations
+    // Views
+    public Iterable<View> getViews() {
+        return new PagedIterable<>(cnst("/views.json"), handleList(View.class, "views"));
+
+    }
+
+    public Iterable<Ticket> getView(long id) {
+        return new PagedIterable<>(tmpl("/views/{id}/tickets.json").set("id", id),
+            handleList(Ticket.class, "tickets"));
+    }
+
+    // Automations
   public Iterable<Automation> getAutomations() {
     return new PagedIterable<>(cnst("/automations.json"),
             handleList(Automation.class, "automations"));
