@@ -1947,9 +1947,9 @@ public class RealSmokeTest {
             assertThat(comments.size(), is(2));
             assertThat(comments.get(0).getBody(), containsString(TICKET_COMMENT2));
             assertThat(comments.get(0).getType(), is(CommentType.COMMENT));
+            assertThat(comments.get(0).getVia(), is(VIA));
             assertThat(comments.get(1).getBody(), containsString(TICKET_COMMENT1));
             assertThat(comments.get(1).getType(), is(CommentType.COMMENT));
-            assertThat(comments.get(1).getVia(), is(VIA));
         } finally {
             if (ticket != null) {
                 instance.deleteTicket(ticket.getId());
