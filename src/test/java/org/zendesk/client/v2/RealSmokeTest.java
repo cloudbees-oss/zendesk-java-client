@@ -42,7 +42,6 @@ import org.zendesk.client.v2.model.Trigger;
 import org.zendesk.client.v2.model.Type;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.View;
-import org.zendesk.client.v2.model.Via;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItem;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
 import org.zendesk.client.v2.model.events.Event;
@@ -63,14 +62,12 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -116,9 +113,6 @@ public class RealSmokeTest {
     private static final Random RANDOM = new Random();
     private static final String TICKET_COMMENT1 = "Please ignore this ticket";
     private static final String TICKET_COMMENT2 = "Yes ignore this ticket";
-    private static final String VIA_CHANNEL = "chat";
-    private static final Map<String, Object> VIA_SOURCE = new HashMap<>();
-    private static final Via VIA = new Via();
 
     private static Properties config;
 
@@ -140,11 +134,6 @@ public class RealSmokeTest {
         Awaitility.setDefaultPollInterval(20, TimeUnit.SECONDS);
     }
 
-    @BeforeClass
-    public static void initializeVia() {
-        VIA.setChannel(VIA_CHANNEL);
-        VIA.setSource(VIA_SOURCE);
-    }
 
     public void assumeHaveToken() {
         assumeThat("We have a username", config.getProperty("username"), not(isEmptyOrNullString()));
@@ -1909,7 +1898,6 @@ public class RealSmokeTest {
             ticket = instance.createTicket(t);
             final Comment comment = new Comment(TICKET_COMMENT2);
             comment.setType(CommentType.COMMENT);
-            comment.setVia(VIA);
             instance.createComment(ticket.getId(), comment);
             Iterable<Comment> ticketCommentsIt = instance.getTicketComments(ticket.getId());
             List<Comment> comments = new ArrayList<>();
@@ -1918,9 +1906,12 @@ public class RealSmokeTest {
             assertThat(comments.size(), is(2));
             assertThat(comments.get(0).getBody(), containsString(TICKET_COMMENT1));
             assertThat(comments.get(0).getType(), is(CommentType.COMMENT));
+            assertNotNull(comments.get(0).getVia());
+            assertThat(comments.get(0).getVia().getChannel(), is("api"));
             assertThat(comments.get(1).getBody(), containsString(TICKET_COMMENT2));
             assertThat(comments.get(1).getType(), is(CommentType.COMMENT));
-            assertThat(comments.get(1).getVia(), is(VIA));
+            assertNotNull(comments.get(1).getVia());
+            assertThat(comments.get(1).getVia().getChannel(), is("api"));
         } finally {
             if (ticket != null) {
                 instance.deleteTicket(ticket.getId());
@@ -1938,7 +1929,6 @@ public class RealSmokeTest {
             ticket = instance.createTicket(t);
             final Comment comment = new Comment(TICKET_COMMENT2);
             comment.setType(CommentType.COMMENT);
-            comment.setVia(VIA);
             instance.createComment(ticket.getId(), comment);
             Iterable<Comment> ticketCommentsIt = instance.getTicketComments(ticket.getId(), SortOrder.DESCENDING);
             List<Comment> comments = new ArrayList<>();
@@ -1947,9 +1937,12 @@ public class RealSmokeTest {
             assertThat(comments.size(), is(2));
             assertThat(comments.get(0).getBody(), containsString(TICKET_COMMENT2));
             assertThat(comments.get(0).getType(), is(CommentType.COMMENT));
-            assertThat(comments.get(0).getVia(), is(VIA));
+            assertNotNull(comments.get(0).getVia());
+            assertThat(comments.get(0).getVia().getChannel(), is("api"));
             assertThat(comments.get(1).getBody(), containsString(TICKET_COMMENT1));
             assertThat(comments.get(1).getType(), is(CommentType.COMMENT));
+            assertNotNull(comments.get(1).getVia());
+            assertThat(comments.get(1).getVia().getChannel(), is("api"));
         } finally {
             if (ticket != null) {
                 instance.deleteTicket(ticket.getId());
