@@ -24,6 +24,7 @@ public class Comment implements Serializable {
     private Date createdAt;
     private Boolean publicComment;
     private CommentType type;
+    private Via via;
 
 
     public Comment() {
@@ -114,6 +115,13 @@ public class Comment implements Serializable {
     public void setType(CommentType type) {
         this.type = type;
     }
+
+    @JsonProperty("via")
+    public Via getVia() {
+        return via;
+    }
+
+    public void setVia(Via via) { this.via = via; }
 
     @Override
     public String toString() {
