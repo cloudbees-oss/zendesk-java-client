@@ -134,7 +134,6 @@ public class RealSmokeTest {
         Awaitility.setDefaultPollInterval(20, TimeUnit.SECONDS);
     }
 
-
     public void assumeHaveToken() {
         assumeThat("We have a username", config.getProperty("username"), not(isEmptyOrNullString()));
         assumeThat("We have a token", config.getProperty("token"), not(isEmptyOrNullString()));
