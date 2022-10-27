@@ -1905,8 +1905,12 @@ public class RealSmokeTest {
             assertThat(comments.size(), is(2));
             assertThat(comments.get(0).getBody(), containsString(TICKET_COMMENT1));
             assertThat(comments.get(0).getType(), is(CommentType.COMMENT));
+            assertNotNull(comments.get(0).getVia());
+            assertThat(comments.get(0).getVia().getChannel(), is("api"));
             assertThat(comments.get(1).getBody(), containsString(TICKET_COMMENT2));
             assertThat(comments.get(1).getType(), is(CommentType.COMMENT));
+            assertNotNull(comments.get(1).getVia());
+            assertThat(comments.get(1).getVia().getChannel(), is("api"));
         } finally {
             if (ticket != null) {
                 instance.deleteTicket(ticket.getId());
@@ -1932,8 +1936,12 @@ public class RealSmokeTest {
             assertThat(comments.size(), is(2));
             assertThat(comments.get(0).getBody(), containsString(TICKET_COMMENT2));
             assertThat(comments.get(0).getType(), is(CommentType.COMMENT));
+            assertNotNull(comments.get(0).getVia());
+            assertThat(comments.get(0).getVia().getChannel(), is("api"));
             assertThat(comments.get(1).getBody(), containsString(TICKET_COMMENT1));
             assertThat(comments.get(1).getType(), is(CommentType.COMMENT));
+            assertNotNull(comments.get(1).getVia());
+            assertThat(comments.get(1).getVia().getChannel(), is("api"));
         } finally {
             if (ticket != null) {
                 instance.deleteTicket(ticket.getId());
