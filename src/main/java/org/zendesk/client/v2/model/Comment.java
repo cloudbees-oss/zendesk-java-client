@@ -131,6 +131,7 @@ public class Comment implements Serializable {
                 ", attachments=" + attachments +
                 ", createdAt=" + createdAt +
                 ", uploads=" + uploads +
+                ", via=" + via +
                 '}';
     }
 }
