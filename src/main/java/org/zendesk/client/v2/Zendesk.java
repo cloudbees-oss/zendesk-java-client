@@ -2242,7 +2242,7 @@ public class Zendesk implements Closeable {
                 handleList(Translation.class, "translations"));
     }
 
-    public Translation getArticleTranslation(long articleId, String locale) {
+    public Translation showArticleTranslation(long articleId, String locale) {
         return complete(submit(req("GET",
                 tmpl("/help_center/articles/{articleId}/translations/{locale}.json")
                     .set("articleId", articleId).set("locale", locale)),
@@ -2341,7 +2341,7 @@ public class Zendesk implements Closeable {
                 handleList(Translation.class, "translations"));
     }
 
-    public Translation getCategoryTranslation(long categoryId, String locale) {
+    public Translation showCategoryTranslation(long categoryId, String locale) {
         return complete(submit(req("GET",
                 tmpl("/help_center/categories/{categoryId}/translations/{locale}.json")
                     .set("categoryId", categoryId).set("locale", locale)),
@@ -2400,7 +2400,7 @@ public class Zendesk implements Closeable {
                 handleList(Translation.class, "translations"));
     }
 
-    public Translation getSectionTranslation(long sectionId, String locale) {
+    public Translation showSectionTranslation(long sectionId, String locale) {
         return complete(submit(req("GET",
                 tmpl("/help_center/sections/{sectionId}/translations/{locale}.json")
                     .set("sectionId", sectionId).set("locale", locale)),
