@@ -2242,6 +2242,13 @@ public class Zendesk implements Closeable {
                 handleList(Translation.class, "translations"));
     }
 
+    public Translation showArticleTranslation(long articleId, String locale) {
+        return complete(submit(req("GET",
+                tmpl("/help_center/articles/{articleId}/translations/{locale}.json")
+                    .set("articleId", articleId).set("locale", locale)),
+            handle(Translation.class, "translation")));
+    }
+
     public Article createArticle(Article article) {
         checkHasSectionId(article);
         return complete(submit(req("POST", tmpl("/help_center/sections/{id}/articles.json").set("id", article.getSectionId()),
@@ -2333,6 +2340,14 @@ public class Zendesk implements Closeable {
                 tmpl("/help_center/categories/{categoryId}/translations.json").set("categoryId", categoryId),
                 handleList(Translation.class, "translations"));
     }
+
+    public Translation showCategoryTranslation(long categoryId, String locale) {
+        return complete(submit(req("GET",
+                tmpl("/help_center/categories/{categoryId}/translations/{locale}.json")
+                    .set("categoryId", categoryId).set("locale", locale)),
+            handle(Translation.class, "translation")));
+    }
+
     public Category createCategory(Category category) {
         return complete(submit(req("POST", cnst("/help_center/categories.json"),
                 JSON, json(Collections.singletonMap("category", category))), handle(Category.class, "category")));
@@ -2384,6 +2399,14 @@ public class Zendesk implements Closeable {
                 tmpl("/help_center/sections/{sectionId}/translations.json").set("sectionId", sectionId),
                 handleList(Translation.class, "translations"));
     }
+
+    public Translation showSectionTranslation(long sectionId, String locale) {
+        return complete(submit(req("GET",
+                tmpl("/help_center/sections/{sectionId}/translations/{locale}.json")
+                    .set("sectionId", sectionId).set("locale", locale)),
+            handle(Translation.class, "translation")));
+    }
+
     public Section createSection(Section section) {
         checkHasCategoryId(section);
         return complete(submit(req("POST", tmpl("/help_center/categories/{id}/sections.json").set("id", section.getCategoryId()),

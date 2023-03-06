@@ -1615,6 +1615,38 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void showArticleTranslation() throws Exception {
+        createClientWithTokenOrPassword();
+        List<String> locales = instance.getHelpCenterLocales();
+
+        int articleCount = 0;
+
+        for (Article article : instance.getArticles()) {
+            assertNotNull(article.getId());
+
+            if (++articleCount > 10) {
+                break;
+            }
+
+            int translationCount = 0;
+
+            for (String locale : locales) {
+                Translation translation = instance.showArticleTranslation(article.getId(), locale);
+
+                // if there is no translation for the given locale the endpoint will return null
+                if (translation != null) {
+                    assertNotNull(translation.getId());
+                    assertNotNull(translation.getTitle());
+                }
+
+                if (++translationCount > 3) {
+                    break;
+                }
+            }
+        }
+    }
+
+    @Test
     public void getSectionTranslations() throws Exception {
         createClientWithTokenOrPassword();
         int sectionCount = 0;
@@ -1637,6 +1669,38 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void showSectionTranslation() throws Exception {
+        createClientWithTokenOrPassword();
+        List<String> locales = instance.getHelpCenterLocales();
+
+        int sectionCount = 0;
+
+        for (Section section : instance.getSections()) {
+            assertNotNull(section.getId());
+
+            if (++sectionCount > 10) {
+                break;
+            }
+
+            int translationCount = 0;
+
+            for (String locale : locales) {
+                Translation translation = instance.showSectionTranslation(section.getId(), locale);
+
+                // if there is no translation for the given locale the endpoint will return null
+                if (translation != null) {
+                    assertNotNull(translation.getId());
+                    assertNotNull(translation.getTitle());
+                }
+
+                if (++translationCount > 3) {
+                    break;
+                }
+            }
+        }
+    }
+
+    @Test
     public void getCategoryTranslations() throws Exception {
         createClientWithTokenOrPassword();
         int categoryCount = 0;
@@ -1653,6 +1717,38 @@ public class RealSmokeTest {
                 //assertNotNull(t.getBody());
                 if (++translationCount > 3) {
                     return;
+                }
+            }
+        }
+    }
+
+    @Test
+    public void showCategoryTranslation() throws Exception {
+        createClientWithTokenOrPassword();
+        List<String> locales = instance.getHelpCenterLocales();
+
+        int categoryCount = 0;
+
+        for (Category category : instance.getCategories()) {
+            assertNotNull(category.getId());
+
+            if (++categoryCount > 10) {
+                break;
+            }
+
+            int translationCount = 0;
+
+            for (String locale : locales) {
+                Translation translation = instance.showCategoryTranslation(category.getId(), locale);
+
+                // if there is no translation for the given locale the endpoint will return null
+                if (translation != null) {
+                    assertNotNull(translation.getId());
+                    assertNotNull(translation.getTitle());
+                }
+
+                if (++translationCount > 3) {
+                    break;
                 }
             }
         }
