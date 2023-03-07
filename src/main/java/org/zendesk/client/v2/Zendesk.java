@@ -63,6 +63,7 @@ import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.ArticleAttachments;
 import org.zendesk.client.v2.model.hc.Category;
+import org.zendesk.client.v2.model.hc.Locales;
 import org.zendesk.client.v2.model.hc.PermissionGroup;
 import org.zendesk.client.v2.model.hc.Section;
 import org.zendesk.client.v2.model.hc.Subscription;
@@ -2184,10 +2185,18 @@ public class Zendesk implements Closeable {
                 handleStatus()));
     }
 
-    public List<String> getHelpCenterLocales() {
+    public Locales listHelpCenterLocales() {
         return complete(submit(
-                req("GET", cnst("/help_center/locales.json")),
-                handle(List.class, "locales")));
+            req("GET", cnst("/help_center/locales.json")),
+            handle(Locales.class)));
+    }
+
+    /**
+     * @deprecated Use {@link Zendesk#listHelpCenterLocales()} instead
+     */
+    @Deprecated
+    public List<String> getHelpCenterLocales() {
+        return listHelpCenterLocales().getLocales();
     }
 
     /**

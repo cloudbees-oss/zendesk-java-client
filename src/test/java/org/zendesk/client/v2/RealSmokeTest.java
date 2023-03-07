@@ -47,6 +47,7 @@ import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
 import org.zendesk.client.v2.model.events.Event;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.Category;
+import org.zendesk.client.v2.model.hc.Locales;
 import org.zendesk.client.v2.model.hc.PermissionGroup;
 import org.zendesk.client.v2.model.hc.Section;
 import org.zendesk.client.v2.model.hc.Subscription;
@@ -95,6 +96,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assume.assumeThat;
 
 /**
@@ -1593,6 +1595,19 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void listHelpCenterLocales() throws Exception {
+        createClientWithTokenOrPassword();
+
+        Locales locales = instance.listHelpCenterLocales();
+
+        assertNotNull(locales);
+        assertNotNull(locales.getDefaultLocale());
+        assertNotNull(locales.getLocales());
+        assertFalse(locales.getLocales().isEmpty());
+        assertTrue(locales.getLocales().contains(locales.getDefaultLocale()));
+    }
+
+    @Test
     public void getArticleTranslations() throws Exception {
         createClientWithTokenOrPassword();
         int articleCount = 0;
@@ -1617,7 +1632,7 @@ public class RealSmokeTest {
     @Test
     public void showArticleTranslation() throws Exception {
         createClientWithTokenOrPassword();
-        List<String> locales = instance.getHelpCenterLocales();
+        List<String> locales = instance.listHelpCenterLocales().getLocales();
 
         int articleCount = 0;
 
@@ -1671,7 +1686,7 @@ public class RealSmokeTest {
     @Test
     public void showSectionTranslation() throws Exception {
         createClientWithTokenOrPassword();
-        List<String> locales = instance.getHelpCenterLocales();
+        List<String> locales = instance.listHelpCenterLocales().getLocales();
 
         int sectionCount = 0;
 
@@ -1725,7 +1740,7 @@ public class RealSmokeTest {
     @Test
     public void showCategoryTranslation() throws Exception {
         createClientWithTokenOrPassword();
-        List<String> locales = instance.getHelpCenterLocales();
+        List<String> locales = instance.listHelpCenterLocales().getLocales();
 
         int categoryCount = 0;
 
