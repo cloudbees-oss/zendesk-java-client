@@ -911,11 +911,11 @@ public class Zendesk implements Closeable {
         // Going to have to build this URI manually, because the RFC6570 template spec doesn't support
         // variables like ?role[]=...role[]=..., which is what Zendesk requires.
         // See https://developer.zendesk.com/rest_api/docs/core/users#filters
-        final StringBuilder uriBuilder = new StringBuilder("/users.json");
+        final StringBuilder uriBuilder = new StringBuilder("/users.json?page[size]=100");
         if (roles.length == 0) {
-            uriBuilder.append("?role=").append(encodeUrl(role));
+            uriBuilder.append("&role=").append(encodeUrl(role));
         } else {
-            uriBuilder.append("?role[]=").append(encodeUrl(role));
+            uriBuilder.append("&role[]=").append(encodeUrl(role));
         }
         for (final String curRole : roles) {
             uriBuilder.append("&role[]=").append(encodeUrl(curRole));
