@@ -1882,8 +1882,9 @@ public class RealSmokeTest {
     }
 
     @Test
-    @Ignore("Failing and I don't know why - caching issue ?")
-    // TODO: Fix this test
+    // Zendesk api behavior note - When update is used to change a phone number, a second phone number
+    // is added to the record. An update works as expected for non-identify fields, additional
+    // constraints exist for identify field updates
     public void createOrUpdateUser() throws Exception {
         createClientWithTokenOrPassword();
 
@@ -1895,30 +1896,30 @@ public class RealSmokeTest {
             instance.deleteUser(u.getId());
         }
 
-        String phoneAtCreation = "5555551234";
+        String detailsAtCreation = "details at creation";
         User user = new User(true, name);
         user.setExternalId(externalId);
-        user.setPhone(phoneAtCreation);
+        user.setDetails(detailsAtCreation);
 
         User createResult = instance.createOrUpdateUser(user);
         assertNotNull(createResult);
         assertNotNull(createResult.getId());
         assertEquals(name, createResult.getName());
         assertEquals(externalId, createResult.getExternalId());
-        assertEquals(phoneAtCreation, createResult.getPhone());
+        assertEquals(detailsAtCreation, createResult.getDetails());
 
-        String phoneAtUpdate = "5555551235";
+        String detailsAtUpdate = "details at update";
         User updateUser = new User(true, name);
         updateUser.setId(createResult.getId());
         updateUser.setExternalId(externalId);
-        updateUser.setPhone(phoneAtUpdate);
+        updateUser.setDetails(detailsAtUpdate);
 
         User updateResult = instance.createOrUpdateUser(updateUser);
         assertNotNull(updateResult);
         assertEquals(createResult.getId(), updateResult.getId());
         assertEquals(name, updateResult.getName());
         assertEquals(externalId, updateResult.getExternalId());
-        assertEquals(phoneAtUpdate, updateResult.getPhone());
+        assertEquals(detailsAtUpdate, updateResult.getDetails());
 
         instance.deleteUser(updateResult);
     }
