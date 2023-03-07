@@ -927,6 +927,11 @@ public class Zendesk implements Closeable {
                 handleList(User.class, "users")));
     }
 
+    /**
+     * @deprecated - User externalIds are Strings in Zendesk API, not longs.
+     * Use {@link #getUsersByExternalIds(String, String...)} instead
+     */
+    @Deprecated
     public List<User> getUsersByExternalIds(long externalId, long... externalIds) {
         return complete(submit(req("GET", tmpl("/users/show_many.json{?external_ids}").set("external_ids", idArray(externalId, externalIds))),
                 handleList(User.class, "users")));
