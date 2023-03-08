@@ -136,7 +136,7 @@ public class UserTest {
                         )
         );
 
-        List<User> usersByLongExternalIds = client.getUsersByExternalIds(123, 456, 789);
+        List<User> usersByLongExternalIds = client.getUsersByExternalIds(123L, 456L, 789L);
 
         zendeskApiMock.verify(getRequestedFor(
                 urlPathEqualTo("/api/v2/users/show_many.json"))
