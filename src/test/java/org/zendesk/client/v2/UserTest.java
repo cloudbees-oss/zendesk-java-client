@@ -1,6 +1,15 @@
 package org.zendesk.client.v2;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.put;
+import static com.github.tomakehurst.wiremock.client.WireMock.putRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static io.netty.handler.codec.http.HttpHeaders.Values.APPLICATION_JSON;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,7 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 
-import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
