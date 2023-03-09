@@ -904,7 +904,7 @@ public class Zendesk implements Closeable {
 
 
     public Iterable<User> getUsers() {
-        return new PagedIterable<>(cnst("/users.json"), handleList(User.class, "users"));
+        return new PagedIterable<>(cnst("/users.json?page[size]=100"), handleList(User.class, "users"));
     }
 
     public Iterable<User> getUsersByRole(String role, String... roles) {
@@ -2655,6 +2655,8 @@ public class Zendesk implements Closeable {
         };
     }
 
+    private static final String CURSOR_LINKS = "links";
+    private static final String CURSOR_NEXT_PAGE = "next";
     private static final String NEXT_PAGE = "next_page";
     private static final String END_TIME = "end_time";
     private static final String COUNT = "count";
@@ -2664,7 +2666,15 @@ public class Zendesk implements Closeable {
         private String nextPage;
 
         public void setPagedProperties(JsonNode responseNode, Class<?> clazz) {
-            JsonNode node = responseNode.get(NEXT_PAGE);
+            JsonNode node = responseNode.get(CURSOR_LINKS);
+
+            // Attempt to use cursor pagination if possible
+            if (node != null) {
+                node = node.get(CURSOR_NEXT_PAGE);
+            } else {
+                node = responseNode.get(NEXT_PAGE);
+            }
+
             if (node == null) {
                 this.nextPage = null;
                 if (logger.isDebugEnabled()) {
