@@ -44,56 +44,54 @@ Status
 
 Here is the status of the various API components:
 
-* [Tickets](http://developer.zendesk.com/documentation/rest_api/tickets.html) ✓
-* [Ticket Audits](http://developer.zendesk.com/documentation/rest_api/ticket_audits.html) ✓
-* [Incremental Export](https://developer.zendesk.com/rest_api/docs/core/incremental_export) - Partial (tickets, users, organizations only) 
-* [Ticket Fields](http://developer.zendesk.com/documentation/rest_api/ticket_fields.html) ✓
-* [Ticket Import](http://developer.zendesk.com/documentation/rest_api/ticket_import.html) ✓
-* [Ticket Metrics](http://developer.zendesk.com/documentation/rest_api/ticket_metrics.html) ✓
-* [Ticket Forms](http://developer.zendesk.com/documentation/rest_api/ticket_forms.html) *getTicketForm() and getTicketForms()*
-* [Views](http://developer.zendesk.com/documentation/rest_api/views.html)
-* [Users](http://developer.zendesk.com/documentation/rest_api/users.html) ✓
-    * [User Related Information](https://developer.zendesk.com/rest_api/docs/core/users#user-related-information) ✓
-* [User Fields](https://developer.zendesk.com/rest_api/docs/core/user_fields.html) - Partial - List User Fields (`getUserField()`)
-* [Requests](http://developer.zendesk.com/documentation/rest_api/requests.html) ✓
-* [User Identities](http://developer.zendesk.com/documentation/rest_api/user_identities.html) ✓
-* [Groups](http://developer.zendesk.com/documentation/rest_api/groups.html) ✓
-* [Group Membership](http://developer.zendesk.com/documentation/rest_api/group_memberships.html) ✓
-* [Custom Agent Roles](http://developer.zendesk.com/documentation/rest_api/custom_roles.html) ✓
-* [Organizations](http://developer.zendesk.com/documentation/rest_api/organizations.html) ✓ *except for related info*
-* [Search](http://developer.zendesk.com/documentation/rest_api/search.html) ✓ *except for topics and sort ordering*
-* [Tags](http://developer.zendesk.com/documentation/rest_api/tags.html)
+* [Tickets](https://developer.zendesk.com/api-reference/ticketing/tickets/tickets/) ✓
+* [Ticket Audits](https://developer.zendesk.com/api-reference/ticketing/tickets/ticket_audits/) ✓
+* [Incremental Export](https://developer.zendesk.com/api-reference/ticketing/ticket-management/incremental_exports/) - Partial (tickets, users, organizations only) 
+* [Ticket Fields](https://developer.zendesk.com/api-reference/ticketing/tickets/ticket_fields/) ✓
+* [Ticket Import](https://developer.zendesk.com/api-reference/ticketing/tickets/ticket_import/) ✓
+* [Ticket Metrics](https://developer.zendesk.com/api-reference/ticketing/tickets/ticket_metrics/) ✓
+* [Ticket Forms](https://developer.zendesk.com/api-reference/ticketing/tickets/ticket_forms/) *getTicketForm() and getTicketForms()*
+* [Views](https://developer.zendesk.com/api-reference/ticketing/business-rules/views/)
+* [Users](https://developer.zendesk.com/api-reference/ticketing/users/users/) ✓
+    * [User Related Information](https://developer.zendesk.com/api-reference/ticketing/users/users/#show-user-related-information) ✓
+* [User Fields](https://developer.zendesk.com/api-reference/ticketing/users/user_fields/) - Partial - List User Fields (`getUserField()`)
+* [Requests](https://developer.zendesk.com/api-reference/ticketing/tickets/ticket-requests/) ✓
+* [User Identities](https://developer.zendesk.com/api-reference/ticketing/users/user_identities/) ✓
+* [Groups](https://developer.zendesk.com/api-reference/ticketing/groups/groups/) ✓
+* [Group Membership](https://developer.zendesk.com/api-reference/ticketing/groups/group_memberships/) ✓
+* [Custom Agent Roles](https://developer.zendesk.com/api-reference/ticketing/account-configuration/custom_roles/) ✓
+* [Organizations](https://developer.zendesk.com/api-reference/ticketing/organizations/organizations/) ✓ *except for related info*
+* [Search](https://developer.zendesk.com/api-reference/ticketing/ticket-management/search/) ✓ *except for topics and sort ordering*
+* [Tags](https://developer.zendesk.com/api-reference/ticketing/ticket-management/tags/)
 * [Forums](http://developer.zendesk.com/documentation/rest_api/forums.html) ✓
 * [Forum Subscriptions](http://developer.zendesk.com/documentation/rest_api/forum_subscriptions.html)
 * [Categories](http://developer.zendesk.com/documentation/rest_api/categories.html)
-* [Topics](http://developer.zendesk.com/documentation/rest_api/topics.html) ✓
-* [Topic Comments](http://developer.zendesk.com/documentation/rest_api/topic_comments.html)
-* [Topic Subscriptions](http://developer.zendesk.com/documentation/rest_api/topic_subscriptions.html)
+* [Topics](https://developer.zendesk.com/api-reference/help_center/help-center-api/topics/) ✓
+* [Post Comments](https://developer.zendesk.com/api-reference/help_center/help-center-api/post_comments/)
+* [Content Subscriptions](https://developer.zendesk.com/api-reference/help_center/help-center-api/content_subscriptions/)
 * [Help Center Categories](https://developer.zendesk.com/rest_api/docs/help_center/categories) ✓
 * [Help Center Sections](https://developer.zendesk.com/rest_api/docs/help_center/sections) ✓
-* [Help Center Articles](https://developer.zendesk.com/rest_api/docs/help_center/articles) ✓
-* [Help Center Translations](https://developer.zendesk.com/rest_api/docs/help_center/translations) - Partial (List Translations, Update Translation, Delete Translation)
+* [Help Center Articles](https://developer.zendesk.com/api-reference/help_center/help-center-api/articles/) ✓
+* [Help Center Translations](https://developer.zendesk.com/api-reference/help_center/help-center-api/translations/) - Partial (List Translations, Update Translation, Delete Translation)
 * [Help Center Subscriptions](https://developer.zendesk.com/rest_api/docs/help_center/subscriptions)
 * [Help Center Management Permission Groups](https://developer.zendesk.com/rest_api/docs/help_center/permission_groups)
 * [Help Center User Segments](https://developer.zendesk.com/rest_api/docs/help_center/user_segments)
-* [Topic Votes](http://developer.zendesk.com/documentation/rest_api/topic_votes.html)
-* [Account Settings](http://developer.zendesk.com/documentation/rest_api/account_settings.html)
-* [Activity Stream](http://developer.zendesk.com/documentation/rest_api/activity_stream.html)
-* [Attachments](http://developer.zendesk.com/documentation/rest_api/attachments.html) ✓
-* [Autocompletion](http://developer.zendesk.com/documentation/rest_api/autocomplete.html)
-* [Automations](http://developer.zendesk.com/documentation/rest_api/automations.html) ✓
-* [Job Statuses](http://developer.zendesk.com/documentation/rest_api/job_statuses.html)
-* [Locales](http://developer.zendesk.com/documentation/rest_api/locales.html)
-* [Macros](http://developer.zendesk.com/documentation/rest_api/macros.html) ✓ *except for restrictions*
-* [Restrictions and Responsibilities](http://developer.zendesk.com/documentation/rest_api/restrictions.html)
-* [Satisfaction Ratings](http://developer.zendesk.com/documentation/rest_api/satisfaction_ratings.html) ✓
-* [Sharing Agreements](http://developer.zendesk.com/documentation/rest_api/sharing_agreements.html)
-* [Suspended Tickets](http://developer.zendesk.com/documentation/rest_api/suspended_tickets.html)
-* [Triggers](http://developer.zendesk.com/documentation/rest_api/triggers.html) ✓
+* [Topic Votes](https://developer.zendesk.com/api-reference/help_center/help-center-api/votes/)
+* [Account Settings](https://developer.zendesk.com/api-reference/ticketing/account-configuration/account_settings/)
+* [Activity Stream](https://developer.zendesk.com/api-reference/ticketing/tickets/activity_stream/)
+* [Attachments](https://developer.zendesk.com/api-reference/ticketing/tickets/ticket-attachments/) ✓
+* [Automations](https://developer.zendesk.com/api-reference/ticketing/business-rules/automations/) ✓
+* [Job Statuses](https://developer.zendesk.com/api-reference/ticketing/ticket-management/job_statuses/) ✓
+* [Locales](https://developer.zendesk.com/api-reference/ticketing/account-configuration/locales/)
+* [Macros](https://developer.zendesk.com/api-reference/ticketing/business-rules/macros/) ✓ *except for restrictions*
+* [Satisfaction Ratings](https://developer.zendesk.com/api-reference/ticketing/ticket-management/satisfaction_ratings/) ✓
+* [Sharing Agreements](https://developer.zendesk.com/api-reference/ticketing/account-configuration/sharing_agreements/)
+* [Suspended Tickets](https://developer.zendesk.com/api-reference/ticketing/tickets/suspended_tickets/)
+* [Triggers](https://developer.zendesk.com/api-reference/ticketing/business-rules/triggers/) ✓
 
 History
 -------
 
 * See [releases](https://github.com/cloudbees/zendesk-java-client/releases)
 
-  [zd]: http://zendesk.com
+  [zd]: https://zendesk.com
