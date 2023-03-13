@@ -2,6 +2,8 @@ package org.zendesk.client.v2;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.put;
 import static com.github.tomakehurst.wiremock.client.WireMock.putRequestedFor;
@@ -14,7 +16,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+
+
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.text.RandomStringGenerator;
 import org.junit.After;
 import org.junit.Before;
@@ -107,5 +114,52 @@ public class UserTest {
                 .isNotNull()
                 .isEqualToComparingFieldByField(userObjectInResponse);
 
+    }
+
+    @Test
+    public void getUsersByExternalIds_canBeCalledWithEitherLongsOrStrings() throws JsonProcessingException {
+
+        User user123 = new User();
+        user123.setId(1L);
+        user123.setExternalId("123");
+        user123.setName("user123");
+        User user456 = new User();
+        user456.setId(2L);
+        user456.setExternalId("456");
+        user456.setName("user456");
+        User user789 = new User();
+        user789.setId(3L);
+        user789.setExternalId("789");
+        user789.setName("user789");
+
+        String expectedJsonResponse = objectMapper.writeValueAsString(
+                Collections.singletonMap("users", Arrays.asList(user123, user456, user789)));
+
+        zendeskApiMock.stubFor(
+                get(
+                        urlPathEqualTo("/api/v2/users/show_many.json"))
+                        .withQueryParam("external_ids", equalTo("123,456,789"))
+                        .willReturn(ok()
+                                .withBody(expectedJsonResponse)
+                        )
+        );
+
+        List<User> usersByLongExternalIds = client.getUsersByExternalIds(123L, 456L, 789L);
+
+        zendeskApiMock.verify(getRequestedFor(
+                urlPathEqualTo("/api/v2/users/show_many.json"))
+                .withQueryParam("external_ids", equalTo("123,456,789"))
+        );
+
+        assertThat(usersByLongExternalIds).containsExactly(user123, user456, user789);
+
+        List<User> usersByStringExternalIds = client.getUsersByExternalIds("123", "456", "789");
+
+        zendeskApiMock.verify(getRequestedFor(
+                urlPathEqualTo("/api/v2/users/show_many.json"))
+                .withQueryParam("external_ids", equalTo("123,456,789"))
+        );
+
+        assertThat(usersByStringExternalIds).containsExactly(user123, user456, user789);
     }
 }

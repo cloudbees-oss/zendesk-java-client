@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author stephenc
@@ -396,4 +397,39 @@ public class User extends Collaborator implements SearchResultEntity, Serializab
         this.reportCsv = reportCsv;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) && Objects.equals(url, user.url) &&
+                Objects.equals(externalId, user.externalId) && Objects.equals(alias, user.alias) &&
+                Objects.equals(createdAt, user.createdAt) && Objects.equals(updatedAt, user.updatedAt) &&
+                Objects.equals(active, user.active) && Objects.equals(verified, user.verified) &&
+                Objects.equals(shared, user.shared) && Objects.equals(localeId, user.localeId) &&
+                Objects.equals(locale, user.locale) && Objects.equals(timeZone, user.timeZone) &&
+                Objects.equals(lastLoginAt, user.lastLoginAt) && Objects.equals(phone, user.phone) &&
+                Objects.equals(restrictedAgent, user.restrictedAgent) && Objects.equals(signature, user.signature) &&
+                Objects.equals(details, user.details) && Objects.equals(notes, user.notes) &&
+                Objects.equals(organizationId, user.organizationId) && role == user.role &&
+                Objects.equals(customRoleId, user.customRoleId) && Objects.equals(moderator, user.moderator) &&
+                ticketRestriction == user.ticketRestriction &&
+                Objects.equals(onlyPrivateComments, user.onlyPrivateComments) &&
+                Objects.equals(tags, user.tags) && Objects.equals(suspended, user.suspended) &&
+                Objects.equals(photo, user.photo) && Objects.equals(identities, user.identities) &&
+                Objects.equals(remotePhotoUrl, user.remotePhotoUrl) && Objects.equals(userFields, user.userFields) &&
+                Objects.equals(chatOnly, user.chatOnly) && Objects.equals(sharedPhoneNumber, user.sharedPhoneNumber) &&
+                Objects.equals(defaultGroupId, user.defaultGroupId) && Objects.equals(roleType, user.roleType) &&
+                Objects.equals(twoFactorAuthEnabled, user.twoFactorAuthEnabled) &&
+                Objects.equals(reportCsv, user.reportCsv);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, url, externalId, alias, createdAt, updatedAt, active, verified, shared, localeId,
+                locale, timeZone, lastLoginAt, phone, restrictedAgent, signature, details, notes, organizationId,
+                role, customRoleId, moderator, ticketRestriction, onlyPrivateComments, tags, suspended, photo,
+                identities, remotePhotoUrl, userFields, chatOnly, sharedPhoneNumber, defaultGroupId, roleType,
+                twoFactorAuthEnabled, reportCsv);
+    }
 }
