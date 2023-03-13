@@ -63,6 +63,7 @@ import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.ArticleAttachments;
 import org.zendesk.client.v2.model.hc.Category;
+import org.zendesk.client.v2.model.hc.ContentTag;
 import org.zendesk.client.v2.model.hc.Locales;
 import org.zendesk.client.v2.model.hc.PermissionGroup;
 import org.zendesk.client.v2.model.hc.Section;
@@ -2534,6 +2535,32 @@ public class Zendesk implements Closeable {
             handleList(Holiday.class, "holidays")));
     }
 
+    public ContentTag getContentTag(String contentTagId) {
+        return complete(submit(req("GET", tmpl("/guide/content_tags/{id}").set("id", contentTagId)),
+                handle(ContentTag.class, "content_tag")));
+    }
+
+    public ContentTag createContentTag(ContentTag contentTag) {
+        checkHasName(contentTag);
+        return complete(submit(req("POST", tmpl("/guide/content_tags"),
+                JSON, json(Collections.singletonMap("content_tag", contentTag))),
+                handle(ContentTag.class, "content_tag")));
+    }
+
+    public ContentTag updateContentTag(ContentTag contentTag) {
+        checkHasId(contentTag);
+        checkHasName(contentTag);
+        return complete(submit(req("PUT", tmpl("/guide/content_tags/{id}").set("id", contentTag.getId()),
+                        JSON, json(Collections.singletonMap("content_tag", contentTag))),
+                handle(ContentTag.class, "content_tag")));
+    }
+
+    public void deleteContentTag(ContentTag contentTag) {
+        checkHasId(contentTag);
+        complete(submit(req("DELETE", tmpl("/guide/content_tags/{id}").set("id", contentTag.getId())),
+                handleStatus()));
+    }
+
     //////////////////////////////////////////////////////////////////////
     // Helper methods
     //////////////////////////////////////////////////////////////////////
@@ -3129,6 +3156,18 @@ public class Zendesk implements Closeable {
     private static void checkHasId(UserSegment userSegment) {
         if (userSegment.getId() == null) {
             throw new IllegalArgumentException("UserSegment requires id");
+        }
+    }
+
+    private static void checkHasId(ContentTag contentTag) {
+        if (contentTag.getId() == null) {
+            throw new IllegalArgumentException("Content Tag requires id");
+        }
+    }
+
+    private static void checkHasName(ContentTag contentTag) {
+        if (contentTag.getName() == null || contentTag.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Content Tag requires name");
         }
     }
 
