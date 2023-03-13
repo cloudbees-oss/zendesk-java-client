@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.zendesk.client.v2.model.hc.Article;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
@@ -31,6 +32,7 @@ public class ArticleTest {
                 "\"html_url\":\"https://example.zendesk.com/hc/en-us/articles/918273645013-Welcome-to-your-Help-Center-\"," +
                 "\"author_id\":2314596780," +
                 "\"comments_disabled\":false," +
+                "\"content_tag_ids\": [335, 7104]," +
                 "\"draft\":false," +
                 "\"promoted\":false," +
                 "\"position\":0," +
@@ -57,6 +59,7 @@ public class ArticleTest {
         assertEquals("https://example.zendesk.com/hc/en-us/articles/918273645013-Welcome-to-your-Help-Center-", article.getHtmlUrl());
         assertEquals((Long) 2314596780L, article.getAuthorId());
         assertEquals(false, article.getCommentsDisabled());
+        assertEquals(Arrays.asList(335L, 7104L), article.getContentTagIds());
         assertEquals(false, article.getDraft());
         assertEquals(false, article.getPromoted());
         assertEquals((Long) 0L, article.getPosition());

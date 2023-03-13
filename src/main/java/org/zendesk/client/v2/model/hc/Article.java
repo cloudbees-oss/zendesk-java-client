@@ -40,6 +40,10 @@ public class Article implements SearchResultEntity {
     @JsonProperty("comments_disabled")
     private Boolean commentsDisabled;
 
+    /** The list of content tags attached to the article */
+    @JsonProperty("content_tag_ids")
+    private List<Long> contentTagIds;
+
     /** Whether the source (default) translation of the article is out of date */
     private Boolean outdated;
 
@@ -166,6 +170,14 @@ public class Article implements SearchResultEntity {
         this.commentsDisabled = commentsDisabled;
     }
 
+    public List<Long> getContentTagIds() {
+        return contentTagIds;
+    }
+
+    public void setContentTagIds(List<Long> contentTagIds) {
+        this.contentTagIds = contentTagIds;
+    }
+
     public Boolean getOutdated() {
         return outdated;
     }
@@ -290,6 +302,7 @@ public class Article implements SearchResultEntity {
                 ", sourceLocale='" + sourceLocale + '\'' +
                 ", authorId=" + authorId +
                 ", commentsDisabled=" + commentsDisabled +
+                ", contentTagIds=" + contentTagIds +
                 ", outdated=" + outdated +
                 ", outdatedLocales=" + outdatedLocales +
                 ", labelNames=" + labelNames +
