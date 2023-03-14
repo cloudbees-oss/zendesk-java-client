@@ -31,6 +31,7 @@ import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.OrganizationMembership;
 import org.zendesk.client.v2.model.Priority;
 import org.zendesk.client.v2.model.Request;
+import org.zendesk.client.v2.model.Role;
 import org.zendesk.client.v2.model.SortOrder;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
@@ -90,6 +91,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.isOneOf;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
@@ -1226,6 +1228,28 @@ public class RealSmokeTest {
                 break;
             }
         }
+    }
+
+    @Test
+    public void getUsersByRole() throws Exception {
+        // Try to fetch a few pages with max 100 results per page to exercise pagination
+        final int maxResults = 250;
+        createClientWithTokenOrPassword();
+
+        StreamSupport.stream(instance.getUsersByRole(Role.ADMIN.toString()).spliterator(), false)
+            .limit(maxResults)
+            .forEach(
+                user -> assertNotEquals("A request for admins does not return end-users", user.getRole(), Role.END_USER));
+
+        StreamSupport.stream(instance.getUsersByRole(Role.END_USER.toString()).spliterator(), false)
+            .limit(maxResults)
+            .forEach(
+                user -> assertEquals("A request for end-users only returns end-users", user.getRole(), Role.END_USER));
+
+        StreamSupport.stream(instance.getUsersByRole(Role.END_USER.toString(), Role.ADMIN.toString()).spliterator(), false)
+            .limit(maxResults)
+            .forEach(
+                user -> assertThat("Multiple roles can be requested together", user.getRole(), isOneOf(Role.END_USER, Role.ADMIN)));
     }
 
     @Test
@@ -2402,3 +2426,4 @@ public class RealSmokeTest {
         assertEquals(name, form.getRawDisplayName());
     }
 }
+
