@@ -1382,6 +1382,11 @@ public class Zendesk implements Closeable {
                 Collections.singletonMap("organizations", organizations))), handleJobStatus());
     }
 
+    public Organization createOrUpdateOrganization(Organization organization) {
+        return complete(submit(req("POST", cnst("/organizations/create_or_update.json"), JSON, json(
+                Collections.singletonMap("organization", organization))), handle(Organization.class, "organization")));
+    }
+
     public Organization updateOrganization(Organization organization) {
         checkHasId(organization);
         return complete(submit(req("PUT", tmpl("/organizations/{id}.json").set("id", organization.getId()), JSON, json(
@@ -1408,6 +1413,11 @@ public class Zendesk implements Closeable {
 
     public void deleteOrganization(long id) {
         complete(submit(req("DELETE", tmpl("/organizations/{id}.json").set("id", id)), handleStatus()));
+    }
+
+    public JobStatus deleteOrganizations(long... ids) {
+        return complete(submit(req("DELETE", tmpl("/organizations/destroy_many.json{?ids}").set("ids", ids)),
+                handleJobStatus()));
     }
 
     public Iterable<Organization> lookupOrganizationsByExternalId(String externalId) {

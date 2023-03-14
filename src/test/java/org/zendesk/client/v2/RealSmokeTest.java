@@ -1416,6 +1416,66 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void deleteOrganizationsById() throws Exception {
+        createClientWithTokenOrPassword();
+
+        final List<Organization> organizations = createTestOrganizationsInZendesk();
+        final long[] ids = organizations.stream().mapToLong(Organization::getId).toArray();
+        final JobStatus status = waitJobCompletion(instance.deleteOrganizations(ids));
+
+        assertThat("Job is completed", status.getStatus(), is(JobStatus.JobStatusEnum.completed));
+        assertThat("The good number of organizations were processed", status.getTotal(), is(organizations.size()));
+        assertThat("We have a result for each organization", status.getResults(), hasSize(organizations.size()));
+        assertThat("Job reports that the same organization requested to be deleted were deleted",
+                status.getResults()
+                        .stream()
+                        .map(JobResult::getId)
+                        .collect(Collectors.toList()),
+                containsInAnyOrder(Arrays.stream(ids).boxed().toArray()));
+    }
+
+    @Test
+    public void createOrUpdateOrganization() throws Exception {
+        createClientWithTokenOrPassword();
+
+        String name = "testCreateOrUpdateOrganization";
+        String externalId = "testCreateOrUpdateOrganization";
+
+        // Clean up to avoid conflicts
+        for (Organization o : instance.lookupOrganizationsByExternalId(externalId)) {
+            instance.deleteOrganization(o.getId());
+        }
+
+        String noteAtCreation = "This is the initial organization note.";
+        Organization org = new Organization();
+        org.setExternalId(externalId);
+        org.setName(name);
+        org.setNotes(noteAtCreation);
+
+        Organization createResult = instance.createOrUpdateOrganization(org);
+        assertNotNull(createResult);
+        assertNotNull(createResult.getId());
+        assertEquals(name, createResult.getName());
+        assertEquals(externalId, createResult.getExternalId());
+        assertEquals(noteAtCreation, createResult.getNotes());
+
+        String noteAtUpdate = "This is the updated organization note.";
+        Organization updateOrg = new Organization();
+        updateOrg.setId(createResult.getId());
+        updateOrg.setExternalId(externalId);
+        updateOrg.setNotes(noteAtUpdate);
+
+        Organization updateResult = instance.createOrUpdateOrganization(updateOrg);
+        assertNotNull(updateResult);
+        assertEquals(createResult.getId(), updateResult.getId());
+        assertEquals(name, updateResult.getName());
+        assertEquals(externalId, updateResult.getExternalId());
+        assertEquals(noteAtUpdate, updateResult.getNotes());
+
+        instance.deleteOrganization(updateResult);
+    }
+
+    @Test
     public void createOrganizationMemberships() throws Exception {
         createClientWithTokenOrPassword();
 
