@@ -99,7 +99,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
+import java.util.function.Function;
 
 /**
  * @author stephenc
@@ -2542,7 +2542,7 @@ public class Zendesk implements Closeable {
 
     public ContentTag createContentTag(ContentTag contentTag) {
         checkHasName(contentTag);
-        return complete(submit(req("POST", tmpl("/guide/content_tags"),
+        return complete(submit(req("POST", cnst("/guide/content_tags"),
                 JSON, json(Collections.singletonMap("content_tag", contentTag))),
                 handle(ContentTag.class, "content_tag")));
     }
@@ -2559,6 +2559,33 @@ public class Zendesk implements Closeable {
         checkHasId(contentTag);
         complete(submit(req("DELETE", tmpl("/guide/content_tags/{id}").set("id", contentTag.getId())),
                 handleStatus()));
+    }
+
+    public Iterable<ContentTag> getContentTags() {
+        int defaultPageSize = 10;
+        return getContentTags(defaultPageSize, null);
+    }
+
+    public Iterable<ContentTag> getContentTags(int pageSize) {
+        return getContentTags(pageSize, null);
+    }
+
+    public Iterable<ContentTag> getContentTags(int pageSize, String namePrefix) {
+        Function<String, Uri> afterCursorUriBuilder = (String afterCursor) -> buildContentTagsSearchUrl(pageSize, namePrefix, afterCursor);
+        return new PagedIterable<>(afterCursorUriBuilder.apply(null),
+                handleListWithAfterCursorButNoLinks(ContentTag.class, afterCursorUriBuilder, "records"));
+    }
+
+    private Uri buildContentTagsSearchUrl(int pageSize, String namePrefixFilter, String afterCursor) {
+        final StringBuilder uriBuilder = new StringBuilder("/guide/content_tags?page[size]=").append(pageSize);
+
+        if (namePrefixFilter != null) {
+            uriBuilder.append("&filter[name_prefix]=").append(encodeUrl(namePrefixFilter));
+        }
+        if (afterCursor != null) {
+            uriBuilder.append("&page[after]=").append(encodeUrl(afterCursor));
+        }
+        return cnst(uriBuilder.toString());
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -2713,6 +2740,7 @@ public class Zendesk implements Closeable {
     private static final String END_TIME = "end_time";
     private static final String COUNT = "count";
     private static final int INCREMENTAL_EXPORT_MAX_COUNT_BY_REQUEST = 1000;
+
 
     private abstract class PagedAsyncCompletionHandler<T> extends ZendeskAsyncCompletionHandler<T> {
         private String nextPage;
@@ -2894,6 +2922,42 @@ public class Zendesk implements Closeable {
                     throw new ZendeskResponseRateLimitException(response);
                 }
                 throw new ZendeskResponseException(response);
+            }
+        };
+    }
+
+    /**
+     * For a resource (e.g. ContentTag) which supports cursor based pagination for multiple results,
+     * but where the response does not have a `links.next` node (which would hold the URL of the next page)
+     * So we need to build the next page URL from the original URL and the meta.after_cursor node value
+     *
+     * @param <T>                   The class of the resource
+     * @param afterCursorUriBuilder a function to build the URL for the next page `fn(after_cursor_value) => URL_of_next_page`
+     * @param name                  the name of the Json node that contains the resources entities (e.g. 'records' for ContentTag)
+     */
+    private <T> PagedAsyncCompletionHandler<List<T>> handleListWithAfterCursorButNoLinks(
+            Class<T> clazz, Function<String, Uri> afterCursorUriBuilder, String name) {
+
+        return new PagedAsyncListCompletionHandler<T>(clazz, name) {
+            @Override
+            public void setPagedProperties(JsonNode responseNode, Class<?> clazz) {
+                JsonNode metaNode = responseNode.get("meta");
+                String nextPage = null;
+                if (metaNode == null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("meta" + " property not found, pagination not supported" +
+                                (clazz != null ? " for " + clazz.getName() : ""));
+                    }
+                } else {
+                    JsonNode afterCursorNode = metaNode.get("after_cursor");
+                    if (afterCursorNode != null) {
+                        JsonNode hasMoreNode = metaNode.get("has_more");
+                        if (hasMoreNode != null && hasMoreNode.asBoolean()) {
+                            nextPage = afterCursorUriBuilder.apply(afterCursorNode.asText()).toString();
+                        }
+                    }
+                }
+                setNextPage(nextPage);
             }
         };
     }
