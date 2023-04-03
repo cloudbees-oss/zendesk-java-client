@@ -33,6 +33,10 @@ public class Section {
     @JsonProperty("category_id")
     private Long categoryId;
 
+    /** The id of the section to which this section belongs. Only writable for Guide Enterprise customers */
+    @JsonProperty("parent_section_id")
+    private Long parentSectionId;
+
     /** Whether the section is out of date */
     private Boolean outdated;
 
@@ -113,6 +117,14 @@ public class Section {
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public Long getParentSectionId() {
+        return parentSectionId;
+    }
+
+    public void setParentSectionId(Long parentSectionId) {
+        this.parentSectionId = parentSectionId;
     }
 
     public Boolean getOutdated() {
