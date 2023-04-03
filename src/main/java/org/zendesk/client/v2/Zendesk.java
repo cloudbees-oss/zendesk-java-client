@@ -63,6 +63,7 @@ import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
 import org.zendesk.client.v2.model.hc.Article;
 import org.zendesk.client.v2.model.hc.ArticleAttachments;
 import org.zendesk.client.v2.model.hc.Category;
+import org.zendesk.client.v2.model.hc.ContentTag;
 import org.zendesk.client.v2.model.hc.Locales;
 import org.zendesk.client.v2.model.hc.PermissionGroup;
 import org.zendesk.client.v2.model.hc.Section;
@@ -98,7 +99,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
+import java.util.function.Function;
 
 /**
  * @author stephenc
@@ -2534,6 +2535,59 @@ public class Zendesk implements Closeable {
             handleList(Holiday.class, "holidays")));
     }
 
+    public ContentTag getContentTag(String contentTagId) {
+        return complete(submit(req("GET", tmpl("/guide/content_tags/{id}").set("id", contentTagId)),
+                handle(ContentTag.class, "content_tag")));
+    }
+
+    public ContentTag createContentTag(ContentTag contentTag) {
+        checkHasName(contentTag);
+        return complete(submit(req("POST", cnst("/guide/content_tags"),
+                JSON, json(Collections.singletonMap("content_tag", contentTag))),
+                handle(ContentTag.class, "content_tag")));
+    }
+
+    public ContentTag updateContentTag(ContentTag contentTag) {
+        checkHasId(contentTag);
+        checkHasName(contentTag);
+        return complete(submit(req("PUT", tmpl("/guide/content_tags/{id}").set("id", contentTag.getId()),
+                        JSON, json(Collections.singletonMap("content_tag", contentTag))),
+                handle(ContentTag.class, "content_tag")));
+    }
+
+    public void deleteContentTag(ContentTag contentTag) {
+        checkHasId(contentTag);
+        complete(submit(req("DELETE", tmpl("/guide/content_tags/{id}").set("id", contentTag.getId())),
+                handleStatus()));
+    }
+
+    public Iterable<ContentTag> getContentTags() {
+        int defaultPageSize = 10;
+        return getContentTags(defaultPageSize, null);
+    }
+
+    public Iterable<ContentTag> getContentTags(int pageSize) {
+        return getContentTags(pageSize, null);
+    }
+
+    public Iterable<ContentTag> getContentTags(int pageSize, String namePrefix) {
+        Function<String, Uri> afterCursorUriBuilder = (String afterCursor) -> buildContentTagsSearchUrl(pageSize, namePrefix, afterCursor);
+        return new PagedIterable<>(afterCursorUriBuilder.apply(null),
+                handleListWithAfterCursorButNoLinks(ContentTag.class, afterCursorUriBuilder, "records"));
+    }
+
+    private Uri buildContentTagsSearchUrl(int pageSize, String namePrefixFilter, String afterCursor) {
+        final StringBuilder uriBuilder = new StringBuilder("/guide/content_tags?page[size]=").append(pageSize);
+
+        if (namePrefixFilter != null) {
+            uriBuilder.append("&filter[name_prefix]=").append(encodeUrl(namePrefixFilter));
+        }
+        if (afterCursor != null) {
+            uriBuilder.append("&page[after]=").append(encodeUrl(afterCursor));
+        }
+        return cnst(uriBuilder.toString());
+    }
+
     //////////////////////////////////////////////////////////////////////
     // Helper methods
     //////////////////////////////////////////////////////////////////////
@@ -2686,6 +2740,7 @@ public class Zendesk implements Closeable {
     private static final String END_TIME = "end_time";
     private static final String COUNT = "count";
     private static final int INCREMENTAL_EXPORT_MAX_COUNT_BY_REQUEST = 1000;
+
 
     private abstract class PagedAsyncCompletionHandler<T> extends ZendeskAsyncCompletionHandler<T> {
         private String nextPage;
@@ -2867,6 +2922,42 @@ public class Zendesk implements Closeable {
                     throw new ZendeskResponseRateLimitException(response);
                 }
                 throw new ZendeskResponseException(response);
+            }
+        };
+    }
+
+    /**
+     * For a resource (e.g. ContentTag) which supports cursor based pagination for multiple results,
+     * but where the response does not have a `links.next` node (which would hold the URL of the next page)
+     * So we need to build the next page URL from the original URL and the meta.after_cursor node value
+     *
+     * @param <T>                   The class of the resource
+     * @param afterCursorUriBuilder a function to build the URL for the next page `fn(after_cursor_value) => URL_of_next_page`
+     * @param name                  the name of the Json node that contains the resources entities (e.g. 'records' for ContentTag)
+     */
+    private <T> PagedAsyncCompletionHandler<List<T>> handleListWithAfterCursorButNoLinks(
+            Class<T> clazz, Function<String, Uri> afterCursorUriBuilder, String name) {
+
+        return new PagedAsyncListCompletionHandler<T>(clazz, name) {
+            @Override
+            public void setPagedProperties(JsonNode responseNode, Class<?> clazz) {
+                JsonNode metaNode = responseNode.get("meta");
+                String nextPage = null;
+                if (metaNode == null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("meta" + " property not found, pagination not supported" +
+                                (clazz != null ? " for " + clazz.getName() : ""));
+                    }
+                } else {
+                    JsonNode afterCursorNode = metaNode.get("after_cursor");
+                    if (afterCursorNode != null) {
+                        JsonNode hasMoreNode = metaNode.get("has_more");
+                        if (hasMoreNode != null && hasMoreNode.asBoolean()) {
+                            nextPage = afterCursorUriBuilder.apply(afterCursorNode.asText()).toString();
+                        }
+                    }
+                }
+                setNextPage(nextPage);
             }
         };
     }
@@ -3129,6 +3220,18 @@ public class Zendesk implements Closeable {
     private static void checkHasId(UserSegment userSegment) {
         if (userSegment.getId() == null) {
             throw new IllegalArgumentException("UserSegment requires id");
+        }
+    }
+
+    private static void checkHasId(ContentTag contentTag) {
+        if (contentTag.getId() == null) {
+            throw new IllegalArgumentException("Content Tag requires id");
+        }
+    }
+
+    private static void checkHasName(ContentTag contentTag) {
+        if (contentTag.getName() == null || contentTag.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Content Tag requires name");
         }
     }
 

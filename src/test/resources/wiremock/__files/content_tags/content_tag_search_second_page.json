@@ -1,0 +1,21 @@
+{
+  "records": [
+    {
+      "id": "33333333333333333333333333",
+      "name": "third name",
+      "created_at": "2023-03-13T10:03:00.000Z",
+      "updated_at": "2023-03-13T10:03:03.000Z"
+    },
+    {
+      "id": "44444444444444444444444444",
+      "name": "fourth name",
+      "created_at": "2023-03-13T10:04:00.000Z",
+      "updated_at": "2023-03-13T10:04:04.000Z"
+    }
+  ],
+  "meta": {
+    "has_more": true,
+    "after_cursor": "second_after_cursor",
+    "before_cursor": "second_before_cursor"
+  }
+}
