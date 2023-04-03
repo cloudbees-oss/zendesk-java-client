@@ -7,7 +7,6 @@ import java.util.Objects;
 
 /**
  * You can assign a content tag to posts and articles to loosely group them together.
- * </p>
  * For more information, see <a href="https://support.zendesk.com/hc/en-us/articles/4848925672730">About Content tags</a>
  * in Zendesk help.
  */
