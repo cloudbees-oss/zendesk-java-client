@@ -42,7 +42,7 @@ public class Article implements SearchResultEntity {
 
     /** The list of content tags attached to the article */
     @JsonProperty("content_tag_ids")
-    private List<Long> contentTagIds;
+    private List<String> contentTagIds;
 
     /** Whether the source (default) translation of the article is out of date */
     private Boolean outdated;
@@ -170,11 +170,11 @@ public class Article implements SearchResultEntity {
         this.commentsDisabled = commentsDisabled;
     }
 
-    public List<Long> getContentTagIds() {
+    public List<String> getContentTagIds() {
         return contentTagIds;
     }
 
-    public void setContentTagIds(List<Long> contentTagIds) {
+    public void setContentTagIds(List<String> contentTagIds) {
         this.contentTagIds = contentTagIds;
     }
 
