@@ -20,13 +20,13 @@ public class VoiceCommentEvent extends PublicPrivateEvent {
     private String htmlBody;
     private Boolean trusted;
     private Long authorId;
-    private List<String> attachments;
+    private List<Object> attachments;
 
-    public List<String> getAttachments() {
+    public List<Object> getAttachments() {
         return attachments;
     }
 
-    public void setAttachments(List<String> attachments) {
+    public void setAttachments(List<Object> attachments) {
         this.attachments = attachments;
     }
 
