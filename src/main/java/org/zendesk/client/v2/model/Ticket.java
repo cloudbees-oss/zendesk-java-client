@@ -16,8 +16,6 @@ public class Ticket extends Request implements SearchResultEntity {
     private static final long serialVersionUID = 1L;
 
     private String externalId;
-    private Type type;
-    private Priority priority;
     private String recipient;
     private Long submitterId;
     private Long assigneeId;
@@ -29,7 +27,6 @@ public class Ticket extends Request implements SearchResultEntity {
     private boolean hasIncidents;
     private Date dueAt;
     private List<String> tags;
-    private List<CustomFieldValue> customFields;
     private SatisfactionRating satisfactionRating;
     private List<Long> sharingAgreementIds;
     private List<Long> followupIds;
@@ -77,15 +74,6 @@ public class Ticket extends Request implements SearchResultEntity {
 
     public void setCollaborators(List<Collaborator> collaborators) {
         this.collaborators = collaborators;
-    }
-
-    @JsonProperty("custom_fields")
-    public List<CustomFieldValue> getCustomFields() {
-        return customFields;
-    }
-
-    public void setCustomFields(List<CustomFieldValue> customFields) {
-        this.customFields = customFields;
     }
 
     @JsonProperty("due_at")
@@ -140,14 +128,6 @@ public class Ticket extends Request implements SearchResultEntity {
 
     public void setHasIncidents(boolean hasIncidents) {
         this.hasIncidents = hasIncidents;
-    }
-
-    public Priority getPriority() {
-        return priority;
-    }
-
-    public void setPriority(Priority priority) {
-        this.priority = priority;
     }
 
     @JsonProperty("problem_id")
@@ -229,14 +209,6 @@ public class Ticket extends Request implements SearchResultEntity {
 
     public void setTicketFormId(Long ticketFormId) {
         this.ticketFormId = ticketFormId;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
     }
 
     @JsonProperty("is_public")
