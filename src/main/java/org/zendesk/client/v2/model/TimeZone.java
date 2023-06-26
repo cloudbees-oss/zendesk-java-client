@@ -13,7 +13,6 @@ public class TimeZone {
     private String translatedName;
     private String name;
     private String ianaName;
-    private String url;
     private int offset;
     private String formattedOffset;
 
@@ -43,14 +42,6 @@ public class TimeZone {
         this.ianaName = ianaName;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public int getOffset() {
         return offset;
     }
@@ -75,11 +66,11 @@ public class TimeZone {
         TimeZone timeZone = (TimeZone) o;
         return offset == timeZone.offset && Objects.equals(translatedName, timeZone.translatedName) &&
                 Objects.equals(name, timeZone.name) && Objects.equals(ianaName, timeZone.ianaName) &&
-                Objects.equals(url, timeZone.url) && Objects.equals(formattedOffset, timeZone.formattedOffset);
+                Objects.equals(formattedOffset, timeZone.formattedOffset);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(translatedName, name, ianaName, url, offset, formattedOffset);
+        return Objects.hash(translatedName, name, ianaName, offset, formattedOffset);
     }
 }

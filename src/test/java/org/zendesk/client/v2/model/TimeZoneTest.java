@@ -32,14 +32,14 @@ public class TimeZoneTest {
 
     @Rule
     public WireMockClassRule zendeskApiMock = zendeskApiClass;
-    private final int ephemeralPort = zendeskApiMock.port();
-    private final String hostname = String.format(MOCK_URL_FORMATTED_STRING, ephemeralPort);
 
     private Zendesk client;
     private final ObjectMapper objectMapper = Zendesk.createMapper();
 
     @Before
     public void setUp() {
+        int ephemeralPort = zendeskApiMock.port();
+        String hostname = String.format(MOCK_URL_FORMATTED_STRING, ephemeralPort);
         client = new Zendesk.Builder(hostname)
                 .setUsername(MOCK_USERNAME)
                 .setToken(MOCK_API_TOKEN)
@@ -61,7 +61,6 @@ public class TimeZoneTest {
         timeZone1.setTranslatedName("Pacific Time (US & Canada)");
         timeZone1.setName("Pacific Time (US & Canada)");
         timeZone1.setIanaName("America/Los_Angeles");
-        timeZone1.setUrl(hostname + "/api/v2/time_zones/Pacific%20Time%20(US%20&%20Canada).json");
         timeZone1.setOffset(-420);
         timeZone1.setFormattedOffset("GMT-07:00");
 
@@ -69,7 +68,6 @@ public class TimeZoneTest {
         timeZone1.setTranslatedName("Kyiv");
         timeZone1.setName("Kyiv");
         timeZone1.setIanaName("Europe/Kiev");
-        timeZone1.setUrl(hostname + "/api/v2/time_zones/Kyiv.json");
         timeZone1.setOffset(180);
         timeZone1.setFormattedOffset("GMT+03:00");
 
