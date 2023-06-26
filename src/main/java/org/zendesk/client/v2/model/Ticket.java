@@ -13,7 +13,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Ticket extends Request implements SearchResultEntity {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -7559199410302237012L;
 
     private String externalId;
     private String recipient;
