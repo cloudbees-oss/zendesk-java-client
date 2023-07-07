@@ -30,6 +30,7 @@ public class User extends Collaborator implements SearchResultEntity, Serializab
     private Long localeId;
     private String locale;
     private String timeZone;
+    private String ianaTimeZone;
     private Date lastLoginAt;
     private String phone;
     private Boolean restrictedAgent;
@@ -291,6 +292,15 @@ public class User extends Collaborator implements SearchResultEntity, Serializab
         this.timeZone = timeZone;
     }
 
+    @JsonProperty("iana_time_zone")
+    public String getIanaTimeZone() {
+        return ianaTimeZone;
+    }
+
+    public void setIanaTimeZone(String ianaTimeZone) {
+        this.ianaTimeZone = ianaTimeZone;
+    }
+
     @JsonProperty("updated_at")
     public Date getUpdatedAt() {
         return updatedAt;
@@ -408,12 +418,12 @@ public class User extends Collaborator implements SearchResultEntity, Serializab
                 Objects.equals(active, user.active) && Objects.equals(verified, user.verified) &&
                 Objects.equals(shared, user.shared) && Objects.equals(localeId, user.localeId) &&
                 Objects.equals(locale, user.locale) && Objects.equals(timeZone, user.timeZone) &&
-                Objects.equals(lastLoginAt, user.lastLoginAt) && Objects.equals(phone, user.phone) &&
-                Objects.equals(restrictedAgent, user.restrictedAgent) && Objects.equals(signature, user.signature) &&
-                Objects.equals(details, user.details) && Objects.equals(notes, user.notes) &&
-                Objects.equals(organizationId, user.organizationId) && role == user.role &&
-                Objects.equals(customRoleId, user.customRoleId) && Objects.equals(moderator, user.moderator) &&
-                ticketRestriction == user.ticketRestriction &&
+                Objects.equals(ianaTimeZone, user.ianaTimeZone) && Objects.equals(lastLoginAt, user.lastLoginAt) &&
+                Objects.equals(phone, user.phone) && Objects.equals(restrictedAgent, user.restrictedAgent) &&
+                Objects.equals(signature, user.signature) && Objects.equals(details, user.details) &&
+                Objects.equals(notes, user.notes) && Objects.equals(organizationId, user.organizationId)
+                && role == user.role && Objects.equals(customRoleId, user.customRoleId)
+                && Objects.equals(moderator, user.moderator) && ticketRestriction == user.ticketRestriction &&
                 Objects.equals(onlyPrivateComments, user.onlyPrivateComments) &&
                 Objects.equals(tags, user.tags) && Objects.equals(suspended, user.suspended) &&
                 Objects.equals(photo, user.photo) && Objects.equals(identities, user.identities) &&
@@ -427,7 +437,7 @@ public class User extends Collaborator implements SearchResultEntity, Serializab
     @Override
     public int hashCode() {
         return Objects.hash(id, url, externalId, alias, createdAt, updatedAt, active, verified, shared, localeId,
-                locale, timeZone, lastLoginAt, phone, restrictedAgent, signature, details, notes, organizationId,
+                locale, timeZone, ianaTimeZone, lastLoginAt, phone, restrictedAgent, signature, details, notes, organizationId,
                 role, customRoleId, moderator, ticketRestriction, onlyPrivateComments, tags, suspended, photo,
                 identities, remotePhotoUrl, userFields, chatOnly, sharedPhoneNumber, defaultGroupId, roleType,
                 twoFactorAuthEnabled, reportCsv);
