@@ -912,6 +912,22 @@ public class RealSmokeTest {
     }
 
     @Test
+    public void createUser() throws Exception {
+        // given
+        createClientWithTokenOrPassword();
+        final User userToCreate = newTestUser();
+        userToCreate.setTimeZone("Pacific Time (US & Canada)");
+
+        // when
+        User createdUser = instance.createUser(userToCreate);
+
+        // then
+        assertThat("A unique ID must be set", createdUser.getId(), notNullValue());
+        assertEquals("Time Zone must be set", userToCreate.getTimeZone(), createdUser.getTimeZone());
+        assertEquals("Iana Time Zone must be automatically set", "America/Los_Angeles", createdUser.getIanaTimeZone());
+    }
+
+    @Test
     public void updateUsers() throws Exception {
         createClientWithTokenOrPassword();
 
@@ -1266,7 +1282,7 @@ public class RealSmokeTest {
             assertThat(user.getName(), notNullValue());
         }
     }
-    
+
     @Test
     public void getUsersIncrementally() throws Exception {
         createClientWithTokenOrPassword();

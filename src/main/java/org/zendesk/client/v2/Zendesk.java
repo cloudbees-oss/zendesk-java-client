@@ -51,6 +51,7 @@ import org.zendesk.client.v2.model.TicketForm;
 import org.zendesk.client.v2.model.TicketImport;
 import org.zendesk.client.v2.model.TicketPage;
 import org.zendesk.client.v2.model.TicketResult;
+import org.zendesk.client.v2.model.TimeZone;
 import org.zendesk.client.v2.model.Topic;
 import org.zendesk.client.v2.model.Trigger;
 import org.zendesk.client.v2.model.TwitterMonitor;
@@ -2586,6 +2587,11 @@ public class Zendesk implements Closeable {
             uriBuilder.append("&page[after]=").append(encodeUrl(afterCursor));
         }
         return cnst(uriBuilder.toString());
+    }
+
+    public List<TimeZone> getTimeZones(){
+        return complete(submit(req("GET", cnst("/time_zones.json")), handleList(TimeZone.class,
+                "time_zones")));
     }
 
     //////////////////////////////////////////////////////////////////////
