@@ -1423,8 +1423,8 @@ public class Zendesk implements Closeable {
     }
 
     public Iterable<Organization> lookupOrganizationsByExternalId(String externalId) {
-        if (externalId == null) {
-            throw new IllegalArgumentException("External ID must not be null");
+        if (externalId == null || externalId.length() == 0) {
+            throw new IllegalArgumentException("External ID must not be null or length 0");
         }
         return new PagedIterable<>(
                 tmpl("/organizations/search.json{?external_id}").set("external_id", externalId),

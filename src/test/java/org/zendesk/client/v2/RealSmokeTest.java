@@ -97,6 +97,7 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assume.assumeThat;
@@ -1581,6 +1582,21 @@ public class RealSmokeTest {
             Arrays.stream(usersIds).forEach(instance::deleteUser);
             instance.deleteOrganizationMemberships(firstElement(orgMembershipsIds), otherElements(orgMembershipsIds));
         }
+    }
+
+    @Test
+    public void lookupOrganizationByExternalId() throws Exception {
+        createClientWithTokenOrPassword();
+
+        Organization newOrganization = newTestOrganization();
+        newOrganization.setExternalId("i");
+        Organization resultOrganization = instance.createOrganization(newOrganization);
+        assertNotNull(resultOrganization);
+
+        Iterable<Organization> or =  instance.lookupOrganizationsByExternalId("i");
+        assertTrue(or.iterator().hasNext());
+
+        assertThrows(IllegalArgumentException.class, () -> instance.lookupOrganizationsByExternalId(""));
     }
 
     @Test
