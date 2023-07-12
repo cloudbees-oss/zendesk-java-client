@@ -617,15 +617,15 @@ public class RealSmokeTest {
         final Long[] ticketsIds = tickets.stream().map(Ticket::getId).toArray(Long[]::new);
         // when
         // We soft delete them
-        instance.deleteTickets(firstElement(ticketsIds), otherElements(ticketsIds));
-        waitTicketsDeleted(ticketsIds);
+        JobStatus softDeleteJobStatus = waitJobCompletion(instance.deleteTickets(firstElement(ticketsIds), otherElements(ticketsIds)));
+        assertThat("Soft Delete Job is completed", softDeleteJobStatus.getStatus(), is(JobStatus.JobStatusEnum.completed));
         // We permanently delete them
-        JobStatus jobStatus =
+        JobStatus permDeleteJobStatus =
               waitJobCompletion(
                     instance.permanentlyDeleteTickets(firstElement(ticketsIds), otherElements(ticketsIds)));
         // then
-        assertThat("Job is completed", jobStatus.getStatus(), is(JobStatus.JobStatusEnum.completed));
-        jobStatus.getResults().forEach(jobResult -> {
+        assertThat("Job is completed", permDeleteJobStatus.getStatus(), is(JobStatus.JobStatusEnum.completed));
+        permDeleteJobStatus.getResults().forEach(jobResult -> {
             assertThat("The job result has no account_id entry", jobResult.getAccountId(), nullValue());
             assertThat("The job result has no action entry", jobResult.getAction(), nullValue());
             assertThat("The job result has no details entry", jobResult.getDetails(), nullValue());
@@ -710,7 +710,7 @@ public class RealSmokeTest {
                   assertThat("A unique ID must be set", id, notNullValue()));
         } finally {
             // cleanup
-            instance.deleteTickets(firstElement(createdTicketsIds), otherElements(createdTicketsIds));
+            waitJobCompletion(instance.deleteTickets(firstElement(createdTicketsIds), otherElements(createdTicketsIds)));
         }
     }
 
@@ -752,7 +752,7 @@ public class RealSmokeTest {
                 assertThat("The job result has a success entry", jobResult.getSuccess(), is(TRUE));
             });
         } finally {
-            instance.deleteTickets(firstElement(ticketsIds), otherElements(ticketsIds));
+            waitJobCompletion(instance.deleteTickets(firstElement(ticketsIds), otherElements(ticketsIds)));
         }
     }
 
@@ -839,7 +839,7 @@ public class RealSmokeTest {
             // then
         } finally {
             // cleanup
-            instance.deleteTickets(firstElement(createdTicketsIds), otherElements(createdTicketsIds));
+            waitJobCompletion(instance.deleteTickets(firstElement(createdTicketsIds), otherElements(createdTicketsIds)));
         }
     }
 

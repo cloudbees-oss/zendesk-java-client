@@ -438,9 +438,9 @@ public class Zendesk implements Closeable {
         complete(submit(req("PUT", tmpl("/tickets/{id}/mark_as_spam.json").set("id", id)), handleStatus()));
     }
 
-    public void deleteTickets(long id, long... ids) {
-        complete(submit(req("DELETE", tmpl("/tickets/destroy_many.json{?ids}").set("ids", idArray(id, ids))),
-                handleStatus()));
+    public JobStatus deleteTickets(long id, long... ids) {
+        return complete(submit(req("DELETE", tmpl("/tickets/destroy_many.json{?ids}").set("ids", idArray(id, ids))),
+                handleJobStatus()));
     }
 
     public JobStatus permanentlyDeleteTickets(long id, long... ids) {
