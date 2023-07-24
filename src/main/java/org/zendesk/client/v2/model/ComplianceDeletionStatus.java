@@ -1,100 +1,112 @@
 package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * https://developer.zendesk.com/rest_api/docs/core/users#show-compliance-deletion-statuses
- */
+/** https://developer.zendesk.com/rest_api/docs/core/users#show-compliance-deletion-statuses */
 public class ComplianceDeletionStatus implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    private String action;
-    private String application;
-    @JsonProperty("account_subdomain")
-    private String accountSubdomain;
-    @JsonProperty("executer_id")
-    private long executerId;
-    @JsonProperty("user_id")
-    private long userId;
-    @JsonProperty("account_id")
-    private long accountId;
-    @JsonProperty("created_at")
-    private Date createdAt;
+  private String action;
+  private String application;
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
+  @JsonProperty("account_subdomain")
+  private String accountSubdomain;
 
-    public String getAction() {
-        return action;
-    }
+  @JsonProperty("executer_id")
+  private long executerId;
 
-    public void setAction(String action) {
-        this.action = action;
-    }
+  @JsonProperty("user_id")
+  private long userId;
 
-    public String getApplication() {
-        return application;
-    }
+  @JsonProperty("account_id")
+  private long accountId;
 
-    public void setApplication(String application) {
-        this.application = application;
-    }
+  @JsonProperty("created_at")
+  private Date createdAt;
 
-    public String getAccountSubdomain() {
-        return accountSubdomain;
-    }
+  public static long getSerialVersionUID() {
+    return serialVersionUID;
+  }
 
-    public void setAccountSubdomain(String accountSubdomain) {
-        this.accountSubdomain = accountSubdomain;
-    }
+  public String getAction() {
+    return action;
+  }
 
-    public long getExecuterId() {
-        return executerId;
-    }
+  public void setAction(String action) {
+    this.action = action;
+  }
 
-    public void setExecuterId(long executerId) {
-        this.executerId = executerId;
-    }
+  public String getApplication() {
+    return application;
+  }
 
-    public long getUserId() {
-        return userId;
-    }
+  public void setApplication(String application) {
+    this.application = application;
+  }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
+  public String getAccountSubdomain() {
+    return accountSubdomain;
+  }
 
-    public long getAccountId() {
-        return accountId;
-    }
+  public void setAccountSubdomain(String accountSubdomain) {
+    this.accountSubdomain = accountSubdomain;
+  }
 
-    public void setAccountId(long accountId) {
-        this.accountId = accountId;
-    }
+  public long getExecuterId() {
+    return executerId;
+  }
 
-    public Date getCreatedAt() {
-        return new Date(createdAt.getTime());
-    }
+  public void setExecuterId(long executerId) {
+    this.executerId = executerId;
+  }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+  public long getUserId() {
+    return userId;
+  }
 
-    @Override
-    public String toString() {
-        return "ComplianceDeletionStatus{" +
-                "action='" + action + '\'' +
-                ", application='" + application + '\'' +
-                ", accountSubdomain='" + accountSubdomain + '\'' +
-                ", executerId=" + executerId +
-                ", userId=" + userId +
-                ", accountId=" + accountId +
-                ", createdAt=" + createdAt +
-                '}';
-    }
+  public void setUserId(long userId) {
+    this.userId = userId;
+  }
+
+  public long getAccountId() {
+    return accountId;
+  }
+
+  public void setAccountId(long accountId) {
+    this.accountId = accountId;
+  }
+
+  public Date getCreatedAt() {
+    return new Date(createdAt.getTime());
+  }
+
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  @Override
+  public String toString() {
+    return "ComplianceDeletionStatus{"
+        + "action='"
+        + action
+        + '\''
+        + ", application='"
+        + application
+        + '\''
+        + ", accountSubdomain='"
+        + accountSubdomain
+        + '\''
+        + ", executerId="
+        + executerId
+        + ", userId="
+        + userId
+        + ", accountId="
+        + accountId
+        + ", createdAt="
+        + createdAt
+        + '}';
+  }
 }

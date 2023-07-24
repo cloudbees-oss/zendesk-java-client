@@ -8,19 +8,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Maxim Savenko (maxim.savenko@gmail.com)
  */
 public enum UserType {
-    @JsonProperty("signed_in_users")
-    SIGNED_IN_USERS("signed_in_users"),
-    @JsonProperty("staff")
-    STAFF("staff");
+  @JsonProperty("signed_in_users")
+  SIGNED_IN_USERS("signed_in_users"),
+  @JsonProperty("staff")
+  STAFF("staff");
 
-    private final String name;
+  private final String name;
 
-    UserType(String name) {
-        this.name = name;
-    }
+  UserType(String name) {
+    this.name = name;
+  }
 
-    @Override
-    public String toString() {
-        return name;
-    }
+  @Override
+  public String toString() {
+    return name;
+  }
 }

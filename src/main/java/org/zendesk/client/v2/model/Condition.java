@@ -2,10 +2,7 @@ package org.zendesk.client.v2.model;
 
 import java.io.Serializable;
 
-/**
- * @author Sandeep Kaul (sandeep.kaul@olacabs.com)
- *
- */
+/** @author Sandeep Kaul (sandeep.kaul@olacabs.com) */
 public class Condition implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -48,11 +45,6 @@ public class Condition implements Serializable {
 
   @Override
   public String toString() {
-    return "Condition" +
-            "{field=" + field +
-            ", operator=" + operator +
-            ", value=" + value +
-            '}';
+    return "Condition" + "{field=" + field + ", operator=" + operator + ", value=" + value + '}';
   }
-
 }

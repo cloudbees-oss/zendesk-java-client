@@ -6,14 +6,14 @@ package org.zendesk.client.v2;
  */
 class FixedUri extends Uri {
 
-    private final String uri;
+  private final String uri;
 
-    FixedUri(String uri) {
-        this.uri = uri;
-    }
+  FixedUri(String uri) {
+    this.uri = uri;
+  }
 
-    @Override
-    public String toString() {
-        return uri;
-    }
+  @Override
+  public String toString() {
+    return uri;
+  }
 }

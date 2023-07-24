@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * An attachment was redacted, or permanently deleted, from a ticket comment
- * 
- * @author matthewtckr
- * @see <a href="https://developer.zendesk.com/rest_api/docs/core/ticket_audits#attachment-redaction-event">Zendesk API Documentation</a>
  *
+ * @author matthewtckr
+ * @see <a
+ *     href="https://developer.zendesk.com/rest_api/docs/core/ticket_audits#attachment-redaction-event">Zendesk
+ *     API Documentation</a>
  */
 public class AttachmentRedactionEvent extends Event {
 
@@ -21,7 +22,7 @@ public class AttachmentRedactionEvent extends Event {
     return attachmentId;
   }
 
-  public void setAttachmentId( Long attachmentId ) {
+  public void setAttachmentId(Long attachmentId) {
     this.attachmentId = attachmentId;
   }
 
@@ -30,15 +31,17 @@ public class AttachmentRedactionEvent extends Event {
     return commentId;
   }
 
-  public void setCommentId( Long commentId ) {
+  public void setCommentId(Long commentId) {
     this.commentId = commentId;
   }
 
   @Override
   public String toString() {
-    return "AttachmentRedactionEvent" +
-            "{attachmentId=" + attachmentId +
-            ", commentId=" + commentId +
-            '}';
+    return "AttachmentRedactionEvent"
+        + "{attachmentId="
+        + attachmentId
+        + ", commentId="
+        + commentId
+        + '}';
   }
 }
