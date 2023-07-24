@@ -1594,7 +1594,7 @@ public class RealSmokeTest {
         assertNotNull(resultOrganization);
 
         Iterable<Organization> or =  instance.lookupOrganizationsByExternalId("i");
-        assertTrue(or.iterator().hasNext());
+        assertEquals(1, StreamSupport.stream(or.spliterator(), false).count());
 
         assertThrows(IllegalArgumentException.class, () -> instance.lookupOrganizationsByExternalId(""));
     }
