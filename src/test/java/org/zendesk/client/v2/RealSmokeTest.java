@@ -1795,15 +1795,23 @@ public class RealSmokeTest {
 
   @Test
   public void lookupOrganizationByExternalId() throws Exception {
+    String orgId = "i";
     createClientWithTokenOrPassword();
 
     Organization newOrganization = newTestOrganization();
-    newOrganization.setExternalId("i");
-    Organization resultOrganization = instance.createOrganization(newOrganization);
-    assertNotNull(resultOrganization);
+    newOrganization.setExternalId(orgId);
+    Organization resultOrganization = null;
+    try {
+      resultOrganization = instance.createOrganization(newOrganization);
+      assertNotNull(resultOrganization);
 
-    Iterable<Organization> or = instance.lookupOrganizationsByExternalId("i");
-    assertEquals(1, StreamSupport.stream(or.spliterator(), false).count());
+      Iterable<Organization> or = instance.lookupOrganizationsByExternalId(orgId);
+      assertEquals(1, StreamSupport.stream(or.spliterator(), false).count());
+    } finally {
+      if (resultOrganization != null) {
+        instance.deleteOrganization(resultOrganization);
+      }
+    }
 
     assertThrows(
         IllegalArgumentException.class, () -> instance.lookupOrganizationsByExternalId(""));
