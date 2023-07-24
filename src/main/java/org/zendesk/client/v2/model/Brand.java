@@ -1,7 +1,6 @@
 package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 import java.util.List;
 
@@ -11,154 +10,163 @@ import java.util.List;
  */
 public class Brand {
 
-    private String url;
-    private Long id;
-    private String name;
-    @JsonProperty("brand_url")
-    private String brandUrl;
-    @JsonProperty("has_help_center")
-    private boolean hasHelpCenter;
-    @JsonProperty("help_center_state")
-    private String helpCenterState;
-    @JsonProperty("active")
-    private boolean isActive;
-    @JsonProperty("default")
-    private boolean isDefault;
-    private Attachment logo;
-    @JsonProperty("ticket_form_ids")
-    private List<Long> ticketFormIds;
-    @JsonProperty("created_at")
-    private Date createdAt;
-    @JsonProperty("updated_at")
-    private Date updatedAt;
-    private String subdomain;
-    @JsonProperty("host_mapping")
-    private String hostMapping;
+  private String url;
+  private Long id;
+  private String name;
 
-    public Brand() {
-    }
+  @JsonProperty("brand_url")
+  private String brandUrl;
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
+  @JsonProperty("has_help_center")
+  private boolean hasHelpCenter;
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+  @JsonProperty("help_center_state")
+  private String helpCenterState;
 
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
+  @JsonProperty("active")
+  private boolean isActive;
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  @JsonProperty("default")
+  private boolean isDefault;
 
-    public String getSubdomain() {
-        return subdomain;
-    }
+  private Attachment logo;
 
-    public void setSubdomain(String subdomain) {
-        this.subdomain = subdomain;
-    }
+  @JsonProperty("ticket_form_ids")
+  private List<Long> ticketFormIds;
 
-    public String getHostMapping() {
-        return hostMapping;
-    }
+  @JsonProperty("created_at")
+  private Date createdAt;
 
-    public void setHostMapping(String hostMapping) {
-        this.hostMapping = hostMapping;
-    }
+  @JsonProperty("updated_at")
+  private Date updatedAt;
 
-    public String getSignatureTemplate() {
-        return signatureTemplate;
-    }
+  private String subdomain;
 
-    public void setSignatureTemplate(String signatureTemplate) {
-        this.signatureTemplate = signatureTemplate;
-    }
+  @JsonProperty("host_mapping")
+  private String hostMapping;
 
-    @JsonProperty("signature_template")
-    private String signatureTemplate;
+  public Brand() {}
 
+  public Date getCreatedAt() {
+    return createdAt;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Date getUpdatedAt() {
+    return updatedAt;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public void setUpdatedAt(Date updatedAt) {
+    this.updatedAt = updatedAt;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getSubdomain() {
+    return subdomain;
+  }
 
-    public String getBrandUrl() {
-        return brandUrl;
-    }
+  public void setSubdomain(String subdomain) {
+    this.subdomain = subdomain;
+  }
 
-    public void setBrandUrl(String brandUrl) {
-        this.brandUrl = brandUrl;
-    }
+  public String getHostMapping() {
+    return hostMapping;
+  }
 
-    public boolean isHasHelpCenter() {
-        return hasHelpCenter;
-    }
+  public void setHostMapping(String hostMapping) {
+    this.hostMapping = hostMapping;
+  }
 
-    public void setHasHelpCenter(boolean hasHelpCenter) {
-        this.hasHelpCenter = hasHelpCenter;
-    }
+  public String getSignatureTemplate() {
+    return signatureTemplate;
+  }
 
-    public String getHelpCenterState() {
-        return helpCenterState;
-    }
+  public void setSignatureTemplate(String signatureTemplate) {
+    this.signatureTemplate = signatureTemplate;
+  }
 
-    public void setHelpCenterState(String helpCenterState) {
-        this.helpCenterState = helpCenterState;
-    }
+  @JsonProperty("signature_template")
+  private String signatureTemplate;
 
-    public boolean isActive() {
-        return isActive;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setActive(boolean active) {
-        isActive = active;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public boolean isDefault() {
-        return isDefault;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setDefault(boolean aDefault) {
-        isDefault = aDefault;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public Attachment getLogo() {
-        return logo;
-    }
+  public String getBrandUrl() {
+    return brandUrl;
+  }
 
-    public void setLogo(Attachment logo) {
-        this.logo = logo;
-    }
+  public void setBrandUrl(String brandUrl) {
+    this.brandUrl = brandUrl;
+  }
 
-    public List<Long> getTicketFormIds() {
-        return ticketFormIds;
-    }
+  public boolean isHasHelpCenter() {
+    return hasHelpCenter;
+  }
 
-    public void setTicketFormIds(List<Long> ticketFormIds) {
-        this.ticketFormIds = ticketFormIds;
-    }
+  public void setHasHelpCenter(boolean hasHelpCenter) {
+    this.hasHelpCenter = hasHelpCenter;
+  }
 
-    public String getUrl() {
-        return url;
-    }
+  public String getHelpCenterState() {
+    return helpCenterState;
+  }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+  public void setHelpCenterState(String helpCenterState) {
+    this.helpCenterState = helpCenterState;
+  }
+
+  public boolean isActive() {
+    return isActive;
+  }
+
+  public void setActive(boolean active) {
+    isActive = active;
+  }
+
+  public boolean isDefault() {
+    return isDefault;
+  }
+
+  public void setDefault(boolean aDefault) {
+    isDefault = aDefault;
+  }
+
+  public Attachment getLogo() {
+    return logo;
+  }
+
+  public void setLogo(Attachment logo) {
+    this.logo = logo;
+  }
+
+  public List<Long> getTicketFormIds() {
+    return ticketFormIds;
+  }
+
+  public void setTicketFormIds(List<Long> ticketFormIds) {
+    this.ticketFormIds = ticketFormIds;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
 }

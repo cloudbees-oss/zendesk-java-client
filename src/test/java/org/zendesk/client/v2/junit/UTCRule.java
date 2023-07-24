@@ -9,15 +9,15 @@ import org.junit.runner.Description;
  */
 public class UTCRule extends TestWatcher {
 
-    private DateTimeZone originalDefault = DateTimeZone.getDefault();
+  private DateTimeZone originalDefault = DateTimeZone.getDefault();
 
-    @Override
-    protected void starting(Description description) {
-        DateTimeZone.setDefault(DateTimeZone.UTC);
-    }
+  @Override
+  protected void starting(Description description) {
+    DateTimeZone.setDefault(DateTimeZone.UTC);
+  }
 
-    @Override
-    protected void finished(Description description) {
-        DateTimeZone.setDefault(originalDefault);
-    }
+  @Override
+  protected void finished(Description description) {
+    DateTimeZone.setDefault(originalDefault);
+  }
 }

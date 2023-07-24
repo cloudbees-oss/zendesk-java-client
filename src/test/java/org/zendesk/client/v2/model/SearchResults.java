@@ -1,7 +1,6 @@
 package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
 /**
@@ -11,48 +10,49 @@ import java.util.List;
  */
 public class SearchResults<T> {
 
-    private List<T> results;
+  private List<T> results;
 
-    @JsonProperty("next_page")
-    private String nextPage;
-    @JsonProperty("prev_page")
-    private String prevPage;
-    private int count;
+  @JsonProperty("next_page")
+  private String nextPage;
 
-    public List<T> getResults() {
-        return results;
-    }
+  @JsonProperty("prev_page")
+  private String prevPage;
 
-    public SearchResults<T> setResults(List<T> results) {
-        this.results = results;
-        return this;
-    }
+  private int count;
 
+  public List<T> getResults() {
+    return results;
+  }
 
-    public String getNextPage() {
-        return nextPage;
-    }
+  public SearchResults<T> setResults(List<T> results) {
+    this.results = results;
+    return this;
+  }
 
-    public SearchResults<T> setNextPage(String nextPage) {
-        this.nextPage = nextPage;
-        return this;
-    }
+  public String getNextPage() {
+    return nextPage;
+  }
 
-    public String getPrevPage() {
-        return prevPage;
-    }
+  public SearchResults<T> setNextPage(String nextPage) {
+    this.nextPage = nextPage;
+    return this;
+  }
 
-    public SearchResults<T> setPrevPage(String prevPage) {
-        this.prevPage = prevPage;
-        return this;
-    }
+  public String getPrevPage() {
+    return prevPage;
+  }
 
-    public int getCount() {
-        return count;
-    }
+  public SearchResults<T> setPrevPage(String prevPage) {
+    this.prevPage = prevPage;
+    return this;
+  }
 
-    public SearchResults<T> setCount(int count) {
-        this.count = count;
-        return this;
-    }
+  public int getCount() {
+    return count;
+  }
+
+  public SearchResults<T> setCount(int count) {
+    this.count = count;
+    return this;
+  }
 }

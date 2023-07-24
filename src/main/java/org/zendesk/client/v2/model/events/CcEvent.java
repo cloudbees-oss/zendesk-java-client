@@ -1,8 +1,7 @@
 package org.zendesk.client.v2.model.events;
 
-import org.zendesk.client.v2.model.Via;
-
 import java.util.List;
+import org.zendesk.client.v2.model.Via;
 
 /**
  * @author stephenc
@@ -10,32 +9,29 @@ import java.util.List;
  */
 public class CcEvent extends Event {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    private List<Long> recipients;
-    private Via via;
+  private List<Long> recipients;
+  private Via via;
 
-    public List<Long> getRecipients() {
-        return recipients;
-    }
+  public List<Long> getRecipients() {
+    return recipients;
+  }
 
-    public void setRecipients(List<Long> recipients) {
-        this.recipients = recipients;
-    }
+  public void setRecipients(List<Long> recipients) {
+    this.recipients = recipients;
+  }
 
-    public Via getVia() {
-        return via;
-    }
+  public Via getVia() {
+    return via;
+  }
 
-    public void setVia(Via via) {
-        this.via = via;
-    }
+  public void setVia(Via via) {
+    this.via = via;
+  }
 
-    @Override
-    public String toString() {
-        return "CcEvent" +
-                "{recipients=" + recipients +
-                ", via=" + via +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "CcEvent" + "{recipients=" + recipients + ", via=" + via + '}';
+  }
 }

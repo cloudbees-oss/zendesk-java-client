@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A word or string was redacted from a ticket comment
- * 
- * @author matthewtckr
- * @see <a href="https://developer.zendesk.com/rest_api/docs/core/ticket_audits#comment-redaction-event">Zendesk API Documentation</a>
  *
+ * @author matthewtckr
+ * @see <a
+ *     href="https://developer.zendesk.com/rest_api/docs/core/ticket_audits#comment-redaction-event">Zendesk
+ *     API Documentation</a>
  */
 public class CommentRedactionEvent extends Event {
 
@@ -20,14 +21,12 @@ public class CommentRedactionEvent extends Event {
     return commentId;
   }
 
-  public void setCommentId( Long commentId ) {
+  public void setCommentId(Long commentId) {
     this.commentId = commentId;
   }
 
   @Override
   public String toString() {
-      return "CommentRedactionEvent" +
-              "{commentId=" + commentId +
-              '}';
+    return "CommentRedactionEvent" + "{commentId=" + commentId + '}';
   }
 }

@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 /**
  * @author Sandeep Kaul (sandeep.kaul@olacabs.com)
- *
  */
 public class Condition implements Serializable {
 
@@ -48,11 +47,6 @@ public class Condition implements Serializable {
 
   @Override
   public String toString() {
-    return "Condition" +
-            "{field=" + field +
-            ", operator=" + operator +
-            ", value=" + value +
-            '}';
+    return "Condition" + "{field=" + field + ", operator=" + operator + ", value=" + value + '}';
   }
-
 }

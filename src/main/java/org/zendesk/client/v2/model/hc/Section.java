@@ -1,188 +1,213 @@
 package org.zendesk.client.v2.model.hc;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 import java.util.List;
 
 public class Section {
-    /** Automatically assigned when creating subscriptions */
-    private Long id;
+  /** Automatically assigned when creating subscriptions */
+  private Long id;
 
-    /** The name of the section */
-    private String name;
+  /** The name of the section */
+  private String name;
 
-    /** The description of the section */
-    private String description;
+  /** The description of the section */
+  private String description;
 
-    /** The locale in which the section is displayed */
-    private String locale;
+  /** The locale in which the section is displayed */
+  private String locale;
 
-    /** The source (default) locale of the section */
-    @JsonProperty("source_locale")
-    private String sourceLocale;
+  /** The source (default) locale of the section */
+  @JsonProperty("source_locale")
+  private String sourceLocale;
 
-    /** The API url of this section */
-    private String url;
+  /** The API url of this section */
+  private String url;
 
-    /** The url of this section in Help Center */
-    @JsonProperty("html_url")
-    private String htmlUrl;
+  /** The url of this section in Help Center */
+  @JsonProperty("html_url")
+  private String htmlUrl;
 
-    /** The id of the category to which this section belongs */
-    @JsonProperty("category_id")
-    private Long categoryId;
+  /** The id of the category to which this section belongs */
+  @JsonProperty("category_id")
+  private Long categoryId;
 
-    /** The id of the section to which this section belongs. Only writable for Guide Enterprise customers */
-    @JsonProperty("parent_section_id")
-    private Long parentSectionId;
+  /**
+   * The id of the section to which this section belongs. Only writable for Guide Enterprise
+   * customers
+   */
+  @JsonProperty("parent_section_id")
+  private Long parentSectionId;
 
-    /** Whether the section is out of date */
-    private Boolean outdated;
+  /** Whether the section is out of date */
+  private Boolean outdated;
 
-    /** The position of this section in the section list. By default the section is added to the end of the list */
-    private Long position;
+  /**
+   * The position of this section in the section list. By default the section is added to the end of
+   * the list
+   */
+  private Long position;
 
-    /** The ids of all translations of this section */
-    @JsonProperty("translation_ids")
-    private List<String> translation_ids;
+  /** The ids of all translations of this section */
+  @JsonProperty("translation_ids")
+  private List<String> translation_ids;
 
-    /** The time the section was created */
-    @JsonProperty("created_at")
-    private Date createdAt;
+  /** The time the section was created */
+  @JsonProperty("created_at")
+  private Date createdAt;
 
-    /** The time the section was last updated */
-    @JsonProperty("updated_at")
-    private Date updatedAt;
+  /** The time the section was last updated */
+  @JsonProperty("updated_at")
+  private Date updatedAt;
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public String getLocale() {
-        return locale;
-    }
+  public String getLocale() {
+    return locale;
+  }
 
-    public void setLocale(String locale) {
-        this.locale = locale;
-    }
+  public void setLocale(String locale) {
+    this.locale = locale;
+  }
 
-    public String getSourceLocale() {
-        return sourceLocale;
-    }
+  public String getSourceLocale() {
+    return sourceLocale;
+  }
 
-    public void setSourceLocale(String sourceLocale) {
-        this.sourceLocale = sourceLocale;
-    }
+  public void setSourceLocale(String sourceLocale) {
+    this.sourceLocale = sourceLocale;
+  }
 
-    public String getUrl() {
-        return url;
-    }
+  public String getUrl() {
+    return url;
+  }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-    public String getHtmlUrl() {
-        return htmlUrl;
-    }
+  public String getHtmlUrl() {
+    return htmlUrl;
+  }
 
-    public void setHtmlUrl(String htmlUrl) {
-        this.htmlUrl = htmlUrl;
-    }
+  public void setHtmlUrl(String htmlUrl) {
+    this.htmlUrl = htmlUrl;
+  }
 
-    public Long getCategoryId() {
-        return categoryId;
-    }
+  public Long getCategoryId() {
+    return categoryId;
+  }
 
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
-    }
+  public void setCategoryId(Long categoryId) {
+    this.categoryId = categoryId;
+  }
 
-    public Long getParentSectionId() {
-        return parentSectionId;
-    }
+  public Long getParentSectionId() {
+    return parentSectionId;
+  }
 
-    public void setParentSectionId(Long parentSectionId) {
-        this.parentSectionId = parentSectionId;
-    }
+  public void setParentSectionId(Long parentSectionId) {
+    this.parentSectionId = parentSectionId;
+  }
 
-    public Boolean getOutdated() {
-        return outdated;
-    }
+  public Boolean getOutdated() {
+    return outdated;
+  }
 
-    public void setOutdated(Boolean outdated) {
-        this.outdated = outdated;
-    }
+  public void setOutdated(Boolean outdated) {
+    this.outdated = outdated;
+  }
 
-    public Long getPosition() {
-        return position;
-    }
+  public Long getPosition() {
+    return position;
+  }
 
-    public void setPosition(Long position) {
-        this.position = position;
-    }
+  public void setPosition(Long position) {
+    this.position = position;
+  }
 
-    public List<String> getTranslation_ids() {
-        return translation_ids;
-    }
+  public List<String> getTranslation_ids() {
+    return translation_ids;
+  }
 
-    public void setTranslation_ids(List<String> translation_ids) {
-        this.translation_ids = translation_ids;
-    }
+  public void setTranslation_ids(List<String> translation_ids) {
+    this.translation_ids = translation_ids;
+  }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
+  public Date getCreatedAt() {
+    return createdAt;
+  }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
 
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
+  public Date getUpdatedAt() {
+    return updatedAt;
+  }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public void setUpdatedAt(Date updatedAt) {
+    this.updatedAt = updatedAt;
+  }
 
-    @Override
-    public String toString() {
-        return "Section{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", locale='" + locale + '\'' +
-                ", sourceLocale='" + sourceLocale + '\'' +
-                ", url='" + url + '\'' +
-                ", htmlUrl='" + htmlUrl + '\'' +
-                ", categoryId='" + categoryId + '\'' +
-                ", outdated=" + outdated +
-                ", position=" + position +
-                ", translation_ids=" + translation_ids +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "Section{"
+        + "id="
+        + id
+        + ", name='"
+        + name
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + ", locale='"
+        + locale
+        + '\''
+        + ", sourceLocale='"
+        + sourceLocale
+        + '\''
+        + ", url='"
+        + url
+        + '\''
+        + ", htmlUrl='"
+        + htmlUrl
+        + '\''
+        + ", categoryId='"
+        + categoryId
+        + '\''
+        + ", outdated="
+        + outdated
+        + ", position="
+        + position
+        + ", translation_ids="
+        + translation_ids
+        + ", createdAt="
+        + createdAt
+        + ", updatedAt="
+        + updatedAt
+        + '}';
+  }
 }

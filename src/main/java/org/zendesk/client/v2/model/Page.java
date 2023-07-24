@@ -1,12 +1,10 @@
 package org.zendesk.client.v2.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * This is the base class for implementing pagination on any SearchResultEntity
- */
+/** This is the base class for implementing pagination on any SearchResultEntity */
 public abstract class Page<T extends SearchResultEntity> implements Serializable {
 
   private static final long serialVersionUID = 456807064715979598L;
@@ -14,14 +12,14 @@ public abstract class Page<T extends SearchResultEntity> implements Serializable
   private @JsonProperty("next_page") String nextPage;
 
   private @JsonProperty("previous_page") String previousPage;
-  
+
   private List<T> results;
 
   private int count;
-  
+
   public abstract Class<T> getTargetClass();
-  
-  public  List<T> getResults(){
+
+  public List<T> getResults() {
     return results;
   }
 
@@ -52,5 +50,4 @@ public abstract class Page<T extends SearchResultEntity> implements Serializable
   public void setCount(final int count) {
     this.count = count;
   }
-  
 }

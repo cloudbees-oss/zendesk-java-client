@@ -6,23 +6,21 @@ package org.zendesk.client.v2.model.events;
  */
 public class ErrorEvent extends Event {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    // for Errors
-    private String message;
+  // for Errors
+  private String message;
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-    @Override
-    public String toString() {
-        return "ErrorEvent" +
-                "{message='" + message + '\'' +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "ErrorEvent" + "{message='" + message + '\'' + '}';
+  }
 }
