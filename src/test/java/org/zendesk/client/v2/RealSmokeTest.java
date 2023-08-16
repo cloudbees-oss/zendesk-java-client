@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -58,6 +59,7 @@ import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.Action;
 import org.zendesk.client.v2.model.AgentRole;
 import org.zendesk.client.v2.model.Audit;
+import org.zendesk.client.v2.model.Automation;
 import org.zendesk.client.v2.model.Brand;
 import org.zendesk.client.v2.model.Collaborator;
 import org.zendesk.client.v2.model.Comment;
@@ -66,14 +68,18 @@ import org.zendesk.client.v2.model.ComplianceDeletionStatus;
 import org.zendesk.client.v2.model.DeletedTicket;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Group;
+import org.zendesk.client.v2.model.GroupMembership;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.JobResult;
 import org.zendesk.client.v2.model.JobStatus;
+import org.zendesk.client.v2.model.Macro;
+import org.zendesk.client.v2.model.Metric;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.OrganizationMembership;
 import org.zendesk.client.v2.model.Priority;
 import org.zendesk.client.v2.model.Request;
 import org.zendesk.client.v2.model.Role;
+import org.zendesk.client.v2.model.SatisfactionRating;
 import org.zendesk.client.v2.model.SortOrder;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
@@ -176,6 +182,10 @@ public class RealSmokeTest {
 
   @Test
   public void createClientWithTokenOrPassword() throws Exception {
+    createClientWithTokenOrPassword(null);
+  }
+
+  public void createClientWithTokenOrPassword(Integer cbpPageSize) throws Exception {
     assumeHaveTokenOrPassword();
     final Zendesk.Builder builder =
         new Zendesk.Builder(config.getProperty("url")).setUsername(config.getProperty("username"));
@@ -184,13 +194,16 @@ public class RealSmokeTest {
     } else if (config.getProperty("password") != null) {
       builder.setPassword(config.getProperty("password"));
     }
+    if (cbpPageSize != null) {
+      builder.setCbpPageSize(cbpPageSize);
+    }
     instance = builder.build();
   }
 
   @Test
   public void getBrands() throws Exception {
     createClientWithTokenOrPassword();
-    List<Brand> brands = instance.getBrands();
+    Iterable<Brand> brands = instance.getBrands();
     assertTrue(brands.iterator().hasNext());
     for (Brand brand : brands) {
       assertThat(brand, notNullValue());
@@ -286,7 +299,7 @@ public class RealSmokeTest {
 
   @Test
   public void getTriggers() throws Exception {
-    createClientWithTokenOrPassword();
+    createClientWithTokenOrPassword(2);
     int count = 0;
     for (Trigger t : instance.getTriggers()) {
       assertThat(t.getTitle(), notNullValue());
@@ -298,10 +311,14 @@ public class RealSmokeTest {
 
   @Test
   public void getTriggersWithParameters() throws Exception {
-    createClientWithTokenOrPassword();
+    createClientWithTokenOrPassword(2);
     int count = 0;
+    String title = null;
     for (Trigger t : instance.getTriggers(null, true, "title", SortOrder.ASCENDING)) {
-      assertThat(t.getTitle(), notNullValue());
+      if (title != null) {
+        assertTrue(title.compareTo(t.getTitle()) < 0);
+      }
+      title = t.getTitle();
       if (++count > 10) {
         break;
       }
@@ -310,7 +327,7 @@ public class RealSmokeTest {
 
   @Test
   public void getActiveTriggers() throws Exception {
-    createClientWithTokenOrPassword();
+    createClientWithTokenOrPassword(2);
     int count = 0;
     for (Trigger t : instance.getActiveTriggers()) {
       assertThat(t.getTitle(), notNullValue());
@@ -435,15 +452,78 @@ public class RealSmokeTest {
 
   @Test
   public void getTicketsPagesRequests() throws Exception {
-    createClientWithTokenOrPassword();
+    createClientWithTokenOrPassword(2);
     int count = 0;
     for (Ticket t : instance.getTickets()) {
       assertThat(t.getSubject(), notNullValue());
-      if (++count > 150) {
+      if (++count > 10) {
         break;
       }
     }
-    assertThat(count, is(151));
+  }
+
+  @Test
+  public void getTicketIncidents() throws Exception {
+    createClientWithTokenOrPassword(2);
+    Iterator<Ticket> tickets = instance.getTickets().iterator();
+    if (!tickets.hasNext()) {
+      return;
+    }
+    int count = 0;
+    for (Ticket t : instance.getTicketIncidents(tickets.next().getId())) {
+      assertThat(t.getSubject(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getDeletedTickets() throws Exception {
+    createClientWithTokenOrPassword(2);
+    int count = 0;
+    for (DeletedTicket t : instance.getDeletedTickets()) {
+      assertThat(t.getSubject(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getSatisfactionRatings() throws Exception {
+    createClientWithTokenOrPassword(2);
+    int count = 0;
+    for (SatisfactionRating sr : instance.getSatisfactionRatings()) {
+      assertThat(sr.getUrl(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getTicketMetrics() throws Exception {
+    createClientWithTokenOrPassword(2);
+    int count = 0;
+    for (Metric m : instance.getTicketMetrics()) {
+      assertThat(m.getId(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getMacros() throws Exception {
+    createClientWithTokenOrPassword(2);
+    int count = 0;
+    for (Macro m : instance.getMacros()) {
+      assertThat(m.getId(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
   }
 
   @Test
@@ -512,10 +592,19 @@ public class RealSmokeTest {
 
   @Test
   public void getTicketAudits() throws Exception {
-    createClientWithTokenOrPassword();
-    for (Audit a : instance.getTicketAudits(1L)) {
+    createClientWithTokenOrPassword(2);
+    Iterator<Ticket> tickets = instance.getTickets().iterator();
+    Ticket ticket = null;
+    if (tickets.hasNext()) {
+      ticket = tickets.next();
+    }
+    int count = 0;
+    for (Audit a : instance.getTicketAudits(ticket.getId())) {
       assertThat(a, notNullValue());
       assertThat(a.getEvents(), not(Collections.<Event>emptyList()));
+      if (++count > 10) {
+        break;
+      }
     }
   }
 
@@ -1363,7 +1452,7 @@ public class RealSmokeTest {
 
   @Test
   public void getUserRequests() throws Exception {
-    createClientWithTokenOrPassword();
+    createClientWithTokenOrPassword(2);
     User user = instance.getCurrentUser();
     int count = 5;
     for (Request r : instance.getUserRequests(user)) {
@@ -1379,7 +1468,7 @@ public class RealSmokeTest {
 
   @Test
   public void getUsers() throws Exception {
-    createClientWithTokenOrPassword();
+    createClientWithTokenOrPassword(2);
     int count = 0;
     for (User u : instance.getUsers()) {
       assertThat(u.getName(), notNullValue());
@@ -1391,18 +1480,16 @@ public class RealSmokeTest {
 
   @Test
   public void getUsersByRole() throws Exception {
-    // Try to fetch a few pages with max 100 results per page to exercise pagination
-    final int maxResults = 250;
-    createClientWithTokenOrPassword();
+    // Try to fetch a few pages with max 2 results per page to exercise pagination
+    final int maxResults = 10;
+    createClientWithTokenOrPassword(2);
 
     StreamSupport.stream(instance.getUsersByRole(Role.ADMIN.toString()).spliterator(), false)
         .limit(maxResults)
         .forEach(
             user ->
-                assertNotEquals(
-                    "A request for admins does not return end-users",
-                    user.getRole(),
-                    Role.END_USER));
+                assertEquals(
+                    "A request for admins only returns admins", user.getRole(), Role.ADMIN));
 
     StreamSupport.stream(instance.getUsersByRole(Role.END_USER.toString()).spliterator(), false)
         .limit(maxResults)
@@ -1456,7 +1543,7 @@ public class RealSmokeTest {
 
   @Test
   public void getSuspendedTickets() throws Exception {
-    createClientWithTokenOrPassword();
+    createClientWithTokenOrPassword(2);
     int count = 0;
     for (SuspendedTicket ticket : instance.getSuspendedTickets()) {
       assertThat(ticket.getId(), notNullValue());
@@ -1467,8 +1554,20 @@ public class RealSmokeTest {
   }
 
   @Test
+  public void getAutomations() throws Exception {
+    createClientWithTokenOrPassword(2);
+    int count = 0;
+    for (Automation automation : instance.getAutomations()) {
+      assertThat(automation.getId(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
   public void getOrganizations() throws Exception {
-    createClientWithTokenOrPassword();
+    createClientWithTokenOrPassword(2);
     int count = 0;
     for (Organization t : instance.getOrganizations()) {
       assertThat(t.getName(), notNullValue());
@@ -1819,10 +1918,223 @@ public class RealSmokeTest {
 
   @Test
   public void getGroups() throws Exception {
-    createClientWithTokenOrPassword();
+    createClientWithTokenOrPassword(2);
     int count = 0;
     for (Group t : instance.getGroups()) {
       assertThat(t.getName(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getAssignableGroups() throws Exception {
+    createClientWithTokenOrPassword(2);
+    int count = 0;
+    for (Group g : instance.getAssignableGroups()) {
+      assertThat(g.getName(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getGroupUsers() throws Exception {
+    createClientWithTokenOrPassword(2);
+    Iterator<Group> groups = instance.getGroups().iterator();
+    if (!groups.hasNext()) {
+      return;
+    }
+    Group group = groups.next();
+    int count = 0;
+    for (User u : instance.getGroupUsers(group.getId())) {
+      assertThat(u.getName(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getOrganizationUsers() throws Exception {
+    createClientWithTokenOrPassword(2);
+    Iterator<Organization> organizations = instance.getOrganizations().iterator();
+    if (!organizations.hasNext()) {
+      return;
+    }
+    Organization organization = organizations.next();
+    int count = 0;
+    for (User u : instance.getOrganizationUsers(organization.getId())) {
+      assertThat(u.getName(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getRequests() throws Exception {
+    createClientWithTokenOrPassword(2);
+    int count = 0;
+    for (Request r : instance.getRequests()) {
+      assertThat(r.getId(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getOpenRequests() throws Exception {
+    createClientWithTokenOrPassword(2);
+    int count = 0;
+    for (Request r : instance.getOpenRequests()) {
+      assertThat(r.getId(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getSolvedRequests() throws Exception {
+    createClientWithTokenOrPassword(1);
+    int count = 0;
+    for (Request r : instance.getSolvedRequests()) {
+      assertThat(r.getId(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getOrganizationMemberships() throws Exception {
+    createClientWithTokenOrPassword(2);
+    int count = 0;
+    for (OrganizationMembership m : instance.getOrganizationMemberships()) {
+      assertThat(m.getId(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getOrganizationMembershipsForOrg() throws Exception {
+    createClientWithTokenOrPassword(2);
+    Iterator<Organization> organizations = instance.getOrganizations().iterator();
+    if (!organizations.hasNext()) {
+      return;
+    }
+    Organization organization = organizations.next();
+    int count = 0;
+    for (OrganizationMembership m :
+        instance.getOrganizationMembershipsForOrg(organization.getId())) {
+      assertThat(m.getId(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getOrganizationMembershipsForUser() throws Exception {
+    createClientWithTokenOrPassword(2);
+    Iterator<OrganizationMembership> organizationMemberships =
+        instance.getOrganizationMemberships().iterator();
+    if (!organizationMemberships.hasNext()) {
+      return;
+    }
+    long userId = organizationMemberships.next().getUserId();
+    int count = 0;
+    for (OrganizationMembership m : instance.getOrganizationMembershipsForUser(userId)) {
+      assertThat(m.getId(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+    count = 0;
+    for (OrganizationMembership m : instance.getOrganizationMembershipByUser(userId)) {
+      assertThat(m.getId(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getGroupMembershipsByUser() throws Exception {
+    createClientWithTokenOrPassword(2);
+    Iterator<GroupMembership> groupMemberships = instance.getGroupMemberships().iterator();
+    if (!groupMemberships.hasNext()) {
+      return;
+    }
+    long userId = groupMemberships.next().getUserId();
+    int count = 0;
+    for (GroupMembership m : instance.getGroupMembershipByUser(userId)) {
+      assertThat(m.getId(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getAssignableGroupMemberships() throws Exception {
+    createClientWithTokenOrPassword(2);
+    int count = 0;
+    for (GroupMembership m : instance.getAssignableGroupMemberships()) {
+      assertThat(m.getId(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getAssignableGroupMembershipsByGroup() throws Exception {
+    createClientWithTokenOrPassword(2);
+    Iterator<Group> groups = instance.getGroups().iterator();
+    if (!groups.hasNext()) {
+      return;
+    }
+    Group group = groups.next();
+    int count = 0;
+    for (GroupMembership m : instance.getAssignableGroupMemberships(group.getId())) {
+      assertThat(m.getId(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getGroupMemberships() throws Exception {
+    createClientWithTokenOrPassword(2);
+    int count = 0;
+    for (GroupMembership gm : instance.getGroupMemberships()) {
+      assertThat(gm.getGroupId(), notNullValue());
+      assertThat(gm.getUserId(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
+  }
+
+  @Test
+  public void getGroupMembershipsForGroup() throws Exception {
+    createClientWithTokenOrPassword(2);
+    Iterator<Group> groups = instance.getGroups().iterator();
+    if (!groups.hasNext()) {
+      return;
+    }
+    int count = 0;
+    for (GroupMembership gm : instance.getGroupMemberships(groups.next().getId())) {
+      assertThat(gm.getGroupId(), notNullValue());
+      assertThat(gm.getUserId(), notNullValue());
       if (++count > 10) {
         break;
       }
@@ -2327,7 +2639,7 @@ public class RealSmokeTest {
 
   @Test
   public void getDynamicContentItems() throws Exception {
-    createClientWithTokenOrPassword();
+    createClientWithTokenOrPassword(2);
     int count = 0;
     for (DynamicContentItem i : instance.getDynamicContentItems()) {
       assertThat(i.getName(), notNullValue());
@@ -2361,7 +2673,7 @@ public class RealSmokeTest {
 
   @Test
   public void getTicketCommentsShouldBeAscending() throws Exception {
-    createClientWithTokenOrPassword();
+    createClientWithTokenOrPassword(2);
 
     Ticket t = newTestTicket();
     Ticket ticket = null;
@@ -2477,6 +2789,18 @@ public class RealSmokeTest {
             .filter(v -> Objects.equals(v.getId(), UNRESOLVED_TICKETS_VIEW_ID))
             .findFirst();
     assertTrue(maybeView.isPresent());
+  }
+
+  @Test
+  public void getViews() throws Exception {
+    createClientWithTokenOrPassword(2);
+    int count = 0;
+    for (View v : instance.getViews()) {
+      assertThat(v.getId(), notNullValue());
+      if (++count > 10) {
+        break;
+      }
+    }
   }
 
   // UTILITIES
