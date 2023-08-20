@@ -37,9 +37,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
@@ -243,7 +243,7 @@ public class RealSmokeTest {
     }
     count = 0;
     Map<String, List<String>> parameters = new HashMap<>();
-    if(ticketId != null) {
+    if (ticketId != null) {
       parameters.put("ticket_id", singletonList(ticketId.toString()));
       for (Skip skip : instance.getSkips(parameters)) {
         assertEquals(skip.getTicket().getId(), ticketId);
@@ -335,7 +335,6 @@ public class RealSmokeTest {
       }
     }
   }
-
 
   @Test
   public void getRecipientAddresses() throws Exception {
@@ -595,7 +594,7 @@ public class RealSmokeTest {
   public void getTicketMetrics() throws Exception {
     createClientWithTokenOrPassword(2);
     int count = 0;
-    for (Metric m: instance.getTicketMetrics()) {
+    for (Metric m : instance.getTicketMetrics()) {
       assertThat(m.getId(), notNullValue());
       if (++count > 10) {
         break;
@@ -607,7 +606,7 @@ public class RealSmokeTest {
   public void getMacros() throws Exception {
     createClientWithTokenOrPassword(2);
     int count = 0;
-    for (Macro m: instance.getMacros()) {
+    for (Macro m : instance.getMacros()) {
       assertThat(m.getId(), notNullValue());
       if (++count > 10) {
         break;
@@ -617,7 +616,7 @@ public class RealSmokeTest {
     count = 0;
     Map<String, List<String>> parameters = new HashMap<>();
     parameters.put("active", singletonList("true"));
-    for (Macro m: instance.getMacros(parameters)) {
+    for (Macro m : instance.getMacros(parameters)) {
       assertTrue(m.getActive());
       if (++count > 10) {
         break;
@@ -1598,33 +1597,31 @@ public class RealSmokeTest {
     createClientWithTokenOrPassword(2);
 
     StreamSupport.stream(instance.getUsersByRole(Role.ADMIN.toString()).spliterator(), false)
-            .limit(maxResults)
-            .forEach(
-                    user ->
-                            assertEquals(
-                                    "A request for admins only returns admins",
-                                    user.getRole(),
-                                    Role.ADMIN));
+        .limit(maxResults)
+        .forEach(
+            user ->
+                assertEquals(
+                    "A request for admins only returns admins", user.getRole(), Role.ADMIN));
 
     StreamSupport.stream(instance.getUsersByRole(Role.END_USER.toString()).spliterator(), false)
-            .limit(maxResults)
-            .forEach(
-                    user ->
-                            assertEquals(
-                                    "A request for end-users only returns end-users",
-                                    user.getRole(),
-                                    Role.END_USER));
+        .limit(maxResults)
+        .forEach(
+            user ->
+                assertEquals(
+                    "A request for end-users only returns end-users",
+                    user.getRole(),
+                    Role.END_USER));
 
     StreamSupport.stream(
-                    instance.getUsersByRole(Role.END_USER.toString(), Role.ADMIN.toString()).spliterator(),
-                    false)
-            .limit(maxResults)
-            .forEach(
-                    user ->
-                            assertThat(
-                                    "Multiple roles can be requested together",
-                                    user.getRole(),
-                                    isOneOf(Role.END_USER, Role.ADMIN)));
+            instance.getUsersByRole(Role.END_USER.toString(), Role.ADMIN.toString()).spliterator(),
+            false)
+        .limit(maxResults)
+        .forEach(
+            user ->
+                assertThat(
+                    "Multiple roles can be requested together",
+                    user.getRole(),
+                    isOneOf(Role.END_USER, Role.ADMIN)));
   }
 
   @Test

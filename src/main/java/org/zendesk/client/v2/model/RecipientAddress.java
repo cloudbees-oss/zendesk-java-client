@@ -1,7 +1,6 @@
 package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 import java.util.Objects;
 
@@ -83,7 +82,9 @@ public class RecipientAddress {
     return brandId;
   }
 
-  public void setBrandId(Long brandId) { this.brandId = brandId; }
+  public void setBrandId(Long brandId) {
+    this.brandId = brandId;
+  }
 
   public String getEmail() {
     return email;
@@ -124,6 +125,7 @@ public class RecipientAddress {
   public void setDomainVerificationCode(String domainVerificationCode) {
     this.domainVerificationCode = domainVerificationCode;
   }
+
   public boolean isDefault() {
     return isDefault;
   }
@@ -137,29 +139,71 @@ public class RecipientAddress {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     RecipientAddress that = (RecipientAddress) o;
-    return isDefault == that.isDefault && Objects.equals(url, that.url) && Objects.equals(id, that.id) && Objects.equals(brandId, that.brandId) && Objects.equals(name, that.name) && Objects.equals(email, that.email) && Objects.equals(forwardingStatus, that.forwardingStatus) && Objects.equals(cnameStatus, that.cnameStatus) && Objects.equals(domainVerificationStatus, that.domainVerificationStatus) && Objects.equals(domainVerificationCode, that.domainVerificationCode) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt);
+    return isDefault == that.isDefault
+        && Objects.equals(url, that.url)
+        && Objects.equals(id, that.id)
+        && Objects.equals(brandId, that.brandId)
+        && Objects.equals(name, that.name)
+        && Objects.equals(email, that.email)
+        && Objects.equals(forwardingStatus, that.forwardingStatus)
+        && Objects.equals(cnameStatus, that.cnameStatus)
+        && Objects.equals(domainVerificationStatus, that.domainVerificationStatus)
+        && Objects.equals(domainVerificationCode, that.domainVerificationCode)
+        && Objects.equals(createdAt, that.createdAt)
+        && Objects.equals(updatedAt, that.updatedAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(url, id, brandId, isDefault, name, email, forwardingStatus, cnameStatus, domainVerificationStatus, domainVerificationCode, createdAt, updatedAt);
+    return Objects.hash(
+        url,
+        id,
+        brandId,
+        isDefault,
+        name,
+        email,
+        forwardingStatus,
+        cnameStatus,
+        domainVerificationStatus,
+        domainVerificationCode,
+        createdAt,
+        updatedAt);
   }
 
   @Override
   public String toString() {
-    return "RecipientAddress{" +
-            "url='" + url + '\'' +
-            ", id=" + id +
-            ", brandId=" + brandId +
-            ", isDefault=" + isDefault +
-            ", name='" + name + '\'' +
-            ", email='" + email + '\'' +
-            ", forwardingStatus='" + forwardingStatus + '\'' +
-            ", cnameStatus='" + cnameStatus + '\'' +
-            ", domainVerificationStatus='" + domainVerificationStatus + '\'' +
-            ", domainVerificationCode='" + domainVerificationCode + '\'' +
-            ", createdAt=" + createdAt +
-            ", updatedAt=" + updatedAt +
-            '}';
+    return "RecipientAddress{"
+        + "url='"
+        + url
+        + '\''
+        + ", id="
+        + id
+        + ", brandId="
+        + brandId
+        + ", isDefault="
+        + isDefault
+        + ", name='"
+        + name
+        + '\''
+        + ", email='"
+        + email
+        + '\''
+        + ", forwardingStatus='"
+        + forwardingStatus
+        + '\''
+        + ", cnameStatus='"
+        + cnameStatus
+        + '\''
+        + ", domainVerificationStatus='"
+        + domainVerificationStatus
+        + '\''
+        + ", domainVerificationCode='"
+        + domainVerificationCode
+        + '\''
+        + ", createdAt="
+        + createdAt
+        + ", updatedAt="
+        + updatedAt
+        + '}';
   }
 }

@@ -1,5 +1,8 @@
 package org.zendesk.client.v2;
 
+import static java.util.Collections.singletonList;
+import static org.asynchttpclient.Param.map2ParamList;
+
 import com.damnhandy.uri.template.UriTemplate;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,7 +32,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
@@ -67,8 +69,8 @@ import org.zendesk.client.v2.model.OrganizationMembership;
 import org.zendesk.client.v2.model.RecipientAddress;
 import org.zendesk.client.v2.model.SatisfactionRating;
 import org.zendesk.client.v2.model.SearchResultEntity;
-import org.zendesk.client.v2.model.SortOrder;
 import org.zendesk.client.v2.model.Skip;
+import org.zendesk.client.v2.model.SortOrder;
 import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.SuspendedTicket;
 import org.zendesk.client.v2.model.Tag;
@@ -107,9 +109,6 @@ import org.zendesk.client.v2.model.targets.PivotalTarget;
 import org.zendesk.client.v2.model.targets.Target;
 import org.zendesk.client.v2.model.targets.TwitterTarget;
 import org.zendesk.client.v2.model.targets.UrlTarget;
-
-import static java.util.Collections.singletonList;
-import static org.asynchttpclient.Param.map2ParamList;
 
 /**
  * @author stephenc
@@ -194,7 +193,11 @@ public class Zendesk implements Closeable {
   }
 
   private Zendesk(
-      AsyncHttpClient client, String url, String oauthToken, Map<String, String> headers, int cbpPageSize) {
+      AsyncHttpClient client,
+      String url,
+      String oauthToken,
+      Map<String, String> headers,
+      int cbpPageSize) {
     this.logger = LoggerFactory.getLogger(Zendesk.class);
     this.closeClient = client == null;
     this.realm = null;
@@ -273,7 +276,7 @@ public class Zendesk implements Closeable {
 
   public Iterable<Skip> getSkips(Map<String, List<String>> parameters) {
     return new PagedIterable<>(
-            cbp("/skips.json", map2ParamList(parameters)), handleList(Skip.class, "skips"));
+        cbp("/skips.json", map2ParamList(parameters)), handleList(Skip.class, "skips"));
   }
 
   public Iterable<Skip> getSkips() {
@@ -399,8 +402,8 @@ public class Zendesk implements Closeable {
 
   public Iterable<Ticket> getTicketIncidentsCbp(long id) {
     return new PagedIterable<>(
-            cbp(UriTemplate.fromTemplate("/tickets/{id}/incidents.json").set("id", id).expand()),
-            handleList(Ticket.class, "tickets"));
+        cbp(UriTemplate.fromTemplate("/tickets/{id}/incidents.json").set("id", id).expand()),
+        handleList(Ticket.class, "tickets"));
   }
 
   public List<User> getTicketCollaborators(long id) {
@@ -706,7 +709,7 @@ public class Zendesk implements Closeable {
 
   public Iterable<Audit> getTicketAudits(Map<String, List<String>> parameters) {
     return new PagedIterable<>(
-            cbp("/ticket_audits.json", map2ParamList(parameters)), handleList(Audit.class, "audits"));
+        cbp("/ticket_audits.json", map2ParamList(parameters)), handleList(Audit.class, "audits"));
   }
 
   public Iterable<Audit> getTicketAudits() {
@@ -797,7 +800,8 @@ public class Zendesk implements Closeable {
   }
 
   public Iterable<Field> getTicketFieldsCbp() {
-    return new PagedIterable<>(cbp("/ticket_fields.json"), handleList(Field.class, "ticket_fields"));
+    return new PagedIterable<>(
+        cbp("/ticket_fields.json"), handleList(Field.class, "ticket_fields"));
   }
 
   public Field getTicketField(long id) {
@@ -841,7 +845,8 @@ public class Zendesk implements Closeable {
 
   public Iterable<SuspendedTicket> getSuspendedTickets(Map<String, List<String>> parameters) {
     return new PagedIterable<>(
-            cbp("/suspended_tickets.json", map2ParamList(parameters)), handleList(SuspendedTicket.class, "suspended_tickets"));
+        cbp("/suspended_tickets.json", map2ParamList(parameters)),
+        handleList(SuspendedTicket.class, "suspended_tickets"));
   }
 
   public Iterable<SuspendedTicket> getSuspendedTickets() {
@@ -851,17 +856,18 @@ public class Zendesk implements Closeable {
 
   public Iterable<Activity> getActivities(Map<String, List<String>> parameters) {
     return new PagedIterable<>(
-            cbp("/activities.json", map2ParamList(parameters)), handleList(Activity.class, "activities"));
+        cbp("/activities.json", map2ParamList(parameters)),
+        handleList(Activity.class, "activities"));
   }
 
   public Iterable<Activity> getActivities() {
-    return new PagedIterable<>(
-            cbp("/activities.json"), handleList(Activity.class, "activities"));
+    return new PagedIterable<>(cbp("/activities.json"), handleList(Activity.class, "activities"));
   }
 
   public Iterable<RecipientAddress> getRecipientAddresses() {
     return new PagedIterable<>(
-            cbp("/recipient_addresses.json"), handleList(RecipientAddress.class, "recipient_addresses"));
+        cbp("/recipient_addresses.json"),
+        handleList(RecipientAddress.class, "recipient_addresses"));
   }
 
   /**
@@ -1016,7 +1022,8 @@ public class Zendesk implements Closeable {
   }
 
   public Iterable<Trigger> getTriggers(Map<String, List<String>> parameters) {
-    return new PagedIterable<>(cbp("/triggers.json", map2ParamList(parameters)), handleList(Trigger.class, "triggers"));
+    return new PagedIterable<>(
+        cbp("/triggers.json", map2ParamList(parameters)), handleList(Trigger.class, "triggers"));
   }
 
   public Iterable<Trigger> getTriggers() {
@@ -1040,8 +1047,7 @@ public class Zendesk implements Closeable {
   }
 
   public Iterable<Trigger> getActiveTriggers() {
-    return new PagedIterable<>(
-        cbp("/triggers/active.json"), handleList(Trigger.class, "triggers"));
+    return new PagedIterable<>(cbp("/triggers/active.json"), handleList(Trigger.class, "triggers"));
   }
 
   public Iterable<Trigger> searchTriggers(String query) {
@@ -1096,7 +1102,8 @@ public class Zendesk implements Closeable {
   }
 
   public Iterable<View> getViews(Map<String, List<String>> parameters) {
-    return new PagedIterable<>(cbp("/views.json", map2ParamList(parameters)), handleList(View.class, "views"));
+    return new PagedIterable<>(
+        cbp("/views.json", map2ParamList(parameters)), handleList(View.class, "views"));
   }
   // Views
   public Iterable<View> getViews() {
@@ -1111,8 +1118,10 @@ public class Zendesk implements Closeable {
   // Automations
   public Iterable<Automation> getAutomations(Map<String, List<String>> parameters) {
     return new PagedIterable<>(
-            cbp("/automations.json", map2ParamList(parameters)), handleList(Automation.class, "automations"));
+        cbp("/automations.json", map2ParamList(parameters)),
+        handleList(Automation.class, "automations"));
   }
+
   public Iterable<Automation> getAutomations() {
     return getAutomations(Collections.emptyMap());
   }
@@ -1172,7 +1181,8 @@ public class Zendesk implements Closeable {
     roleList.addAll(Arrays.asList(roles));
     Map<String, List<String>> parameters = new HashMap<>();
     parameters.put("role[]", roleList);
-    return new PagedIterable<>(cbp("/users.json", map2ParamList(parameters)), handleList(User.class, "users"));
+    return new PagedIterable<>(
+        cbp("/users.json", map2ParamList(parameters)), handleList(User.class, "users"));
   }
 
   public List<User> getUsers(long id, long... ids) {
@@ -1216,12 +1226,14 @@ public class Zendesk implements Closeable {
 
   public Iterable<User> getGroupUsers(long id) {
     return new PagedIterable<>(
-        cbp(UriTemplate.fromTemplate("/groups/{id}/users.json").set("id", id).expand()), handleList(User.class, "users"));
+        cbp(UriTemplate.fromTemplate("/groups/{id}/users.json").set("id", id).expand()),
+        handleList(User.class, "users"));
   }
 
   public Iterable<User> getOrganizationUsers(long id) {
     return new PagedIterable<>(
-            cbp(UriTemplate.fromTemplate("/organizations/{id}/users.json").set("id", id).expand()), handleList(User.class, "users"));
+        cbp(UriTemplate.fromTemplate("/organizations/{id}/users.json").set("id", id).expand()),
+        handleList(User.class, "users"));
   }
 
   public User getUser(long id) {
@@ -1661,7 +1673,8 @@ public class Zendesk implements Closeable {
   public Iterable<Comment> getRequestComments(long id) {
 
     return new PagedIterable<>(
-        cbp(UriTemplate.fromTemplate("/requests/{id}/comments.json").set("id", id).expand()), handleList(Comment.class, "comments"));
+        cbp(UriTemplate.fromTemplate("/requests/{id}/comments.json").set("id", id).expand()),
+        handleList(Comment.class, "comments"));
   }
 
   public Iterable<Comment> getTicketComments(long id) {
@@ -1726,7 +1739,8 @@ public class Zendesk implements Closeable {
   }
 
   public Iterable<Organization> getOrganizations() {
-    return new PagedIterable<>(cbp("/organizations.json"), handleList(Organization.class, "organizations"));
+    return new PagedIterable<>(
+        cbp("/organizations.json"), handleList(Organization.class, "organizations"));
   }
 
   public List<Organization> getOrganizations(long id, long... ids) {
@@ -1873,19 +1887,20 @@ public class Zendesk implements Closeable {
   public Iterable<OrganizationMembership> getOrganizationMembershipsForOrg(long organizationId) {
     return new PagedIterable<>(
         cbp(
-                UriTemplate
-                        .fromTemplate("/organizations/{organization_id}/organization_memberships.json")
-                        .set("organization_id", organizationId).expand()),
+            UriTemplate.fromTemplate(
+                    "/organizations/{organization_id}/organization_memberships.json")
+                .set("organization_id", organizationId)
+                .expand()),
         handleList(OrganizationMembership.class, "organization_memberships"));
   }
 
   public Iterable<OrganizationMembership> getOrganizationMembershipsForUser(long userId) {
     return new PagedIterable<>(
-            cbp(
-                    UriTemplate
-                            .fromTemplate("/users/{user_id}/organization_memberships.json")
-                            .set("user_id", userId).expand()),
-            handleList(OrganizationMembership.class, "organization_memberships"));
+        cbp(
+            UriTemplate.fromTemplate("/users/{user_id}/organization_memberships.json")
+                .set("user_id", userId)
+                .expand()),
+        handleList(OrganizationMembership.class, "organization_memberships"));
   }
 
   public OrganizationMembership getOrganizationMembershipForUser(long user_id, long id) {
@@ -2034,7 +2049,8 @@ public class Zendesk implements Closeable {
   }
 
   public Iterable<Macro> getMacros(Map<String, List<String>> parameters) {
-    return new PagedIterable<>(cbp("/macros.json", map2ParamList(parameters)), handleList(Macro.class, "macros"));
+    return new PagedIterable<>(
+        cbp("/macros.json", map2ParamList(parameters)), handleList(Macro.class, "macros"));
   }
 
   public Iterable<Macro> getMacros() {
@@ -2206,7 +2222,8 @@ public class Zendesk implements Closeable {
       parameters.put("group_id", singletonList(groupId.toString()));
     }
     return new PagedIterable<>(
-        cbp("/group_memberships.json", map2ParamList(parameters)), handleList(GroupMembership.class, "group_memberships"));
+        cbp("/group_memberships.json", map2ParamList(parameters)),
+        handleList(GroupMembership.class, "group_memberships"));
   }
 
   /**
@@ -2222,8 +2239,11 @@ public class Zendesk implements Closeable {
 
   public Iterable<GroupMembership> getGroupMembershipByUserCbp(long userId) {
     return new PagedIterable<>(
-            cbp(UriTemplate.fromTemplate("/users/{user_id}/group_memberships.json").set("user_id", userId).expand()),
-            handleList(GroupMembership.class, "group_memberships"));
+        cbp(
+            UriTemplate.fromTemplate("/users/{user_id}/group_memberships.json")
+                .set("user_id", userId)
+                .expand()),
+        handleList(GroupMembership.class, "group_memberships"));
   }
 
   /**
@@ -2239,8 +2259,11 @@ public class Zendesk implements Closeable {
 
   public Iterable<GroupMembership> getGroupMembershipsCbp(long groupId) {
     return new PagedIterable<>(
-            cbp(UriTemplate.fromTemplate("/groups/{group_id}/memberships.json").set("group_id", groupId).expand()),
-            handleList(GroupMembership.class, "group_memberships"));
+        cbp(
+            UriTemplate.fromTemplate("/groups/{group_id}/memberships.json")
+                .set("group_id", groupId)
+                .expand()),
+        handleList(GroupMembership.class, "group_memberships"));
   }
 
   public Iterable<GroupMembership> getAssignableGroupMemberships() {
@@ -2264,8 +2287,11 @@ public class Zendesk implements Closeable {
 
   public Iterable<GroupMembership> getAssignableGroupMembershipsCbp(long groupId) {
     return new PagedIterable<>(
-            cbp(UriTemplate.fromTemplate("/groups/{group_id}/memberships/assignable.json").set("group_id", groupId).expand()),
-            handleList(GroupMembership.class, "group_memberships"));
+        cbp(
+            UriTemplate.fromTemplate("/groups/{group_id}/memberships/assignable.json")
+                .set("group_id", groupId)
+                .expand()),
+        handleList(GroupMembership.class, "group_memberships"));
   }
 
   public GroupMembership getGroupMembership(long id) {
@@ -2538,7 +2564,9 @@ public class Zendesk implements Closeable {
     return getSearchResults(type, query, Collections.emptyMap());
   }
 
-  /** @deprecated Use {@link #getSearchResults(Class, String, Map)} instead. */
+  /**
+   * @deprecated Use {@link #getSearchResults(Class, String, Map)} instead.
+   */
   @Deprecated
   public <T extends SearchResultEntity> Iterable<T> getSearchResults(
       Class<T> type, String query, String params) {
@@ -2725,7 +2753,10 @@ public class Zendesk implements Closeable {
       DynamicContentItem item) {
     checkHasId(item);
     return new PagedIterable<>(
-            cbp(UriTemplate.fromTemplate("/dynamic_content/items/{id}/variants.json").set("id", item.getId()).expand()),
+        cbp(
+            UriTemplate.fromTemplate("/dynamic_content/items/{id}/variants.json")
+                .set("id", item.getId())
+                .expand()),
         handleList(DynamicContentItemVariant.class, "variants"));
   }
 
@@ -2994,7 +3025,9 @@ public class Zendesk implements Closeable {
     return complete(submit(req("GET", cnst("/help_center/locales.json")), handle(Locales.class)));
   }
 
-  /** @deprecated Use {@link Zendesk#listHelpCenterLocales()} instead */
+  /**
+   * @deprecated Use {@link Zendesk#listHelpCenterLocales()} instead
+   */
   @Deprecated
   public List<String> getHelpCenterLocales() {
     return listHelpCenterLocales().getLocales();
@@ -3939,14 +3972,14 @@ public class Zendesk implements Closeable {
       throw new IllegalArgumentException("Path cannot contain a query string");
     }
     // No need to encode parameters. Handled by AHC.
-    // See https://github.com/AsyncHttpClient/async-http-client/blob/async-http-client-project-2.12.3/client/src/main/java/org/asynchttpclient/RequestBuilderBase.java#L598-L609
-    StringBuilder sb = new StringBuilder(url)
-      .append(path)
-      .append("?page[size]=")
-      .append(cbpPageSize);
-    queryParameters.forEach(qp -> {
-      sb.append('&').append(qp.getName()).append('=').append(qp.getValue());
-    });
+    // See
+    // https://github.com/AsyncHttpClient/async-http-client/blob/async-http-client-project-2.12.3/client/src/main/java/org/asynchttpclient/RequestBuilderBase.java#L598-L609
+    StringBuilder sb =
+        new StringBuilder(url).append(path).append("?page[size]=").append(cbpPageSize);
+    queryParameters.forEach(
+        qp -> {
+          sb.append('&').append(qp.getName()).append('=').append(qp.getValue());
+        });
     return new FixedUri(sb.toString());
   }
 

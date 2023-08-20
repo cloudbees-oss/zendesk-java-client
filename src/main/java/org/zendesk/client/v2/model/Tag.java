@@ -1,13 +1,9 @@
 package org.zendesk.client.v2.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.Date;
 import java.util.Objects;
 
 public class Tag {
 
-  /** The name of the content tag */
   private String name;
 
   private Integer count;
@@ -50,9 +46,6 @@ public class Tag {
 
   @Override
   public String toString() {
-    return "Tag{" +
-            "name='" + name + '\'' +
-            ", count=" + count +
-            '}';
+    return "Tag{" + "name='" + name + '\'' + ", count=" + count + '}';
   }
 }
