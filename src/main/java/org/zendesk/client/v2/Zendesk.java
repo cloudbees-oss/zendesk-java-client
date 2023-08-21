@@ -107,6 +107,7 @@ import org.zendesk.client.v2.model.targets.UrlTarget;
  */
 public class Zendesk implements Closeable {
   private static final String JSON = "application/json; charset=UTF-8";
+  private static final String USER_AGENT_HEADER = "User-Agent";
   private static final DefaultAsyncHttpClientConfig DEFAULT_ASYNC_HTTP_CLIENT_CONFIG =
       new DefaultAsyncHttpClientConfig.Builder().setFollowRedirect(true).build();
   private final boolean closeClient;
@@ -176,6 +177,7 @@ public class Zendesk implements Closeable {
       }
       this.realm = null;
     }
+    headers.putIfAbsent(USER_AGENT_HEADER, new DefaultUserAgent().toString());
     this.headers = Collections.unmodifiableMap(headers);
     this.mapper = createMapper();
   }
@@ -194,6 +196,7 @@ public class Zendesk implements Closeable {
       throw new IllegalStateException(
           "Cannot specify token or password without specifying username");
     }
+    headers.putIfAbsent(USER_AGENT_HEADER, new DefaultUserAgent().toString());
     this.headers = Collections.unmodifiableMap(headers);
 
     this.mapper = createMapper();
