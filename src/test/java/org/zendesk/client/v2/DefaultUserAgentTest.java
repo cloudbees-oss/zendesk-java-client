@@ -28,7 +28,6 @@ public class DefaultUserAgentTest {
 
   @Test
   public void testReleaseVersion() {
-    assertThat(new DefaultUserAgent("0.1.2").toString())
-        .isEqualTo("zendesk-java-client/0.1.2");
+    assertThat(new DefaultUserAgent("0.1.2").toString()).isEqualTo("zendesk-java-client/0.1.2");
   }
 }
