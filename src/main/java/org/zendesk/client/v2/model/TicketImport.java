@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 import java.util.List;
 
-/** @author robert-fernandes */
+/**
+ * @author robert-fernandes
+ */
 @JsonIgnoreProperties(value = "comment", ignoreUnknown = true)
 public class TicketImport extends Ticket {
 

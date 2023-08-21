@@ -2,7 +2,9 @@ package org.zendesk.client.v2.model;
 
 import java.io.Serializable;
 
-/** @author Sandeep Kaul (sandeep.kaul@olacabs.com) */
+/**
+ * @author Sandeep Kaul (sandeep.kaul@olacabs.com)
+ */
 public class Condition implements Serializable {
 
   private static final long serialVersionUID = 1L;
