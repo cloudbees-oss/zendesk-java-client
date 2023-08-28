@@ -2074,8 +2074,13 @@ public class RealSmokeTest {
   @Test
   public void getGroupUsers() throws Exception {
     createClientWithTokenOrPassword(2);
+    Iterator<Group> groups = instance.getGroups().iterator();
+    if (!groups.hasNext()) {
+      return;
+    }
+    Group group = groups.next();
     int count = 0;
-    for (User u : instance.getGroupUsers(0L)) {
+    for (User u : instance.getGroupUsers(group.getId())) {
       assertThat(u.getName(), notNullValue());
       if (++count > 10) {
         break;
@@ -2086,8 +2091,13 @@ public class RealSmokeTest {
   @Test
   public void getOrganizationUsers() throws Exception {
     createClientWithTokenOrPassword(2);
+    Iterator<Organization> organizations = instance.getOrganizations().iterator();
+    if (!organizations.hasNext()) {
+      return;
+    }
+    Organization organization = organizations.next();
     int count = 0;
-    for (User u : instance.getOrganizationUsers(0L)) {
+    for (User u : instance.getOrganizationUsers(organization.getId())) {
       assertThat(u.getName(), notNullValue());
       if (++count > 10) {
         break;
@@ -2146,8 +2156,13 @@ public class RealSmokeTest {
   @Test
   public void getOrganizationMembershipsForOrg() throws Exception {
     createClientWithTokenOrPassword(2);
+    Iterator<Organization> organizations = instance.getOrganizations().iterator();
+    if (!organizations.hasNext()) {
+      return;
+    }
+    Organization organization = organizations.next();
     int count = 0;
-    for (OrganizationMembership m : instance.getOrganizationMembershipsForOrg(0L)) {
+    for (OrganizationMembership m : instance.getOrganizationMembershipsForOrg(organization.getId())) {
       assertThat(m.getId(), notNullValue());
       if (++count > 10) {
         break;
@@ -2158,8 +2173,13 @@ public class RealSmokeTest {
   @Test
   public void getOrganizationMembershipsForUser() throws Exception {
     createClientWithTokenOrPassword(2);
+    Iterator<OrganizationMembership> organizationMemberships = instance.getOrganizationMemberships().iterator();
+    if (!organizationMemberships.hasNext()) {
+      return;
+    }
+    long userId = organizationMemberships.next().getUserId();
     int count = 0;
-    for (OrganizationMembership m : instance.getOrganizationMembershipsForUser(0L)) {
+    for (OrganizationMembership m : instance.getOrganizationMembershipsForUser(userId)) {
       assertThat(m.getId(), notNullValue());
       if (++count > 10) {
         break;
@@ -2170,8 +2190,13 @@ public class RealSmokeTest {
   @Test
   public void getGroupMembershipsForUser() throws Exception {
     createClientWithTokenOrPassword(2);
+    Iterator<GroupMembership> groupMemberships = instance.getGroupMemberships().iterator();
+    if (!groupMemberships.hasNext()) {
+      return;
+    }
+    long userId = groupMemberships.next().getUserId();
     int count = 0;
-    for (GroupMembership m : instance.getGroupMembershipByUserCbp(0L)) {
+    for (GroupMembership m : instance.getGroupMembershipByUserCbp(userId)) {
       assertThat(m.getId(), notNullValue());
       if (++count > 10) {
         break;
@@ -2182,8 +2207,13 @@ public class RealSmokeTest {
   @Test
   public void getGroupMembershipsCbp() throws Exception {
     createClientWithTokenOrPassword(2);
+    Iterator<Group> groups = instance.getGroups().iterator();
+    if (!groups.hasNext()) {
+      return;
+    }
+    Group group = groups.next();
     int count = 0;
-    for (GroupMembership m : instance.getGroupMembershipsCbp(0L)) {
+    for (GroupMembership m : instance.getGroupMembershipsCbp(group.getId())) {
       assertThat(m.getId(), notNullValue());
       if (++count > 10) {
         break;
@@ -2206,8 +2236,13 @@ public class RealSmokeTest {
   @Test
   public void getAssignableGroupMembershipsCbp() throws Exception {
     createClientWithTokenOrPassword(2);
+    Iterator<Group> groups = instance.getGroups().iterator();
+    if (!groups.hasNext()) {
+      return;
+    }
+    Group group = groups.next();
     int count = 0;
-    for (GroupMembership m : instance.getAssignableGroupMembershipsCbp(0L)) {
+    for (GroupMembership m : instance.getAssignableGroupMembershipsCbp(group.getId())) {
       assertThat(m.getId(), notNullValue());
       if (++count > 10) {
         break;
