@@ -69,6 +69,7 @@ import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.JobResult;
 import org.zendesk.client.v2.model.JobStatus;
+import org.zendesk.client.v2.model.Locale;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.OrganizationMembership;
 import org.zendesk.client.v2.model.Priority;
@@ -2477,6 +2478,22 @@ public class RealSmokeTest {
             .filter(v -> Objects.equals(v.getId(), UNRESOLVED_TICKETS_VIEW_ID))
             .findFirst();
     assertTrue(maybeView.isPresent());
+  }
+
+  @Test
+  public void getLocalesReturnsLocales() throws Exception {
+    createClientWithTokenOrPassword();
+    Iterable<Locale> locales = instance.getLocales();
+    assertThat(locales, notNullValue());
+
+    int numLocales = 0;
+    boolean defaultLocaleIsPresent = false;
+    for (Locale locale : locales) {
+      defaultLocaleIsPresent |= locale.isDefault();
+      ++numLocales;
+    }
+    assertThat(numLocales, greaterThan(0));
+    assertThat(defaultLocaleIsPresent, is(true));
   }
 
   // UTILITIES
