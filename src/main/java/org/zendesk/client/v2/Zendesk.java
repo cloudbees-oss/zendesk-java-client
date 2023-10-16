@@ -3241,7 +3241,7 @@ public class Zendesk implements Closeable {
 
   public Iterable<Subscription> getUserSubscriptions(Long userId) {
     return new PagedIterable<>(
-        tmpl("/help_center/users/{userId}/subscriptions.json").set("userId", userId),
+        tmpl("/help_center/users/{userId}/subscriptions.json?page[size]=100").set("userId", userId),
         handleList(Subscription.class, "subscriptions"));
   }
 
@@ -3251,7 +3251,7 @@ public class Zendesk implements Closeable {
 
   public Iterable<Subscription> getArticleSubscriptions(Long articleId, String locale) {
     return new PagedIterable<>(
-        tmpl("/help_center{/locale}/articles/{articleId}/subscriptions.json")
+        tmpl("/help_center{/locale}/articles/{articleId}/subscriptions.json?page[size]=100")
             .set("locale", locale)
             .set("articleId", articleId),
         handleList(Subscription.class, "subscriptions"));
@@ -3263,7 +3263,7 @@ public class Zendesk implements Closeable {
 
   public Iterable<Subscription> getSectionSubscriptions(Long sectionId, String locale) {
     return new PagedIterable<>(
-        tmpl("/help_center{/locale}/sections/{sectionId}/subscriptions.json")
+        tmpl("/help_center{/locale}/sections/{sectionId}/subscriptions.json?page[size]=100")
             .set("locale", locale)
             .set("sectionId", sectionId),
         handleList(Subscription.class, "subscriptions"));
