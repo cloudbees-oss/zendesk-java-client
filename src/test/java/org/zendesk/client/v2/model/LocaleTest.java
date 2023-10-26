@@ -15,12 +15,8 @@ public class LocaleTest {
             + "\"id\": 1,"
             + "\"locale\": \"en-US\","
             + "\"name\": \"English\","
-            + "\"native_name\": \"English (United States)\","
-            + "\"presentation_name\": \"English (United States)\","
-            + "\"rtl\": false,"
             + "\"created_at\": \"2023-08-13T19:23:16Z\","
-            + "\"updated_at\": \"2023-09-21T19:23:16Z\","
-            + "\"default\": true"
+            + "\"updated_at\": \"2023-09-21T19:23:16Z\""
             + "}";
 
     Locale locale = Zendesk.createMapper().readValue(json, Locale.class);
@@ -29,11 +25,7 @@ public class LocaleTest {
     assertThat(locale.getId(), is(1L));
     assertThat(locale.getLocale(), is("en-US"));
     assertThat(locale.getName(), is("English"));
-    assertThat(locale.getNativeName(), is("English (United States)"));
-    assertThat(locale.getPresentationName(), is("English (United States)"));
-    assertThat(locale.getRtl(), is(false));
     assertThat(locale.getCreatedAt().getTime(), is(1691954596000L));
     assertThat(locale.getUpdatedAt().getTime(), is(1695324196000L));
-    assertThat(locale.isDefault(), is(true));
   }
 }

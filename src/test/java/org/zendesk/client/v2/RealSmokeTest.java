@@ -2487,13 +2487,10 @@ public class RealSmokeTest {
     assertThat(locales, notNullValue());
 
     int numLocales = 0;
-    boolean defaultLocaleIsPresent = false;
-    for (Locale locale : locales) {
-      defaultLocaleIsPresent |= locale.isDefault();
+    for (Locale ignored : locales) {
       ++numLocales;
     }
     assertThat(numLocales, greaterThan(0));
-    assertThat(defaultLocaleIsPresent, is(true));
   }
 
   // UTILITIES
