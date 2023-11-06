@@ -55,6 +55,7 @@ import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.GroupMembership;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.JobStatus;
+import org.zendesk.client.v2.model.Locale;
 import org.zendesk.client.v2.model.Macro;
 import org.zendesk.client.v2.model.Metric;
 import org.zendesk.client.v2.model.Organization;
@@ -2636,6 +2637,20 @@ public class Zendesk implements Closeable {
                     .set("itemId", itemId)
                     .set("id", variant.getId())),
             handleStatus()));
+  }
+
+  //////////////////////////////////////////////////////////////////////
+  // Action methods for Locales
+  //////////////////////////////////////////////////////////////////////
+
+  /**
+   * https://developer.zendesk.com/api-reference/ticketing/account-configuration/locales/#list-locales
+   *
+   * @return the translation locales available for the account.
+   * @since FIXME
+   */
+  public Iterable<Locale> getLocales() {
+    return new PagedIterable<>(cnst("/locales.json"), handleList(Locale.class, "locales"));
   }
 
   // TODO search with query building API

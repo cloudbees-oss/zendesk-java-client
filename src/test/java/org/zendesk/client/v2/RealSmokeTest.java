@@ -72,6 +72,7 @@ import org.zendesk.client.v2.model.GroupMembership;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.JobResult;
 import org.zendesk.client.v2.model.JobStatus;
+import org.zendesk.client.v2.model.Locale;
 import org.zendesk.client.v2.model.Macro;
 import org.zendesk.client.v2.model.Metric;
 import org.zendesk.client.v2.model.Organization;
@@ -2801,6 +2802,18 @@ public class RealSmokeTest {
         break;
       }
     }
+
+  @Test
+  public void getLocalesReturnsLocales() throws Exception {
+    createClientWithTokenOrPassword();
+    Iterable<Locale> locales = instance.getLocales();
+    assertThat(locales, notNullValue());
+
+    int numLocales = 0;
+    for (Locale ignored : locales) {
+      ++numLocales;
+    }
+    assertThat(numLocales, greaterThan(0));
   }
 
   // UTILITIES
