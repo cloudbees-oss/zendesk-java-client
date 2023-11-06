@@ -82,7 +82,7 @@ Here is the status of the various API components:
 * [Attachments](https://developer.zendesk.com/api-reference/ticketing/tickets/ticket-attachments/) ✓
 * [Automations](https://developer.zendesk.com/api-reference/ticketing/business-rules/automations/) ✓
 * [Job Statuses](https://developer.zendesk.com/api-reference/ticketing/ticket-management/job_statuses/) ✓
-* [Locales](https://developer.zendesk.com/api-reference/ticketing/account-configuration/locales/)
+* [Locales](https://developer.zendesk.com/api-reference/ticketing/account-configuration/locales/) - Partial (List Locales)
 * [Macros](https://developer.zendesk.com/api-reference/ticketing/business-rules/macros/) ✓ *except for restrictions*
 * [Satisfaction Ratings](https://developer.zendesk.com/api-reference/ticketing/ticket-management/satisfaction_ratings/) ✓
 * [Sharing Agreements](https://developer.zendesk.com/api-reference/ticketing/account-configuration/sharing_agreements/)
