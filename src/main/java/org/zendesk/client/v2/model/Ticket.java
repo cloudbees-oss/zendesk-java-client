@@ -1,6 +1,8 @@
 package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +34,7 @@ public class Ticket extends Request implements SearchResultEntity {
   private Long ticketFormId;
   private Long brandId;
   private Boolean isPublic;
+  private Boolean safeUpdate;
 
   public Ticket() {}
 
@@ -218,6 +221,34 @@ public class Ticket extends Request implements SearchResultEntity {
     this.isPublic = isPublic;
   }
 
+  /**
+   * The safe_update &amp; update_stamp parameters are used by the Zendesk API to protect against
+   * update collisions. If the safe_update parameter is set to true and Zendesk detects that a
+   * ticket has been updated since the time specified in update_stamp then it will return an HTTP
+   * CONFLICT status to let the caller know that the ticket was not successfully updated.
+   *
+   * <p>These properties are annotated with JsonInclude(Include.NON_DEFAULT) so that they will only
+   * be serialized to JSON if safeUpdate is set to TRUE.
+   *
+   * <p>For more information see Zendesk documentation at:
+   * https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets/#protecting-against-ticket-update-collisions
+   */
+  @JsonInclude(Include.NON_DEFAULT)
+  @JsonProperty("safe_update")
+  public Boolean getSafeUpdate() {
+    return safeUpdate;
+  }
+
+  public void setSafeUpdate(Boolean safeUpdate) {
+    this.safeUpdate = safeUpdate;
+  }
+
+  @JsonInclude(Include.NON_DEFAULT)
+  @JsonProperty("updated_stamp")
+  private Date getUpdatedStamp() {
+    return Boolean.TRUE.equals(safeUpdate) ? updatedAt : null;
+  }
+
   @Override
   public String toString() {
     return "Ticket"
@@ -285,6 +316,8 @@ public class Ticket extends Request implements SearchResultEntity {
         + brandId
         + ", isPublic="
         + isPublic
+        + ", safeUpdate="
+        + safeUpdate
         + ", createdAt="
         + createdAt
         + ", updatedAt="
