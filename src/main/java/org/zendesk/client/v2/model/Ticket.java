@@ -222,7 +222,7 @@ public class Ticket extends Request implements SearchResultEntity {
   }
 
   /**
-   * The safe_update & update_stamp parameters are used by the Zendesk API to protect against update
+   * The safe_update &amp; update_stamp parameters are used by the Zendesk API to protect against update
    * collisions. If the safe_update parameter is set to true and Zendesk detects that a ticket has
    * been updated since the time specified in update_stamp then it will return an HTTP CONFLICT
    * status to let the caller know that the ticket was not successfully updated.
