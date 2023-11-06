@@ -2802,6 +2802,7 @@ public class RealSmokeTest {
         break;
       }
     }
+  }
 
   @Test
   public void getLocalesReturnsLocales() throws Exception {
