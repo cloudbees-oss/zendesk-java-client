@@ -117,6 +117,7 @@ public class Zendesk implements Closeable {
   private final String url;
   private final String oauthToken;
   private final Map<String, String> headers;
+  private final int cbpPageSize;
   private final ObjectMapper mapper;
   private final Logger logger;
   private boolean closed = false;
@@ -158,7 +159,8 @@ public class Zendesk implements Closeable {
       String url,
       String username,
       String password,
-      Map<String, String> headers) {
+      Map<String, String> headers,
+      int cbpPageSize) {
     this.logger = LoggerFactory.getLogger(Zendesk.class);
     this.closeClient = client == null;
     this.oauthToken = null;
@@ -180,11 +182,16 @@ public class Zendesk implements Closeable {
     }
     headers.putIfAbsent(USER_AGENT_HEADER, new DefaultUserAgent().toString());
     this.headers = Collections.unmodifiableMap(headers);
+    this.cbpPageSize = cbpPageSize;
     this.mapper = createMapper();
   }
 
   private Zendesk(
-      AsyncHttpClient client, String url, String oauthToken, Map<String, String> headers) {
+      AsyncHttpClient client,
+      String url,
+      String oauthToken,
+      Map<String, String> headers,
+      int cbpPageSize) {
     this.logger = LoggerFactory.getLogger(Zendesk.class);
     this.closeClient = client == null;
     this.realm = null;
@@ -199,7 +206,7 @@ public class Zendesk implements Closeable {
     }
     headers.putIfAbsent(USER_AGENT_HEADER, new DefaultUserAgent().toString());
     this.headers = Collections.unmodifiableMap(headers);
-
+    this.cbpPageSize = cbpPageSize;
     this.mapper = createMapper();
   }
 
@@ -250,8 +257,8 @@ public class Zendesk implements Closeable {
         handleList(clazz, "job_statuses"));
   }
 
-  public List<Brand> getBrands() {
-    return complete(submit(req("GET", cnst("/brands.json")), handleList(Brand.class, "brands")));
+  public Iterable<Brand> getBrands() {
+    return new PagedIterable<>(cbp("/brands.json"), handleList(Brand.class, "brands"));
   }
 
   public TicketForm getTicketForm(long id) {
@@ -360,11 +367,9 @@ public class Zendesk implements Closeable {
             req("GET", tmpl("/tickets/{id}.json").set("id", id)), handle(Ticket.class, "ticket")));
   }
 
-  public List<Ticket> getTicketIncidents(long id) {
-    return complete(
-        submit(
-            req("GET", tmpl("/tickets/{id}/incidents.json").set("id", id)),
-            handleList(Ticket.class, "tickets")));
+  public Iterable<Ticket> getTicketIncidents(long id) {
+    return new PagedIterable<>(
+        cbp("/tickets/{id}/incidents.json").set("id", id), handleList(Ticket.class, "tickets"));
   }
 
   public List<User> getTicketCollaborators(long id) {
@@ -377,7 +382,7 @@ public class Zendesk implements Closeable {
   /** https://developer.zendesk.com/rest_api/docs/support/tickets#list-deleted-tickets */
   public Iterable<DeletedTicket> getDeletedTickets() {
     return new PagedIterable<>(
-        cnst("/deleted_tickets.json"), handleList(DeletedTicket.class, "deleted_tickets"));
+        cbp("/deleted_tickets.json"), handleList(DeletedTicket.class, "deleted_tickets"));
   }
 
   /** https://developer.zendesk.com/rest_api/docs/support/tickets#list-deleted-tickets */
@@ -503,7 +508,7 @@ public class Zendesk implements Closeable {
   }
 
   public Iterable<Ticket> getTickets() {
-    return new PagedIterable<>(cnst("/tickets.json"), handleList(Ticket.class, "tickets"));
+    return new PagedIterable<>(cbp("/tickets.json"), handleList(Ticket.class, "tickets"));
   }
 
   /**
@@ -651,7 +656,7 @@ public class Zendesk implements Closeable {
 
   public Iterable<Metric> getTicketMetrics() {
     return new PagedIterable<>(
-        cnst("/ticket_metrics.json"), handleList(Metric.class, "ticket_metrics"));
+        cbp("/ticket_metrics.json"), handleList(Metric.class, "ticket_metrics"));
   }
 
   public Metric getTicketMetricByTicket(long id) {
@@ -675,7 +680,7 @@ public class Zendesk implements Closeable {
 
   public Iterable<Audit> getTicketAudits(Long id) {
     return new PagedIterable<>(
-        tmpl("/tickets/{ticketId}/audits.json").set("ticketId", id),
+        cbp("/tickets/{ticketId}/audits.json").set("ticketId", id),
         handleList(Audit.class, "audits"));
   }
 
@@ -742,9 +747,9 @@ public class Zendesk implements Closeable {
             handleStatus()));
   }
 
-  public List<Field> getTicketFields() {
-    return complete(
-        submit(req("GET", cnst("/ticket_fields.json")), handleList(Field.class, "ticket_fields")));
+  public Iterable<Field> getTicketFields() {
+    return new PagedIterable<>(
+        cbp("/ticket_fields.json"), handleList(Field.class, "ticket_fields"));
   }
 
   public Field getTicketField(long id) {
@@ -788,7 +793,7 @@ public class Zendesk implements Closeable {
 
   public Iterable<SuspendedTicket> getSuspendedTickets() {
     return new PagedIterable<>(
-        cnst("/suspended_tickets.json"), handleList(SuspendedTicket.class, "suspended_tickets"));
+        cbp("/suspended_tickets.json"), handleList(SuspendedTicket.class, "suspended_tickets"));
   }
 
   /**
@@ -943,23 +948,23 @@ public class Zendesk implements Closeable {
   }
 
   public Iterable<Trigger> getTriggers() {
-    return new PagedIterable<>(cnst("/triggers.json"), handleList(Trigger.class, "triggers"));
+    return new PagedIterable<>(cbp("/triggers.json"), handleList(Trigger.class, "triggers"));
   }
 
   public Iterable<Trigger> getTriggers(
       String categoryId, boolean active, String sortBy, SortOrder sortOrder) {
     return new PagedIterable<>(
-        tmpl("/triggers.json{?category_id,active,sort_by,sort_order}")
+        tmpl("/triggers.json{?category_id,active,sort_by,sort_order}&page[size]={pageSize}")
             .set("category_id", categoryId)
             .set("active", active)
             .set("sort_by", sortBy)
-            .set("sort_order", sortOrder.getQueryParameter()),
+            .set("sort_order", sortOrder.getQueryParameter())
+            .set("pageSize", cbpPageSize),
         handleList(Trigger.class, "triggers"));
   }
 
   public Iterable<Trigger> getActiveTriggers() {
-    return new PagedIterable<>(
-        cnst("/triggers/active.json"), handleList(Trigger.class, "triggers"));
+    return new PagedIterable<>(cbp("/triggers/active.json"), handleList(Trigger.class, "triggers"));
   }
 
   public Iterable<Trigger> searchTriggers(String query) {
@@ -1013,9 +1018,8 @@ public class Zendesk implements Closeable {
         submit(req("DELETE", tmpl("/triggers/{id}.json").set("id", triggerId)), handleStatus()));
   }
 
-  // Views
   public Iterable<View> getViews() {
-    return new PagedIterable<>(cnst("/views.json"), handleList(View.class, "views"));
+    return new PagedIterable<>(cbp("/views.json"), handleList(View.class, "views"));
   }
 
   public Iterable<Ticket> getView(long id) {
@@ -1026,7 +1030,7 @@ public class Zendesk implements Closeable {
   // Automations
   public Iterable<Automation> getAutomations() {
     return new PagedIterable<>(
-        cnst("/automations.json"), handleList(Automation.class, "automations"));
+        cbp("/automations.json"), handleList(Automation.class, "automations"));
   }
 
   public Automation getAutomation(long id) {
@@ -1071,14 +1075,15 @@ public class Zendesk implements Closeable {
   }
 
   public Iterable<User> getUsers() {
-    return new PagedIterable<>(cnst("/users.json?page[size]=100"), handleList(User.class, "users"));
+    return new PagedIterable<>(cbp("/users.json"), handleList(User.class, "users"));
   }
 
   public Iterable<User> getUsersByRole(String role, String... roles) {
     // Going to have to build this URI manually, because the RFC6570 template spec doesn't support
     // variables like ?role[]=...role[]=..., which is what Zendesk requires.
     // See https://developer.zendesk.com/rest_api/docs/core/users#filters
-    final StringBuilder uriBuilder = new StringBuilder("/users.json?page[size]=100");
+    final StringBuilder uriBuilder =
+        new StringBuilder("/users.json?page[size]=").append(cbpPageSize);
     if (roles.length == 0) {
       uriBuilder.append("&role=").append(encodeUrl(role));
     } else {
@@ -1131,12 +1136,12 @@ public class Zendesk implements Closeable {
 
   public Iterable<User> getGroupUsers(long id) {
     return new PagedIterable<>(
-        tmpl("/groups/{id}/users.json").set("id", id), handleList(User.class, "users"));
+        cbp("/groups/{id}/users.json").set("id", id), handleList(User.class, "users"));
   }
 
   public Iterable<User> getOrganizationUsers(long id) {
     return new PagedIterable<>(
-        tmpl("/organizations/{id}/users.json").set("id", id), handleList(User.class, "users"));
+        cbp("/organizations/{id}/users.json").set("id", id), handleList(User.class, "users"));
   }
 
   public User getUser(long id) {
@@ -1504,18 +1509,18 @@ public class Zendesk implements Closeable {
 
   public Iterable<org.zendesk.client.v2.model.Request> getRequests() {
     return new PagedIterable<>(
-        cnst("/requests.json"), handleList(org.zendesk.client.v2.model.Request.class, "requests"));
+        cbp("/requests.json"), handleList(org.zendesk.client.v2.model.Request.class, "requests"));
   }
 
   public Iterable<org.zendesk.client.v2.model.Request> getOpenRequests() {
     return new PagedIterable<>(
-        cnst("/requests/open.json"),
+        cbp("/requests/open.json"),
         handleList(org.zendesk.client.v2.model.Request.class, "requests"));
   }
 
   public Iterable<org.zendesk.client.v2.model.Request> getSolvedRequests() {
     return new PagedIterable<>(
-        cnst("/requests/solved.json"),
+        cbp("/requests/solved.json"),
         handleList(org.zendesk.client.v2.model.Request.class, "requests"));
   }
 
@@ -1575,7 +1580,7 @@ public class Zendesk implements Closeable {
 
   public Iterable<Comment> getRequestComments(long id) {
     return new PagedIterable<>(
-        tmpl("/requests/{id}/comments.json").set("id", id), handleList(Comment.class, "comments"));
+        cbp("/requests/{id}/comments.json").set("id", id), handleList(Comment.class, "comments"));
   }
 
   public Iterable<Comment> getTicketComments(long id) {
@@ -1641,7 +1646,7 @@ public class Zendesk implements Closeable {
 
   public Iterable<Organization> getOrganizations() {
     return new PagedIterable<>(
-        cnst("/organizations.json"), handleList(Organization.class, "organizations"));
+        cbp("/organizations.json"), handleList(Organization.class, "organizations"));
   }
 
   public List<Organization> getOrganizations(long id, long... ids) {
@@ -1781,20 +1786,20 @@ public class Zendesk implements Closeable {
 
   public Iterable<OrganizationMembership> getOrganizationMemberships() {
     return new PagedIterable<>(
-        cnst("/organization_memberships.json"),
+        cbp("/organization_memberships.json"),
         handleList(OrganizationMembership.class, "organization_memberships"));
   }
 
   public Iterable<OrganizationMembership> getOrganizationMembershipsForOrg(long organization_id) {
     return new PagedIterable<>(
-        tmpl("/organizations/{organization_id}/organization_memberships.json")
+        cbp("/organizations/{organization_id}/organization_memberships.json")
             .set("organization_id", organization_id),
         handleList(OrganizationMembership.class, "organization_memberships"));
   }
 
   public Iterable<OrganizationMembership> getOrganizationMembershipsForUser(long user_id) {
     return new PagedIterable<>(
-        tmpl("/users/{user_id}/organization_memberships.json").set("user_id", user_id),
+        cbp("/users/{user_id}/organization_memberships.json").set("user_id", user_id),
         handleList(OrganizationMembership.class, "organization_memberships"));
   }
 
@@ -1879,11 +1884,11 @@ public class Zendesk implements Closeable {
   }
 
   public Iterable<Group> getGroups() {
-    return new PagedIterable<>(cnst("/groups.json"), handleList(Group.class, "groups"));
+    return new PagedIterable<>(cbp("/groups.json"), handleList(Group.class, "groups"));
   }
 
   public Iterable<Group> getAssignableGroups() {
-    return new PagedIterable<>(cnst("/groups/assignable.json"), handleList(Group.class, "groups"));
+    return new PagedIterable<>(cbp("/groups/assignable.json"), handleList(Group.class, "groups"));
   }
 
   public Group getGroup(long id) {
@@ -1944,7 +1949,7 @@ public class Zendesk implements Closeable {
   }
 
   public Iterable<Macro> getMacros() {
-    return new PagedIterable<>(cnst("/macros.json"), handleList(Macro.class, "macros"));
+    return new PagedIterable<>(cbp("/macros.json"), handleList(Macro.class, "macros"));
   }
 
   public Macro getMacro(long macroId) {
@@ -2101,36 +2106,31 @@ public class Zendesk implements Closeable {
 
   public Iterable<GroupMembership> getGroupMemberships() {
     return new PagedIterable<>(
-        cnst("/group_memberships.json"), handleList(GroupMembership.class, "group_memberships"));
+        cbp("/group_memberships.json"), handleList(GroupMembership.class, "group_memberships"));
   }
 
-  public List<GroupMembership> getGroupMembershipByUser(long user_id) {
-    return complete(
-        submit(
-            req("GET", tmpl("/users/{user_id}/group_memberships.json").set("user_id", user_id)),
-            handleList(GroupMembership.class, "group_memberships")));
+  public Iterable<GroupMembership> getGroupMembershipByUser(long user_id) {
+    return new PagedIterable<>(
+        cbp("/users/{user_id}/group_memberships.json").set("user_id", user_id),
+        handleList(GroupMembership.class, "group_memberships"));
   }
 
-  public List<GroupMembership> getGroupMemberships(long group_id) {
-    return complete(
-        submit(
-            req("GET", tmpl("/groups/{group_id}/memberships.json").set("group_id", group_id)),
-            handleList(GroupMembership.class, "group_memberships")));
+  public Iterable<GroupMembership> getGroupMemberships(long group_id) {
+    return new PagedIterable<>(
+        cbp("/groups/{group_id}/memberships.json").set("group_id", group_id),
+        handleList(GroupMembership.class, "group_memberships"));
   }
 
   public Iterable<GroupMembership> getAssignableGroupMemberships() {
     return new PagedIterable<>(
-        cnst("/group_memberships/assignable.json"),
+        cbp("/group_memberships/assignable.json"),
         handleList(GroupMembership.class, "group_memberships"));
   }
 
-  public List<GroupMembership> getAssignableGroupMemberships(long group_id) {
-    return complete(
-        submit(
-            req(
-                "GET",
-                tmpl("/groups/{group_id}/memberships/assignable.json").set("group_id", group_id)),
-            handleList(GroupMembership.class, "group_memberships")));
+  public Iterable<GroupMembership> getAssignableGroupMemberships(long group_id) {
+    return new PagedIterable<>(
+        cbp("/groups/{group_id}/memberships/assignable.json").set("group_id", group_id),
+        handleList(GroupMembership.class, "group_memberships"));
   }
 
   public GroupMembership getGroupMembership(long id) {
@@ -2324,13 +2324,8 @@ public class Zendesk implements Closeable {
   }
 
   // https://support.zendesk.com/hc/communities/public/posts/203464106-Managing-Organization-Memberships-via-the-Zendesk-API
-  public List<OrganizationMembership> getOrganizationMembershipByUser(long user_id) {
-    return complete(
-        submit(
-            req(
-                "GET",
-                tmpl("/users/{user_id}/organization_memberships.json").set("user_id", user_id)),
-            handleList(OrganizationMembership.class, "organization_memberships")));
+  public Iterable<OrganizationMembership> getOrganizationMembershipByUser(long user_id) {
+    return getOrganizationMembershipsForUser(user_id);
   }
 
   public OrganizationMembership getGroupOrganization(
@@ -2507,7 +2502,7 @@ public class Zendesk implements Closeable {
 
   public Iterable<SatisfactionRating> getSatisfactionRatings() {
     return new PagedIterable<>(
-        cnst("/satisfaction_ratings.json"),
+        cbp("/satisfaction_ratings.json"),
         handleList(SatisfactionRating.class, "satisfaction_ratings"));
   }
 
@@ -2541,7 +2536,7 @@ public class Zendesk implements Closeable {
 
   public Iterable<DynamicContentItem> getDynamicContentItems() {
     return new PagedIterable<>(
-        cnst("/dynamic_content/items.json"), handleList(DynamicContentItem.class, "items"));
+        cbp("/dynamic_content/items.json"), handleList(DynamicContentItem.class, "items"));
   }
 
   public DynamicContentItem getDynamicContentItem(long id) {
@@ -2587,7 +2582,7 @@ public class Zendesk implements Closeable {
       DynamicContentItem item) {
     checkHasId(item);
     return new PagedIterable<>(
-        tmpl("/dynamic_content/items/{id}/variants.json").set("id", item.getId()),
+        cbp("/dynamic_content/items/{id}/variants.json").set("id", item.getId()),
         handleList(DynamicContentItemVariant.class, "variants"));
   }
 
@@ -3801,6 +3796,14 @@ public class Zendesk implements Closeable {
     return new TemplateUri(url + template);
   }
 
+  private TemplateUri cbp(String path) {
+    Objects.requireNonNull(path, "Path cannot be null");
+    if (path.indexOf('?') != -1) {
+      throw new IllegalArgumentException("Path cannot contain a query string");
+    }
+    return new TemplateUri(url + path + "?page[size]={pageSize}").set("pageSize", cbpPageSize);
+  }
+
   private Uri cnst(String template) {
     return new FixedUri(url + template);
   }
@@ -4206,12 +4209,14 @@ public class Zendesk implements Closeable {
   }
 
   public static class Builder {
+    private static final Integer DEFAULT_CBP_PAGE_SIZE = 100;
     private AsyncHttpClient client = null;
     private final String url;
     private String username = null;
     private String password = null;
     private String token = null;
     private String oauthToken = null;
+    private int cbpPageSize = DEFAULT_CBP_PAGE_SIZE;
     private final Map<String, String> headers;
 
     public Builder(String url) {
@@ -4267,13 +4272,18 @@ public class Zendesk implements Closeable {
       return this;
     }
 
+    public Builder setCbpPageSize(int cbpPageSize) {
+      this.cbpPageSize = cbpPageSize;
+      return this;
+    }
+
     public Zendesk build() {
       if (token != null) {
-        return new Zendesk(client, url, username + "/token", token, headers);
+        return new Zendesk(client, url, username + "/token", token, headers, cbpPageSize);
       } else if (oauthToken != null) {
-        return new Zendesk(client, url, oauthToken, headers);
+        return new Zendesk(client, url, oauthToken, headers, cbpPageSize);
       }
-      return new Zendesk(client, url, username, password, headers);
+      return new Zendesk(client, url, username, password, headers, cbpPageSize);
     }
   }
 }
