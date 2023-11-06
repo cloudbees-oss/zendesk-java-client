@@ -952,13 +952,17 @@ public class Zendesk implements Closeable {
   }
 
   public Iterable<Trigger> getTriggers(
-      String categoryId, boolean active, String sortBy, SortOrder sortOrder) {
+      String categoryId, boolean active, String sort, SortOrder sortOrder) {
+    if (SortOrder.DESCENDING == sortOrder) {
+      if (sort != null && !sort.startsWith("-")) {
+        sort = '-' + sort;
+      }
+    }
     return new PagedIterable<>(
-        tmpl("/triggers.json{?category_id,active,sort_by,sort_order}&page[size]={pageSize}")
+        tmpl("/triggers.json{?category_id,active,sort}&page[size]={pageSize}")
             .set("category_id", categoryId)
             .set("active", active)
-            .set("sort_by", sortBy)
-            .set("sort_order", sortOrder.getQueryParameter())
+            .set("sort", sort)
             .set("pageSize", cbpPageSize),
         handleList(Trigger.class, "triggers"));
   }

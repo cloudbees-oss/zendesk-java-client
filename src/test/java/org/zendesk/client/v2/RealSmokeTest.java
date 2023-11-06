@@ -313,15 +313,21 @@ public class RealSmokeTest {
   @Test
   public void getTriggersWithParameters() throws Exception {
     createClientWithTokenOrPassword(2);
-    int count = 0;
-    String title = null;
-    for (Trigger t : instance.getTriggers(null, true, "title", SortOrder.ASCENDING)) {
-      if (title != null) {
-        assertTrue(title.compareTo(t.getTitle()) < 0);
-      }
-      title = t.getTitle();
-      if (++count > 10) {
-        break;
+    for (SortOrder order : SortOrder.values()) {
+      int count = 0;
+      String title = null;
+      for (Trigger t : instance.getTriggers(null, true, "alphabetical", order)) {
+        if (title != null) {
+          if (order == SortOrder.ASCENDING) {
+            assertTrue(title.compareTo(t.getTitle()) <= 0);
+          } else {
+            assertTrue(title.compareTo(t.getTitle()) >= 0);
+          }
+        }
+        title = t.getTitle();
+        if (++count > 10) {
+          break;
+        }
       }
     }
   }
