@@ -315,9 +315,9 @@ public class RealSmokeTest {
     createClientWithTokenOrPassword(2);
     int count = 0;
     String title = null;
-    for (Trigger t : instance.getTriggers(null, true, "title", SortOrder.ASCENDING)) {
+    for (Trigger t : instance.getTriggers(null, true, "alphabetical", SortOrder.ASCENDING)) {
       if (title != null) {
-        assertTrue(title.compareTo(t.getTitle()) < 0);
+        assertTrue(title.compareToIgnoreCase(t.getTitle()) < 0);
       }
       title = t.getTitle();
       if (++count > 10) {
