@@ -67,7 +67,7 @@ public class ChatStartedEvent extends Event {
         private String url;
 
         @JsonProperty("size")
-        private Long size;
+        private Object size;
 
         @JsonProperty("timestamp")
         @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -155,10 +155,13 @@ public class ChatStartedEvent extends Event {
         }
 
         public Long getSize() {
-            return size;
+            if (size instanceof Integer) {
+                return ((Integer) size).longValue();
+            }
+            return null;
         }
 
-        public void setSize(Long size) {
+        public void setSize(Object size) {
             this.size = size;
         }
 
