@@ -91,7 +91,7 @@
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <spotless.version>2.30.0</spotless.version>
+    <spotless.version>2.41.1</spotless.version>
   </properties>
 
   <dependencyManagement>
