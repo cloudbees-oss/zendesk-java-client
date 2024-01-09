@@ -41,45 +41,7 @@ import org.asynchttpclient.request.body.multipart.FilePart;
 import org.asynchttpclient.request.body.multipart.StringPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zendesk.client.v2.model.AgentRole;
-import org.zendesk.client.v2.model.Attachment;
-import org.zendesk.client.v2.model.Audit;
-import org.zendesk.client.v2.model.Automation;
-import org.zendesk.client.v2.model.Brand;
-import org.zendesk.client.v2.model.Comment;
-import org.zendesk.client.v2.model.ComplianceDeletionStatus;
-import org.zendesk.client.v2.model.DeletedTicket;
-import org.zendesk.client.v2.model.Field;
-import org.zendesk.client.v2.model.Forum;
-import org.zendesk.client.v2.model.Group;
-import org.zendesk.client.v2.model.GroupMembership;
-import org.zendesk.client.v2.model.Identity;
-import org.zendesk.client.v2.model.JobStatus;
-import org.zendesk.client.v2.model.Locale;
-import org.zendesk.client.v2.model.Macro;
-import org.zendesk.client.v2.model.Metric;
-import org.zendesk.client.v2.model.Organization;
-import org.zendesk.client.v2.model.OrganizationField;
-import org.zendesk.client.v2.model.OrganizationMembership;
-import org.zendesk.client.v2.model.SatisfactionRating;
-import org.zendesk.client.v2.model.SearchResultEntity;
-import org.zendesk.client.v2.model.SortOrder;
-import org.zendesk.client.v2.model.Status;
-import org.zendesk.client.v2.model.SuspendedTicket;
-import org.zendesk.client.v2.model.Ticket;
-import org.zendesk.client.v2.model.TicketCount;
-import org.zendesk.client.v2.model.TicketForm;
-import org.zendesk.client.v2.model.TicketImport;
-import org.zendesk.client.v2.model.TicketPage;
-import org.zendesk.client.v2.model.TicketResult;
-import org.zendesk.client.v2.model.TimeZone;
-import org.zendesk.client.v2.model.Topic;
-import org.zendesk.client.v2.model.Trigger;
-import org.zendesk.client.v2.model.TwitterMonitor;
-import org.zendesk.client.v2.model.User;
-import org.zendesk.client.v2.model.UserField;
-import org.zendesk.client.v2.model.UserRelatedInfo;
-import org.zendesk.client.v2.model.View;
+import org.zendesk.client.v2.model.*;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItem;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
 import org.zendesk.client.v2.model.hc.Article;
@@ -639,6 +601,11 @@ public class Zendesk implements Closeable {
     return new PagedIterable<>(
         tmpl("/users/{userId}/compliance_deletion_statuses.json").set("userId", userId),
         handleList(ComplianceDeletionStatus.class, "compliance_deletion_statuses"));
+  }
+
+  public Iterable<CustomTicketStatus> getCustomTicketStatuses() {
+    return new PagedIterable<>(
+        tmpl("/custom_statuses.json"), handleList(CustomTicketStatus.class, "custom_statuses"));
   }
 
   public Iterable<Ticket> getUserCCDTickets(long userId) {
