@@ -19,6 +19,7 @@ public class Request implements Serializable {
   protected String subject;
   protected String description;
   protected Status status;
+  protected Long customStatusId;
   protected Ticket.Requester requester;
   protected Long requesterId;
   protected Long organizationId;
@@ -85,6 +86,15 @@ public class Request implements Serializable {
 
   public void setStatus(Status status) {
     this.status = status;
+  }
+
+  @JsonProperty("custom_status_id")
+  public Long getCustomStatusId() {
+    return customStatusId;
+  }
+
+  public void setCustomStatusId(Long customStatusId) {
+    this.customStatusId = customStatusId;
   }
 
   public String getSubject() {
