@@ -603,6 +603,11 @@ public class Zendesk implements Closeable {
         handleList(ComplianceDeletionStatus.class, "compliance_deletion_statuses"));
   }
 
+  public Iterable<CustomTicketStatus> getCustomTicketStatuses() {
+    return new PagedIterable<>(
+        tmpl("/custom_statuses.json"), handleList(CustomTicketStatus.class, "custom_statuses"));
+  }
+
   public Iterable<Ticket> getUserCCDTickets(long userId) {
     return new PagedIterable<>(
         tmpl("/users/{userId}/tickets/ccd.json").set("userId", userId),
