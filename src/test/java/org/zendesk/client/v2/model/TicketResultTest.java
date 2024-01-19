@@ -20,9 +20,10 @@ public class TicketResultTest {
 
   @Test
   public void testParseTicketResult() {
-    String json = "{ \"ticket\": { \"id\": 21337631753}}";
+    String json = "{ \"ticket\": { \"id\": 21337631753, \"custom_status_id\": 9999}}";
     TicketResult ev = parseJson(json.getBytes());
     assertNotNull(ev);
+    assertEquals(Long.valueOf(9999), ev.getTicket().getCustomStatusId());
     assertEquals(TicketResult.class, ev.getClass());
   }
 }
