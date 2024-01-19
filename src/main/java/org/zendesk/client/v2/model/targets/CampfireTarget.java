@@ -2,9 +2,7 @@ package org.zendesk.client.v2.model.targets;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * @author adavidson
- */
+/** @author adavidson */
 public class CampfireTarget extends Target {
   private String subdomain;
   private boolean ssl;

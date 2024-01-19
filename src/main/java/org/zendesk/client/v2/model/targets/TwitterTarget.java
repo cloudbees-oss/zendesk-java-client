@@ -1,8 +1,6 @@
 package org.zendesk.client.v2.model.targets;
 
-/**
- * @author adavidson
- */
+/** @author adavidson */
 public class TwitterTarget extends Target {
   private String token;
   private String secret;

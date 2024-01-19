@@ -49,6 +49,7 @@ public class TicketTest {
     ticket.setId(Math.abs(RANDOM.nextLong()));
     ticket.setComment(new Comment(TICKET_COMMENT1));
     ticket.setUpdatedAt(NOW);
+    ticket.setCustomStatusId(Math.abs(RANDOM.nextLong()));
     return ticket;
   }
 }
