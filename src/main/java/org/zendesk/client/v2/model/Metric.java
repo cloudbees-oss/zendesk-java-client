@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * @author jyrij
- */
+/** @author jyrij */
 public class Metric implements Serializable {
 
   private static final long serialVersionUID = -847290591071406141L;

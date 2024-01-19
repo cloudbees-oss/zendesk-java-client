@@ -1,8 +1,6 @@
 package org.zendesk.client.v2.model.targets;
 
-/**
- * @author adavidson
- */
+/** @author adavidson */
 public class EmailTarget extends Target {
   private String email;
   private String subject;

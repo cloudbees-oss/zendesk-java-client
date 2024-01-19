@@ -29,9 +29,7 @@ public class Schedule implements Serializable {
     this.id = id;
   }
 
-  /**
-   * @return Name of the Schedule
-   */
+  /** @return Name of the Schedule */
   public String getName() {
     return name;
   }
@@ -40,9 +38,7 @@ public class Schedule implements Serializable {
     this.name = name;
   }
 
-  /**
-   * @return Time zone of the schedule
-   */
+  /** @return Time zone of the schedule */
   @JsonProperty("time_zone")
   public String getTimeZone() {
     return timeZone;
@@ -52,9 +48,7 @@ public class Schedule implements Serializable {
     this.timeZone = timeZone;
   }
 
-  /**
-   * @return List of intervals for the schedule
-   */
+  /** @return List of intervals for the schedule */
   public List<Interval> getIntervals() {
     return intervals;
   }
@@ -63,9 +57,7 @@ public class Schedule implements Serializable {
     this.intervals = intervals;
   }
 
-  /**
-   * @return Time the schedule was created
-   */
+  /** @return Time the schedule was created */
   @JsonProperty("created_at")
   public Date getCreatedAt() {
     return createdAt;
@@ -75,9 +67,7 @@ public class Schedule implements Serializable {
     this.createdAt = createdAt;
   }
 
-  /**
-   * @return Time the schedule was last updated
-   */
+  /** @return Time the schedule was last updated */
   @JsonProperty("updated_at")
   public Date getUpdatedAt() {
     return updatedAt;
