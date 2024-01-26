@@ -48,6 +48,7 @@ import org.zendesk.client.v2.model.Automation;
 import org.zendesk.client.v2.model.Brand;
 import org.zendesk.client.v2.model.Comment;
 import org.zendesk.client.v2.model.ComplianceDeletionStatus;
+import org.zendesk.client.v2.model.CustomTicketStatus;
 import org.zendesk.client.v2.model.DeletedTicket;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Forum;
@@ -639,6 +640,11 @@ public class Zendesk implements Closeable {
     return new PagedIterable<>(
         tmpl("/users/{userId}/compliance_deletion_statuses.json").set("userId", userId),
         handleList(ComplianceDeletionStatus.class, "compliance_deletion_statuses"));
+  }
+
+  public Iterable<CustomTicketStatus> getCustomTicketStatuses() {
+    return new PagedIterable<>(
+        tmpl("/custom_statuses.json"), handleList(CustomTicketStatus.class, "custom_statuses"));
   }
 
   public Iterable<Ticket> getUserCCDTickets(long userId) {
