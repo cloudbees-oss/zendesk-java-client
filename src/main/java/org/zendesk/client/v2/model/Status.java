@@ -5,17 +5,16 @@ package org.zendesk.client.v2.model;
  * @since 05/04/2013 08:56
  */
 public enum Status {
-    NEW,
-    OPEN,
-    PENDING,
-    HOLD,
-    SOLVED,
-    CLOSED,
-    DELETED;
+  NEW,
+  OPEN,
+  PENDING,
+  HOLD,
+  SOLVED,
+  CLOSED,
+  DELETED;
 
-    @Override
-    public String toString() {
-        return super.toString().toLowerCase();
-    }
-
+  @Override
+  public String toString() {
+    return super.toString().toLowerCase();
+  }
 }

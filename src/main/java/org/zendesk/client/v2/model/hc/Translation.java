@@ -1,7 +1,6 @@
 package org.zendesk.client.v2.model.hc;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 
 public class Translation {
@@ -55,133 +54,162 @@ public class Translation {
   private Long createdById;
 
   public Long getId() {
-      return id;
+    return id;
   }
 
-  public void setId( Long id ) {
-      this.id = id;
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public String getUrl() {
-      return url;
+    return url;
   }
 
-  public void setUrl( String url ) {
-      this.url = url;
+  public void setUrl(String url) {
+    this.url = url;
   }
 
   public String getHtmlUrl() {
-      return htmlUrl;
+    return htmlUrl;
   }
 
-  public void setHtmlUrl( String htmlUrl ) {
-      this.htmlUrl = htmlUrl;
+  public void setHtmlUrl(String htmlUrl) {
+    this.htmlUrl = htmlUrl;
   }
 
   public Long getSourceId() {
-      return sourceId;
+    return sourceId;
   }
 
-  public void setSourceId( Long sourceId ) {
-      this.sourceId = sourceId;
+  public void setSourceId(Long sourceId) {
+    this.sourceId = sourceId;
   }
 
   public String getSourceType() {
-      return sourceType;
+    return sourceType;
   }
 
-  public void setSourceType( String sourceType ) {
-      this.sourceType = sourceType;
+  public void setSourceType(String sourceType) {
+    this.sourceType = sourceType;
   }
 
   public String getLocale() {
-      return locale;
+    return locale;
   }
 
-  public void setLocale( String locale ) {
-      this.locale = locale;
+  public void setLocale(String locale) {
+    this.locale = locale;
   }
 
   public String getTitle() {
-      return title;
+    return title;
   }
 
-  public void setTitle( String title ) {
-      this.title = title;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   public String getBody() {
-      return body;
+    return body;
   }
 
-  public void setBody( String body ) {
-      this.body = body;
+  public void setBody(String body) {
+    this.body = body;
   }
 
   public boolean isOutdated() {
-      return outdated;
+    return outdated;
   }
 
-  public void setOutdated( boolean outdated ) {
-      this.outdated = outdated;
+  public void setOutdated(boolean outdated) {
+    this.outdated = outdated;
   }
 
   public boolean isDraft() {
-      return draft;
+    return draft;
   }
 
-  public void setDraft( boolean draft ) {
-      this.draft = draft;
+  public void setDraft(boolean draft) {
+    this.draft = draft;
   }
 
   public Date getCreatedAt() {
-      return createdAt;
+    return createdAt;
   }
 
-  public void setCreatedAt( Date createdAt ) {
-      this.createdAt = createdAt;
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
   }
 
   public Date getUpdatedAt() {
-      return updatedAt;
+    return updatedAt;
   }
 
-  public void setUpdatedAt( Date updatedAt ) {
-      this.updatedAt = updatedAt;
+  public void setUpdatedAt(Date updatedAt) {
+    this.updatedAt = updatedAt;
   }
 
   public Long getUpdatedById() {
-      return updatedById;
+    return updatedById;
   }
 
-  public void setUpdatedById( Long updatedById ) {
-      this.updatedById = updatedById;
+  public void setUpdatedById(Long updatedById) {
+    this.updatedById = updatedById;
   }
 
   public Long getCreatedById() {
-      return createdById;
+    return createdById;
   }
 
-  public void setCreatedById( Long createdById ) {
-      this.createdById = createdById;
+  public void setCreatedById(Long createdById) {
+    this.createdById = createdById;
   }
+
   @Override
   public String toString() {
-      return "Translation{" +
-          "id=" + id + '\'' +
-          ", url=" + url + '\'' +
-          ", htmlUrl=" + htmlUrl + '\'' +
-          ", sourceId=" + sourceId + '\'' +
-          ", sourceType=" + sourceType + '\'' +
-          ", locale=" + locale + '\'' +
-          ", title=" + title + '\'' +
-          ", body=" + body + '\'' +
-          ", outdated=" + outdated + '\'' +
-          ", draft=" + draft + '\'' +
-          ", createdAt=" + createdAt + '\'' +
-          ", updatedAt=" + updatedAt + '\'' +
-          ", updatedById=" + updatedById + '\'' +
-          ", createdById=" + createdById + '\'' +
-          '}';
+    return "Translation{"
+        + "id="
+        + id
+        + '\''
+        + ", url="
+        + url
+        + '\''
+        + ", htmlUrl="
+        + htmlUrl
+        + '\''
+        + ", sourceId="
+        + sourceId
+        + '\''
+        + ", sourceType="
+        + sourceType
+        + '\''
+        + ", locale="
+        + locale
+        + '\''
+        + ", title="
+        + title
+        + '\''
+        + ", body="
+        + body
+        + '\''
+        + ", outdated="
+        + outdated
+        + '\''
+        + ", draft="
+        + draft
+        + '\''
+        + ", createdAt="
+        + createdAt
+        + '\''
+        + ", updatedAt="
+        + updatedAt
+        + '\''
+        + ", updatedById="
+        + updatedById
+        + '\''
+        + ", createdById="
+        + createdById
+        + '\''
+        + '}';
   }
 }

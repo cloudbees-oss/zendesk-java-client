@@ -11,10 +11,10 @@ import java.util.stream.Stream;
 
 public class Utils {
 
-    public static String resourceToString(String filePath) throws URISyntaxException, IOException {
-        Path path = Paths.get(Utils.class.getClassLoader().getResource(filePath).toURI());
-        try (Stream<String> lines = Files.lines(path, StandardCharsets.UTF_8)) {
-            return lines.collect(Collectors.joining("\n"));
-        }
+  public static String resourceToString(String filePath) throws URISyntaxException, IOException {
+    Path path = Paths.get(Utils.class.getClassLoader().getResource(filePath).toURI());
+    try (Stream<String> lines = Files.lines(path, StandardCharsets.UTF_8)) {
+      return lines.collect(Collectors.joining("\n"));
     }
+  }
 }

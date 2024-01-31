@@ -1,15 +1,15 @@
 package org.zendesk.client.v2.model.events;
 
-import org.zendesk.client.v2.model.Via;
-
 import java.util.List;
+import org.zendesk.client.v2.model.Via;
 
 /**
  * A notification was sent to the organization subscribers
- * 
- * @author matthewtckr
- * @see <a href="https://developer.zendesk.com/rest_api/docs/core/ticket_audits#organization-subscription-notification-event">Zendesk API Documentation</a>
  *
+ * @author matthewtckr
+ * @see <a
+ *     href="https://developer.zendesk.com/rest_api/docs/core/ticket_audits#organization-subscription-notification-event">Zendesk
+ *     API Documentation</a>
  */
 public class OrganizationActivityEvent extends Event {
 
@@ -24,7 +24,7 @@ public class OrganizationActivityEvent extends Event {
     return subject;
   }
 
-  public void setSubject( String subject ) {
+  public void setSubject(String subject) {
     this.subject = subject;
   }
 
@@ -32,7 +32,7 @@ public class OrganizationActivityEvent extends Event {
     return body;
   }
 
-  public void setBody( String body ) {
+  public void setBody(String body) {
     this.body = body;
   }
 
@@ -40,7 +40,7 @@ public class OrganizationActivityEvent extends Event {
     return recipients;
   }
 
-  public void setRecipients( List<Long> recipients ) {
+  public void setRecipients(List<Long> recipients) {
     this.recipients = recipients;
   }
 
@@ -48,17 +48,21 @@ public class OrganizationActivityEvent extends Event {
     return via;
   }
 
-  public void setVia( Via via ) {
+  public void setVia(Via via) {
     this.via = via;
   }
 
   @Override
   public String toString() {
-      return "OrganizationActivityEvent" +
-              "{subject=" + subject +
-              ", body=" + body +
-              ", recipients=" + recipients +
-              ", via=" + via +
-              '}';
+    return "OrganizationActivityEvent"
+        + "{subject="
+        + subject
+        + ", body="
+        + body
+        + ", recipients="
+        + recipients
+        + ", via="
+        + via
+        + '}';
   }
 }

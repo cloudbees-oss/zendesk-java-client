@@ -26,8 +26,9 @@ Unless code has shipped to users, the initial value of the `serialVersionUID` fi
 
 == Indentation
 
-1. **Use spaces.** Tabs are banned.
-2. **Java blocks are 4 spaces.** JavaScript blocks as for Java. **XML nesting is 2 spaces**
+The project relies on [https://github.com/diffplug/spotless/tree/main/plugin-maven](the Spotless Maven Plugin) to manage its formatting.
+The [https://github.com/google/google-java-format](google-java-format) project was chosen, check it, it contains links to plugins for various IDEs.
+You can also run the formatter from command line: `mvn spotless:apply`.
 
 == Field Naming Conventions
 
@@ -41,42 +42,6 @@ If you need more than three, you are likely doing something wrong and as such yo
 6. It is acceptable to use `e` for the exception in a `try...catch` block.
 7. You shall never use `l` (i.e. lower case `L`) as a variable name.
 
-== Line Length
-
-To the greatest extent possible, please wrap lines to ensure that they do not exceed 120 characters.
-
-== Maven POM file layout
-
-* The `pom.xml` file shall use the sequencing of elements as defined by the `mvn tidy:pom` command (after any indenting fix-up).
-* If you are introducing a property to the `pom.xml` the property must be used in at least two distinct places in the model or a comment justifying the use of a property shall be provided.
-* If the `<plugin>` is in the groupId `org.apache.maven.plugins` you shall omit the `<groupId>`.
-* All `<plugin>` entries shall have an explicit version defined unless inherited from the parent.
-
-== Java code style
-
-=== Modifiers
-
-* For fields, the order is:
-  . `public` / `protected` / `private`
-  . `static`
-  . `final`
-  . `transient`
-  . `volatile`
-* For methods, the order is:
-  . `public` / `protected` / `private`
-  . `abstract`
-  . `static`
-  . `final`
-  . `synchronized`
-  . `native`
-  . `strictfp`
-*  For classes, the order is:
-  .  `public` / `protected` / `private`
-  .  `abstract`
-  .  `static`
-  .  `final`
-  .  `strictfp`
-
 === Imports
 
 * For code in `src/main`:
@@ -88,11 +53,6 @@ To the greatest extent possible, please wrap lines to ensure that they do not ex
   . `static` imports of anything other than JUnit classes and Hamcrest matchers are strongly discouraged.
   . `import static org.hamcrest.Matchers.*`, `import static org.junit.Assert.*`, `import static org.junit.Assume.*` are expressly encouraged and permitted.
     Any other `static` `*` imports are discouraged unless code readability is significantly enhanced and the import is restricted to a single class.
-
-=== Annotation placement
-
-* Annotations on classes, interfaces, annotations, enums, methods, fields and local variables shall be on the lines immediately preceding the line where modifier(s) (e.g. `public` / `protected` / `private` / `final`, etc) would be appropriate.
-* Annotations on method arguments shall, to the largest extent possible, be on the same line as the method argument (and, if present, before the `final` modifier)
 
 === Javadoc
 
@@ -137,35 +97,6 @@ public void setWidgetCount(int widgetCount) {
 * When adding a new class / interface / etc, it shall have a `@since` doc comment.
   The version shall be `FIXME` to indicate that the person merging the change should replace the `FIXME` with the next release version number.
   The fields and methods within a class/interface (but not nested classes) will be assumed to have the `@since` annotation of their class/interface unless a different `@since` annotation is present.
-
-=== IDE Configuration
-
-* Eclipse, by and large the IDE defaults are acceptable with the following changes:
-** Tab policy to `Spaces only`
-** Indent statements within `switch` body
-** Maximum line width `120`
-** Line wrapping, ensure all to `wrap where necessary`
-** Organize imports alphabetically, no grouping
-* NetBeans, by and large the IDE defaults are acceptable with the following changes:
-** Tabs and Indents
-*** Change Right Margin to `120`
-*** Indent case statements in switch
-** Wrapping
-*** Change all the `Never` values to `If Long`
-*** Select the checkbox for Wrap After Assignment Operators
-* IntelliJ, by and large the IDE defaults are acceptable with the following changes:
-** Wrapping and Braces
-*** Change `Do not wrap` to `Wrap if long`
-*** Change `Do not force` to `Always`
-** Javadoc
-*** Disable generating `<p/>` on empty lines
-** Imports
-*** Class count to use import with '*': `9999`
-*** Names count to use static import with '*': `99999`
-*** Import Layout
-**** import all other imports
-**** blank line
-**** import static all other imports
 
 == Integration Tests
 

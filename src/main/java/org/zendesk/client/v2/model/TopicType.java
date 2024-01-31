@@ -1,18 +1,18 @@
 package org.zendesk.client.v2.model;
 
 public enum TopicType {
-    ARTICLES("Articles"),
-    QUESTIONS("Questions"),
-    IDEAS("Ideas");
+  ARTICLES("Articles"),
+  QUESTIONS("Questions"),
+  IDEAS("Ideas");
 
-    private final String name;
+  private final String name;
 
-    TopicType(String name) {
-        this.name = name;
-    }
+  TopicType(String name) {
+    this.name = name;
+  }
 
-    @Override
-    public String toString() {
-        return name;
-    }
+  @Override
+  public String toString() {
+    return name;
+  }
 }
