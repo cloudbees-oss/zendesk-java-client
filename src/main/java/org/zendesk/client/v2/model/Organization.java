@@ -1,7 +1,6 @@
 package org.zendesk.client.v2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -13,152 +12,169 @@ import java.util.Map;
  */
 public class Organization implements SearchResultEntity, Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    private Long id;
-    private String externalId;
-    private String name;
-    private Date createdAt;
-    private Date updatedAt;
-    private List<String> domainNames;
-    private String details;
-    private String notes;
-    private Long groupId;
-    private Boolean sharedTickets;
-    private Boolean sharedComments;
-    private List<String> tags;
-    private Map<String, Object> organizationFields;
+  private Long id;
+  private String externalId;
+  private String name;
+  private Date createdAt;
+  private Date updatedAt;
+  private List<String> domainNames;
+  private String details;
+  private String notes;
+  private Long groupId;
+  private Boolean sharedTickets;
+  private Boolean sharedComments;
+  private List<String> tags;
+  private Map<String, Object> organizationFields;
 
-    public Organization() {
-    }
+  public Organization() {}
 
-    @JsonProperty("created_at")
-    public Date getCreatedAt() {
-        return createdAt;
-    }
+  @JsonProperty("created_at")
+  public Date getCreatedAt() {
+    return createdAt;
+  }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
 
-    public String getDetails() {
-        return details;
-    }
+  public String getDetails() {
+    return details;
+  }
 
-    public void setDetails(String details) {
-        this.details = details;
-    }
+  public void setDetails(String details) {
+    this.details = details;
+  }
 
-    @JsonProperty("domain_names")
-    public List<String> getDomainNames() {
-        return domainNames;
-    }
+  @JsonProperty("domain_names")
+  public List<String> getDomainNames() {
+    return domainNames;
+  }
 
-    public void setDomainNames(List<String> domainNames) {
-        this.domainNames = domainNames;
-    }
+  public void setDomainNames(List<String> domainNames) {
+    this.domainNames = domainNames;
+  }
 
-    @JsonProperty("external_id")
-    public String getExternalId() {
-        return externalId;
-    }
+  @JsonProperty("external_id")
+  public String getExternalId() {
+    return externalId;
+  }
 
-    public void setExternalId(String externalId) {
-        this.externalId = externalId;
-    }
+  public void setExternalId(String externalId) {
+    this.externalId = externalId;
+  }
 
-    @JsonProperty("group_id")
-    public Long getGroupId() {
-        return groupId;
-    }
+  @JsonProperty("group_id")
+  public Long getGroupId() {
+    return groupId;
+  }
 
-    public void setGroupId(Long groupId) {
-        this.groupId = groupId;
-    }
+  public void setGroupId(Long groupId) {
+    this.groupId = groupId;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getNotes() {
-        return notes;
-    }
+  public String getNotes() {
+    return notes;
+  }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
+  public void setNotes(String notes) {
+    this.notes = notes;
+  }
 
-    @JsonProperty("shared_comments")
-    public Boolean getSharedComments() {
-        return sharedComments;
-    }
+  @JsonProperty("shared_comments")
+  public Boolean getSharedComments() {
+    return sharedComments;
+  }
 
-    public void setSharedComments(Boolean sharedComments) {
-        this.sharedComments = sharedComments;
-    }
+  public void setSharedComments(Boolean sharedComments) {
+    this.sharedComments = sharedComments;
+  }
 
-    @JsonProperty("shared_tickets")
-    public Boolean getSharedTickets() {
-        return sharedTickets;
-    }
+  @JsonProperty("shared_tickets")
+  public Boolean getSharedTickets() {
+    return sharedTickets;
+  }
 
-    public void setSharedTickets(Boolean sharedTickets) {
-        this.sharedTickets = sharedTickets;
-    }
+  public void setSharedTickets(Boolean sharedTickets) {
+    this.sharedTickets = sharedTickets;
+  }
 
-    public List<String> getTags() {
-        return tags;
-    }
+  public List<String> getTags() {
+    return tags;
+  }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
+  public void setTags(List<String> tags) {
+    this.tags = tags;
+  }
 
-    @JsonProperty("updated_at")
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
+  @JsonProperty("updated_at")
+  public Date getUpdatedAt() {
+    return updatedAt;
+  }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public void setUpdatedAt(Date updatedAt) {
+    this.updatedAt = updatedAt;
+  }
 
-    @JsonProperty("organization_fields")
-    public Map<String, Object> getOrganizationFields() {
-        return organizationFields;
-    }
+  @JsonProperty("organization_fields")
+  public Map<String, Object> getOrganizationFields() {
+    return organizationFields;
+  }
 
-    public void setOrganizationFields(Map<String, Object> organizationFields) {
-        this.organizationFields = organizationFields;
-    }
+  public void setOrganizationFields(Map<String, Object> organizationFields) {
+    this.organizationFields = organizationFields;
+  }
 
-    @Override
-    public String toString() {
-        return "Organization{" + "id=" + id +
-                ", externalId='" + externalId + '\'' +
-                ", name='" + name + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", domainNames=" + domainNames +
-                ", details='" + details + '\'' +
-                ", notes='" + notes + '\'' +
-                ", groupId=" + groupId +
-                ", sharedTickets=" + sharedTickets +
-                ", sharedComments=" + sharedComments +
-                ", tags=" + tags +
-                ", organizationFields=" + organizationFields +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "Organization{"
+        + "id="
+        + id
+        + ", externalId='"
+        + externalId
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", createdAt="
+        + createdAt
+        + ", updatedAt="
+        + updatedAt
+        + ", domainNames="
+        + domainNames
+        + ", details='"
+        + details
+        + '\''
+        + ", notes='"
+        + notes
+        + '\''
+        + ", groupId="
+        + groupId
+        + ", sharedTickets="
+        + sharedTickets
+        + ", sharedComments="
+        + sharedComments
+        + ", tags="
+        + tags
+        + ", organizationFields="
+        + organizationFields
+        + '}';
+  }
 }

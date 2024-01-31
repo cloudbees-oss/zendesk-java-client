@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright 2013, CloudBees Inc.
   ~
@@ -13,7 +14,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -25,7 +25,7 @@
 
   <groupId>com.cloudbees.thirdparty</groupId>
   <artifactId>zendesk-java-client</artifactId>
-  <version>0.22.2-SNAPSHOT</version>
+  <version>0.24.3-SNAPSHOT</version>
 
   <name>zendesk-java-client</name>
   <description>Java client for the Zendesk API</description>
@@ -74,8 +74,8 @@
   <scm>
     <connection>scm:git:git://github.com/cloudbees-oss/zendesk-java-client.git</connection>
     <developerConnection>scm:git:git@github.com:cloudbees-oss/zendesk-java-client.git</developerConnection>
-    <url>http://github.com/cloudbees-oss/zendesk-java-client/tree/master/</url>
     <tag>HEAD</tag>
+    <url>http://github.com/cloudbees-oss/zendesk-java-client/tree/master/</url>
   </scm>
 
   <issueManagement>
@@ -91,6 +91,7 @@
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <spotless.version>2.30.0</spotless.version>
   </properties>
 
   <dependencyManagement>
@@ -98,17 +99,17 @@
       <dependency>
         <groupId>com.fasterxml.jackson</groupId>
         <artifactId>jackson-bom</artifactId>
-        <version>2.15.0</version>
+        <version>2.16.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-bom</artifactId>
-        <version>4.1.93.Final</version>
+        <version>4.1.106.Final</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>      
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -116,7 +117,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>2.0.7</version>
+      <version>2.0.11</version>
     </dependency>
     <dependency>
       <groupId>org.asynchttpclient</groupId>
@@ -151,26 +152,26 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>2.0.7</version>
+      <version>2.0.11</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>com.github.tomakehurst</groupId>
-        <artifactId>wiremock</artifactId>
-        <version>2.27.2</version>
-        <scope>test</scope>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock</artifactId>
+      <version>2.27.2</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <!-- use 2.9.0 for Java 7 projects -->
-      <version>3.24.2</version>
+      <version>3.25.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-text</artifactId>
-      <version>1.10.0</version>
+      <version>1.11.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -186,7 +187,7 @@
       <plugins>
         <plugin>
           <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.4.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -203,6 +204,18 @@
         <configuration>
           <fail>true</fail>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>animal-sniffer-enforcer-rule</artifactId>
+            <version>1.23</version>
+          </dependency>
+          <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>extra-enforcer-rules</artifactId>
+            <version>1.7.0</version>
+          </dependency>
+        </dependencies>
         <executions>
           <execution>
             <id>check-java-compat</id>
@@ -236,34 +249,62 @@
             </configuration>
           </execution>
         </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>animal-sniffer-enforcer-rule</artifactId>
-            <version>1.23</version>
-          </dependency>
-          <dependency>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>extra-enforcer-rules</artifactId>
-            <version>1.6.2</version>
-          </dependency>
-        </dependencies>
       </plugin>
       <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.3.0</version>
-          <configuration>
-              <archive>
-                  <manifestEntries>
-                      <Automatic-Module-Name>org.zendesk.client.v2</Automatic-Module-Name>
-                  </manifestEntries>
-              </archive>
-          </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Automatic-Module-Name>org.zendesk.client.v2</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>${spotless.version}</version>
+        <configuration>
+          <java>
+            <toggleOffOn>
+              <off>@formatter:off</off>
+              <on>@formatter:on</on>
+            </toggleOffOn>
+            <googleJavaFormat/>
+            <importOrder/>
+            <removeUnusedImports/>
+            <formatAnnotations/>
+          </java>
+          <pom>
+            <sortPom>
+              <expandEmptyElements>false</expandEmptyElements>
+            </sortPom>
+          </pom>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <completionGoals>spotless:apply verify</completionGoals>
+          <preparationGoals>spotless:apply verify</preparationGoals>
+        </configuration>
       </plugin>
     </plugins>
   </build>
-  
+
   <profiles>
     <profile>
       <id>coverage</id>
@@ -272,7 +313,7 @@
           <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.10</version>
+            <version>0.8.11</version>
             <executions>
               <execution>
                 <id>prepare-agent</id>
@@ -291,6 +332,6 @@
         </plugins>
       </build>
     </profile>
-  </profiles>  
+  </profiles>
 
 </project>

@@ -6,22 +6,20 @@ package org.zendesk.client.v2.model.events;
  */
 abstract class PublicPrivateEvent extends Event {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    private Boolean publicComment;
+  private Boolean publicComment;
 
-    public Boolean getPublic() {
-        return publicComment;
-    }
+  public Boolean getPublic() {
+    return publicComment;
+  }
 
-    public void setPublic(Boolean publicComment) {
-        this.publicComment = publicComment;
-    }
+  public void setPublic(Boolean publicComment) {
+    this.publicComment = publicComment;
+  }
 
-    @Override
-    public String toString() {
-        return "PublicPrivateEvent" +
-                "{publicComment=" + publicComment +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "PublicPrivateEvent" + "{publicComment=" + publicComment + '}';
+  }
 }
