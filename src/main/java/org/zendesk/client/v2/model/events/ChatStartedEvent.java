@@ -182,7 +182,7 @@ public class ChatStartedEvent extends Event {
         @JsonProperty("received")
         @JsonSerialize(using = LocalDateTimeSerializer.class)
         @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-        private String received;
+        private LocalDateTime received;
         @JsonProperty("author")
         private OriginalMessageAuthor author;
         @JsonProperty("source")
@@ -199,11 +199,11 @@ public class ChatStartedEvent extends Event {
             this.id = id;
         }
 
-        public String getReceived() {
+        public LocalDateTime getReceived() {
             return received;
         }
 
-        public void setReceived(String received) {
+        public void setReceived(LocalDateTime received) {
             this.received = received;
         }
 
