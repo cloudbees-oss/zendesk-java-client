@@ -55,6 +55,7 @@ import org.zendesk.client.v2.model.Forum;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.GroupMembership;
 import org.zendesk.client.v2.model.Identity;
+import org.zendesk.client.v2.model.JiraLink;
 import org.zendesk.client.v2.model.JobStatus;
 import org.zendesk.client.v2.model.Locale;
 import org.zendesk.client.v2.model.Macro;
@@ -3375,6 +3376,10 @@ public class Zendesk implements Closeable {
     return new PagedIterable<>(
         afterCursorUriBuilder.apply(null),
         handleListWithAfterCursorButNoLinks(ContentTag.class, afterCursorUriBuilder, "records"));
+  }
+
+  public Iterable<JiraLink> getJiraLinks() {
+    return new PagedIterable<>(cnst("/jira/links"), handleList(JiraLink.class, "links"));
   }
 
   private Uri buildContentTagsSearchUrl(int pageSize, String namePrefixFilter, String afterCursor) {
