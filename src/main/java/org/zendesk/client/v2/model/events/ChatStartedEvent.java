@@ -189,7 +189,7 @@ public class ChatStartedEvent extends Event {
         private OriginalMessageSource source;
 
         @JsonProperty("content")
-        private OriginalMessageContent content;
+        private JsonNode content;
 
         public String getId() {
             return id;
@@ -223,11 +223,11 @@ public class ChatStartedEvent extends Event {
             this.source = source;
         }
 
-        public OriginalMessageContent getContent() {
+        public JsonNode getContent() {
             return content;
         }
 
-        public void setContent(OriginalMessageContent content) {
+        public void setContent(JsonNode content) {
             this.content = content;
         }
     }
@@ -273,54 +273,6 @@ public class ChatStartedEvent extends Event {
 
         public void setAvatarUrl(String avatarUrl) {
             this.avatarUrl = avatarUrl;
-        }
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class OriginalMessageContent {
-        @JsonProperty("text")
-        private OriginalMessageContentText text;
-
-        public OriginalMessageContentText getText() {
-            return text;
-        }
-
-        public void setText(OriginalMessageContentText text) {
-            this.text = text;
-        }
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class OriginalMessageContentText {
-        @JsonProperty("type")
-        private String type;
-        @JsonProperty("text")
-        private String text;
-        @JsonProperty("actions")
-        private JsonNode actions;
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public void setText(String text) {
-            this.text = text;
-        }
-
-        public JsonNode getActions() {
-            return actions;
-        }
-
-        public void setActions(JsonNode actions) {
-            this.actions = actions;
         }
     }
 
