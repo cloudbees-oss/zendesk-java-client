@@ -25,7 +25,7 @@
 
   <groupId>com.cloudbees.thirdparty</groupId>
   <artifactId>zendesk-java-client</artifactId>
-  <version>0.24.3-SNAPSHOT</version>
+  <version>0.24.3</version>
 
   <name>zendesk-java-client</name>
   <description>Java client for the Zendesk API</description>
@@ -74,7 +74,7 @@
   <scm>
     <connection>scm:git:git://github.com/cloudbees-oss/zendesk-java-client.git</connection>
     <developerConnection>scm:git:git@github.com:cloudbees-oss/zendesk-java-client.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>zendesk-java-client-0.24.3</tag>
     <url>http://github.com/cloudbees-oss/zendesk-java-client/tree/master/</url>
   </scm>
 
