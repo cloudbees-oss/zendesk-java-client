@@ -1,5 +1,7 @@
 package org.zendesk.client.v2.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,6 +34,7 @@ public class Trigger implements Serializable {
     this.id = id;
   }
 
+  @JsonProperty("category_id")
   public String getCategoryId() {
     return categoryId;
   }
@@ -56,6 +59,7 @@ public class Trigger implements Serializable {
     this.active = active;
   }
 
+  @JsonProperty("created_at")
   public Date getCreatedAt() {
     return createdAt;
   }
@@ -88,6 +92,7 @@ public class Trigger implements Serializable {
     this.actions = actions;
   }
 
+  @JsonProperty("updated_at")
   public Date getUpdatedAt() {
     return updatedAt;
   }
@@ -105,8 +110,6 @@ public class Trigger implements Serializable {
         + categoryId
         + ", title="
         + title
-        + ", active="
-        + active
         + ", position="
         + position
         + ", active="
@@ -115,6 +118,8 @@ public class Trigger implements Serializable {
         + conditions
         + ", actions="
         + actions
+        + ", createdAt="
+        + createdAt
         + ", updatedAt="
         + updatedAt
         + '}';
