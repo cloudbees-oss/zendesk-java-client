@@ -91,7 +91,7 @@
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
-    <spotless.version>2.30.0</spotless.version>
+    <spotless.version>2.43.0</spotless.version>
   </properties>
 
   <dependencyManagement>
@@ -106,7 +106,7 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-bom</artifactId>
-        <version>4.1.106.Final</version>
+        <version>4.1.107.Final</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -117,7 +117,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>2.0.11</version>
+      <version>2.0.12</version>
     </dependency>
     <dependency>
       <groupId>org.asynchttpclient</groupId>
@@ -152,7 +152,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>2.0.11</version>
+      <version>2.0.12</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -165,7 +165,7 @@
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <!-- use 2.9.0 for Java 7 projects -->
-      <version>3.25.2</version>
+      <version>3.25.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
