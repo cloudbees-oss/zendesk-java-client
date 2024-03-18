@@ -47,8 +47,8 @@ public class TriggerTest {
     assertEquals(0, trigger.getConditions().getAll().size());
     assertEquals(1, trigger.getConditions().getAny().size());
     assertEquals("1", trigger.getCategoryId());
-    assertEquals(Date.valueOf("2024-03-10"), trigger.getCreatedAt());
-    assertEquals(Date.valueOf("2024-03-11"), trigger.getUpdatedAt());
+    assertEquals(new Date(1710025200000L), trigger.getCreatedAt());
+    assertEquals(new Date(1710111600000L), trigger.getUpdatedAt());
     assertEquals("comment_includes_word", trigger.getConditions().getAny().get(0).getField());
     assertEquals("includes", trigger.getConditions().getAny().get(0).getOperator());
     assertEquals("@triggerTest", trigger.getConditions().getAny().get(0).getValue());
@@ -82,8 +82,8 @@ public class TriggerTest {
     assertEquals(0, trigger.getConditions().getAll().size());
     assertEquals(1, trigger.getConditions().getAny().size());
     assertEquals("1", trigger.getCategoryId());
-    assertEquals(Date.valueOf("2024-03-10"), trigger.getCreatedAt());
-    assertEquals(Date.valueOf("2024-03-11"), trigger.getUpdatedAt());
+    assertEquals(new Date(1710025200000L), trigger.getCreatedAt());
+    assertEquals(new Date(1710111600000L), trigger.getUpdatedAt());
     assertEquals("comment_includes_word", trigger.getConditions().getAny().get(0).getField());
     assertEquals("includes", trigger.getConditions().getAny().get(0).getOperator());
     assertEquals("@triggerTest", trigger.getConditions().getAny().get(0).getValue());
