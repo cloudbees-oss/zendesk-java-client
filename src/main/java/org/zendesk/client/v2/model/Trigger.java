@@ -22,8 +22,12 @@ public class Trigger implements Serializable {
   private int position;
   private Conditions conditions;
   private List<Action> actions;
+  @JsonProperty("created_at")
   private Date createdAt;
+  @JsonProperty("updated_at")
   private Date updatedAt;
+
+  @JsonProperty("category_id")
   private String categoryId;
 
   public Long getId() {
@@ -34,8 +38,7 @@ public class Trigger implements Serializable {
     this.id = id;
   }
 
-  @JsonProperty("category_id")
-  public String getCategoryId() {
+    public String getCategoryId() {
     return categoryId;
   }
 
@@ -59,7 +62,7 @@ public class Trigger implements Serializable {
     this.active = active;
   }
 
-  @JsonProperty("created_at")
+
   public Date getCreatedAt() {
     return createdAt;
   }
@@ -92,7 +95,6 @@ public class Trigger implements Serializable {
     this.actions = actions;
   }
 
-  @JsonProperty("updated_at")
   public Date getUpdatedAt() {
     return updatedAt;
   }
