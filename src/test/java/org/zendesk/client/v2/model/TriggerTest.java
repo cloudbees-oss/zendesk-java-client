@@ -6,9 +6,8 @@ import static org.junit.Assert.assertNotNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.sql.Date;
 import java.util.Arrays;
+import java.util.Date;
 import org.junit.Test;
 import org.zendesk.client.v2.Utils;
 
