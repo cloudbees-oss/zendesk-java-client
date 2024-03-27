@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
+import java.util.Date;
 import org.junit.Test;
 import org.zendesk.client.v2.Utils;
 
@@ -44,6 +45,9 @@ public class TriggerTest {
         trigger.getActions().get(0).getValue());
     assertEquals(0, trigger.getConditions().getAll().size());
     assertEquals(1, trigger.getConditions().getAny().size());
+    assertEquals("1", trigger.getCategoryId());
+    assertEquals(new Date(1710025200000L), trigger.getCreatedAt());
+    assertEquals(new Date(1710111600000L), trigger.getUpdatedAt());
     assertEquals("comment_includes_word", trigger.getConditions().getAny().get(0).getField());
     assertEquals("includes", trigger.getConditions().getAny().get(0).getOperator());
     assertEquals("@triggerTest", trigger.getConditions().getAny().get(0).getValue());
@@ -76,6 +80,9 @@ public class TriggerTest {
         trigger.getActions().get(1).getValue());
     assertEquals(0, trigger.getConditions().getAll().size());
     assertEquals(1, trigger.getConditions().getAny().size());
+    assertEquals("1", trigger.getCategoryId());
+    assertEquals(new Date(1710025200000L), trigger.getCreatedAt());
+    assertEquals(new Date(1710111600000L), trigger.getUpdatedAt());
     assertEquals("comment_includes_word", trigger.getConditions().getAny().get(0).getField());
     assertEquals("includes", trigger.getConditions().getAny().get(0).getOperator());
     assertEquals("@triggerTest", trigger.getConditions().getAny().get(0).getValue());
