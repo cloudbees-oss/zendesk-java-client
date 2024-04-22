@@ -29,6 +29,8 @@ public class ChatStartedEvent extends Event {
     public static class ChatStartedEventValue {
         @JsonProperty("history")
         private List<ChatEventHistory> historyList;
+        @JsonProperty("conversation_id")
+        private String conversationId;
 
         public List<ChatEventHistory> getHistoryList() {
             return historyList;
@@ -36,6 +38,14 @@ public class ChatStartedEvent extends Event {
 
         public void setHistoryList(List<ChatEventHistory> historyList) {
             this.historyList = historyList;
+        }
+
+        public String getConversationId() {
+            return conversationId;
+        }
+
+        public void setConversationId(String conversationId) {
+            this.conversationId = conversationId;
         }
     }
 
