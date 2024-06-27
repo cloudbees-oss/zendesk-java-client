@@ -19,7 +19,8 @@ import org.zendesk.client.v2.model.comments.VoiceComment;
 @JsonTypeInfo(use = NAME, include = EXTERNAL_PROPERTY, property = "type", visible = true)
 @JsonSubTypes({
   @JsonSubTypes.Type(value = Comment.class, name = "Comment"),
-  @JsonSubTypes.Type(value = VoiceComment.class, name = "VoiceComment")
+  @JsonSubTypes.Type(value = VoiceComment.class, name = "VoiceComment"),
+  @JsonSubTypes.Type(value = VoiceComment.class, name = "TpeVoiceComment")
 })
 public class Comment implements Serializable {
 
