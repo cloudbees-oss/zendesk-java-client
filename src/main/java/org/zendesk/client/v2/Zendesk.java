@@ -2904,10 +2904,28 @@ public class Zendesk implements Closeable {
         handleList(Article.class, "articles"));
   }
 
+  public Iterable<Article> getArticles(Category category, String locale) {
+    checkHasId(category);
+    return new PagedIterable<>(
+        tmpl("/help_center/{locale}/categories/{id}/articles.json")
+            .set("id", category.getId())
+            .set("locale", locale),
+        handleList(Article.class, "articles"));
+  }
+
   public Iterable<Article> getArticles(Section section) {
     checkHasId(section);
     return new PagedIterable<>(
         tmpl("/help_center/sections/{id}/articles.json").set("id", section.getId()),
+        handleList(Article.class, "articles"));
+  }
+
+  public Iterable<Article> getArticles(Section section, String locale) {
+    checkHasId(section);
+    return new PagedIterable<>(
+        tmpl("/help_center/{locale}/sections/{id}/articles.json")
+            .set("id", section.getId())
+            .set("locale", locale),
         handleList(Article.class, "articles"));
   }
 
