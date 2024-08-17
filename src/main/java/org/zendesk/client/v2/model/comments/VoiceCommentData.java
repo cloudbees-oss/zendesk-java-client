@@ -1,7 +1,6 @@
 package org.zendesk.client.v2.model.comments;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 
 /**
