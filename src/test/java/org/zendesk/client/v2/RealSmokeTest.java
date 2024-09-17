@@ -2771,15 +2771,15 @@ public class RealSmokeTest {
     Ticket ticket = instance.createTicket(newTestTicket());
     try {
       assertThat(ticket.getId(), notNullValue());
-
-      Optional<Ticket> maybeTicket =
-          StreamSupport.stream(instance.getView(UNRESOLVED_TICKETS_VIEW_ID).spliterator(), false)
-              .filter(t -> Objects.equals(t.getId(), ticket.getId()))
-              .findFirst();
-      assertTrue(maybeTicket.isPresent());
+      await().until(() -> lookForTicket(ticket));
     } finally {
       instance.deleteTicket(ticket.getId());
     }
+  }
+
+  private boolean lookForTicket(Ticket ticket) {
+    return StreamSupport.stream(instance.getView(UNRESOLVED_TICKETS_VIEW_ID).spliterator(), false)
+        .anyMatch(t -> Objects.equals(t.getId(), ticket.getId()));
   }
 
   @Test
