@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Sandeep Kaul(sandeep.kaul@olacabs.com) */
+/**
+ * @author Sandeep Kaul(sandeep.kaul@olacabs.com)
+ */
 public class Conditions implements Serializable {
 
   private static final long serialVersionUID = 1L;

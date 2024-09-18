@@ -25,7 +25,7 @@
 
   <groupId>com.cloudbees.thirdparty</groupId>
   <artifactId>zendesk-java-client</artifactId>
-  <version>0.24.3-SNAPSHOT</version>
+  <version>1.0.1-SNAPSHOT</version>
 
   <name>zendesk-java-client</name>
   <description>Java client for the Zendesk API</description>
@@ -89,9 +89,9 @@
   </ciManagement>
 
   <properties>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <spotless.version>2.30.0</spotless.version>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <spotless.version>2.43.0</spotless.version>
   </properties>
 
   <dependencyManagement>
@@ -99,14 +99,14 @@
       <dependency>
         <groupId>com.fasterxml.jackson</groupId>
         <artifactId>jackson-bom</artifactId>
-        <version>2.16.1</version>
+        <version>2.17.2</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-bom</artifactId>
-        <version>4.1.106.Final</version>
+        <version>4.1.112.Final</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -117,7 +117,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>2.0.11</version>
+      <version>2.0.16</version>
     </dependency>
     <dependency>
       <groupId>org.asynchttpclient</groupId>
@@ -152,7 +152,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>2.0.11</version>
+      <version>2.0.13</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -165,19 +165,19 @@
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <!-- use 2.9.0 for Java 7 projects -->
-      <version>3.25.2</version>
+      <version>3.26.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-text</artifactId>
-      <version>1.11.0</version>
+      <version>1.12.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
-      <version>4.2.0</version>
+      <version>4.2.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -187,7 +187,7 @@
       <plugins>
         <plugin>
           <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.4.1</version>
+          <version>3.5.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -208,12 +208,12 @@
           <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>animal-sniffer-enforcer-rule</artifactId>
-            <version>1.23</version>
+            <version>1.24</version>
           </dependency>
           <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>extra-enforcer-rules</artifactId>
-            <version>1.7.0</version>
+            <version>1.8.0</version>
           </dependency>
         </dependencies>
         <executions>
@@ -253,7 +253,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>3.4.2</version>
         <configuration>
           <archive>
             <manifest>
@@ -313,7 +313,7 @@
           <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.11</version>
+            <version>0.8.12</version>
             <executions>
               <execution>
                 <id>prepare-agent</id>

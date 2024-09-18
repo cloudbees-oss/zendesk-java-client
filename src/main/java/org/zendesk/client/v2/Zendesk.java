@@ -55,6 +55,7 @@ import org.zendesk.client.v2.model.Forum;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.GroupMembership;
 import org.zendesk.client.v2.model.Identity;
+import org.zendesk.client.v2.model.JiraLink;
 import org.zendesk.client.v2.model.JobStatus;
 import org.zendesk.client.v2.model.Locale;
 import org.zendesk.client.v2.model.Macro;
@@ -2400,7 +2401,9 @@ public class Zendesk implements Closeable {
     return getSearchResults(type, query, Collections.emptyMap());
   }
 
-  /** @deprecated Use {@link #getSearchResults(Class, String, Map)} instead. */
+  /**
+   * @deprecated Use {@link #getSearchResults(Class, String, Map)} instead.
+   */
   @Deprecated
   public <T extends SearchResultEntity> Iterable<T> getSearchResults(
       Class<T> type, String query, String params) {
@@ -2870,7 +2873,9 @@ public class Zendesk implements Closeable {
     return complete(submit(req("GET", cnst("/help_center/locales.json")), handle(Locales.class)));
   }
 
-  /** @deprecated Use {@link Zendesk#listHelpCenterLocales()} instead */
+  /**
+   * @deprecated Use {@link Zendesk#listHelpCenterLocales()} instead
+   */
   @Deprecated
   public List<String> getHelpCenterLocales() {
     return listHelpCenterLocales().getLocales();
@@ -2899,10 +2904,28 @@ public class Zendesk implements Closeable {
         handleList(Article.class, "articles"));
   }
 
+  public Iterable<Article> getArticles(Category category, String locale) {
+    checkHasId(category);
+    return new PagedIterable<>(
+        tmpl("/help_center/{locale}/categories/{id}/articles.json")
+            .set("id", category.getId())
+            .set("locale", locale),
+        handleList(Article.class, "articles"));
+  }
+
   public Iterable<Article> getArticles(Section section) {
     checkHasId(section);
     return new PagedIterable<>(
         tmpl("/help_center/sections/{id}/articles.json").set("id", section.getId()),
+        handleList(Article.class, "articles"));
+  }
+
+  public Iterable<Article> getArticles(Section section, String locale) {
+    checkHasId(section);
+    return new PagedIterable<>(
+        tmpl("/help_center/{locale}/sections/{id}/articles.json")
+            .set("id", section.getId())
+            .set("locale", locale),
         handleList(Article.class, "articles"));
   }
 
@@ -3375,6 +3398,10 @@ public class Zendesk implements Closeable {
     return new PagedIterable<>(
         afterCursorUriBuilder.apply(null),
         handleListWithAfterCursorButNoLinks(ContentTag.class, afterCursorUriBuilder, "records"));
+  }
+
+  public Iterable<JiraLink> getJiraLinks() {
+    return new PagedIterable<>(cnst("/jira/links"), handleList(JiraLink.class, "links"));
   }
 
   private Uri buildContentTagsSearchUrl(int pageSize, String namePrefixFilter, String afterCursor) {

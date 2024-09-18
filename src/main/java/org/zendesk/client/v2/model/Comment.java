@@ -1,15 +1,27 @@
 package org.zendesk.client.v2.model;
 
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.As.EXTERNAL_PROPERTY;
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import org.zendesk.client.v2.model.comments.VoiceComment;
 
 /**
  * @author stephenc
  * @since 09/04/2013 15:09
  */
+@JsonTypeInfo(use = NAME, include = EXTERNAL_PROPERTY, property = "type", visible = true)
+@JsonSubTypes({
+  @JsonSubTypes.Type(value = Comment.class, name = "Comment"),
+  @JsonSubTypes.Type(value = VoiceComment.class, name = "VoiceComment"),
+  @JsonSubTypes.Type(value = VoiceComment.class, name = "TpeVoiceComment")
+})
 public class Comment implements Serializable {
 
   private static final long serialVersionUID = 1L;

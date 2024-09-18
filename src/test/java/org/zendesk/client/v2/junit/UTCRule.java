@@ -4,7 +4,9 @@ import org.joda.time.DateTimeZone;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
-/** @author Johno Crawford (johno@sulake.com) */
+/**
+ * @author Johno Crawford (johno@sulake.com)
+ */
 public class UTCRule extends TestWatcher {
 
   private DateTimeZone originalDefault = DateTimeZone.getDefault();
