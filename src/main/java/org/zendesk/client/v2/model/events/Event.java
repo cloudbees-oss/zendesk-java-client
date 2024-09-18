@@ -35,7 +35,9 @@ import java.io.Serializable;
   @JsonSubTypes.Type(value = CommentRedactionEvent.class, name = "CommentRedactionEvent"),
   @JsonSubTypes.Type(value = OrganizationActivityEvent.class, name = "OrganizationActivity"),
   @JsonSubTypes.Type(value = AgentMacroReferenceEvent.class, name = "AgentMacroReference"),
-  @JsonSubTypes.Type(value = ChatStartedEvent.class, name = "ChatStartedEvent")
+  @JsonSubTypes.Type(value = ChatStartedEvent.class, name = "ChatStartedEvent"),
+  @JsonSubTypes.Type(value = SurveyOfferedEvent.class, name = "SurveyOffered"),
+  @JsonSubTypes.Type(value = SurveyResponseSubmittedEvent.class, name = "SurveyResponseSubmitted")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class Event implements Serializable {
