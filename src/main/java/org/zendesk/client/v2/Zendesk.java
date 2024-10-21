@@ -8,26 +8,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
@@ -80,6 +60,7 @@ import org.zendesk.client.v2.model.Trigger;
 import org.zendesk.client.v2.model.TwitterMonitor;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.UserField;
+import org.zendesk.client.v2.model.UserProfile;
 import org.zendesk.client.v2.model.UserRelatedInfo;
 import org.zendesk.client.v2.model.View;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItem;
@@ -103,6 +84,27 @@ import org.zendesk.client.v2.model.targets.PivotalTarget;
 import org.zendesk.client.v2.model.targets.Target;
 import org.zendesk.client.v2.model.targets.TwitterTarget;
 import org.zendesk.client.v2.model.targets.UrlTarget;
+
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * @author stephenc
@@ -1342,6 +1344,30 @@ public class Zendesk implements Closeable {
         submit(
             req("PUT", tmpl("/users/{id}/password.json").set("id", user.getId()), JSON, json(req)),
             handleStatus()));
+  }
+
+  public UserProfile createUserProfile(UserProfile userProfile) {
+    String idQuery = String.format(
+        "%s:%s:%s:%s",
+        userProfile.getSource(),
+        userProfile.getType(),
+        userProfile.getIdentifiers().get(0).getType(),
+        userProfile.getIdentifiers().get(0).getValue());
+
+    return complete(
+        submit(
+            req(
+                "PUT",
+                tmpl("/user_profiles?identifier={idQuery}")
+                    .set("idQuery", idQuery),
+                JSON,
+                json(Collections.singletonMap("profile", userProfile))),
+            handle(UserProfile.class, "profile")));
+  }
+
+  public List<UserProfile> getUserProfilesForUser(User user) {
+    return complete(
+        submit(req("GET", tmpl("/users/{user_id}/profiles").set("user_id", user.getId())), handleList(UserProfile.class, "profiles")));
   }
 
   public List<Identity> getUserIdentities(User user) {
