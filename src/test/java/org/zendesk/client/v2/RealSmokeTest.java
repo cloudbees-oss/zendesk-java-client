@@ -5,6 +5,7 @@ import static java.lang.Boolean.TRUE;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -13,11 +14,14 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.isOneOf;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.collection.IsMapWithSize.aMapWithSize;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,6 +39,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
@@ -91,6 +96,7 @@ import org.zendesk.client.v2.model.TicketImport;
 import org.zendesk.client.v2.model.Trigger;
 import org.zendesk.client.v2.model.Type;
 import org.zendesk.client.v2.model.User;
+import org.zendesk.client.v2.model.UserProfile;
 import org.zendesk.client.v2.model.View;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItem;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItemVariant;
@@ -1130,6 +1136,87 @@ public class RealSmokeTest {
         "Iana Time Zone must be automatically set",
         "America/Los_Angeles",
         createdUser.getIanaTimeZone());
+  }
+
+  @Test
+  public void createUserProfile() throws Exception {
+    // given
+    createClientWithTokenOrPassword();
+    UserProfile userProfile = newTestUserProfile();
+
+    // when
+    UserProfile createdUserProfile = instance.createOrUpdateUserProfile(userProfile);
+
+    // then
+    assertThat("A unique ID must be set", createdUserProfile.getId(), notNullValue());
+    assertThat("A user must have been created", createdUserProfile.getUserId(), notNullValue());
+    assertThat("An identifier should be present", createdUserProfile.getIdentifiers(), hasSize(1));
+    assertThat(
+        "An email identifier should be present",
+        createdUserProfile.getIdentifiers().get(0).getType(),
+        equalTo("email"));
+    assertThat(
+        "An attribute should be set", createdUserProfile.getAttributes(), is(aMapWithSize(1)));
+  }
+
+  @Test
+  public void getUserProfile() throws Exception {
+    // given
+    createClientWithTokenOrPassword();
+    UserProfile userProfile = newTestUserProfile();
+    UserProfile createdUserProfile = instance.createOrUpdateUserProfile(userProfile);
+
+    // when
+    UserProfile queriedProfile = instance.getUserProfile(createdUserProfile.getId());
+
+    // then
+    assertThat("A unique ID must be set", queriedProfile.getId(), notNullValue());
+    assertThat("A user must have been created", queriedProfile.getUserId(), notNullValue());
+    assertThat("An identifier should be present", queriedProfile.getIdentifiers(), hasSize(1));
+    assertThat(
+        "An email identifier should be present",
+        queriedProfile.getIdentifiers().get(0).getType(),
+        equalTo("email"));
+    assertThat("An attribute should be set", queriedProfile.getAttributes(), is(aMapWithSize(1)));
+  }
+
+  @Test
+  public void updateUserProfile() throws Exception {
+    // given
+    String phoneNumber = "555-123-4567";
+    createClientWithTokenOrPassword();
+    UserProfile userProfile = newTestUserProfile();
+    UserProfile createdUserProfile = instance.createOrUpdateUserProfile(userProfile);
+
+    // when
+    createdUserProfile.addAttribute("phone", phoneNumber);
+    createdUserProfile.setName(createdUserProfile.getName() + "updated");
+
+    UserProfile updateUserProfile = instance.updateUserProfile(createdUserProfile);
+
+    // then
+    assertThat("Name must have been updated", updateUserProfile.getName(), endsWith("updated"));
+    assertThat(
+        "Attribute must have been added", updateUserProfile.getAttributes().entrySet(), hasSize(2));
+    assertThat(
+        "Added attribute must have correct key and value",
+        updateUserProfile.getAttributes(),
+        hasEntry("phone", phoneNumber));
+  }
+
+  @Test
+  public void deleteUserProfile() throws Exception {
+    // given
+    createClientWithTokenOrPassword();
+    UserProfile userProfile = newTestUserProfile();
+    UserProfile createdUserProfile = instance.createOrUpdateUserProfile(userProfile);
+    assertThat(instance.getUserProfile(createdUserProfile.getId()), notNullValue());
+
+    // when
+    instance.deleteUserProfile(createdUserProfile.getId());
+
+    // then
+    assertThat(instance.getUserProfile(createdUserProfile.getId()), nullValue());
   }
 
   @Test
@@ -2907,6 +2994,17 @@ public class RealSmokeTest {
     user.setTags(Arrays.asList("zendesk-java-client", "smoke-test"));
     user.setEmail(id + "@test.com");
     return user;
+  }
+
+  /** Creates a new user profile for the given user */
+  private UserProfile newTestUserProfile() {
+    final String id = UUID.randomUUID().toString();
+    return new UserProfile(
+        Map.of("createdBy", "zendesk-java-client"),
+        List.of(new UserProfile.Identifier("email", id + "@test.com")),
+        "zendesk-java-client user profile" + id,
+        "integration",
+        "test");
   }
 
   /**

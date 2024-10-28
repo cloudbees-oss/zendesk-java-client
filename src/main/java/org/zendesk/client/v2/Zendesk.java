@@ -8,6 +8,26 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
@@ -84,27 +104,6 @@ import org.zendesk.client.v2.model.targets.PivotalTarget;
 import org.zendesk.client.v2.model.targets.Target;
 import org.zendesk.client.v2.model.targets.TwitterTarget;
 import org.zendesk.client.v2.model.targets.UrlTarget;
-
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 /**
  * @author stephenc
@@ -1353,10 +1352,7 @@ public class Zendesk implements Closeable {
   public List<UserProfile> getUserProfilesForUser(long userId) {
     return complete(
         submit(
-            req(
-                "GET",
-                tmpl("/users/{user_id}/profiles")
-                    .set("user_id", userId)),
+            req("GET", tmpl("/users/{user_id}/profiles").set("user_id", userId)),
             handleList(UserProfile.class, "profiles")));
   }
 
@@ -1367,10 +1363,7 @@ public class Zendesk implements Closeable {
   public UserProfile getUserProfile(String userProfileId) {
     return complete(
         submit(
-            req(
-                "GET",
-                tmpl("/user_profiles/{profile_id}")
-                    .set("profile_id", userProfileId)),
+            req("GET", tmpl("/user_profiles/{profile_id}").set("profile_id", userProfileId)),
             handle(UserProfile.class, "profile")));
   }
 
@@ -1379,31 +1372,29 @@ public class Zendesk implements Closeable {
         submit(
             req(
                 "GET",
-                tmpl("/user_profiles?identifier={identifier}")
-                    .set("identifier", identifier)),
+                tmpl("/user_profiles?identifier={identifier}").set("identifier", identifier)),
             handle(UserProfile.class, "profile")));
   }
 
   public UserProfile createOrUpdateUserProfile(UserProfile userProfile) {
-    return createOrUpdateUserProfile(userProfile,
-                                     userProfile.getIdentifiers().get(0).getType(),
-                                     userProfile.getIdentifiers().get(0).getValue());
+    return createOrUpdateUserProfile(
+        userProfile,
+        userProfile.getIdentifiers().get(0).getType(),
+        userProfile.getIdentifiers().get(0).getValue());
   }
 
-  public UserProfile createOrUpdateUserProfile(UserProfile userProfile, String identifierType, String identifierValue) {
-    String identifier = String.format(
-        "%s:%s:%s:%s",
-        userProfile.getSource(),
-        userProfile.getType(),
-        identifierType,
-        identifierValue);
+  public UserProfile createOrUpdateUserProfile(
+      UserProfile userProfile, String identifierType, String identifierValue) {
+    String identifier =
+        String.format(
+            "%s:%s:%s:%s",
+            userProfile.getSource(), userProfile.getType(), identifierType, identifierValue);
 
     return complete(
         submit(
             req(
                 "PUT",
-                tmpl("/user_profiles?identifier={identifier}")
-                    .set("identifier", identifier),
+                tmpl("/user_profiles?identifier={identifier}").set("identifier", identifier),
                 JSON,
                 json(Collections.singletonMap("profile", userProfile))),
             handle(UserProfile.class, "profile")));
@@ -1415,8 +1406,7 @@ public class Zendesk implements Closeable {
         submit(
             req(
                 "PUT",
-                tmpl("/user_profiles/{profile_id}")
-                    .set("profile_id", userProfile.getId()),
+                tmpl("/user_profiles/{profile_id}").set("profile_id", userProfile.getId()),
                 JSON,
                 json(Collections.singletonMap("profile", userProfile))),
             handle(UserProfile.class, "profile")));
@@ -1429,10 +1419,7 @@ public class Zendesk implements Closeable {
   public void deleteUserProfile(String userProfileId) {
     complete(
         submit(
-            req(
-                "DELETE",
-                tmpl("/user_profiles/{profile_id}")
-                    .set("profile_id", userProfileId)),
+            req("DELETE", tmpl("/user_profiles/{profile_id}").set("profile_id", userProfileId)),
             handleStatus()));
   }
 
