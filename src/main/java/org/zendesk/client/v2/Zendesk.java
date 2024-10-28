@@ -1346,28 +1346,94 @@ public class Zendesk implements Closeable {
             handleStatus()));
   }
 
-  public UserProfile createUserProfile(UserProfile userProfile) {
-    String idQuery = String.format(
+  public List<UserProfile> getUserProfilesForUser(User user) {
+    return getUserProfilesForUser(user.getId());
+  }
+
+  public List<UserProfile> getUserProfilesForUser(long userId) {
+    return complete(
+        submit(
+            req(
+                "GET",
+                tmpl("/users/{user_id}/profiles")
+                    .set("user_id", userId)),
+            handleList(UserProfile.class, "profiles")));
+  }
+
+  public UserProfile getUserProfile(UserProfile userProfile) {
+    return getUserProfile(userProfile.getId());
+  }
+
+  public UserProfile getUserProfile(String userProfileId) {
+    return complete(
+        submit(
+            req(
+                "GET",
+                tmpl("/user_profiles/{profile_id}")
+                    .set("profile_id", userProfileId)),
+            handle(UserProfile.class, "profile")));
+  }
+
+  public UserProfile getUserProfilebyIdentifier(String identifier) {
+    return complete(
+        submit(
+            req(
+                "GET",
+                tmpl("/user_profiles?identifier={identifier}")
+                    .set("identifier", identifier)),
+            handle(UserProfile.class, "profile")));
+  }
+
+  public UserProfile createOrUpdateUserProfile(UserProfile userProfile) {
+    return createOrUpdateUserProfile(userProfile,
+                                     userProfile.getIdentifiers().get(0).getType(),
+                                     userProfile.getIdentifiers().get(0).getValue());
+  }
+
+  public UserProfile createOrUpdateUserProfile(UserProfile userProfile, String identifierType, String identifierValue) {
+    String identifier = String.format(
         "%s:%s:%s:%s",
         userProfile.getSource(),
         userProfile.getType(),
-        userProfile.getIdentifiers().get(0).getType(),
-        userProfile.getIdentifiers().get(0).getValue());
+        identifierType,
+        identifierValue);
 
     return complete(
         submit(
             req(
                 "PUT",
-                tmpl("/user_profiles?identifier={idQuery}")
-                    .set("idQuery", idQuery),
+                tmpl("/user_profiles?identifier={identifier}")
+                    .set("identifier", identifier),
                 JSON,
                 json(Collections.singletonMap("profile", userProfile))),
             handle(UserProfile.class, "profile")));
   }
 
-  public List<UserProfile> getUserProfilesForUser(User user) {
+  public UserProfile updateUserProfile(UserProfile userProfile) {
+
     return complete(
-        submit(req("GET", tmpl("/users/{user_id}/profiles").set("user_id", user.getId())), handleList(UserProfile.class, "profiles")));
+        submit(
+            req(
+                "PUT",
+                tmpl("/user_profiles/{profile_id}")
+                    .set("profile_id", userProfile.getId()),
+                JSON,
+                json(Collections.singletonMap("profile", userProfile))),
+            handle(UserProfile.class, "profile")));
+  }
+
+  public void deleteUserProfile(UserProfile userProfile) {
+    deleteUserProfile(userProfile.getId());
+  }
+
+  public void deleteUserProfile(String userProfileId) {
+    complete(
+        submit(
+            req(
+                "DELETE",
+                tmpl("/user_profiles/{profile_id}")
+                    .set("profile_id", userProfileId)),
+            handleStatus()));
   }
 
   public List<Identity> getUserIdentities(User user) {
