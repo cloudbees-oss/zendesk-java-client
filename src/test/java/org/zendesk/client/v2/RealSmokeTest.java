@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
@@ -1890,6 +1891,36 @@ public class RealSmokeTest {
       Arrays.stream(usersIds).forEach(instance::deleteUser);
       instance.deleteOrganizationMemberships(
           firstElement(orgMembershipsIds), otherElements(orgMembershipsIds));
+    }
+  }
+
+  @Test
+  public void unassignOrgMemberShip() throws Exception {
+    createClientWithToken();
+
+    var newOrganization = newTestOrganization();
+    var user = newTestUser();
+
+    Organization resultOrganization = null;
+    User resultUser = null;
+    try {
+      resultOrganization = instance.createOrganization(newOrganization);
+      assertNotNull(resultOrganization);
+
+      user.setOrganizationId(resultOrganization.getId());
+      resultUser = instance.createUser(user);
+      assertNotNull(resultUser);
+      assertEquals(resultOrganization.getId(), resultUser.getOrganizationId());
+      instance.unassignOrganizationMembership(resultUser.getId(), resultOrganization.getId());
+      var updatedUser = instance.getUser(resultUser.getId());
+      assertNull(updatedUser.getOrganizationId());
+    } finally {
+      if (resultUser != null) {
+        instance.deleteUser(resultUser);
+      }
+      if (resultOrganization != null) {
+        instance.deleteOrganization(resultOrganization);
+      }
     }
   }
 

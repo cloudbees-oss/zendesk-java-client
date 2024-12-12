@@ -2375,6 +2375,17 @@ public class Zendesk implements Closeable {
             handleStatus()));
   }
 
+  public void unassignOrganizationMembership(long user_id, long organization_id) {
+    complete(
+        submit(
+            req(
+                "DELETE",
+                tmpl("/users/{uid}/organizations/{oid}.json")
+                    .set("uid", user_id)
+                    .set("oid", organization_id)),
+            handleStatus()));
+  }
+
   public List<OrganizationMembership> setOrganizationMembershipAsDefault(
       long user_id, OrganizationMembership organizationMembership) {
     checkHasId(organizationMembership);
