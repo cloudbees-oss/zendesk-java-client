@@ -2899,26 +2899,26 @@ public class Zendesk implements Closeable {
    */
   public Iterable<Article> getArticles() {
     return new PagedIterable<>(
-        cnst("/help_center/articles.json"), handleList(Article.class, "articles"));
+        cbp("/help_center/articles.json"), handleList(Article.class, "articles"));
   }
 
   public Iterable<Article> getArticles(String locale) {
     return new PagedIterable<>(
-        tmpl("/help_center/{locale}/articles.json").set("locale", locale),
+        cbp("/help_center/{locale}/articles.json").set("locale", locale),
         handleList(Article.class, "articles"));
   }
 
   public Iterable<Article> getArticles(Category category) {
     checkHasId(category);
     return new PagedIterable<>(
-        tmpl("/help_center/categories/{id}/articles.json").set("id", category.getId()),
+        cbp("/help_center/categories/{id}/articles.json").set("id", category.getId()),
         handleList(Article.class, "articles"));
   }
 
   public Iterable<Article> getArticles(Category category, String locale) {
     checkHasId(category);
     return new PagedIterable<>(
-        tmpl("/help_center/{locale}/categories/{id}/articles.json")
+        cbp("/help_center/{locale}/categories/{id}/articles.json")
             .set("id", category.getId())
             .set("locale", locale),
         handleList(Article.class, "articles"));
@@ -2927,14 +2927,14 @@ public class Zendesk implements Closeable {
   public Iterable<Article> getArticles(Section section) {
     checkHasId(section);
     return new PagedIterable<>(
-        tmpl("/help_center/sections/{id}/articles.json").set("id", section.getId()),
+        cbp("/help_center/sections/{id}/articles.json").set("id", section.getId()),
         handleList(Article.class, "articles"));
   }
 
   public Iterable<Article> getArticles(Section section, String locale) {
     checkHasId(section);
     return new PagedIterable<>(
-        tmpl("/help_center/{locale}/sections/{id}/articles.json")
+        cbp("/help_center/{locale}/sections/{id}/articles.json")
             .set("id", section.getId())
             .set("locale", locale),
         handleList(Article.class, "articles"));
@@ -2963,7 +2963,7 @@ public class Zendesk implements Closeable {
 
   public Iterable<Translation> getArticleTranslations(Long articleId) {
     return new PagedIterable<>(
-        tmpl("/help_center/articles/{articleId}/translations.json").set("articleId", articleId),
+        cbp("/help_center/articles/{articleId}/translations.json").set("articleId", articleId),
         handleList(Translation.class, "translations"));
   }
 
