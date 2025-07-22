@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import java.io.Closeable;
@@ -104,6 +105,8 @@ import org.zendesk.client.v2.model.targets.PivotalTarget;
 import org.zendesk.client.v2.model.targets.Target;
 import org.zendesk.client.v2.model.targets.TwitterTarget;
 import org.zendesk.client.v2.model.targets.UrlTarget;
+import org.zendesk.client.v2.model.views.ExecutedViewPage;
+import org.zendesk.client.v2.model.views.ViewRow;
 
 /**
  * @author stephenc
@@ -1032,6 +1035,17 @@ public class Zendesk implements Closeable {
   public Iterable<Ticket> getView(long id) {
     return new PagedIterable<>(
         tmpl("/views/{id}/tickets.json").set("id", id), handleList(Ticket.class, "tickets"));
+  }
+
+  @SuppressWarnings("unchecked")
+  public <V extends ViewRow> Optional<ExecutedViewPage<V>> executeView(long id, Class<V> clazz) {
+    var objectReader =
+        mapper.readerFor(
+            mapper.getTypeFactory().constructParametricType(ExecutedViewPage.class, clazz));
+    return Optional.of(
+        complete(
+            submit(
+                req("GET", tmpl("/views/{id}/execute.json").set("id", id)), handle(objectReader))));
   }
 
   // Automations
@@ -2454,6 +2468,17 @@ public class Zendesk implements Closeable {
             handleStatus()));
   }
 
+  public void unassignOrganizationMembership(long user_id, long organization_id) {
+    complete(
+        submit(
+            req(
+                "DELETE",
+                tmpl("/users/{uid}/organizations/{oid}.json")
+                    .set("uid", user_id)
+                    .set("oid", organization_id)),
+            handleStatus()));
+  }
+
   public List<OrganizationMembership> setOrganizationMembershipAsDefault(
       long user_id, OrganizationMembership organizationMembership) {
     checkHasId(organizationMembership);
@@ -2967,26 +2992,26 @@ public class Zendesk implements Closeable {
    */
   public Iterable<Article> getArticles() {
     return new PagedIterable<>(
-        cnst("/help_center/articles.json"), handleList(Article.class, "articles"));
+        cbp("/help_center/articles.json"), handleList(Article.class, "articles"));
   }
 
   public Iterable<Article> getArticles(String locale) {
     return new PagedIterable<>(
-        tmpl("/help_center/{locale}/articles.json").set("locale", locale),
+        cbp("/help_center/{locale}/articles.json").set("locale", locale),
         handleList(Article.class, "articles"));
   }
 
   public Iterable<Article> getArticles(Category category) {
     checkHasId(category);
     return new PagedIterable<>(
-        tmpl("/help_center/categories/{id}/articles.json").set("id", category.getId()),
+        cbp("/help_center/categories/{id}/articles.json").set("id", category.getId()),
         handleList(Article.class, "articles"));
   }
 
   public Iterable<Article> getArticles(Category category, String locale) {
     checkHasId(category);
     return new PagedIterable<>(
-        tmpl("/help_center/{locale}/categories/{id}/articles.json")
+        cbp("/help_center/{locale}/categories/{id}/articles.json")
             .set("id", category.getId())
             .set("locale", locale),
         handleList(Article.class, "articles"));
@@ -2995,14 +3020,14 @@ public class Zendesk implements Closeable {
   public Iterable<Article> getArticles(Section section) {
     checkHasId(section);
     return new PagedIterable<>(
-        tmpl("/help_center/sections/{id}/articles.json").set("id", section.getId()),
+        cbp("/help_center/sections/{id}/articles.json").set("id", section.getId()),
         handleList(Article.class, "articles"));
   }
 
   public Iterable<Article> getArticles(Section section, String locale) {
     checkHasId(section);
     return new PagedIterable<>(
-        tmpl("/help_center/{locale}/sections/{id}/articles.json")
+        cbp("/help_center/{locale}/sections/{id}/articles.json")
             .set("id", section.getId())
             .set("locale", locale),
         handleList(Article.class, "articles"));
@@ -3031,7 +3056,7 @@ public class Zendesk implements Closeable {
 
   public Iterable<Translation> getArticleTranslations(Long articleId) {
     return new PagedIterable<>(
-        tmpl("/help_center/articles/{articleId}/translations.json").set("articleId", articleId),
+        cbp("/help_center/articles/{articleId}/translations.json").set("articleId", articleId),
         handleList(Translation.class, "translations"));
   }
 
@@ -3587,12 +3612,17 @@ public class Zendesk implements Closeable {
 
   @SuppressWarnings("unchecked")
   protected <T> ZendeskAsyncCompletionHandler<T> handle(final Class<T> clazz) {
+    return handle(mapper.readerFor(clazz));
+  }
+
+  @SuppressWarnings("unchecked")
+  protected <T> ZendeskAsyncCompletionHandler<T> handle(ObjectReader reader) {
     return new ZendeskAsyncCompletionHandler<T>() {
       @Override
       public T onCompleted(Response response) throws Exception {
         logResponse(response);
         if (isStatus2xx(response)) {
-          return (T) mapper.readerFor(clazz).readValue(response.getResponseBodyAsStream());
+          return reader.readValue(response.getResponseBodyAsStream());
         } else if (isRateLimitResponse(response)) {
           throw new ZendeskResponseRateLimitException(response);
         }

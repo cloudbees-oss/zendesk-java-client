@@ -27,10 +27,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -112,6 +114,7 @@ import org.zendesk.client.v2.model.schedules.Holiday;
 import org.zendesk.client.v2.model.schedules.Interval;
 import org.zendesk.client.v2.model.schedules.Schedule;
 import org.zendesk.client.v2.model.targets.Target;
+import org.zendesk.client.v2.model.views.ViewRow;
 
 /**
  * @author stephenc
@@ -1981,6 +1984,36 @@ public class RealSmokeTest {
   }
 
   @Test
+  public void unassignOrgMemberShip() throws Exception {
+    createClientWithToken();
+
+    var newOrganization = newTestOrganization();
+    var user = newTestUser();
+
+    Organization resultOrganization = null;
+    User resultUser = null;
+    try {
+      resultOrganization = instance.createOrganization(newOrganization);
+      assertNotNull(resultOrganization);
+
+      user.setOrganizationId(resultOrganization.getId());
+      resultUser = instance.createUser(user);
+      assertNotNull(resultUser);
+      assertEquals(resultOrganization.getId(), resultUser.getOrganizationId());
+      instance.unassignOrganizationMembership(resultUser.getId(), resultOrganization.getId());
+      var updatedUser = instance.getUser(resultUser.getId());
+      assertNull(updatedUser.getOrganizationId());
+    } finally {
+      if (resultUser != null) {
+        instance.deleteUser(resultUser);
+      }
+      if (resultOrganization != null) {
+        instance.deleteOrganization(resultOrganization);
+      }
+    }
+  }
+
+  @Test
   public void lookupOrganizationByExternalId() throws Exception {
     String orgId = "i";
     createClientWithTokenOrPassword();
@@ -2902,6 +2935,32 @@ public class RealSmokeTest {
       ++numLocales;
     }
     assertThat(numLocales, greaterThan(0));
+  }
+
+  @Test
+  public void executeView() throws Exception {
+    // a view specifically created for this test, that is supposed to stay on our test instance
+    var ispView = 37058613923611L;
+    createClientWithTokenOrPassword();
+    var maybeViewPage = instance.executeView(ispView, ViewRowWithSatisfactionScore.class);
+    assertThat(maybeViewPage.isPresent(), is(true));
+    assertThat(maybeViewPage.get().getCount(), is(2));
+    assertThat(maybeViewPage.get().getRows().get(0).getSatisfactionScore(), is("Unoffered"));
+  }
+
+  static class ViewRowWithSatisfactionScore extends ViewRow {
+    private static final long serialVersionUID = 1L;
+
+    @JsonProperty("satisfaction_score")
+    private String satisfactionScore;
+
+    public String getSatisfactionScore() {
+      return satisfactionScore;
+    }
+
+    public void setSatisfactionScore(String satisfactionScore) {
+      this.satisfactionScore = satisfactionScore;
+    }
   }
 
   // UTILITIES
