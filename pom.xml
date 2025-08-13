@@ -88,6 +88,14 @@
     <url>https://app.codeship.com/projects/302087</url>
   </ciManagement>
 
+  <distributionManagement>
+    <repository>
+      <id>cloudbees-nexus-staging</id>
+      <name>Nexus Release Repository</name>
+      <url>https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
