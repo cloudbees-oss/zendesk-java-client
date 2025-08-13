@@ -40,6 +40,7 @@ import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;
 import org.asynchttpclient.request.body.multipart.FilePart;
 import org.asynchttpclient.request.body.multipart.StringPart;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zendesk.client.v2.model.AgentRole;
@@ -165,7 +166,8 @@ public class Zendesk implements Closeable {
       String username,
       String password,
       Map<String, String> headers,
-      int cbpPageSize) {
+      int cbpPageSize,
+      Function<ObjectMapper, ObjectMapper> objectMapperCustomizer) {
     this.logger = LoggerFactory.getLogger(Zendesk.class);
     this.closeClient = client == null;
     this.oauthToken = null;
@@ -188,7 +190,7 @@ public class Zendesk implements Closeable {
     headers.putIfAbsent(USER_AGENT_HEADER, new DefaultUserAgent().toString());
     this.headers = Collections.unmodifiableMap(headers);
     this.cbpPageSize = cbpPageSize;
-    this.mapper = createMapper();
+    this.mapper = createMapper(objectMapperCustomizer);
   }
 
   private Zendesk(
@@ -196,7 +198,8 @@ public class Zendesk implements Closeable {
       String url,
       String oauthToken,
       Map<String, String> headers,
-      int cbpPageSize) {
+      int cbpPageSize,
+      Function<ObjectMapper, ObjectMapper> objectMapperCustomizer) {
     this.logger = LoggerFactory.getLogger(Zendesk.class);
     this.closeClient = client == null;
     this.realm = null;
@@ -212,7 +215,7 @@ public class Zendesk implements Closeable {
     headers.putIfAbsent(USER_AGENT_HEADER, new DefaultUserAgent().toString());
     this.headers = Collections.unmodifiableMap(headers);
     this.cbpPageSize = cbpPageSize;
-    this.mapper = createMapper();
+    this.mapper = createMapper(objectMapperCustomizer);
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -4206,7 +4209,19 @@ public class Zendesk implements Closeable {
     return templateUri;
   }
 
+  /**
+   * This method did not allow for any customization and its public visibility was likely only for
+   * tests. If you rely on it for some reason, please report a new issue to discuss options. To
+   * customize the ObjectMapper, use the {@link Builder#customizeObjectMapper(Function)} method.
+   */
+  @Deprecated(since = "1.3.0", forRemoval = true)
   public static ObjectMapper createMapper() {
+    return createMapper(Function.identity());
+  }
+
+  @VisibleForTesting
+  public static ObjectMapper createMapper(
+      Function<ObjectMapper, ObjectMapper> objectMapperCustomizer) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
     mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
@@ -4215,6 +4230,11 @@ public class Zendesk implements Closeable {
     mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     mapper.setDateFormat(new StdDateFormat());
     mapper.enable(DeserializationFeature.USE_LONG_FOR_INTS);
+    return objectMapperCustomizer.apply(mapper);
+  }
+
+  @VisibleForTesting
+  ObjectMapper getMapper() {
     return mapper;
   }
 
@@ -4279,11 +4299,13 @@ public class Zendesk implements Closeable {
     private String token = null;
     private String oauthToken = null;
     private int cbpPageSize = DEFAULT_CBP_PAGE_SIZE;
+    private Function<ObjectMapper, ObjectMapper> objectMapperCustomizer;
     private final Map<String, String> headers;
 
     public Builder(String url) {
       this.url = url;
       this.headers = new HashMap<>();
+      objectMapperCustomizer = Function.identity();
     }
 
     public Builder setClient(AsyncHttpClient client) {
@@ -4339,13 +4361,30 @@ public class Zendesk implements Closeable {
       return this;
     }
 
+    /**
+     * Customize the ObjectMapper used by this Zendesk client. Careful, the customizer function will
+     * be applied after the default configuration for this library.
+     *
+     * @param customizer a function that takes an ObjectMapper and returns a customized ObjectMapper
+     * @return this builder instance
+     * @since 1.3.0
+     */
+    public Builder customizeObjectMapper(Function<ObjectMapper, ObjectMapper> customizer) {
+      if (customizer != null) {
+        this.objectMapperCustomizer = customizer;
+      }
+      return this;
+    }
+
     public Zendesk build() {
       if (token != null) {
-        return new Zendesk(client, url, username + "/token", token, headers, cbpPageSize);
+        return new Zendesk(
+            client, url, username + "/token", token, headers, cbpPageSize, objectMapperCustomizer);
       } else if (oauthToken != null) {
-        return new Zendesk(client, url, oauthToken, headers, cbpPageSize);
+        return new Zendesk(client, url, oauthToken, headers, cbpPageSize, objectMapperCustomizer);
       }
-      return new Zendesk(client, url, username, password, headers, cbpPageSize);
+      return new Zendesk(
+          client, url, username, password, headers, cbpPageSize, objectMapperCustomizer);
     }
   }
 }

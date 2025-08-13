@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
+import java.util.function.Function;
 import org.junit.Test;
 import org.zendesk.client.v2.Zendesk;
 
@@ -17,7 +18,7 @@ public class TicketTest {
 
   @Test
   public void serializeWithNullSafeUpdate() throws Exception {
-    ObjectMapper mapper = Zendesk.createMapper();
+    ObjectMapper mapper = Zendesk.createMapper(Function.identity());
     Ticket ticket = createSampleTicket();
     assertThat(mapper.writeValueAsString(ticket))
         .doesNotContain("\"safe_update\"")
@@ -26,7 +27,7 @@ public class TicketTest {
 
   @Test
   public void serializeWithFalseSafeUpdate() throws Exception {
-    ObjectMapper mapper = Zendesk.createMapper();
+    ObjectMapper mapper = Zendesk.createMapper(Function.identity());
     Ticket ticket = createSampleTicket();
     ticket.setSafeUpdate(false);
     assertThat(mapper.writeValueAsString(ticket))
@@ -36,7 +37,7 @@ public class TicketTest {
 
   @Test
   public void serializeWithSafeUpdate() throws Exception {
-    ObjectMapper mapper = Zendesk.createMapper();
+    ObjectMapper mapper = Zendesk.createMapper(Function.identity());
     Ticket ticket = createSampleTicket();
     ticket.setSafeUpdate(true);
     assertThat(mapper.writeValueAsString(ticket))

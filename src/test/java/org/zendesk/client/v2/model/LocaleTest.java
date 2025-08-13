@@ -3,6 +3,7 @@ package org.zendesk.client.v2.model;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.util.function.Function;
 import org.junit.Test;
 import org.zendesk.client.v2.Zendesk;
 
@@ -19,7 +20,7 @@ public class LocaleTest {
             + "\"updated_at\": \"2023-09-21T19:23:16Z\""
             + "}";
 
-    Locale locale = Zendesk.createMapper().readValue(json, Locale.class);
+    Locale locale = Zendesk.createMapper(Function.identity()).readValue(json, Locale.class);
 
     assertThat(locale.getUrl(), is("https://acme.zendesk.com/api/v2/locales/en-US.json"));
     assertThat(locale.getId(), is(1L));
