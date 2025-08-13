@@ -94,6 +94,11 @@
       <name>Nexus Release Repository</name>
       <url>https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/</url>
     </repository>
+    <snapshotRepository>
+      <id>cloudbees-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://ossrh-staging-api.central.sonatype.com/content/repositories/snapshots/</url>
+    </snapshotRepository>
   </distributionManagement>
 
   <properties>
@@ -308,6 +313,17 @@
         <configuration>
           <completionGoals>spotless:apply verify</completionGoals>
           <preparationGoals>spotless:apply verify</preparationGoals>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.5</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>cloudbees-nexus-snapshots</serverId>
+          <nexusUrl>https://ossrh-staging-api.central.sonatype.com/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
     </plugins>
