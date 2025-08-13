@@ -10,6 +10,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import org.apache.commons.text.RandomStringGenerator;
 import org.junit.*;
 import org.zendesk.client.v2.Zendesk;
@@ -31,7 +32,7 @@ public class TimeZoneTest {
   @Rule public WireMockClassRule zendeskApiMock = zendeskApiClass;
 
   private Zendesk client;
-  private final ObjectMapper objectMapper = Zendesk.createMapper();
+  private final ObjectMapper objectMapper = Zendesk.createMapper(Function.identity());
 
   @Before
   public void setUp() {

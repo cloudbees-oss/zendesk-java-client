@@ -13,6 +13,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.function.Function;
 import org.apache.commons.text.RandomStringGenerator;
 import org.junit.After;
 import org.junit.Before;
@@ -46,7 +47,7 @@ public class SearchTest {
 
   private Zendesk client;
   // use a mapper that is identical to what the client will use
-  private ObjectMapper objectMapper = Zendesk.createMapper();
+  private ObjectMapper objectMapper = Zendesk.createMapper(Function.identity());
 
   @Before
   public void setUp() throws Exception {

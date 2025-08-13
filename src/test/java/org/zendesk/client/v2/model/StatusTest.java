@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import java.util.function.Function;
 import org.junit.Test;
 import org.zendesk.client.v2.Zendesk;
 
@@ -15,7 +16,7 @@ import org.zendesk.client.v2.Zendesk;
 public class StatusTest {
   @Test
   public void serializeAsLowercase() throws Exception {
-    ObjectMapper mapper = Zendesk.createMapper();
+    ObjectMapper mapper = Zendesk.createMapper(Function.identity());
     assertThat(
         mapper.writeValueAsString(Status.PENDING),
         is("\"" + Status.PENDING.name().toLowerCase() + "\""));
@@ -23,7 +24,7 @@ public class StatusTest {
 
   @Test
   public void deserializeFromLowercase() throws Exception {
-    ObjectMapper mapper = Zendesk.createMapper();
+    ObjectMapper mapper = Zendesk.createMapper(Function.identity());
     ObjectReader reader = mapper.readerFor(Status.class);
     assertThat(
         reader.readValue("\"" + Status.PENDING.name().toLowerCase() + "\""),

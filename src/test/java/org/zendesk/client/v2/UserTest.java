@@ -19,6 +19,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import org.apache.commons.text.RandomStringGenerator;
 import org.junit.After;
 import org.junit.Before;
@@ -50,7 +51,7 @@ public class UserTest {
 
   private Zendesk client;
   // use a mapper that is identical to what the client will use
-  private ObjectMapper objectMapper = Zendesk.createMapper();
+  private ObjectMapper objectMapper = Zendesk.createMapper(Function.identity());
 
   @Before
   public void setUp() throws Exception {
