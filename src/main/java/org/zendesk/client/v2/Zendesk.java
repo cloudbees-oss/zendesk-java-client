@@ -558,6 +558,13 @@ public class Zendesk implements Closeable {
         handleList(Ticket.class, "results"));
   }
 
+  public Iterable<Ticket> getTicketFromSearchWithExport(String searchTerm) {
+    return new PagedIterable<>(
+        tmpl(cbp("/search/export", true).toString() + "&filter[type]=ticket&query={query}")
+            .set("query", searchTerm + " type:ticket"),
+        handleList(Ticket.class, "results"));
+  }
+
   public Iterable<Article> getArticleFromSearch(String searchTerm) {
     return new PagedIterable<>(
         tmpl("/help_center/articles/search.json{?query}").set("query", searchTerm),
@@ -3862,11 +3869,16 @@ public class Zendesk implements Closeable {
   }
 
   private TemplateUri cbp(String path) {
+    return cbp(path, false);
+  }
+
+  private TemplateUri cbp(String path, boolean noDomain) {
     Objects.requireNonNull(path, "Path cannot be null");
     if (path.indexOf('?') != -1) {
       throw new IllegalArgumentException("Path cannot contain a query string");
     }
-    return new TemplateUri(url + path + "?page[size]={pageSize}").set("pageSize", cbpPageSize);
+    return new TemplateUri((noDomain ? "" : url) + path + "?page[size]={pageSize}")
+        .set("pageSize", cbpPageSize);
   }
 
   private Uri cnst(String template) {
