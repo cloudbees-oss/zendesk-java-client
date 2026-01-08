@@ -53,6 +53,7 @@ import org.hamcrest.Matchers;
 import org.hamcrest.core.IsCollectionContaining;
 import org.junit.After;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
@@ -627,6 +628,9 @@ public class RealSmokeTest {
   }
 
   @Test
+  @Ignore(
+      value =
+          "keeping the test in case we need to check something quick, but we do not want to run since our instance does not allow such login for security reasons")
   public void createClientWithPassword() throws Exception {
     assumeHavePassword();
     instance =
