@@ -2799,6 +2799,36 @@ public class RealSmokeTest {
   }
 
   @Test
+  public void getTicketFromSearchWithExport() throws Exception {
+    createClientWithTokenOrPassword();
+
+    Ticket t = newTestTicket();
+    t.setRequester(new Ticket.Requester("a name", "email+alias@acme.org"));
+    Ticket ticket = null;
+    try {
+      ticket = instance.createTicket(t);
+      // according to the doc, it takes about 1 minute for the ticket to be indexed
+      // running several time, it seems that the actual value is around 30-40s
+      Awaitility.with()
+          .pollDelay(20, SECONDS)
+          .and()
+          .pollInterval(10, SECONDS)
+          .await()
+          .timeout(90, SECONDS)
+          .until(
+              () -> {
+                Iterable<Ticket> tickets =
+                    instance.getTicketFromSearchWithExport("requester:email+alias@acme.org");
+                return StreamSupport.stream(tickets.spliterator(), false).findAny().isPresent();
+              });
+    } finally {
+      if (ticket != null) {
+        instance.deleteTicket(ticket.getId());
+      }
+    }
+  }
+
+  @Test
   public void getUnresolvedViewReturnsANewlyCreatedTicket() throws Exception {
     createClientWithTokenOrPassword();
     Ticket ticket = instance.createTicket(newTestTicket());
