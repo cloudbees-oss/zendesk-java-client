@@ -82,6 +82,7 @@ import org.zendesk.client.v2.model.Trigger;
 import org.zendesk.client.v2.model.TwitterMonitor;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.UserField;
+import org.zendesk.client.v2.model.UserProfile;
 import org.zendesk.client.v2.model.UserRelatedInfo;
 import org.zendesk.client.v2.model.View;
 import org.zendesk.client.v2.model.dynamic.DynamicContentItem;
@@ -1370,6 +1371,84 @@ public class Zendesk implements Closeable {
     complete(
         submit(
             req("PUT", tmpl("/users/{id}/password.json").set("id", user.getId()), JSON, json(req)),
+            handleStatus()));
+  }
+
+  public List<UserProfile> getUserProfilesForUser(User user) {
+    return getUserProfilesForUser(user.getId());
+  }
+
+  public List<UserProfile> getUserProfilesForUser(long userId) {
+    return complete(
+        submit(
+            req("GET", tmpl("/users/{user_id}/profiles").set("user_id", userId)),
+            handleList(UserProfile.class, "profiles")));
+  }
+
+  public UserProfile getUserProfile(UserProfile userProfile) {
+    return getUserProfile(userProfile.getId());
+  }
+
+  public UserProfile getUserProfile(String userProfileId) {
+    return complete(
+        submit(
+            req("GET", tmpl("/user_profiles/{profile_id}").set("profile_id", userProfileId)),
+            handle(UserProfile.class, "profile")));
+  }
+
+  public UserProfile getUserProfilebyIdentifier(String identifier) {
+    return complete(
+        submit(
+            req(
+                "GET",
+                tmpl("/user_profiles?identifier={identifier}").set("identifier", identifier)),
+            handle(UserProfile.class, "profile")));
+  }
+
+  public UserProfile createOrUpdateUserProfile(UserProfile userProfile) {
+    return createOrUpdateUserProfile(
+        userProfile,
+        userProfile.getIdentifiers().get(0).getType(),
+        userProfile.getIdentifiers().get(0).getValue());
+  }
+
+  public UserProfile createOrUpdateUserProfile(
+      UserProfile userProfile, String identifierType, String identifierValue) {
+    String identifier =
+        String.format(
+            "%s:%s:%s:%s",
+            userProfile.getSource(), userProfile.getType(), identifierType, identifierValue);
+
+    return complete(
+        submit(
+            req(
+                "PUT",
+                tmpl("/user_profiles?identifier={identifier}").set("identifier", identifier),
+                JSON,
+                json(Collections.singletonMap("profile", userProfile))),
+            handle(UserProfile.class, "profile")));
+  }
+
+  public UserProfile updateUserProfile(UserProfile userProfile) {
+
+    return complete(
+        submit(
+            req(
+                "PUT",
+                tmpl("/user_profiles/{profile_id}").set("profile_id", userProfile.getId()),
+                JSON,
+                json(Collections.singletonMap("profile", userProfile))),
+            handle(UserProfile.class, "profile")));
+  }
+
+  public void deleteUserProfile(UserProfile userProfile) {
+    deleteUserProfile(userProfile.getId());
+  }
+
+  public void deleteUserProfile(String userProfileId) {
+    complete(
+        submit(
+            req("DELETE", tmpl("/user_profiles/{profile_id}").set("profile_id", userProfileId)),
             handleStatus()));
   }
 
