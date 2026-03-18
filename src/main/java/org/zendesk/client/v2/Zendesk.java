@@ -56,6 +56,8 @@ import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Forum;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.GroupMembership;
+import org.zendesk.client.v2.model.IdempotencyState;
+import org.zendesk.client.v2.model.IdempotentEntity;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.JiraLink;
 import org.zendesk.client.v2.model.JobStatus;
@@ -432,9 +434,15 @@ public class Zendesk implements Closeable {
   }
 
   public ListenableFuture<Ticket> createTicketAsync(Ticket ticket) {
+    IdempotencyState idempotencyState = IdempotencyState.of(ticket).orElse(null);
     return submit(
-        req("POST", cnst("/tickets.json"), JSON, json(Collections.singletonMap("ticket", ticket))),
-        handle(Ticket.class, "ticket"));
+        req(
+            "POST",
+            cnst("/tickets.json"),
+            JSON,
+            json(Collections.singletonMap("ticket", ticket))),
+        handle(Ticket.class, "ticket"),
+        idempotencyState);
   }
 
   public Ticket createTicket(Ticket ticket) {
@@ -3474,8 +3482,7 @@ public class Zendesk implements Closeable {
     }
   }
 
-  private <T> ListenableFuture<T> submit(
-      Request request, ZendeskAsyncCompletionHandler<T> handler) {
+  private <T> ListenableFuture<T> submit(Request request, AsyncCompletionHandler<T> handler) {
     if (logger.isDebugEnabled()) {
       if (request.getStringData() != null) {
         logger.debug(
@@ -3492,6 +3499,15 @@ public class Zendesk implements Closeable {
       }
     }
     return client.executeRequest(request, handler);
+  }
+
+  private <T extends IdempotentEntity> ListenableFuture<T> submit(
+      Request request,
+      AsyncCompletionHandler<T> handler,
+      IdempotencyState idempotencyState) {
+    return submit(
+        IdempotencyUtil.addIdempotencyState(request, idempotencyState),
+        IdempotencyUtil.wrapHandler(handler, idempotencyState));
   }
 
   private abstract static class ZendeskAsyncCompletionHandler<T> extends AsyncCompletionHandler<T> {
