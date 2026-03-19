@@ -10,6 +10,11 @@ import org.zendesk.client.v2.model.IdempotentEntity;
 
 public class IdempotencyUtil {
 
+  static final String IDEMPOTENCY_KEY_HEADER = "Idempotency-Key";
+  static final String IDEMPOTENCY_LOOKUP_HEADER = "x-idempotency-lookup";
+  static final String IDEMPOTENCY_LOOKUP_HIT = "hit";
+  static final String IDEMPOTENCY_LOOKUP_MISS = "miss";
+
   public static Request addIdempotencyState(Request request, IdempotencyState state) {
     if (state == null) {
       return request;
@@ -21,7 +26,7 @@ public class IdempotencyUtil {
 
     // https://developer.zendesk.com/api-reference/ticketing/introduction/#idempotency
     return request.toBuilder()
-        .setHeader("Idempotency-Key", state.getIdempotencyKey())
+        .setHeader(IDEMPOTENCY_KEY_HEADER, state.getIdempotencyKey())
         .build();
   }
 
@@ -56,15 +61,15 @@ public class IdempotencyUtil {
     }
 
     // https://developer.zendesk.com/api-reference/ticketing/introduction/#idempotency
-    String idempotencyLookup = response.getHeader("x-idempotency-lookup");
+    String idempotencyLookup = response.getHeader(IDEMPOTENCY_LOOKUP_HEADER);
     if (idempotencyLookup == null) {
       return Optional.empty();
     }
 
     switch (idempotencyLookup) {
-      case "hit":
+      case IDEMPOTENCY_LOOKUP_HIT:
         return Optional.of(state.toPreviouslyCreated());
-      case "miss":
+      case IDEMPOTENCY_LOOKUP_MISS:
         return Optional.of(state.toCreated());
       default:
         return Optional.empty();
