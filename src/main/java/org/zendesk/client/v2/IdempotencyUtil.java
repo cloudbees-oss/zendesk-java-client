@@ -8,6 +8,17 @@ import org.zendesk.client.v2.model.IdempotencyState;
 import org.zendesk.client.v2.model.IdempotencyState.Status;
 import org.zendesk.client.v2.model.IdempotentEntity;
 
+/**
+ * Utility class for handling Zendesk API idempotency keys.
+ *
+ * <p>Provides methods to add idempotency headers to requests and process idempotency-related
+ * response headers. Supports the Zendesk API's idempotency feature which allows safe retries of
+ * create operations without creating duplicate resources.
+ *
+ * @see <a href="https://developer.zendesk.com/api-reference/ticketing/introduction/#idempotency">
+ *     Zendesk API Idempotency</a>
+ * @since 1.5.0
+ */
 public class IdempotencyUtil {
 
   static final String IDEMPOTENCY_KEY_HEADER = "Idempotency-Key";
@@ -16,6 +27,15 @@ public class IdempotencyUtil {
   static final String IDEMPOTENCY_LOOKUP_MISS = "miss";
   static final String IDEMPOTENCY_ERROR_NAME = "IdempotentRequestError";
 
+  /**
+   * Adds an idempotency key header to the request if the state is present and pending.
+   *
+   * @param request the HTTP request to modify
+   * @param state the idempotency state, or null if idempotency is not being used
+   * @return a new request with the idempotency key header added, or the original request if state
+   *     is null
+   * @throws IllegalArgumentException if the state is not in PENDING status
+   */
   public static Request addIdempotencyState(Request request, IdempotencyState state) {
     if (state == null) {
       return request;
@@ -31,6 +51,20 @@ public class IdempotencyUtil {
         .build();
   }
 
+  /**
+   * Wraps an async completion handler to process idempotency response headers.
+   *
+   * <p>The wrapped handler will automatically update the entity's idempotency fields based on the
+   * response headers returned by the Zendesk API. If the {@code x-idempotency-lookup} header
+   * indicates a "hit", the entity will be marked as previously created. If "miss", it will be
+   * marked as newly created.
+   *
+   * @param <T> the entity type that implements IdempotentEntity
+   * @param handler the original async completion handler
+   * @param idempotencyState the idempotency state, or null if idempotency is not being used
+   * @return a wrapped handler that processes idempotency headers, or the original handler if state
+   *     is null
+   */
   public static <T extends IdempotentEntity> AsyncCompletionHandler<T> wrapHandler(
       AsyncCompletionHandler<T> handler,
       IdempotencyState idempotencyState) {
