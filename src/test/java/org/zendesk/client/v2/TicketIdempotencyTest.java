@@ -9,9 +9,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.util.Collections;
@@ -142,6 +145,30 @@ public class TicketIdempotencyTest {
     assertThat(result.getId()).isEqualTo(TICKET_ID);
     assertThat(result.getIdempotencyKey()).isEqualTo(TICKET_KEY);
     assertThat(result.getIsIdempotencyHit()).isTrue();
+  }
+
+  @Test
+  public void createTicket_onIdempotencyConflictError_throwsException() {
+    Ticket requestTicket = createSampleTicket();
+    requestTicket.setIdempotencyKey(TICKET_KEY);
+
+    JsonNode expectedJsonResponse = JsonNodeFactory.instance.objectNode()
+        .put("error", IdempotencyUtil.IDEMPOTENCY_ERROR_NAME)
+        .put("description", "Request parameters don't match the given idempotency key");
+
+    zendeskApiMock.stubFor(
+        post(urlEqualTo(CREATE_TICKET_PATH))
+            .withHeader(IdempotencyUtil.IDEMPOTENCY_KEY_HEADER, equalTo(TICKET_KEY))
+            .willReturn(
+                aResponse()
+                    .withStatus(400)
+                    .withJsonBody(expectedJsonResponse)));
+
+    assertThatThrownBy(() -> client.createTicket(requestTicket)).isInstanceOfSatisfying(
+        ZendeskResponseIdempotencyConflictException.class,
+        e -> assertThat(e.isIdempotencyConflict()).isTrue());
+
+    verifyRequest(TICKET_KEY);
   }
 
   @Test

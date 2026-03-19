@@ -14,6 +14,7 @@ public class IdempotencyUtil {
   static final String IDEMPOTENCY_LOOKUP_HEADER = "x-idempotency-lookup";
   static final String IDEMPOTENCY_LOOKUP_HIT = "hit";
   static final String IDEMPOTENCY_LOOKUP_MISS = "miss";
+  static final String IDEMPOTENCY_ERROR_NAME = "IdempotentRequestError";
 
   public static Request addIdempotencyState(Request request, IdempotencyState state) {
     if (state == null) {

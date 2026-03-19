@@ -3608,12 +3608,20 @@ public class Zendesk implements Closeable {
         }
         return mapper.convertValue(
             mapper.readTree(response.getResponseBodyAsStream()).get(name), clazz);
-      } else if (isRateLimitResponse(response)) {
+      }
+
+      if (isRateLimitResponse(response)) {
         throw new ZendeskResponseRateLimitException(response);
       }
+
+      if (isIdempotencyConflict(response)) {
+        throw new ZendeskResponseIdempotencyConflictException(response);
+      }
+
       if (response.getStatusCode() == 404) {
         return null;
       }
+
       throw new ZendeskResponseException(response);
     }
   }
@@ -3941,6 +3949,21 @@ public class Zendesk implements Closeable {
     return response.getStatusCode() == 429;
   }
 
+  private boolean isIdempotencyConflict(Response response) throws IOException {
+    if (response.getStatusCode() != 400) {
+      return false;
+    }
+
+    try {
+      Map<?, ?> body = mapper.readValue(response.getResponseBody(), Map.class);
+      return IdempotencyUtil.IDEMPOTENCY_ERROR_NAME.equals(body.get("error"));
+    } catch (JsonProcessingException e) {
+      ZendeskResponseException exception = new ZendeskResponseException(response);
+      exception.addSuppressed(e);
+      throw exception;
+    }
+  }
+
   //////////////////////////////////////////////////////////////////////
   // Static helper methods
   //////////////////////////////////////////////////////////////////////
@@ -3951,14 +3974,18 @@ public class Zendesk implements Closeable {
     } catch (InterruptedException e) {
       throw new ZendeskException(e.getMessage(), e);
     } catch (ExecutionException e) {
+      if (e.getCause() instanceof ZendeskResponseRateLimitException) {
+        throw new ZendeskResponseRateLimitException(
+            (ZendeskResponseRateLimitException) e.getCause());
+      }
+      if (e.getCause() instanceof ZendeskResponseIdempotencyConflictException) {
+        throw new ZendeskResponseIdempotencyConflictException(
+            (ZendeskResponseIdempotencyConflictException) e.getCause());
+      }
+      if (e.getCause() instanceof ZendeskResponseException) {
+        throw new ZendeskResponseException((ZendeskResponseException) e.getCause());
+      }
       if (e.getCause() instanceof ZendeskException) {
-        if (e.getCause() instanceof ZendeskResponseRateLimitException) {
-          throw new ZendeskResponseRateLimitException(
-              (ZendeskResponseRateLimitException) e.getCause());
-        }
-        if (e.getCause() instanceof ZendeskResponseException) {
-          throw new ZendeskResponseException((ZendeskResponseException) e.getCause());
-        }
         throw new ZendeskException(e.getCause());
       }
       throw new ZendeskException(e.getMessage(), e);

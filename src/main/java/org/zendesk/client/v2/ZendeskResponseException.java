@@ -42,4 +42,8 @@ public class ZendeskResponseException extends ZendeskException {
   public String getBody() {
     return body;
   }
+
+  public boolean isIdempotencyConflict() {
+    return false;
+  }
 }
