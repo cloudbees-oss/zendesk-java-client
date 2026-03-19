@@ -42,17 +42,4 @@ public class ZendeskResponseException extends ZendeskException {
   public String getBody() {
     return body;
   }
-
-  /**
-   * Determines if this exception represents an idempotency conflict error.
-   *
-   * <p>Returns true only for {@link ZendeskResponseIdempotencyConflictException}, which indicates
-   * that a request was retried with the same idempotency key but different parameters.
-   *
-   * @return true if this is an idempotency conflict, false otherwise
-   * @since 1.5.0
-   */
-  public boolean isIdempotencyConflict() {
-    return false;
-  }
 }

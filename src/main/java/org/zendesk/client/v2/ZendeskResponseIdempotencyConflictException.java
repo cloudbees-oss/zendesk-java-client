@@ -35,9 +35,4 @@ public class ZendeskResponseIdempotencyConflictException extends ZendeskResponse
       ZendeskResponseIdempotencyConflictException cause) {
     super(cause);
   }
-
-  @Override
-  public boolean isIdempotencyConflict() {
-    return true;
-  }
 }

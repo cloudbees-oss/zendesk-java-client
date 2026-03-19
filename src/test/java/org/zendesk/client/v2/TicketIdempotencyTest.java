@@ -164,9 +164,8 @@ public class TicketIdempotencyTest {
                     .withStatus(400)
                     .withJsonBody(expectedJsonResponse)));
 
-    assertThatThrownBy(() -> client.createTicket(requestTicket)).isInstanceOfSatisfying(
-        ZendeskResponseIdempotencyConflictException.class,
-        e -> assertThat(e.isIdempotencyConflict()).isTrue());
+    assertThatThrownBy(() -> client.createTicket(requestTicket)).isInstanceOf(
+        ZendeskResponseIdempotencyConflictException.class);
 
     verifyRequest(TICKET_KEY);
   }
