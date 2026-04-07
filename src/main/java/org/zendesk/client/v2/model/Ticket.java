@@ -1,6 +1,5 @@
 package org.zendesk.client.v2.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -13,7 +12,7 @@ import java.util.List;
  * @since 04/04/2013 14:25
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Ticket extends Request implements SearchResultEntity, IdempotentEntity {
+public class Ticket extends Request implements SearchResultEntity {
 
   private static final long serialVersionUID = -7559199410302237012L;
 
@@ -36,8 +35,6 @@ public class Ticket extends Request implements SearchResultEntity, IdempotentEnt
   private Long brandId;
   private Boolean isPublic;
   private Boolean safeUpdate;
-  @JsonIgnore private String idempotencyKey;
-  @JsonIgnore private Boolean isIdempotencyHit;
 
   public Ticket() {}
 
@@ -250,28 +247,6 @@ public class Ticket extends Request implements SearchResultEntity, IdempotentEnt
   @JsonProperty("updated_stamp")
   private Date getUpdatedStamp() {
     return Boolean.TRUE.equals(safeUpdate) ? updatedAt : null;
-  }
-
-  @Override
-  @JsonIgnore
-  public String getIdempotencyKey() {
-    return idempotencyKey;
-  }
-
-  @Override
-  public void setIdempotencyKey(String idempotencyKey) {
-    this.idempotencyKey = idempotencyKey;
-  }
-
-  @Override
-  @JsonIgnore
-  public Boolean getIsIdempotencyHit() {
-    return isIdempotencyHit;
-  }
-
-  @Override
-  public void setIsIdempotencyHit(Boolean isIdempotencyHit) {
-    this.isIdempotencyHit = isIdempotencyHit;
   }
 
   @Override

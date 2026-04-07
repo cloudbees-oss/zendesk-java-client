@@ -37,12 +37,8 @@ Idempotency
 -----------
 
 The Zendesk API supports [idempotency keys](https://developer.zendesk.com/api-reference/ticketing/introduction/#idempotency)
-to safely retry operations without creating duplicate resources. This client supports idempotency
-for ticket creation operations.
-
-**Note:** Currently, only `createTicket()` and `createTicketAsync()` fully support idempotency.
-Other create operations (comments, users, etc.) do not yet support this feature, and
-`queueCreateTicketAsync` might not work as expected when used with idempotency keys.
+to safely retry operations without creating duplicate resources. This client supports idempotent
+ticket creation via `createTicketIdempotent` and `createTicketIdempotentAsync`.
 
 ### Usage Example
 
@@ -55,14 +51,17 @@ class FooIssueService {
     // ...
 
     public void postIssueUpdate(FooIssue issue, String update) {
-        // Note: in production code, we should probably also check for an existing ticket before
-        // trying to create a new one, in addition to the fallback.
         Ticket ticket = new Ticket(issue.getRequesterId(), issue.getTitle(), new Comment(update));
-        ticket.setIdempotencyKey(generateIdempotencyKey(issue));
 
+        // Must map 1-to-1 with the issue, so that retries for the same issue use the same key
+        String idempotencyKey = String.format("issue-%s", issue.getId());
+        
         try {
-            ticket = zendesk.createTicket(ticket);
-            if (Boolean.FALSE.equals(ticket.getIsIdempotencyHit())) {
+            // Note: in production code, we should probably also check for an existing ticket before
+            // trying to create a new one, in addition to the fallback.
+            result = zendesk.createTicketIdempotent(ticket, idempotencyKey);
+            ticket = result.get();
+            if (!result.isDuplicateRequest()) {
                 issueRepository.saveTicketId(issue.getId(), ticket.getId());
                 logger.info("Created new ticket (id = {})", ticket.getId());
             }
@@ -75,11 +74,6 @@ class FooIssueService {
                 comment.getId(),
                 existingTicketId);
         }
-    }
-
-    private String generateIdempotencyKey(FooIssue issue) {
-        // Must map 1-to-1 with the issue, so that retries for the same issue use the same key
-        return String.format("issue-%s", issue.getId());
     }
 }
 ```

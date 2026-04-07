@@ -1,6 +1,5 @@
 package org.zendesk.client.v2;
 
-import java.io.IOException;
 import org.asynchttpclient.Response;
 
 /**
@@ -22,7 +21,7 @@ public class ZendeskResponseIdempotencyConflictException extends ZendeskResponse
 
   private static final long serialVersionUID = 1L;
 
-  public ZendeskResponseIdempotencyConflictException(Response res) throws IOException {
+  public ZendeskResponseIdempotencyConflictException(Response res) {
     super(res);
   }
 

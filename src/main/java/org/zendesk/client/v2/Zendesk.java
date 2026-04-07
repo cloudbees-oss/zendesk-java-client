@@ -43,6 +43,7 @@ import org.asynchttpclient.request.body.multipart.StringPart;
 import org.jetbrains.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zendesk.client.v2.model.IdempotentResult;
 import org.zendesk.client.v2.model.AgentRole;
 import org.zendesk.client.v2.model.Attachment;
 import org.zendesk.client.v2.model.Audit;
@@ -56,8 +57,6 @@ import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Forum;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.GroupMembership;
-import org.zendesk.client.v2.model.IdempotencyState;
-import org.zendesk.client.v2.model.IdempotentEntity;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.JiraLink;
 import org.zendesk.client.v2.model.JobStatus;
@@ -434,19 +433,28 @@ public class Zendesk implements Closeable {
   }
 
   public ListenableFuture<Ticket> createTicketAsync(Ticket ticket) {
-    IdempotencyState idempotencyState = IdempotencyState.of(ticket).orElse(null);
     return submit(
-        req(
-            "POST",
-            cnst("/tickets.json"),
-            JSON,
-            json(Collections.singletonMap("ticket", ticket))),
-        handle(Ticket.class, "ticket"),
-        idempotencyState);
+        req("POST", cnst("/tickets.json"), JSON, json(Collections.singletonMap("ticket", ticket))),
+        handle(Ticket.class, "ticket"));
   }
 
   public Ticket createTicket(Ticket ticket) {
     return complete(createTicketAsync(ticket));
+  }
+
+  public ListenableFuture<IdempotentResult<Ticket>> createTicketIdempotentAsync(Ticket ticket, String idempotencyKey) {
+    return submitIdempotent(
+        reqBuilder(
+              "POST",
+              cnst("/tickets.json"),
+              JSON,
+              json(Collections.singletonMap("ticket", ticket))),
+        handle(Ticket.class, "ticket"),
+        idempotencyKey);
+  }
+
+  public IdempotentResult<Ticket> createTicketIdempotent(Ticket ticket, String idempotencyKey) {
+    return complete(createTicketIdempotentAsync(ticket, idempotencyKey));
   }
 
   public JobStatus createTickets(Ticket... tickets) {
@@ -3501,13 +3509,15 @@ public class Zendesk implements Closeable {
     return client.executeRequest(request, handler);
   }
 
-  private <T extends IdempotentEntity> ListenableFuture<T> submit(
-      Request request,
+  private <T> ListenableFuture<IdempotentResult<T>> submitIdempotent(
+      RequestBuilder builder,
       AsyncCompletionHandler<T> handler,
-      IdempotencyState idempotencyState) {
-    return submit(
-        IdempotencyUtil.addIdempotencyState(request, idempotencyState),
-        IdempotencyUtil.wrapHandler(handler, idempotencyState));
+      String idempotencyKey) {
+    Request request = IdempotencyUtil.addIdempotencyHeader(builder, idempotencyKey).build();
+    AsyncCompletionHandler<IdempotentResult<T>> idempotentHandler =
+        IdempotencyUtil.wrapHandler(handler);
+
+    return submit(request, idempotentHandler);
   }
 
   private abstract static class ZendeskAsyncCompletionHandler<T> extends AsyncCompletionHandler<T> {
@@ -3530,10 +3540,7 @@ public class Zendesk implements Closeable {
   }
 
   private Request req(String method, Uri template, String contentType, byte[] body) {
-    RequestBuilder builder = reqBuilder(method, template.toString());
-    builder.addHeader("Content-type", contentType);
-    builder.setBody(body);
-    return builder.build();
+    return reqBuilder(method, template, contentType, body).build();
   }
 
   private RequestBuilder reqBuilder(String method, String url) {
@@ -3547,17 +3554,19 @@ public class Zendesk implements Closeable {
     return builder.setUrl(url);
   }
 
+  private RequestBuilder reqBuilder(String method, Uri url, String contentType, byte[] body) {
+    return reqBuilder(method, url.toString())
+        .addHeader("Content-type", contentType)
+        .setBody(body);
+  }
+
   protected ZendeskAsyncCompletionHandler<Void> handleStatus() {
     return new ZendeskAsyncCompletionHandler<Void>() {
       @Override
       public Void onCompleted(Response response) throws Exception {
         logResponse(response);
-        if (isStatus2xx(response)) {
-          return null;
-        } else if (isRateLimitResponse(response)) {
-          throw new ZendeskResponseRateLimitException(response);
-        }
-        throw new ZendeskResponseException(response);
+        checkStatusCode(response);
+        return null;
       }
     };
   }
@@ -3573,15 +3582,10 @@ public class Zendesk implements Closeable {
       @Override
       public T onCompleted(Response response) throws Exception {
         logResponse(response);
-        if (isStatus2xx(response)) {
+        if (checkStatusCode(response, true)) {
           return reader.readValue(response.getResponseBodyAsStream());
-        } else if (isRateLimitResponse(response)) {
-          throw new ZendeskResponseRateLimitException(response);
         }
-        if (response.getStatusCode() == 404) {
-          return null;
-        }
-        throw new ZendeskResponseException(response);
+        return null;
       }
     };
   }
@@ -3600,7 +3604,8 @@ public class Zendesk implements Closeable {
     @Override
     public T onCompleted(Response response) throws Exception {
       logResponse(response);
-      if (isStatus2xx(response)) {
+
+      if (checkStatusCode(response, true)) {
         if (typeParams.length > 0) {
           JavaType type = mapper.getTypeFactory().constructParametricType(clazz, typeParams);
           return mapper.convertValue(
@@ -3610,19 +3615,7 @@ public class Zendesk implements Closeable {
             mapper.readTree(response.getResponseBodyAsStream()).get(name), clazz);
       }
 
-      if (isRateLimitResponse(response)) {
-        throw new ZendeskResponseRateLimitException(response);
-      }
-
-      if (isIdempotencyConflict(response)) {
-        throw new ZendeskResponseIdempotencyConflictException(response);
-      }
-
-      if (response.getStatusCode() == 404) {
-        return null;
-      }
-
-      throw new ZendeskResponseException(response);
+      return null;
     }
   }
 
@@ -3700,18 +3693,15 @@ public class Zendesk implements Closeable {
     @Override
     public List<T> onCompleted(Response response) throws Exception {
       logResponse(response);
-      if (isStatus2xx(response)) {
-        JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
-        setPagedProperties(responseNode, clazz);
-        List<T> values = new ArrayList<>();
-        for (JsonNode node : responseNode.get(name)) {
-          values.add(mapper.convertValue(node, clazz));
-        }
-        return values;
-      } else if (isRateLimitResponse(response)) {
-        throw new ZendeskResponseRateLimitException(response);
+      checkStatusCode(response);
+
+      JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
+      setPagedProperties(responseNode, clazz);
+      List<T> values = new ArrayList<>();
+      for (JsonNode node : responseNode.get(name)) {
+        values.add(mapper.convertValue(node, clazz));
       }
-      throw new ZendeskResponseException(response);
+      return values;
     }
   }
 
@@ -3787,22 +3777,19 @@ public class Zendesk implements Closeable {
       @Override
       public List<SearchResultEntity> onCompleted(Response response) throws Exception {
         logResponse(response);
-        if (isStatus2xx(response)) {
-          JsonNode responseNode = mapper.readTree(response.getResponseBodyAsStream()).get(name);
-          setPagedProperties(responseNode, null);
-          List<SearchResultEntity> values = new ArrayList<>();
-          for (JsonNode node : responseNode) {
-            Class<? extends SearchResultEntity> clazz =
-                searchResultTypes.get(node.get("result_type").asText());
-            if (clazz != null) {
-              values.add(mapper.convertValue(node, clazz));
-            }
+        checkStatusCode(response);
+
+        JsonNode responseNode = mapper.readTree(response.getResponseBodyAsStream()).get(name);
+        setPagedProperties(responseNode, null);
+        List<SearchResultEntity> values = new ArrayList<>();
+        for (JsonNode node : responseNode) {
+          Class<? extends SearchResultEntity> clazz =
+              searchResultTypes.get(node.get("result_type").asText());
+          if (clazz != null) {
+            values.add(mapper.convertValue(node, clazz));
           }
-          return values;
-        } else if (isRateLimitResponse(response)) {
-          throw new ZendeskResponseRateLimitException(response);
         }
-        throw new ZendeskResponseException(response);
+        return values;
       }
     };
   }
@@ -3812,21 +3799,18 @@ public class Zendesk implements Closeable {
       @Override
       public List<Target> onCompleted(Response response) throws Exception {
         logResponse(response);
-        if (isStatus2xx(response)) {
-          JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
-          setPagedProperties(responseNode, null);
-          List<Target> values = new ArrayList<>();
-          for (JsonNode node : responseNode.get(name)) {
-            Class<? extends Target> clazz = targetTypes.get(node.get("type").asText());
-            if (clazz != null) {
-              values.add(mapper.convertValue(node, clazz));
-            }
+        checkStatusCode(response);
+
+        JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
+        setPagedProperties(responseNode, null);
+        List<Target> values = new ArrayList<>();
+        for (JsonNode node : responseNode.get(name)) {
+          Class<? extends Target> clazz = targetTypes.get(node.get("type").asText());
+          if (clazz != null) {
+            values.add(mapper.convertValue(node, clazz));
           }
-          return values;
-        } else if (isRateLimitResponse(response)) {
-          throw new ZendeskResponseRateLimitException(response);
         }
-        throw new ZendeskResponseException(response);
+        return values;
       }
     };
   }
@@ -3837,17 +3821,14 @@ public class Zendesk implements Closeable {
       @Override
       public List<ArticleAttachments> onCompleted(Response response) throws Exception {
         logResponse(response);
-        if (isStatus2xx(response)) {
-          JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
-          List<ArticleAttachments> values = new ArrayList<>();
-          for (JsonNode node : responseNode.get(name)) {
-            values.add(mapper.convertValue(node, ArticleAttachments.class));
-          }
-          return values;
-        } else if (isRateLimitResponse(response)) {
-          throw new ZendeskResponseRateLimitException(response);
+        checkStatusCode(response);
+
+        JsonNode responseNode = mapper.readTree(response.getResponseBodyAsBytes());
+        List<ArticleAttachments> values = new ArrayList<>();
+        for (JsonNode node : responseNode.get(name)) {
+          values.add(mapper.convertValue(node, ArticleAttachments.class));
         }
-        throw new ZendeskResponseException(response);
+        return values;
       }
     };
   }
@@ -3914,7 +3895,7 @@ public class Zendesk implements Closeable {
     return new FixedUri(url + template);
   }
 
-  private void logResponse(Response response) throws IOException {
+  private void logResponse(Response response) {
     if (logger.isDebugEnabled()) {
       logger.debug(
           "Response HTTP/{} {}\n{}",
@@ -3941,22 +3922,38 @@ public class Zendesk implements Closeable {
     return TimeUnit.MILLISECONDS.toSeconds(millis);
   }
 
-  private boolean isStatus2xx(Response response) {
-    return response.getStatusCode() / 100 == 2;
-  }
+  // When `notFoundMeansNull == true`, may return `false` to indicate a 404 response.
+  private boolean checkStatusCode(Response response, boolean notFoundMeansNull) {
+    int statusCode = response.getStatusCode();
 
-  private boolean isRateLimitResponse(Response response) {
-    return response.getStatusCode() == 429;
-  }
+    if (200 <= statusCode && statusCode < 300) {
+      return true;
+    }
 
-  private boolean isIdempotencyConflict(Response response) throws IOException {
-    if (response.getStatusCode() != 400) {
+    if (notFoundMeansNull && statusCode == 404) {
       return false;
     }
 
+    if (statusCode == 429) {
+      throw new ZendeskResponseRateLimitException(response);
+    }
+
+    if (isIdempotencyConflict(response)) {
+      throw new ZendeskResponseIdempotencyConflictException(response);
+    }
+
+    // Covers status codes 1xx and 3xx, we assume that they are handled internally
+    // by the HTTP client.
+    throw new ZendeskResponseException(response);
+  }
+
+  private void checkStatusCode(Response response) {
+    checkStatusCode(response, false); // always returns `true`
+  }
+
+  private boolean isIdempotencyConflict(Response response) {
     try {
-      Map<?, ?> body = mapper.readValue(response.getResponseBody(), Map.class);
-      return IdempotencyUtil.IDEMPOTENCY_ERROR_NAME.equals(body.get("error"));
+      return IdempotencyUtil.isIdempotencyConflict(response, mapper);
     } catch (JsonProcessingException e) {
       ZendeskResponseException exception = new ZendeskResponseException(response);
       exception.addSuppressed(e);

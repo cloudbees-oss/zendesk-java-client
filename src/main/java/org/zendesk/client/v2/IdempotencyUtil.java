@@ -1,12 +1,12 @@
 package org.zendesk.client.v2;
 
-import java.util.Optional;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.asynchttpclient.AsyncCompletionHandler;
-import org.asynchttpclient.Request;
+import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;
-import org.zendesk.client.v2.model.IdempotencyState;
-import org.zendesk.client.v2.model.IdempotencyState.Status;
-import org.zendesk.client.v2.model.IdempotentEntity;
+import org.zendesk.client.v2.model.IdempotentResult;
 
 /**
  * Utility class for handling Zendesk API idempotency keys.
@@ -27,58 +27,20 @@ public class IdempotencyUtil {
   static final String IDEMPOTENCY_LOOKUP_MISS = "miss";
   static final String IDEMPOTENCY_ERROR_NAME = "IdempotentRequestError";
 
-  /**
-   * Adds an idempotency key header to the request if the state is present and pending.
-   *
-   * @param request the HTTP request to modify
-   * @param state the idempotency state, or null if idempotency is not being used
-   * @return a new request with the idempotency key header added, or the original request if state
-   *     is null
-   * @throws IllegalArgumentException if the state is not in PENDING status
-   */
-  public static Request addIdempotencyState(Request request, IdempotencyState state) {
-    if (state == null) {
-      return request;
-    }
-
-    if (state.getStatus() != Status.PENDING) {
-      throw new IllegalArgumentException("Idempotency state must be PENDING to add to a request");
-    }
-
+  public static RequestBuilder addIdempotencyHeader(RequestBuilder builder, String idempotencyKey) {
     // https://developer.zendesk.com/api-reference/ticketing/introduction/#idempotency
-    return request.toBuilder()
-        .setHeader(IDEMPOTENCY_KEY_HEADER, state.getIdempotencyKey())
-        .build();
+    return builder.setHeader(IDEMPOTENCY_KEY_HEADER, idempotencyKey);
   }
 
-  /**
-   * Wraps an async completion handler to process idempotency response headers.
-   *
-   * <p>The wrapped handler will automatically update the entity's idempotency fields based on the
-   * response headers returned by the Zendesk API. If the {@code x-idempotency-lookup} header
-   * indicates a "hit", the entity will be marked as previously created. If "miss", it will be
-   * marked as newly created.
-   *
-   * @param <T> the entity type that implements IdempotentEntity
-   * @param handler the original async completion handler
-   * @param idempotencyState the idempotency state, or null if idempotency is not being used
-   * @return a wrapped handler that processes idempotency headers, or the original handler if state
-   *     is null
-   */
-  public static <T extends IdempotentEntity> AsyncCompletionHandler<T> wrapHandler(
-      AsyncCompletionHandler<T> handler,
-      IdempotencyState idempotencyState) {
-    if (idempotencyState == null) {
-      return handler;
-    }
-
+  public static <T> AsyncCompletionHandler<IdempotentResult<T>> wrapHandler(
+      AsyncCompletionHandler<T> handler) {
     return new AsyncCompletionHandler<>() {
       @Override
-      public T onCompleted(Response response) throws Exception {
+      public IdempotentResult<T> onCompleted(Response response) throws Exception {
         T entity = handler.onCompleted(response);
-        transitionIdempotencyState(idempotencyState, response)
-            .ifPresent(newState -> newState.apply(entity));
-        return entity;
+        boolean duplicateRequest = isDuplicateResponse(response);
+
+        return new IdempotentResult<>(entity, duplicateRequest);
       }
 
       @Override
@@ -88,26 +50,36 @@ public class IdempotencyUtil {
     };
   }
 
-  private static Optional<IdempotencyState> transitionIdempotencyState(
-      IdempotencyState state,
-      Response response) {
-    if (state == null) {
-      return Optional.empty();
+  public static boolean isIdempotencyConflict(
+      Response response,
+      ObjectMapper mapper) throws JsonProcessingException {
+    if (response.getStatusCode() != 400) {
+      return false;
     }
 
+    // Note: Jackson's own docs are a bit outdated in that `readTree` returns
+    // `MissingNode.getInstance()` and not `null` when given an essentially empty string.
+    JsonNode error = mapper.readTree(response.getResponseBody()).path("error");
+    return IDEMPOTENCY_ERROR_NAME.equals(error.textValue());
+  }
+
+  private static boolean isDuplicateResponse(Response response) {
     // https://developer.zendesk.com/api-reference/ticketing/introduction/#idempotency
     String idempotencyLookup = response.getHeader(IDEMPOTENCY_LOOKUP_HEADER);
     if (idempotencyLookup == null) {
-      return Optional.empty();
+      idempotencyLookup = "<absent>";
     }
 
     switch (idempotencyLookup) {
       case IDEMPOTENCY_LOOKUP_HIT:
-        return Optional.of(state.toPreviouslyCreated());
+        return true;
       case IDEMPOTENCY_LOOKUP_MISS:
-        return Optional.of(state.toCreated());
+        return false;
       default:
-        return Optional.empty();
+        throw new IllegalArgumentException(
+            String.format(
+                "Unexpected value of the idempotency lookup header: %s",
+                idempotencyLookup));
     }
   }
 
