@@ -16,9 +16,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.asynchttpclient.ListenableFuture;
 import org.junit.After;
 import org.junit.Before;
@@ -75,12 +73,9 @@ public class CreateTicketIdempotentTest {
     assertThat(result.isDuplicateRequest()).isFalse();
     assertThat(result.get())
         .satisfies(
-            new Consumer<>() {
-              @Override
-              public void accept(Ticket ticket) {
-                assertThat(ticket).isNotNull();
-                assertThat(ticket.getId()).isEqualTo(TICKET_ID);
-              }
+            ticket -> {
+              assertThat(ticket).isNotNull();
+              assertThat(ticket.getId()).isEqualTo(TICKET_ID);
             });
   }
 
@@ -93,25 +88,16 @@ public class CreateTicketIdempotentTest {
     assertThat(result.isDuplicateRequest()).isTrue();
     assertThat(result.get())
         .satisfies(
-            new Consumer<>() {
-              @Override
-              public void accept(Ticket ticket) {
-                assertThat(ticket).isNotNull();
-                assertThat(ticket.getId()).isEqualTo(TICKET_ID);
-              }
+            ticket -> {
+              assertThat(ticket).isNotNull();
+              assertThat(ticket.getId()).isEqualTo(TICKET_ID);
             });
   }
 
   @Test
   public void idempotencyLookupInvalid() throws JsonProcessingException {
     stubPostTicket(createExpectedResponse("InvalidValue"));
-    assertThatThrownBy(
-            new ThrowingCallable() {
-              @Override
-              public void call() {
-                client.createTicketIdempotent(createTicket(), TICKET_KEY);
-              }
-            })
+    assertThatThrownBy(() -> client.createTicketIdempotent(createTicket(), TICKET_KEY))
         .isExactlyInstanceOf(ZendeskException.class);
   }
 
@@ -119,13 +105,7 @@ public class CreateTicketIdempotentTest {
   public void idempotencyLookupAbsent() throws JsonProcessingException {
     stubPostTicket(createExpectedResponse(null));
 
-    assertThatThrownBy(
-            new ThrowingCallable() {
-              @Override
-              public void call() {
-                client.createTicketIdempotent(createTicket(), TICKET_KEY);
-              }
-            })
+    assertThatThrownBy(() -> client.createTicketIdempotent(createTicket(), TICKET_KEY))
         .isExactlyInstanceOf(ZendeskException.class);
   }
 
@@ -138,13 +118,7 @@ public class CreateTicketIdempotentTest {
                 objectMapper.writeValueAsString(
                     Collections.singletonMap("error", IdempotencyUtil.IDEMPOTENCY_ERROR_NAME))));
 
-    assertThatThrownBy(
-            new ThrowingCallable() {
-              @Override
-              public void call() {
-                client.createTicketIdempotent(createTicket(), TICKET_KEY);
-              }
-            })
+    assertThatThrownBy(() -> client.createTicketIdempotent(createTicket(), TICKET_KEY))
         .isExactlyInstanceOf(ZendeskResponseIdempotencyConflictException.class);
   }
 

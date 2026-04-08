@@ -4,7 +4,22 @@ This document provides guidance for AI agents and developers working on this pro
 
 ## Java Version Requirements
 
-This project targets **Java 11** (as specified in `pom.xml` with `maven.compiler.source` and `maven.compiler.target` set to 11).
+This project **compiles with Java 11** (as specified in `pom.xml` with `maven.compiler.source` and `maven.compiler.target` set to 11) but **must maintain Java 8 API compatibility**.
+
+### CRITICAL: Java 8 API Compatibility
+
+**The project enforces Java 8 API compatibility via animal-sniffer, even though it compiles with Java 11.**
+
+This means:
+- ✅ **Allowed:** Java 8 language features (lambdas, method references, streams, Optional, etc.)
+- ✅ **Allowed:** Java 11 compiler and build tools
+- ❌ **NOT Allowed:** APIs added in Java 9+ (e.g., `Objects.requireNonNullElse()`, `List.of()`, `Map.of()`, `String.isBlank()`, etc.)
+
+When modernizing code or adding features:
+1. Use Java 8 language syntax features freely (lambdas, streams, etc.)
+2. Only use APIs available in Java 8 (check the Javadoc version!)
+3. The animal-sniffer plugin will fail the build if you use Java 9+ APIs
+4. If in doubt, verify API availability at https://docs.oracle.com/javase/8/docs/api/
 
 ### Running Maven Commands
 
@@ -62,4 +77,8 @@ Key dependencies include:
 
 The project uses Maven Enforcer Plugin to ensure:
 - Bytecode version matches Java 11
-- API compatibility with Java 8 (via animal-sniffer)
+- **API compatibility with Java 8 (via animal-sniffer)** - This is enforced at build time and will fail if Java 9+ APIs are used
+
+### Why Java 8 API Compatibility?
+
+This library is designed to be usable by applications running on Java 8 JVMs, even though it's built with Java 11 tooling. This is a common pattern for libraries that want maximum compatibility while benefiting from modern build tools.
