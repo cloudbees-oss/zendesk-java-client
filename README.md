@@ -39,8 +39,18 @@ Idempotency
 The Zendesk API supports [idempotency keys](https://developer.zendesk.com/api-reference/ticketing/introduction/#idempotency)
 to safely retry operations without creating duplicate resources. This client supports idempotent
 ticket creation via `createTicketIdempotent` and `createTicketIdempotentAsync`.
+Either method may throw a `ZendeskResponseIdempotencyConflictException` if the same idempotency key
+is used in two requests with non-identical payloads.
 
 ### Usage Example
+
+The following example illustrates a usage pattern for publishing updates to a Zendesk ticket
+that tracks some application specific issue. It ensures that only one ticket is created per
+issue, even if multiple updates are published concurrently for the same issue, or if the update is
+retried due to a transient failure after the ticket has already been created.
+
+Note that it's intentionally slightly more complicated than it would probably be in real life
+so that we can demonstrate non-trivial handling of a `ZendeskResponseIdempotencyConflictException`.
 
 ```java
 class FooIssueService {
@@ -50,30 +60,42 @@ class FooIssueService {
 
     // ...
 
-    public void postIssueUpdate(FooIssue issue, String update) {
-        Ticket ticket = new Ticket(issue.getRequesterId(), issue.getTitle(), new Comment(update));
-
-        // Must map 1-to-1 with the issue, so that retries for the same issue use the same key
-        String idempotencyKey = String.format("issue-%s", issue.getId());
+    public void postIssueUpdate(FooIssue issue, String update) {     
+        // Fast path pre-check, would be unsafe without idempotency b/c TOCTOU.
+        Optional<Long> optTicketId = issueRepository.getTicketId(issue.getId());
+        if (optTicketId.isPresent()) {
+            postIssueComment(optTicketId.get(), update);
+            return;
+        }
+        
+        // Must map the issue 1-to-1, so that retries for the same issue use the same key.
+        String idempotencyKey = String.format("foo-issue-%s", issue.getId());
         
         try {
-            // Note: in production code, we should probably also check for an existing ticket before
-            // trying to create a new one, in addition to the fallback.
-            result = zendesk.createTicketIdempotent(ticket, idempotencyKey);
-            ticket = result.get();
+            issueRepository.reserveTicketId(issue.getId());
+            IdempotentResult<Ticket> result = zendesk.createTicketIdempotent(
+                    new Ticket(issue.getRequesterId(), issue.getTitle(), new Comment(update)),
+                    idempotencyKey);
+            
             if (!result.isDuplicateRequest()) {
+                Ticket ticket = result.get();
                 issueRepository.saveTicketId(issue.getId(), ticket.getId());
                 logger.info("Created new ticket (id = {})", ticket.getId());
             }
         } catch (ZendeskResponseIdempotencyConflictException e) {
-            // Already created by a concurrent update, so just add a comment to the existing ticket
-            long existingTicketId = issueRepository.getTicketId(issue.getId());
-            Comment comment = zendesk.createComment(existingTicketId, new Comment(update));
-            logger.info(
-                "Added comment (id = {}) to existing ticket (id = {})",
-                comment.getId(),
-                existingTicketId);
+            // We assume that `getTicketId` will retry internally if the reservation is still
+            // fresh and the ticket id has not yet been saved in order to limit potential
+            // race conditions.
+            long existingTicketId = issueRepository.getTicketId(issue.getId()).orElseThrow(
+                () -> new IllegalStateException(
+                    String.format("Existing ticket not found for issue %s", issue.getId()), e));
+            postIssueComment(existingTicketId, update);
         }
+    }
+    
+    private void postIssueComment(long ticketId, String update) {
+        Comment comment = zendesk.createComment(ticketId, new Comment(update));
+        logger.info("Added comment (id = {}) to ticket (id = {})", comment.getId(), ticketId);
     }
 }
 ```
