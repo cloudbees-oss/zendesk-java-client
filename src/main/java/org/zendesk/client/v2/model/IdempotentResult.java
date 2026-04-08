@@ -44,10 +44,10 @@ public class IdempotentResult<T> {
   /**
    * Returns whether this request was identified as a duplicate.
    *
-   * <p>Returns {@code true} if the Zendesk API returned a cached response (indicated by the
-   * {@code x-idempotency-lookup: hit} header), meaning this idempotency key was previously used
-   * and no new resource was created. Returns {@code false} if this was a new request that created
-   * a new resource (indicated by the {@code x-idempotency-lookup: miss} header).
+   * <p>Returns {@code true} if the Zendesk API returned a cached response (indicated by the {@code
+   * x-idempotency-lookup: hit} header), meaning this idempotency key was previously used and no new
+   * resource was created. Returns {@code false} if this was a new request that created a new
+   * resource (indicated by the {@code x-idempotency-lookup: miss} header).
    *
    * <p><b>Note:</b> If the same idempotency key is reused with different request parameters, the
    * Zendesk API will return a 400 error and a {@link

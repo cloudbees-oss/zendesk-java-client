@@ -5,13 +5,13 @@ import org.asynchttpclient.Response;
 /**
  * Exception thrown when the Zendesk API returns an idempotency conflict error.
  *
- * <p>This exception is thrown when a request is retried with the same idempotency key but
- * different request parameters. The API returns a 400 status code with
- * {@code error: "IdempotentRequestError"} to indicate that the request parameters don't match the
- * original request associated with the idempotency key.
+ * <p>This exception is thrown when a request is retried with the same idempotency key but different
+ * request parameters. The API returns a 400 status code with {@code error:
+ * "IdempotentRequestError"} to indicate that the request parameters don't match the original
+ * request associated with the idempotency key.
  *
- * <p>To resolve this error, either use a new idempotency key or ensure the request parameters
- * match the original request.
+ * <p>To resolve this error, either use a new idempotency key or ensure the request parameters match
+ * the original request.
  *
  * @see <a href="https://developer.zendesk.com/api-reference/ticketing/introduction/#idempotency">
  *     Zendesk API Idempotency</a>

@@ -50,9 +50,8 @@ public class IdempotencyUtil {
     };
   }
 
-  public static boolean isIdempotencyConflict(
-      Response response,
-      ObjectMapper mapper) throws JsonProcessingException {
+  public static boolean isIdempotencyConflict(Response response, ObjectMapper mapper)
+      throws JsonProcessingException {
     if (response.getStatusCode() != 400) {
       return false;
     }
@@ -78,8 +77,7 @@ public class IdempotencyUtil {
       default:
         throw new IllegalArgumentException(
             String.format(
-                "Unexpected value of the idempotency lookup header: %s",
-                idempotencyLookup));
+                "Unexpected value of the idempotency lookup header: %s", idempotencyLookup));
     }
   }
 

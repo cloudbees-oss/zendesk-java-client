@@ -43,7 +43,6 @@ import org.asynchttpclient.request.body.multipart.StringPart;
 import org.jetbrains.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zendesk.client.v2.model.IdempotentResult;
 import org.zendesk.client.v2.model.AgentRole;
 import org.zendesk.client.v2.model.Attachment;
 import org.zendesk.client.v2.model.Audit;
@@ -57,6 +56,7 @@ import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Forum;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.GroupMembership;
+import org.zendesk.client.v2.model.IdempotentResult;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.JiraLink;
 import org.zendesk.client.v2.model.JobStatus;
@@ -442,13 +442,11 @@ public class Zendesk implements Closeable {
     return complete(createTicketAsync(ticket));
   }
 
-  public ListenableFuture<IdempotentResult<Ticket>> createTicketIdempotentAsync(Ticket ticket, String idempotencyKey) {
+  public ListenableFuture<IdempotentResult<Ticket>> createTicketIdempotentAsync(
+      Ticket ticket, String idempotencyKey) {
     return submitIdempotent(
         reqBuilder(
-              "POST",
-              cnst("/tickets.json"),
-              JSON,
-              json(Collections.singletonMap("ticket", ticket))),
+            "POST", cnst("/tickets.json"), JSON, json(Collections.singletonMap("ticket", ticket))),
         handle(Ticket.class, "ticket"),
         idempotencyKey);
   }
@@ -3510,9 +3508,7 @@ public class Zendesk implements Closeable {
   }
 
   private <T> ListenableFuture<IdempotentResult<T>> submitIdempotent(
-      RequestBuilder builder,
-      AsyncCompletionHandler<T> handler,
-      String idempotencyKey) {
+      RequestBuilder builder, AsyncCompletionHandler<T> handler, String idempotencyKey) {
     Request request = IdempotencyUtil.addIdempotencyHeader(builder, idempotencyKey).build();
     AsyncCompletionHandler<IdempotentResult<T>> idempotentHandler =
         IdempotencyUtil.wrapHandler(handler);
@@ -3555,9 +3551,7 @@ public class Zendesk implements Closeable {
   }
 
   private RequestBuilder reqBuilder(String method, Uri url, String contentType, byte[] body) {
-    return reqBuilder(method, url.toString())
-        .addHeader("Content-type", contentType)
-        .setBody(body);
+    return reqBuilder(method, url.toString()).addHeader("Content-type", contentType).setBody(body);
   }
 
   protected ZendeskAsyncCompletionHandler<Void> handleStatus() {

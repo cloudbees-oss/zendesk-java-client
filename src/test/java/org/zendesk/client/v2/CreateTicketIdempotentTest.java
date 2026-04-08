@@ -31,8 +31,8 @@ import org.zendesk.client.v2.model.Status;
 import org.zendesk.client.v2.model.Ticket;
 
 /**
- * Integration tests for ticket creation with idempotency key support.
- * Uses WireMock to simulate Zendesk API responses.
+ * Integration tests for ticket creation with idempotency key support. Uses WireMock to simulate
+ * Zendesk API responses.
  */
 public class CreateTicketIdempotentTest {
 
@@ -51,10 +51,11 @@ public class CreateTicketIdempotentTest {
 
   @Before
   public void setUp() {
-    client = new Zendesk.Builder("http://localhost:" + zendeskApiMock.port())
-        .setUsername("zana@example.com")
-        .setToken("still-sane-exile")
-        .build();
+    client =
+        new Zendesk.Builder("http://localhost:" + zendeskApiMock.port())
+            .setUsername("zana@example.com")
+            .setToken("still-sane-exile")
+            .build();
   }
 
   @After
@@ -72,13 +73,15 @@ public class CreateTicketIdempotentTest {
 
     assertThat(result).isNotNull();
     assertThat(result.isDuplicateRequest()).isFalse();
-    assertThat(result.get()).satisfies(new Consumer<>() {
-      @Override
-      public void accept(Ticket ticket) {
-        assertThat(ticket).isNotNull();
-        assertThat(ticket.getId()).isEqualTo(TICKET_ID);
-      }
-    });
+    assertThat(result.get())
+        .satisfies(
+            new Consumer<>() {
+              @Override
+              public void accept(Ticket ticket) {
+                assertThat(ticket).isNotNull();
+                assertThat(ticket.getId()).isEqualTo(TICKET_ID);
+              }
+            });
   }
 
   @Test
@@ -88,61 +91,68 @@ public class CreateTicketIdempotentTest {
 
     assertThat(result).isNotNull();
     assertThat(result.isDuplicateRequest()).isTrue();
-    assertThat(result.get()).satisfies(new Consumer<>() {
-      @Override
-      public void accept(Ticket ticket) {
-        assertThat(ticket).isNotNull();
-        assertThat(ticket.getId()).isEqualTo(TICKET_ID);
-      }
-    });
+    assertThat(result.get())
+        .satisfies(
+            new Consumer<>() {
+              @Override
+              public void accept(Ticket ticket) {
+                assertThat(ticket).isNotNull();
+                assertThat(ticket.getId()).isEqualTo(TICKET_ID);
+              }
+            });
   }
 
   @Test
   public void idempotencyLookupInvalid() throws JsonProcessingException {
     stubPostTicket(createExpectedResponse("InvalidValue"));
-    assertThatThrownBy(new ThrowingCallable() {
-      @Override
-      public void call() {
-        client.createTicketIdempotent(createTicket(), TICKET_KEY);
-      }
-    }).isExactlyInstanceOf(ZendeskException.class);
+    assertThatThrownBy(
+            new ThrowingCallable() {
+              @Override
+              public void call() {
+                client.createTicketIdempotent(createTicket(), TICKET_KEY);
+              }
+            })
+        .isExactlyInstanceOf(ZendeskException.class);
   }
 
   @Test
   public void idempotencyLookupAbsent() throws JsonProcessingException {
     stubPostTicket(createExpectedResponse(null));
 
-    assertThatThrownBy(new ThrowingCallable() {
-      @Override
-      public void call() {
-        client.createTicketIdempotent(createTicket(), TICKET_KEY);
-      }
-    }).isExactlyInstanceOf(ZendeskException.class);
+    assertThatThrownBy(
+            new ThrowingCallable() {
+              @Override
+              public void call() {
+                client.createTicketIdempotent(createTicket(), TICKET_KEY);
+              }
+            })
+        .isExactlyInstanceOf(ZendeskException.class);
   }
 
   @Test
   public void idempotencyConflict() throws JsonProcessingException {
-    stubPostTicket(aResponse()
-        .withStatus(400)
-        .withBody(
-            objectMapper.writeValueAsString(
-                Collections.singletonMap("error", IdempotencyUtil.IDEMPOTENCY_ERROR_NAME))));
+    stubPostTicket(
+        aResponse()
+            .withStatus(400)
+            .withBody(
+                objectMapper.writeValueAsString(
+                    Collections.singletonMap("error", IdempotencyUtil.IDEMPOTENCY_ERROR_NAME))));
 
-    assertThatThrownBy(new ThrowingCallable() {
-      @Override
-      public void call() {
-        client.createTicketIdempotent(createTicket(), TICKET_KEY);
-      }
-    }).isExactlyInstanceOf(ZendeskResponseIdempotencyConflictException.class);
+    assertThatThrownBy(
+            new ThrowingCallable() {
+              @Override
+              public void call() {
+                client.createTicketIdempotent(createTicket(), TICKET_KEY);
+              }
+            })
+        .isExactlyInstanceOf(ZendeskResponseIdempotencyConflictException.class);
   }
 
   @Test
   public void errorWithEmptyResponseBody() {
     // White-box testing a known edge case where an older Jackson version would throw
     // a `NullPointerException`.
-    stubPostTicket(aResponse()
-        .withStatus(400)
-        .withBody(""));
+    stubPostTicket(aResponse().withStatus(400).withBody(""));
 
     ListenableFuture<IdempotentResult<Ticket>> future =
         client.createTicketIdempotentAsync(createTicket(), TICKET_KEY);
@@ -169,12 +179,11 @@ public class CreateTicketIdempotentTest {
     ticket.setStatus(Status.OPEN);
     String ticketJson = objectMapper.writeValueAsString(Collections.singletonMap("ticket", ticket));
 
-    ResponseDefinitionBuilder response = aResponse()
-        .withStatus(201)
-        .withBody(ticketJson);
+    ResponseDefinitionBuilder response = aResponse().withStatus(201).withBody(ticketJson);
 
     if (idempotencyLookupValue != null) {
-        response = response.withHeader(IdempotencyUtil.IDEMPOTENCY_LOOKUP_HEADER, idempotencyLookupValue);
+      response =
+          response.withHeader(IdempotencyUtil.IDEMPOTENCY_LOOKUP_HEADER, idempotencyLookupValue);
     }
 
     return response;
