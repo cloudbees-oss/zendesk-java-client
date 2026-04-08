@@ -72,6 +72,7 @@ import org.zendesk.client.v2.model.DeletedTicket;
 import org.zendesk.client.v2.model.Field;
 import org.zendesk.client.v2.model.Group;
 import org.zendesk.client.v2.model.GroupMembership;
+import org.zendesk.client.v2.model.IdempotentResult;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.JobResult;
 import org.zendesk.client.v2.model.JobStatus;
@@ -676,6 +677,78 @@ public class RealSmokeTest {
     assertThat(ticket.getDescription(), is(t.getComment().getBody()));
     assertThat("Collaborators", ticket.getCollaboratorIds().size(), is(2));
     assertThat(instance.getTicket(ticket.getId()), nullValue());
+  }
+
+  @Test
+  public void createTicketIdempotentNewRequest() throws Exception {
+    createClientWithTokenOrPassword();
+
+    String idempotencyKey = UUID.randomUUID().toString();
+    Ticket t = newTestTicket();
+    IdempotentResult<Ticket> result = instance.createTicketIdempotent(t, idempotencyKey);
+
+    assertThat(result, notNullValue());
+    assertThat(result.isDuplicateRequest(), is(false));
+
+    Ticket ticket = result.get();
+    assertThat(ticket.getId(), notNullValue());
+
+    try {
+      Ticket t2 = instance.getTicket(ticket.getId());
+      assertThat(t2, notNullValue());
+      assertThat(t2.getId(), is(ticket.getId()));
+    } finally {
+      instance.deleteTicket(ticket.getId());
+    }
+  }
+
+  @Test
+  public void createTicketIdempotentDuplicateRequest() throws Exception {
+    createClientWithTokenOrPassword();
+
+    String idempotencyKey = UUID.randomUUID().toString();
+    Ticket t = newTestTicket();
+
+    IdempotentResult<Ticket> result1 = instance.createTicketIdempotent(t, idempotencyKey);
+    assertThat(result1, notNullValue());
+    assertThat(result1.isDuplicateRequest(), is(false));
+
+    Ticket ticket1 = result1.get();
+    assertThat(ticket1.getId(), notNullValue());
+
+    try {
+      IdempotentResult<Ticket> result2 = instance.createTicketIdempotent(t, idempotencyKey);
+      assertThat(result2, notNullValue());
+      assertThat(result2.isDuplicateRequest(), is(true));
+
+      Ticket ticket2 = result2.get();
+      assertThat(ticket2.getId(), is(ticket1.getId()));
+    } finally {
+      instance.deleteTicket(ticket1.getId());
+    }
+  }
+
+  @Test
+  public void createTicketIdempotentConflict() throws Exception {
+    createClientWithTokenOrPassword();
+
+    String idempotencyKey = UUID.randomUUID().toString();
+    Ticket t1 = newTestTicket();
+
+    IdempotentResult<Ticket> result1 = instance.createTicketIdempotent(t1, idempotencyKey);
+    assertThat(result1, notNullValue());
+
+    Ticket ticket1 = result1.get();
+    assertThat(ticket1.getId(), notNullValue());
+
+    try {
+      Ticket t2 = newTestTicket();
+      assertThrows(
+          ZendeskResponseIdempotencyConflictException.class,
+          () -> instance.createTicketIdempotent(t2, idempotencyKey));
+    } finally {
+      instance.deleteTicket(ticket1.getId());
+    }
   }
 
   // https://github.com/cloudbees/zendesk-java-client/issues/94
