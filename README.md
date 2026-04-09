@@ -79,7 +79,7 @@ class FooIssueService {
         
         try {
             IdempotentResult<Ticket> result = zendesk.createTicketIdempotent(
-                    toTicket(issue, update),
+                    toTicketAdvanced(issue, update),
                     toIdempotencyKey(issue));
             
             if (!result.isDuplicateRequest()) {
