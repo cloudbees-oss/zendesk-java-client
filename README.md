@@ -49,53 +49,75 @@ that tracks some application specific issue. It ensures that only one ticket is 
 issue, even if multiple updates are published concurrently for the same issue, or if the update is
 retried due to a transient failure after the ticket has already been created.
 
-Note that it's intentionally slightly more complicated than it would probably be in real life
-so that we can demonstrate non-trivial handling of a `ZendeskResponseIdempotencyConflictException`.
-
 ```java
 class FooIssueService {
+    
     private final Zendesk zendesk;
-    private final IssueRepository issueRepository;
     private final Logger logger = LoggerFactory.getLogger(FooIssueService.class);
-
-    // ...
-
-    public void postIssueUpdate(FooIssue issue, String update) {     
+    
+    // Simple use case: the ticket payload depends only on the issue itself
+    public void postIssueUpdateSimple(FooIssue issue, String update) {
+        IdempotentResult<Ticket> result = zendesk.createTicketIdempotent(
+                toTicketSimple(issue),
+                toIdempotencyKey(issue));
+        
+        if (!result.isDuplicateRequest()) {
+            logger.info("Created new ticket (id = {})", result.get().getId());
+        }
+        
+        postIssueComment(result.get().getId(), update);
+    }
+    
+    // Advanced use case: the ticket payload depends on the update
+    public void postIssueUpdateAdvanced(FooIssue issue, String update) {
         // Fast path pre-check, would be unsafe without idempotency b/c TOCTOU.
-        Optional<Long> optTicketId = issueRepository.getTicketId(issue.getId());
-        if (optTicketId.isPresent()) {
-            postIssueComment(optTicketId.get(), update);
+        Optional<Ticket> optTicket = findTicket(issue);
+        if (optTicket.isPresent()) {
+            postIssueComment(optTicket.get().getId(), update);
             return;
         }
         
-        // Must map the issue 1-to-1, so that retries for the same issue use the same key.
-        String idempotencyKey = String.format("foo-issue-%s", issue.getId());
-        
         try {
-            issueRepository.reserveTicketId(issue.getId());
             IdempotentResult<Ticket> result = zendesk.createTicketIdempotent(
-                    new Ticket(issue.getRequesterId(), issue.getTitle(), new Comment(update)),
-                    idempotencyKey);
+                    toTicket(issue, update),
+                    toIdempotencyKey(issue));
             
             if (!result.isDuplicateRequest()) {
-                Ticket ticket = result.get();
-                issueRepository.saveTicketId(issue.getId(), ticket.getId());
-                logger.info("Created new ticket (id = {})", ticket.getId());
+                logger.info("Created new ticket (id = {})", result.get().getId());
             }
         } catch (ZendeskResponseIdempotencyConflictException e) {
-            // We assume that `getTicketId` will retry internally if the reservation is still
-            // fresh and the ticket id has not yet been saved in order to limit potential
-            // race conditions.
-            long existingTicketId = issueRepository.getTicketId(issue.getId()).orElseThrow(
-                () -> new IllegalStateException(
-                    String.format("Existing ticket not found for issue %s", issue.getId()), e));
-            postIssueComment(existingTicketId, update);
+            Ticket ticket = findTicket(issue).orElseThrow(
+                    () -> new IllegalStateException(
+                            String.format("Ticket not found for issue %s", issue.getId()), e));
+            postIssueComment(ticket.getId(), update);
         }
+    }
+    
+    private static void toTicketSimple(FooIssue issue) {
+        return toTicketAdvanced(issue, "See comments for details");
+    }
+    
+    private static void toTicketAdvanced(FooIssue issue, String update) {
+        Ticket ticket = new Ticket(issue.getRequesterId(), issue.getTitle(), new Comment(update));
+        ticket.setExternalId(toIdempotencyKey(issue));
+        return ticket;
+    }
+    
+    private static String toIdempotencyKey(FooIssue issue) {
+        // Must map the issue 1-to-1, so that retries for the same issue use the same key.
+        return String.format("foo-issue-%s", issue.getId());
     }
     
     private void postIssueComment(long ticketId, String update) {
         Comment comment = zendesk.createComment(ticketId, new Comment(update));
         logger.info("Added comment (id = {}) to ticket (id = {})", comment.getId(), ticketId);
+    }
+    
+    private Optional<Ticket> findTicket(FooIssue issue) {
+        Iterator<Ticket> ticketsIt = zendesk.getTicketsByExternalId(issue.getId()).iterator();
+        return ticketsIt.hasNext()
+                ? Optional.of(ticketsIt.next())
+                : Optional.empty();
     }
 }
 ```
