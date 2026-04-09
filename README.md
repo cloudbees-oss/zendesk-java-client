@@ -93,11 +93,11 @@ class FooIssueService {
         }
     }
     
-    private static void toTicketSimple(FooIssue issue) {
+    private static Ticket toTicketSimple(FooIssue issue) {
         return toTicketAdvanced(issue, "See comments for details");
     }
     
-    private static void toTicketAdvanced(FooIssue issue, String update) {
+    private static Ticket toTicketAdvanced(FooIssue issue, String update) {
         Ticket ticket = new Ticket(issue.getRequesterId(), issue.getTitle(), new Comment(update));
         ticket.setExternalId(toIdempotencyKey(issue));
         return ticket;
