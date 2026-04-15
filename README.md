@@ -33,6 +33,95 @@ all records have been fetched, so e.g.
 will iterate through *all* tickets. Most likely you will want to implement your own cut-off process to stop iterating
 when you have got enough data.
 
+Idempotency
+-----------
+
+The Zendesk API supports [idempotency keys](https://developer.zendesk.com/api-reference/ticketing/introduction/#idempotency)
+to safely retry operations without creating duplicate resources. This client supports idempotent
+ticket creation via `createTicketIdempotent` and `createTicketIdempotentAsync`.
+Either method may throw a `ZendeskResponseIdempotencyConflictException` if the same idempotency key
+is used in two requests with non-identical payloads.
+
+### Usage Example
+
+The following example illustrates a usage pattern for publishing updates to a Zendesk ticket
+that tracks some application specific issue. It ensures that only one ticket is created per
+issue, even if multiple updates are published concurrently for the same issue, or if the update is
+retried due to a transient failure after the ticket has already been created.
+
+```java
+class FooIssueService {
+    
+    private final Zendesk zendesk;
+    private final Logger logger = LoggerFactory.getLogger(FooIssueService.class);
+    
+    // Simple use case: the ticket payload depends only on the issue itself
+    public void postIssueUpdateSimple(FooIssue issue, String update) {
+        IdempotentResult<Ticket> result = zendesk.createTicketIdempotent(
+                toTicketSimple(issue),
+                toIdempotencyKey(issue));
+        
+        if (!result.isDuplicateRequest()) {
+            logger.info("Created new ticket (id = {})", result.get().getId());
+        }
+        
+        postIssueComment(result.get().getId(), update);
+    }
+    
+    // Advanced use case: the ticket payload depends on the update
+    public void postIssueUpdateAdvanced(FooIssue issue, String update) {
+        // Fast path pre-check, would be unsafe without idempotency b/c TOCTOU.
+        Optional<Ticket> optTicket = findTicket(issue);
+        if (optTicket.isPresent()) {
+            postIssueComment(optTicket.get().getId(), update);
+            return;
+        }
+        
+        try {
+            IdempotentResult<Ticket> result = zendesk.createTicketIdempotent(
+                    toTicketAdvanced(issue, update),
+                    toIdempotencyKey(issue));
+            
+            if (!result.isDuplicateRequest()) {
+                logger.info("Created new ticket (id = {})", result.get().getId());
+            }
+        } catch (ZendeskResponseIdempotencyConflictException e) {
+            Ticket ticket = findTicket(issue).orElseThrow(
+                    () -> new IllegalStateException(
+                            String.format("Ticket not found for issue %s", issue.getId()), e));
+            postIssueComment(ticket.getId(), update);
+        }
+    }
+    
+    private static Ticket toTicketSimple(FooIssue issue) {
+        return toTicketAdvanced(issue, "See comments for details");
+    }
+    
+    private static Ticket toTicketAdvanced(FooIssue issue, String update) {
+        Ticket ticket = new Ticket(issue.getRequesterId(), issue.getTitle(), new Comment(update));
+        ticket.setExternalId(toIdempotencyKey(issue));
+        return ticket;
+    }
+    
+    private static String toIdempotencyKey(FooIssue issue) {
+        // Must map the issue 1-to-1, so that retries for the same issue use the same key.
+        return String.format("foo-issue-%s", issue.getId());
+    }
+    
+    private void postIssueComment(long ticketId, String update) {
+        Comment comment = zendesk.createComment(ticketId, new Comment(update));
+        logger.info("Added comment (id = {}) to ticket (id = {})", comment.getId(), ticketId);
+    }
+    
+    private Optional<Ticket> findTicket(FooIssue issue) {
+        Iterator<Ticket> ticketsIt = zendesk.getTicketsByExternalId(issue.getId()).iterator();
+        return ticketsIt.hasNext()
+                ? Optional.of(ticketsIt.next())
+                : Optional.empty();
+    }
+}
+```
+
 Community
 -------------
 

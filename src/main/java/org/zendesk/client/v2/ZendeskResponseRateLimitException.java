@@ -1,6 +1,5 @@
 package org.zendesk.client.v2;
 
-import java.io.IOException;
 import org.asynchttpclient.Response;
 
 public class ZendeskResponseRateLimitException extends ZendeskResponseException {
@@ -11,7 +10,7 @@ public class ZendeskResponseRateLimitException extends ZendeskResponseException 
 
   private Long retryAfter = DEFAULT_RETRY_AFTER;
 
-  public ZendeskResponseRateLimitException(Response resp) throws IOException {
+  public ZendeskResponseRateLimitException(Response resp) {
     super(resp);
     try {
       this.retryAfter = Long.valueOf(resp.getHeader(RETRY_AFTER_HEADER));

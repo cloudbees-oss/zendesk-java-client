@@ -1,6 +1,5 @@
 package org.zendesk.client.v2;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import org.asynchttpclient.Response;
 
@@ -13,7 +12,7 @@ public class ZendeskResponseException extends ZendeskException {
   private String statusText;
   private String body;
 
-  public ZendeskResponseException(Response resp) throws IOException {
+  public ZendeskResponseException(Response resp) {
     this(resp.getStatusCode(), resp.getStatusText(), resp.getResponseBody());
   }
 
