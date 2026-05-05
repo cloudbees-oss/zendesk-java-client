@@ -71,20 +71,20 @@ public class CommentTest {
 
   private static String createCommentJson(@Nullable String type) throws JsonProcessingException {
     // https://developer.zendesk.com/documentation/ticketing/managing-tickets/adding-voice-comments-to-tickets/
-    ObjectNode voiceData = MAPPER.createObjectNode()
-        .put("from", "+16617480240")
-        .put("to", "+16617480123")
-        .put("recording_url", COMMENT_VOICE_URL)
-        .put("started_at", "2019-04-16T09:14:57Z")
-        .put("call_duration", 42)
-        .put("answered_by_id", 28765)
-        .put("transcription_text", "The transcription of the call")
-        .put("location", "Topeka, Kansas");
+    ObjectNode voiceData =
+        MAPPER
+            .createObjectNode()
+            .put("from", "+16617480240")
+            .put("to", "+16617480123")
+            .put("recording_url", COMMENT_VOICE_URL)
+            .put("started_at", "2019-04-16T09:14:57Z")
+            .put("call_duration", 42)
+            .put("answered_by_id", 28765)
+            .put("transcription_text", "The transcription of the call")
+            .put("location", "Topeka, Kansas");
 
-    ObjectNode res = MAPPER.createObjectNode()
-        .put("id", COMMENT_ID)
-        .put("body", "Foo")
-        .set("data", voiceData);
+    ObjectNode res =
+        MAPPER.createObjectNode().put("id", COMMENT_ID).put("body", "Foo").set("data", voiceData);
 
     if (type != null) {
       res.put("type", type);
