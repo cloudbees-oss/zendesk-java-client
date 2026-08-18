@@ -155,6 +155,19 @@ public class RealSmokeTest {
     assumeThat("We have a token", config.getProperty("token"), not(isEmptyOrNullString()));
   }
 
+  public void assumeHaveOauthClientCredentials() {
+    assumeThat(
+        "We have an OAuth client id",
+        config.getProperty("oauth.client.id"),
+        not(isEmptyOrNullString()));
+    assumeThat(
+        "We have an OAuth client secret",
+        config.getProperty("oauth.client.secret"),
+        not(isEmptyOrNullString()));
+    assumeThat(
+        "We have an OAuth scope", config.getProperty("oauth.scope"), not(isEmptyOrNullString()));
+  }
+
   public void assumeHavePassword() {
     assumeThat("We have a username", config.getProperty("username"), not(isEmptyOrNullString()));
     assumeThat("We have a password", config.getProperty("password"), not(isEmptyOrNullString()));
@@ -174,6 +187,29 @@ public class RealSmokeTest {
       instance.close();
     }
     instance = null;
+  }
+
+  /**
+   * Enable by setting {@code oauth.client.id}, {@code oauth.client.secret} and {@code oauth.scope}
+   * (or the corresponding {@code ZENDESK_JAVA_CLIENT_TEST_OAUTH_*} environment variables). The
+   * scope must cover reading tickets, since this exercises the minted token against a real endpoint
+   * too: a scope that can mint but cannot read tickets fails on the API call, after {@code
+   * warmUp()} has already succeeded.
+   */
+  @Test
+  public void createClientWithOauthClientCredentials() throws Exception {
+    assumeHaveOauthClientCredentials();
+    instance =
+        new Zendesk.Builder(config.getProperty("url"))
+            .setOauthClientCredentials(
+                config.getProperty("oauth.client.id"),
+                config.getProperty("oauth.client.secret"),
+                config.getProperty("oauth.scope"))
+            .build();
+
+    instance.warmUp(); // forces credential validation before any API call
+
+    assertThat("A ticket count is returned", instance.getTicketsCount(), notNullValue());
   }
 
   @Test
