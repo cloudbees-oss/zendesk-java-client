@@ -4498,6 +4498,8 @@ public class Zendesk implements Closeable {
      * {@code *Async} methods. Call {@link Zendesk#warmUp()} at startup to keep the first request
      * off that path.
      *
+     * <p>All arguments must be non-null and nonblank, validated by {@link #build()}.
+     *
      * @param clientId the OAuth client's unique identifier
      * @param clientSecret the OAuth client's secret
      * @param scope space-separated scopes to request, for example {@code "tickets:read"}
@@ -4584,9 +4586,9 @@ public class Zendesk implements Closeable {
 
     public Zendesk build() {
       if (oauthClientCredentialsConfigured) {
-        Objects.requireNonNull(oauthClientId, "OAuth client id cannot be null");
-        Objects.requireNonNull(oauthClientSecret, "OAuth client secret cannot be null");
-        Objects.requireNonNull(oauthScope, "OAuth scope cannot be null");
+        requireNonBlank(oauthClientId, "OAuth client id");
+        requireNonBlank(oauthClientSecret, "OAuth client secret");
+        requireNonBlank(oauthScope, "OAuth scope");
         if (oauthTokenLifetimeSeconds <= MIN_OAUTH_TOKEN_LIFETIME_SECONDS
             || oauthTokenLifetimeSeconds >= MAX_OAUTH_TOKEN_LIFETIME_SECONDS) {
           throw new IllegalArgumentException(
@@ -4622,6 +4624,13 @@ public class Zendesk implements Closeable {
       }
       return new Zendesk(
           client, url, username, password, headers, cbpPageSize, objectMapperCustomizer);
+    }
+
+    private static void requireNonBlank(String value, String name) {
+      Objects.requireNonNull(value, name + " cannot be null");
+      if (value.trim().isEmpty()) {
+        throw new IllegalArgumentException(name + " cannot be blank");
+      }
     }
   }
 }

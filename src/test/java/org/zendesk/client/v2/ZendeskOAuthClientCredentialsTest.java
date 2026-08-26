@@ -244,6 +244,29 @@ public class ZendeskOAuthClientCredentialsTest {
   }
 
   @Test
+  public void blankOauthClientCredentialsExpectException() {
+    String[][] invalidCredentials = {
+      {"", CLIENT_SECRET, SCOPE, "client id"},
+      {" \t", CLIENT_SECRET, SCOPE, "client id"},
+      {CLIENT_ID, "", SCOPE, "client secret"},
+      {CLIENT_ID, "\t\r\n", SCOPE, "client secret"},
+      {CLIENT_ID, CLIENT_SECRET, "", "scope"},
+      {CLIENT_ID, CLIENT_SECRET, " \t\r\n", "scope"}
+    };
+
+    for (String[] testCase : invalidCredentials) {
+      var builder =
+          new Zendesk.Builder(hostname)
+              .setOauthClientCredentials(testCase[0], testCase[1], testCase[2]);
+
+      assertThatThrownBy(builder::build)
+          .as("blank OAuth %s", testCase[3])
+          .isInstanceOf(IllegalArgumentException.class)
+          .hasMessage("OAuth " + testCase[3] + " cannot be blank");
+    }
+  }
+
+  @Test
   public void existingAuthPathsUnaffected() {
     stubTicketCount();
 
