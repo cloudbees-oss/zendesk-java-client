@@ -32,7 +32,7 @@ import org.asynchttpclient.Response;
  *
  * @see <a href="https://developer.zendesk.com/api-reference/ticketing/oauth/grant_type_tokens/">
  *     OAuth grant type tokens</a>
- * @since FIXME
+ * @since 1.6.0
  */
 final class HttpTokenMinter implements TokenMinter {
 

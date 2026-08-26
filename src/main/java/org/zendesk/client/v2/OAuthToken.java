@@ -5,7 +5,7 @@ import java.time.Instant;
 /**
  * An immutable OAuth access token with the instants it was issued and expires.
  *
- * @since FIXME
+ * @since 1.6.0
  */
 final class OAuthToken {
 

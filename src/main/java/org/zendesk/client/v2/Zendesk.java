@@ -272,7 +272,7 @@ public class Zendesk implements Closeable {
    * does nothing when there is nothing to prepare.
    *
    * @throws ZendeskOAuthException if minting fails
-   * @since FIXME
+   * @since 1.6.0
    */
   public void warmUp() {
     if (tokenProvider != null) {
@@ -4411,14 +4411,14 @@ public class Zendesk implements Closeable {
      * Default requested token lifetime. 30 minutes: short enough to limit the exposure of a leaked
      * token, long enough to keep minting infrequent.
      *
-     * @since FIXME
+     * @since 1.6.0
      */
     public static final int DEFAULT_OAUTH_TOKEN_LIFETIME_SECONDS = 1800;
 
     /**
      * Default refresh threshold. Refreshes when the current token has half its lifetime left.
      *
-     * @since FIXME
+     * @since 1.6.0
      */
     public static final double DEFAULT_OAUTH_REFRESH_THRESHOLD = 0.5;
 
@@ -4504,7 +4504,7 @@ public class Zendesk implements Closeable {
      * @param clientSecret the OAuth client's secret
      * @param scope space-separated scopes to request, for example {@code "tickets:read"}
      * @return this builder instance
-     * @since FIXME
+     * @since 1.6.0
      */
     public Builder setOauthClientCredentials(String clientId, String clientSecret, String scope) {
       this.oauthClientId = clientId;
@@ -4525,7 +4525,7 @@ public class Zendesk implements Closeable {
      *
      * @param oauthTokenLifetimeSeconds seconds a minted token should remain valid
      * @return this builder instance
-     * @since FIXME
+     * @since 1.6.0
      */
     public Builder setOauthTokenLifetimeSeconds(int oauthTokenLifetimeSeconds) {
       this.oauthTokenLifetimeSeconds = oauthTokenLifetimeSeconds;
@@ -4539,7 +4539,7 @@ public class Zendesk implements Closeable {
      *
      * @param oauthRefreshThreshold fraction of the lifetime that may remain before refreshing
      * @return this builder instance
-     * @since FIXME
+     * @since 1.6.0
      */
     public Builder setOauthRefreshThreshold(double oauthRefreshThreshold) {
       this.oauthRefreshThreshold = oauthRefreshThreshold;

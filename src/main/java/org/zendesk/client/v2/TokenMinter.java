@@ -3,7 +3,7 @@ package org.zendesk.client.v2;
 /**
  * Acquires a brand-new access token. Does no caching, no coordination and no retry.
  *
- * @since FIXME
+ * @since 1.6.0
  */
 interface TokenMinter {
 

@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  *       not handed out.
  * </ol>
  *
- * @since FIXME
+ * @since 1.6.0
  */
 final class SharedFutureTokenProvider implements TokenProvider {
 

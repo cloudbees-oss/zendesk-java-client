@@ -6,7 +6,7 @@ package org.zendesk.client.v2;
  * <p>Distinct from {@link ZendeskResponseException} so callers can tell authentication issues apart
  * from actual API exceptions.
  *
- * @since FIXME
+ * @since 1.6.0
  */
 public class ZendeskOAuthException extends ZendeskException {
 
