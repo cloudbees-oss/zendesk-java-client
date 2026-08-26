@@ -52,6 +52,7 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.IsCollectionContaining;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
