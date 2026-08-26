@@ -52,6 +52,7 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.IsCollectionContaining;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -148,6 +149,11 @@ public class RealSmokeTest {
     Awaitility.setDefaultTimeout(2, TimeUnit.MINUTES);
     Awaitility.setDefaultPollDelay(10, TimeUnit.SECONDS);
     Awaitility.setDefaultPollInterval(20, TimeUnit.SECONDS);
+  }
+
+  @AfterClass
+  public static void resetConfig() {
+    Awaitility.reset();
   }
 
   public void assumeHaveToken() {
