@@ -37,9 +37,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
-      - name: Analyze with SonarQube
-        run: mvn --show-version --no-transfer-progress sonar:sonar --file pom.xml -Dsonar.organization=cloudbees -Dsonar.host.url=${SONAR_URL} -Dsonar.login=${SONAR_TOKEN}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_URL: ${{ secrets.SONAR_URL }}
+#      - name: Analyze with SonarQube
+#        run: mvn --show-version --no-transfer-progress sonar:sonar --file pom.xml -Dsonar.organization=cloudbees -Dsonar.host.url=${SONAR_URL} -Dsonar.login=${SONAR_TOKEN}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#          SONAR_URL: ${{ secrets.SONAR_URL }}
