@@ -218,6 +218,62 @@ public class RealSmokeTest {
     assertThat("A ticket count is returned", instance.getTicketsCount(), notNullValue());
   }
 
+  /**
+   * Same configuration as {@link #createClientWithOauthClientCredentials()}: two clients sharing
+   * one {@link ClientCredentialsTokenProvider} both authenticate with its token.
+   */
+  @Test
+  public void createClientsWithSharedOauthTokenProvider() throws Exception {
+    assumeHaveOauthClientCredentials();
+    try (var provider = oauthClientCredentialsTokenProvider();
+        var first =
+            new Zendesk.Builder(config.getProperty("url")).setOauthTokenProvider(provider).build();
+        var second =
+            new Zendesk.Builder(config.getProperty("url"))
+                .setOauthTokenProvider(provider)
+                .build()) {
+
+      assertThat("A ticket count is returned", first.getTicketsCount(), notNullValue());
+      assertThat("A ticket count is returned", second.getTicketsCount(), notNullValue());
+    }
+  }
+
+  /**
+   * Checks that a client-credentials token honors {@code X-On-Behalf-Of}. Enable by also setting
+   * {@code oauth.impersonate.email} (or {@code ZENDESK_JAVA_CLIENT_TEST_OAUTH_IMPERSONATE_EMAIL})
+   * to an existing user other than the admin associated with the OAuth client. Zendesk only
+   * documents impersonating end users, so run it with an agent too if you rely on that. {@code
+   * oauth.scope} must include {@code impersonate}, and {@code read} or {@code users:read} for the
+   * current-user lookup; the OAuth client's allowed scopes must cover both.
+   */
+  @Test
+  public void impersonateWithSharedOauthTokenProvider() throws Exception {
+    assumeHaveOauthClientCredentials();
+    String email = config.getProperty("oauth.impersonate.email");
+    assumeThat("We have an email to impersonate", email, not(isEmptyOrNullString()));
+    try (var provider = oauthClientCredentialsTokenProvider();
+        var impersonating =
+            new Zendesk.Builder(config.getProperty("url"))
+                .setOauthTokenProvider(provider)
+                .addHeader("X-On-Behalf-Of", email)
+                .build()) {
+
+      assertThat(
+          "The current user is the impersonated one",
+          impersonating.getCurrentUser().getEmail(),
+          is(email));
+    }
+  }
+
+  private ClientCredentialsTokenProvider oauthClientCredentialsTokenProvider() {
+    return ClientCredentialsTokenProvider.builder(config.getProperty("url"))
+        .setClientCredentials(
+            config.getProperty("oauth.client.id"),
+            config.getProperty("oauth.client.secret"),
+            config.getProperty("oauth.scope"))
+        .build();
+  }
+
   @Test
   public void createClientWithToken() throws Exception {
     assumeHaveToken();

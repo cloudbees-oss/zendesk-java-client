@@ -115,3 +115,12 @@ requester.email=#A EMAIL - can be like username - TO CREATE THE REPORTER#
 requester.name=#A NAME FOR THE REPORTER#
 ```
 
+The OAuth client-credentials tests additionally need a confidential OAuth client:
+
+```
+oauth.client.id=#THE OAUTH CLIENT IDENTIFIER#
+oauth.client.secret=#THE OAUTH CLIENT SECRET#
+oauth.scope=#SPACE-SEPARATED SCOPES, "read impersonate" covers every OAuth test#
+oauth.impersonate.email=#OPTIONAL - A USER TO IMPERSONATE, requires the impersonate scope and an OAuth client associated with an admin#
+```
+

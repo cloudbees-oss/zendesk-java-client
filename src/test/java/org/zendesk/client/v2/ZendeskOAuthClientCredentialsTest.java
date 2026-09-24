@@ -21,9 +21,11 @@ import com.github.tomakehurst.wiremock.client.BasicCredentials;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.apache.commons.text.RandomStringGenerator;
@@ -358,6 +360,104 @@ public class ZendeskOAuthClientCredentialsTest {
     }
   }
 
+  @Test
+  public void sharedTokenProviderMintsOnceAcrossClients() {
+    stubToken();
+    stubTicketCount();
+    try (var provider = sharedProvider();
+        var alice = sharedProviderClient(provider, "alice@example.com");
+        var bob = sharedProviderClient(provider, "bob@example.com")) {
+
+      alice.getTicketsCount();
+      bob.getTicketsCount();
+    }
+
+    zendeskApiMock.verify(1, postRequestedFor(urlPathEqualTo("/oauth/tokens")));
+    for (String email : Arrays.asList("alice@example.com", "bob@example.com")) {
+      zendeskApiMock.verify(
+          getRequestedFor(urlPathEqualTo("/api/v2/tickets/count.json"))
+              .withHeader("X-On-Behalf-Of", equalTo(email))
+              .withHeader("Authorization", equalTo("Bearer " + ACCESS_TOKEN)));
+    }
+  }
+
+  @Test
+  public void closingClientKeepsSharedTokenProviderUsable() {
+    stubToken();
+    stubTicketCount();
+    try (var provider = sharedProvider()) {
+      sharedProviderClient(provider, "alice@example.com").close();
+
+      try (var bob = sharedProviderClient(provider, "bob@example.com")) {
+        bob.getTicketsCount();
+      }
+    }
+
+    zendeskApiMock.verify(
+        getRequestedFor(urlPathEqualTo("/api/v2/tickets/count.json"))
+            .withHeader("Authorization", equalTo("Bearer " + ACCESS_TOKEN)));
+  }
+
+  @Test
+  public void customTokenProviderIsAskedOnEveryRequest() {
+    stubTicketCount();
+    var calls = new AtomicInteger();
+    client =
+        new Zendesk.Builder(hostname)
+            .setOauthTokenProvider(() -> STATIC_TOKEN + calls.incrementAndGet())
+            .build();
+
+    client.getTicketsCount();
+    client.getTicketsCount();
+
+    zendeskApiMock.verify(
+        getRequestedFor(urlPathEqualTo("/api/v2/tickets/count.json"))
+            .withHeader("Authorization", equalTo("Bearer " + STATIC_TOKEN + "1")));
+    zendeskApiMock.verify(
+        getRequestedFor(urlPathEqualTo("/api/v2/tickets/count.json"))
+            .withHeader("Authorization", equalTo("Bearer " + STATIC_TOKEN + "2")));
+  }
+
+  @Test
+  public void setOauthTokenProviderClearsOtherCredentials() {
+    stubTicketCount();
+    client =
+        new Zendesk.Builder(hostname)
+            .setUsername(USERNAME)
+            .setToken(STATIC_TOKEN)
+            .setOauthClientCredentials(CLIENT_ID, CLIENT_SECRET, SCOPE)
+            .setOauthTokenProvider(() -> ACCESS_TOKEN)
+            .build();
+
+    client.getTicketsCount();
+
+    zendeskApiMock.verify(0, postRequestedFor(urlPathEqualTo("/oauth/tokens")));
+    zendeskApiMock.verify(
+        getRequestedFor(urlPathEqualTo("/api/v2/tickets/count.json"))
+            .withHeader("Authorization", equalTo("Bearer " + ACCESS_TOKEN)));
+  }
+
+  @Test
+  public void otherCredentialSettersClearTokenProvider() {
+    stubToken();
+    stubTicketCount();
+    List<Consumer<Zendesk.Builder>> overrides = new ArrayList<>(staticCredentialSetters());
+    overrides.add(builder -> builder.setOauthClientCredentials(CLIENT_ID, CLIENT_SECRET, SCOPE));
+
+    for (Consumer<Zendesk.Builder> override : overrides) {
+      var builder =
+          new Zendesk.Builder(hostname)
+              .setOauthTokenProvider(
+                  () -> {
+                    throw new AssertionError("overridden token provider must not be asked");
+                  });
+      override.accept(builder);
+      try (var overridden = builder.build()) {
+        overridden.getTicketsCount();
+      }
+    }
+  }
+
   /** Every pre-existing way to supply credentials, each of which excludes client credentials. */
   private static List<Consumer<Zendesk.Builder>> staticCredentialSetters() {
     return Arrays.asList(
@@ -368,6 +468,19 @@ public class ZendeskOAuthClientCredentialsTest {
 
   private Zendesk.Builder oauthBuilder() {
     return new Zendesk.Builder(hostname).setOauthClientCredentials(CLIENT_ID, CLIENT_SECRET, SCOPE);
+  }
+
+  private ClientCredentialsTokenProvider sharedProvider() {
+    return ClientCredentialsTokenProvider.builder(hostname)
+        .setClientCredentials(CLIENT_ID, CLIENT_SECRET, SCOPE)
+        .build();
+  }
+
+  private Zendesk sharedProviderClient(TokenProvider provider, String onBehalfOf) {
+    return new Zendesk.Builder(hostname)
+        .setOauthTokenProvider(provider)
+        .addHeader("X-On-Behalf-Of", onBehalfOf)
+        .build();
   }
 
   private void stubToken() {
