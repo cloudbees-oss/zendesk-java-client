@@ -4,9 +4,13 @@ package org.zendesk.client.v2;
  * Supplies a currently-usable bearer token. Called on every request from many threads at once, so
  * implementations must be thread-safe and may block while a token is minted.
  *
+ * <p>Public since 1.6.1, so one provider can be shared across clients through {@link
+ * Zendesk.Builder#setOauthTokenProvider(TokenProvider)}. See {@link
+ * ClientCredentialsTokenProvider}.
+ *
  * @since 1.6.0
  */
-interface TokenProvider {
+public interface TokenProvider {
 
   /**
    * @return a token that is valid at the moment of return

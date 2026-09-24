@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -117,7 +116,7 @@ import org.zendesk.client.v2.model.views.ViewRow;
 public class Zendesk implements Closeable {
   private static final String JSON = "application/json; charset=UTF-8";
   private static final String USER_AGENT_HEADER = "User-Agent";
-  private static final DefaultAsyncHttpClientConfig DEFAULT_ASYNC_HTTP_CLIENT_CONFIG =
+  static final DefaultAsyncHttpClientConfig DEFAULT_ASYNC_HTTP_CLIENT_CONFIG =
       new DefaultAsyncHttpClientConfig.Builder().setFollowRedirect(true).build();
   private final boolean closeClient;
   private final AsyncHttpClient client;
@@ -224,19 +223,15 @@ public class Zendesk implements Closeable {
   }
 
   /**
-   * Client-credentials OAuth: instead of a pre-minted token, hold the app credentials and let a
-   * {@link TokenProvider} mint short-lived access tokens on demand for the client's whole lifetime.
+   * Token-provider OAuth: instead of a pre-minted token, ask a {@link TokenProvider} for a bearer
+   * token on every request, for the client's whole lifetime.
    *
    * <p>This constructor performs no network I/O.
    */
   private Zendesk(
       AsyncHttpClient client,
       String url,
-      String clientId,
-      String clientSecret,
-      String scope,
-      int tokenLifetimeSeconds,
-      double refreshThreshold,
+      Function<AsyncHttpClient, TokenProvider> tokenProviderFactory,
       Map<String, String> headers,
       int cbpPageSize,
       Function<ObjectMapper, ObjectMapper> objectMapperCustomizer) {
@@ -251,25 +246,13 @@ public class Zendesk implements Closeable {
     this.headers = Collections.unmodifiableMap(headers);
     this.cbpPageSize = cbpPageSize;
     this.mapper = createMapper(objectMapperCustomizer);
-    String baseHostUrl = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
-    this.tokenProvider =
-        new SharedFutureTokenProvider(
-            new HttpTokenMinter(
-                this.client,
-                baseHostUrl,
-                clientId,
-                clientSecret,
-                scope,
-                tokenLifetimeSeconds,
-                Clock.systemUTC()),
-            Clock.systemUTC(),
-            refreshThreshold);
+    this.tokenProvider = tokenProviderFactory.apply(this.client);
   }
 
   /**
-   * Prepares authentication up front, so the first request does not pay for it: a
-   * client-credentials client mints an access token here. May perform network I/O and throw, and
-   * does nothing when there is nothing to prepare.
+   * Prepares authentication up front, so the first request does not pay for it: a client using a
+   * {@link TokenProvider} asks it for a token here, which mints one if none is cached. May perform
+   * network I/O and throw, and does nothing when there is nothing to prepare.
    *
    * @throws ZendeskOAuthException if minting fails
    * @since 1.6.0
@@ -4422,8 +4405,6 @@ public class Zendesk implements Closeable {
      */
     public static final double DEFAULT_OAUTH_REFRESH_THRESHOLD = 0.5;
 
-    private static final int MIN_OAUTH_TOKEN_LIFETIME_SECONDS = 300;
-
     static final int MAX_OAUTH_TOKEN_LIFETIME_SECONDS = 172_800;
 
     private AsyncHttpClient client = null;
@@ -4438,6 +4419,7 @@ public class Zendesk implements Closeable {
     private boolean oauthClientCredentialsConfigured = false;
     private int oauthTokenLifetimeSeconds = DEFAULT_OAUTH_TOKEN_LIFETIME_SECONDS;
     private double oauthRefreshThreshold = DEFAULT_OAUTH_REFRESH_THRESHOLD;
+    private TokenProvider oauthTokenProvider = null;
     private int cbpPageSize = DEFAULT_CBP_PAGE_SIZE;
     private Function<ObjectMapper, ObjectMapper> objectMapperCustomizer;
     private final Map<String, String> headers;
@@ -4463,7 +4445,7 @@ public class Zendesk implements Closeable {
       if (password != null) {
         this.token = null;
         this.oauthToken = null;
-        clearOauthClientCredentials();
+        clearOauthTokenProviders();
       }
       return this;
     }
@@ -4473,7 +4455,7 @@ public class Zendesk implements Closeable {
       if (token != null) {
         this.password = null;
         this.oauthToken = null;
-        clearOauthClientCredentials();
+        clearOauthTokenProviders();
       }
       return this;
     }
@@ -4483,7 +4465,7 @@ public class Zendesk implements Closeable {
       if (oauthToken != null) {
         this.password = null;
         this.token = null;
-        clearOauthClientCredentials();
+        clearOauthTokenProviders();
       }
       return this;
     }
@@ -4511,9 +4493,36 @@ public class Zendesk implements Closeable {
       this.oauthClientSecret = clientSecret;
       this.oauthScope = scope;
       this.oauthClientCredentialsConfigured = true;
+      this.oauthTokenProvider = null;
       this.password = null;
       this.token = null;
       this.oauthToken = null;
+      return this;
+    }
+
+    /**
+     * Authenticate with bearer tokens from a caller-owned {@link TokenProvider}, asked for a token
+     * on every request. Share one provider, typically a {@link ClientCredentialsTokenProvider},
+     * across clients that should use the same token, for example clients that differ only by an
+     * {@code X-On-Behalf-Of} header.
+     *
+     * <p>Mutually exclusive with {@link #setPassword(String)}, {@link #setToken(String)}, {@link
+     * #setOauthToken(String)} and {@link #setOauthClientCredentials(String, String, String)}. The
+     * built client never closes the provider, and {@link #setOauthTokenLifetimeSeconds(int)} and
+     * {@link #setOauthRefreshThreshold(double)} do not apply to it.
+     *
+     * @param tokenProvider the provider to ask for bearer tokens
+     * @return this builder instance
+     * @since 1.6.1
+     */
+    public Builder setOauthTokenProvider(TokenProvider tokenProvider) {
+      this.oauthTokenProvider = tokenProvider;
+      if (tokenProvider != null) {
+        this.password = null;
+        this.token = null;
+        this.oauthToken = null;
+        clearOauthClientCredentials();
+      }
       return this;
     }
 
@@ -4544,6 +4553,11 @@ public class Zendesk implements Closeable {
     public Builder setOauthRefreshThreshold(double oauthRefreshThreshold) {
       this.oauthRefreshThreshold = oauthRefreshThreshold;
       return this;
+    }
+
+    private void clearOauthTokenProviders() {
+      clearOauthClientCredentials();
+      this.oauthTokenProvider = null;
     }
 
     private void clearOauthClientCredentials() {
@@ -4586,32 +4600,27 @@ public class Zendesk implements Closeable {
 
     public Zendesk build() {
       if (oauthClientCredentialsConfigured) {
-        requireNonBlank(oauthClientId, "OAuth client id");
-        requireNonBlank(oauthClientSecret, "OAuth client secret");
-        requireNonBlank(oauthScope, "OAuth scope");
-        if (oauthTokenLifetimeSeconds <= MIN_OAUTH_TOKEN_LIFETIME_SECONDS
-            || oauthTokenLifetimeSeconds >= MAX_OAUTH_TOKEN_LIFETIME_SECONDS) {
-          throw new IllegalArgumentException(
-              "OAuth token lifetime must be between "
-                  + MIN_OAUTH_TOKEN_LIFETIME_SECONDS
-                  + " and "
-                  + MAX_OAUTH_TOKEN_LIFETIME_SECONDS
-                  + " seconds exclusive, but was "
-                  + oauthTokenLifetimeSeconds);
-        }
-        if (!(oauthRefreshThreshold > 0.0 && oauthRefreshThreshold < 1.0)) {
-          throw new IllegalArgumentException(
-              "OAuth refresh threshold must be between 0 and 1 exclusive, but was "
-                  + oauthRefreshThreshold);
-        }
+        ClientCredentialsTokenProvider.Builder providerBuilder =
+            ClientCredentialsTokenProvider.builder(url)
+                .setClientCredentials(oauthClientId, oauthClientSecret, oauthScope)
+                .setTokenLifetimeSeconds(oauthTokenLifetimeSeconds)
+                .setRefreshThreshold(oauthRefreshThreshold);
+        providerBuilder.validate();
+        // Mint through the client's own HTTP client, which the client alone closes.
         return new Zendesk(
             client,
             url,
-            oauthClientId,
-            oauthClientSecret,
-            oauthScope,
-            oauthTokenLifetimeSeconds,
-            oauthRefreshThreshold,
+            httpClient -> providerBuilder.setClient(httpClient).build(),
+            headers,
+            cbpPageSize,
+            objectMapperCustomizer);
+      }
+      if (oauthTokenProvider != null) {
+        TokenProvider sharedProvider = oauthTokenProvider;
+        return new Zendesk(
+            client,
+            url,
+            httpClient -> sharedProvider,
             headers,
             cbpPageSize,
             objectMapperCustomizer);
@@ -4624,13 +4633,6 @@ public class Zendesk implements Closeable {
       }
       return new Zendesk(
           client, url, username, password, headers, cbpPageSize, objectMapperCustomizer);
-    }
-
-    private static void requireNonBlank(String value, String name) {
-      Objects.requireNonNull(value, name + " cannot be null");
-      if (value.trim().isEmpty()) {
-        throw new IllegalArgumentException(name + " cannot be blank");
-      }
     }
   }
 }
