@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
  * A {@link TokenProvider} that mints and refreshes access tokens with the OAuth {@code
  * client_credentials} grant.
  *
- * <p>Thread-safe. {@link #build() Building} performs no network I/O; the first call to {@link
- * #provideBearerToken()} mints synchronously.
+ * <p>Thread-safe. {@link Builder#build() Building} performs no network I/O; the first call to
+ * {@link #provideBearerToken()} mints synchronously.
  *
  * @since 1.6.1
  */
