@@ -15,7 +15,23 @@ public class ZendeskResponseRateLimitException extends ZendeskResponseException 
     try {
       this.retryAfter = Long.valueOf(resp.getHeader(RETRY_AFTER_HEADER));
     } catch (NumberFormatException e) {
-      // Ignore, use the default value already set
+      // HTTP also permits an absolute date. Round up: never retry before that instant.
+      String value = resp.getHeader(RETRY_AFTER_HEADER);
+      if (value != null) {
+        try {
+          long millis =
+              java.time.Duration.between(
+                      java.time.Instant.now(),
+                      java.time.ZonedDateTime.parse(
+                              value, java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME)
+                          .toInstant())
+                  .toMillis();
+          this.retryAfter = millis <= 0 ? 0L : 1 + (millis - 1) / 1000;
+        } catch (java.time.DateTimeException | ArithmeticException invalid) {
+          // An unusable header is not permission to retry earlier than requested.
+          this.retryAfter = Long.MAX_VALUE;
+        }
+      }
     }
   }
 
