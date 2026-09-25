@@ -12,9 +12,13 @@ import com.fasterxml.jackson.databind.util.StdDateFormat;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -117,7 +121,11 @@ public class Zendesk implements Closeable {
   private static final String JSON = "application/json; charset=UTF-8";
   private static final String USER_AGENT_HEADER = "User-Agent";
   static final DefaultAsyncHttpClientConfig DEFAULT_ASYNC_HTTP_CLIENT_CONFIG =
-      new DefaultAsyncHttpClientConfig.Builder().setFollowRedirect(true).build();
+      new DefaultAsyncHttpClientConfig.Builder()
+          .setFollowRedirect(true)
+          // Transport replay is not method-aware; creations must never be replayed implicitly.
+          .setMaxRequestRetry(0)
+          .build();
   private final boolean closeClient;
   private final AsyncHttpClient client;
   private final Realm realm;
@@ -287,7 +295,7 @@ public class Zendesk implements Closeable {
   //////////////////////////////////////////////////////////////////////
 
   public JobStatus getJobStatus(JobStatus status) {
-    return complete(getJobStatusAsync(status));
+    return retryRead(() -> complete(getJobStatusAsync(status)));
   }
 
   public ListenableFuture<JobStatus> getJobStatusAsync(JobStatus status) {
@@ -296,7 +304,7 @@ public class Zendesk implements Closeable {
   }
 
   public List<JobStatus> getJobStatuses(List<JobStatus> statuses) {
-    return complete(getJobStatusesAsync(statuses));
+    return retryRead(() -> complete(getJobStatusesAsync(statuses)));
   }
 
   public ListenableFuture<List<JobStatus>> getJobStatusesAsync(List<JobStatus> statuses) {
@@ -624,7 +632,8 @@ public class Zendesk implements Closeable {
     return new PagedIterable<>(
         tmpl(cbp("/search/export", true, pageSize).toString()
                 + "&filter[type]=ticket&query={query}")
-            .set("query", searchTerm + " type:ticket"),
+            // Export Search accepts the object type only in filter[type], not in query.
+            .set("query", searchTerm),
         handleList(Ticket.class, "results"));
   }
 
@@ -990,10 +999,103 @@ public class Zendesk implements Closeable {
   }
 
   public Attachment getAttachment(long id) {
-    return complete(
-        submit(
-            req("GET", tmpl("/attachments/{id}.json").set("id", id)),
-            handle(Attachment.class, "attachment")));
+    return retryRead(
+        () ->
+            complete(
+                submit(
+                    req("GET", tmpl("/attachments/{id}.json").set("id", id)),
+                    handle(Attachment.class, "attachment"))));
+  }
+
+  /**
+   * Downloads an attachment after refreshing its metadata by id. Creates parent directories and
+   * overwrites an existing destination file. Uses this client's authentication and redirect policy.
+   *
+   * @since FIXME
+   * @param attachment attachment with a positive id; its cached content URL is not used
+   * @param destination destination file, not null
+   * @return the supplied destination
+   * @throws IOException if transport or file writing fails
+   * @throws InterruptedException if interrupted while waiting for the download
+   */
+  public Path downloadAttachment(Attachment attachment, Path destination)
+      throws IOException, InterruptedException {
+    Objects.requireNonNull(attachment, "attachment");
+    if (attachment.getId() == null) {
+      throw new IllegalArgumentException("Attachment must have an id");
+    }
+    return downloadAttachment(attachment.getId().longValue(), destination);
+  }
+
+  /**
+   * Downloads an attachment using freshly retrieved metadata. Creates parent directories and
+   * overwrites an existing destination file, but only after validating the HTTP response status.
+   *
+   * @since FIXME
+   * @param attachmentId positive attachment id
+   * @param destination destination file, not null
+   * @return the supplied destination
+   * @throws IOException if transport or file writing fails
+   * @throws InterruptedException if interrupted while waiting for the download
+   */
+  public Path downloadAttachment(long attachmentId, Path destination)
+      throws IOException, InterruptedException {
+    Objects.requireNonNull(destination, "destination");
+    if (attachmentId <= 0) {
+      throw new IllegalArgumentException("Attachment id must be positive");
+    }
+Attachment attachment;
+try {
+  attachment = getAttachment(attachmentId);
+} catch (ZendeskException failure) {
+  for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
+    if (cause instanceof InterruptedException) throw (InterruptedException) cause;
+    if (cause instanceof IOException) throw (IOException) cause;
+  }
+  throw failure;
+}
+if (attachment == null) {
+  throw new ZendeskResponseException(404, "Not Found", "Attachment not found");
+}
+  }
+
+  private Path downloadAttachmentContent(Attachment attachment, Path destination)
+      throws IOException, InterruptedException {
+    Objects.requireNonNull(attachment, "attachment");
+    String contentUrl = attachment.getContentUrl();
+    if (contentUrl == null || contentUrl.trim().isEmpty()) {
+      throw new IllegalArgumentException("Attachment must have a content URL");
+    }
+    Response response;
+    try {
+      response =
+          retryRead(
+              () -> {
+                // content_url may point directly to a CDN. Never send Zendesk credentials there.
+                RequestBuilder request = new RequestBuilder("GET").setUrl(contentUrl);
+                if (org.asynchttpclient.uri.Uri.create(url)
+                    .isSameBase(org.asynchttpclient.uri.Uri.create(contentUrl))) {
+                  request = reqBuilder("GET", contentUrl);
+                }
+                Response result = complete(client.executeRequest(request.build()));
+                checkStatusCode(result);
+                return result;
+              });
+    } catch (ZendeskException failure) {
+      for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
+        if (cause instanceof InterruptedException) throw (InterruptedException) cause;
+        if (cause instanceof IOException) throw (IOException) cause;
+      }
+      throw failure;
+    }
+    try (InputStream stream = response.getResponseBodyAsStream()) {
+      Path parent = destination.getParent();
+      if (parent != null) {
+        Files.createDirectories(parent);
+      }
+      Files.copy(stream, destination, StandardCopyOption.REPLACE_EXISTING);
+    }
+    return destination;
   }
 
   public void deleteAttachment(Attachment attachment) {
@@ -3532,6 +3634,12 @@ public class Zendesk implements Closeable {
     }
   }
 
+  private <T> T retryRead(java.util.function.Supplier<T> operation) {
+    // An injected client controls its own retry policy: do not multiply its attempts.
+    if (client.getConfig().getMaxRequestRetry() != 0) return operation.get();
+    return ReadRetry.execute(operation, Thread::sleep);
+  }
+
   private <T> ListenableFuture<T> submit(Request request, AsyncCompletionHandler<T> handler) {
     if (logger.isDebugEnabled()) {
       if (request.getStringData() != null) {
@@ -4009,7 +4117,9 @@ public class Zendesk implements Closeable {
     try {
       return future.get();
     } catch (InterruptedException e) {
-      throw new ZendeskException(e.getMessage(), e);
+      future.cancel(true);
+      Thread.currentThread().interrupt();
+      throw new ZendeskException("Interrupted while waiting for Zendesk", e);
     } catch (ExecutionException e) {
       if (e.getCause() instanceof ZendeskResponseRateLimitException) {
         throw new ZendeskResponseRateLimitException(
@@ -4367,7 +4477,7 @@ public class Zendesk implements Closeable {
           if (nextPage == null || nextPage.equalsIgnoreCase("null")) {
             return false;
           }
-          List<T> values = complete(submit(req("GET", nextPage), handler));
+          List<T> values = retryRead(() -> complete(submit(req("GET", nextPage), handler)));
           nextPage = handler.getNextPage();
           current = values.iterator();
         }

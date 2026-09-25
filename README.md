@@ -33,6 +33,43 @@ all records have been fetched, so e.g.
 will iterate through *all* tickets. Most likely you will want to implement your own cut-off process to stop iterating
 when you have got enough data.
 
+Attachment downloads
+--------------------
+
+`downloadAttachment(attachmentId, destination)` refreshes the attachment metadata and writes
+its content to a `java.nio.file.Path`. The overload taking an `Attachment` also refreshes metadata
+by id rather than trusting its cached content URL. Both methods create parent directories and
+replace an existing file only after receiving a successful HTTP status.
+
+```java
+Path destination = Paths.get("downloads", "attachment.bin");
+zendesk.downloadAttachment(attachmentId, destination);
+```
+
+Downloads reuse the client's HTTP transport and authentication. Zendesk credentials are sent only
+when the initial content URL has the same scheme, host and effective port as the Zendesk endpoint.
+AsyncHttpClient removes authorization when a redirect crosses that origin boundary. External CDN
+URLs are requested without Zendesk credentials. An injected client's redirect configuration is
+respected. Responses are buffered by AsyncHttpClient before being copied; this is not a constant-memory
+streaming API. Interrupted downloads cancel their request and retain the thread's interrupted flag.
+
+Read retries
+------------
+
+The default transport disables method-agnostic connection replay so that imports, creates, uploads
+and updates are not silently repeated after an ambiguous transport failure. Instead, synchronous
+job reads, attachment metadata/downloads and individual pages of lazy iterables use at most three
+attempts for transient connection failures, timeouts and HTTP 500/502/503/504 (1 and 2 seconds of
+backoff). HTTP 429 honors `Retry-After` in seconds or HTTP-date form, up to a 60-second wait; longer,
+negative or invalid values propagate the error without an early retry. An absent header retains
+the existing 60-second fallback. Authentication, parsing and permanent failures are not retried.
+
+Backoff waits on the synchronous caller, never a Netty event-loop thread. OAuth token minting keeps
+its own provider lifecycle and is not retried by this policy. Async job methods do not add these
+read retries. If an injected HTTP client has nonzero `maxRequestRetry`, its policy is preserved and
+no additional read retry layer is added; callers must then ensure their transport replay policy is
+appropriate for writes. No changes are made to `setRetry`, which remains a no-op.
+
 Idempotency
 -----------
 
