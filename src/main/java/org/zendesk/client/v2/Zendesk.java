@@ -1044,11 +1044,19 @@ public class Zendesk implements Closeable {
     if (attachmentId <= 0) {
       throw new IllegalArgumentException("Attachment id must be positive");
     }
-    Attachment attachment = getAttachment(attachmentId);
-    if (attachment == null) {
-      throw new ZendeskResponseException(404, "Not Found", "Attachment not found");
-    }
-    return downloadAttachmentContent(attachment, destination);
+Attachment attachment;
+try {
+  attachment = getAttachment(attachmentId);
+} catch (ZendeskException failure) {
+  for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
+    if (cause instanceof InterruptedException) throw (InterruptedException) cause;
+    if (cause instanceof IOException) throw (IOException) cause;
+  }
+  throw failure;
+}
+if (attachment == null) {
+  throw new ZendeskResponseException(404, "Not Found", "Attachment not found");
+}
   }
 
   private Path downloadAttachmentContent(Attachment attachment, Path destination)
