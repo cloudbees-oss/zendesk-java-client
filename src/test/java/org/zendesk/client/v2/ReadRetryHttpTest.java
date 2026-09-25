@@ -16,15 +16,24 @@ import org.zendesk.client.v2.model.JobStatus;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.TicketImport;
 
+/**
+ * Tests retry behavior against local HTTP endpoints.
+ *
+ * @since FIXME
+ */
 public class ReadRetryHttpTest {
+  /** Local HTTP endpoint used by these tests. */
   @Rule public WireMockRule api = new WireMockRule(options().dynamicPort());
 
+  /** Returns the URL of the local HTTP endpoint. */
   String base() {
     return "http://localhost:" + api.port();
   }
 
+  /** Configured transport instance closed after each test. */
   private org.asynchttpclient.DefaultAsyncHttpClient http;
 
+  /** Creates a client with retries enabled at the Zendesk read boundary. */
   Zendesk client() {
     if (http != null) http.close();
     http =
@@ -37,11 +46,13 @@ public class ReadRetryHttpTest {
   }
 
   @org.junit.After
+  /** {@inheritDoc} */
   public void closeTransport() throws Exception {
     if (http != null) http.close();
   }
 
   @Test
+  /** Verifies retries resume at the failed page without duplicating earlier results. */
   public void retriesOnlyTheFailedCursorPageWithoutDuplicatingResults() {
     api.stubFor(
         get(urlEqualTo("/api/v2/search/export?page%5Bafter%5D=second"))
@@ -71,6 +82,7 @@ public class ReadRetryHttpTest {
   }
 
   @Test
+  /** Verifies rate-limit delays are honored within the configured bound. */
   public void rateLimitBackoffUsesServerSecondsAndRefusesExcessiveWait() {
     for (int seconds : new int[] {0, 2, 61}) {
       api.resetRequests();
@@ -93,6 +105,7 @@ public class ReadRetryHttpTest {
   }
 
   @Test
+  /** Verifies date and malformed Retry-After headers never cause an early retry. */
   public void retryAfterDateOrMalformedHeaderDoesNotTriggerAnEarlyRetry() {
     String future =
         java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)
@@ -113,6 +126,7 @@ public class ReadRetryHttpTest {
   }
 
   @Test
+  /** Verifies connection resets are retried only up to the attempt limit. */
   public void readConnectionResetIsRetriedButBounded() {
     api.stubFor(
         get(urlEqualTo("/api/v2/job_statuses/job.json"))
@@ -126,6 +140,7 @@ public class ReadRetryHttpTest {
   }
 
   @Test
+  /** Verifies job status and attachment metadata use bounded retries. */
   public void jobAndMetadataUseBoundedReadRetries() {
     api.stubFor(
         get(urlEqualTo("/api/v2/job_statuses/job.json"))
@@ -144,6 +159,7 @@ public class ReadRetryHttpTest {
   }
 
   @Test
+  /** Verifies write operations are not replayed after HTTP or transport failures. */
   public void importCreateAndUpdateAreNeverReplayedOnHttpFailureOrConnectionReset() {
     for (boolean reset : new boolean[] {false, true}) {
       api.resetRequests();

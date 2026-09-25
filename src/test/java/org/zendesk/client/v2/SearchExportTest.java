@@ -11,10 +11,17 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 
+/**
+ * Tests Export Search query parameters and cursor pagination.
+ *
+ * @since FIXME
+ */
 public class SearchExportTest {
+  /** Local HTTP endpoint used by the search request. */
   @Rule public WireMockRule api = new WireMockRule(options().dynamicPort());
 
   @Test
+  /** Verifies the resource filter and consumption of every cursor page. */
   public void exportUsesFilterTypeAndConsumesEveryCursorPage() {
     String base = "http://localhost:" + api.port();
     api.stubFor(

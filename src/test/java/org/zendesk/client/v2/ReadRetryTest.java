@@ -13,8 +13,14 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
+/**
+ * Tests classification, bounds, and interruption of synchronous read retries.
+ *
+ * @since FIXME
+ */
 public class ReadRetryTest {
   @Test
+  /** Verifies transient HTTP and transport errors have at most three attempts. */
   public void retriesTransientHttpAndTransportAtMostThreeTimes() {
     List<ZendeskException> failures = new ArrayList<>();
     for (int status : new int[] {500, 502, 503, 504}) {
@@ -48,6 +54,7 @@ public class ReadRetryTest {
   }
 
   @Test
+  /** Verifies a successful retry returns immediately without extra attempts. */
   public void succeedsOnNextReadWithoutExtraAttempts() {
     AtomicInteger attempts = new AtomicInteger();
     assertEquals(
@@ -63,6 +70,7 @@ public class ReadRetryTest {
   }
 
   @Test
+  /** Verifies permanent, parsing, and OAuth failures are not retried. */
   public void doesNotRetryPermanentFailuresParsingOrOAuthMinting() {
     for (ZendeskException failure :
         Arrays.asList(
@@ -90,6 +98,7 @@ public class ReadRetryTest {
   }
 
   @Test
+  /** Verifies interruption stops retrying and preserves the interrupt flag. */
   public void interruptionStopsImmediatelyAndPreservesFlag() {
     AtomicInteger attempts = new AtomicInteger();
     try {

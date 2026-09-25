@@ -14,7 +14,11 @@ import java.util.function.Supplier;
 final class ReadRetry {
   private ReadRetry() {}
 
-  /** Interruptible wait strategy, replaceable in tests. */
+  /**
+   * Interruptible wait strategy, replaceable in tests.
+   *
+   * @since FIXME
+   */
   interface Sleeper {
     /** Waits for the specified number of milliseconds. */
     void sleep(long millis) throws InterruptedException;
