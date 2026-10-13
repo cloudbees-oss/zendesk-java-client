@@ -14,7 +14,7 @@ import org.junit.Test;
 /**
  * Tests Export Search query parameters and cursor pagination.
  *
- * @since FIXME
+ * @since 1.7.0
  */
 public class SearchExportTest {
   /** Local HTTP endpoint used by the search request. */

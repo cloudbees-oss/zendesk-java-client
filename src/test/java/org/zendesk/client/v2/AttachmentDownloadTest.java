@@ -4,9 +4,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.Assert.*;
 
+import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.junit.Rule;
@@ -17,7 +22,7 @@ import org.zendesk.client.v2.model.Attachment;
 /**
  * Tests attachment downloads with local HTTP endpoints.
  *
- * @since FIXME
+ * @since 1.7.0
  */
 public class AttachmentDownloadTest {
   /** Local Zendesk and redirect endpoints. */
@@ -369,6 +374,89 @@ public class AttachmentDownloadTest {
     try (Zendesk zd = oauth()) {
       assertThrows(
           java.io.IOException.class, () -> zd.downloadAttachment(7L, parentFile.resolve("child")));
+    }
+  }
+
+  @Test
+  /** Verifies metadata and content transport failures satisfy the checked IOException contract. */
+  public void transportFailuresArePropagatedFromMetadataAndContent() throws Exception {
+    Path target = files.newFile("transport-failure").toPath();
+    byte[] original = {5, 6};
+    Files.write(target, original);
+    for (String failedPath : new String[] {"/api/v2/attachments/7.json", "/binary"}) {
+      api.resetAll();
+      metadata(base() + "/binary");
+      content(200);
+      api.stubFor(
+          get(urlEqualTo(failedPath)).willReturn(aResponse().withFault(Fault.EMPTY_RESPONSE)));
+      try (DefaultAsyncHttpClient http =
+              new DefaultAsyncHttpClient(
+                  new DefaultAsyncHttpClientConfig.Builder()
+                      .setMaxRequestRetry(0)
+                      .setRequestTimeout(java.time.Duration.ofSeconds(2))
+                      .build());
+          Zendesk zd = new Zendesk.Builder(base()).setClient(http).setOauthToken(TOKEN).build()) {
+        assertThrows(IOException.class, () -> zd.downloadAttachment(7L, target));
+      }
+      assertArrayEquals(original, Files.readAllBytes(target));
+      api.verify(3, getRequestedFor(urlEqualTo(failedPath)));
+      if (!failedPath.equals("/binary")) {
+        api.verify(0, getRequestedFor(urlEqualTo("/binary")));
+      }
+    }
+  }
+
+  @Test
+  /** Verifies metadata interruption preserves the interrupt flag and leaves the file untouched. */
+  public void metadataInterruptionIsPropagated() throws Exception {
+    assertInterruptedDownload("/api/v2/attachments/7.json");
+  }
+
+  @Test
+  /** Verifies content interruption preserves the interrupt flag and leaves the file untouched. */
+  public void contentInterruptionIsPropagated() throws Exception {
+    assertInterruptedDownload("/binary");
+  }
+
+  private void assertInterruptedDownload(String delayedPath) throws Exception {
+    metadata(base() + "/binary");
+    content(200);
+    api.stubFor(get(urlEqualTo(delayedPath)).willReturn(okJson("{}").withFixedDelay(10000)));
+    Path target = files.newFile("interrupted").toPath();
+    byte[] original = {5, 6};
+    Files.write(target, original);
+    AtomicReference<Throwable> failure = new AtomicReference<>();
+    AtomicBoolean interrupted = new AtomicBoolean();
+    try (Zendesk zd = new Zendesk.Builder(base()).setOauthToken(TOKEN).build()) {
+      Thread worker =
+          new Thread(
+              () -> {
+                try {
+                  zd.downloadAttachment(7L, target);
+                } catch (Throwable e) {
+                  failure.set(e);
+                  interrupted.set(Thread.currentThread().isInterrupted());
+                }
+              });
+      worker.start();
+      try {
+        org.awaitility.Awaitility.await()
+            .atMost(5, TimeUnit.SECONDS)
+            .until(() -> !api.findAll(getRequestedFor(urlEqualTo(delayedPath))).isEmpty());
+        worker.interrupt();
+        worker.join(5000);
+        assertFalse("Download must stop promptly", worker.isAlive());
+        assertTrue(String.valueOf(failure.get()), failure.get() instanceof InterruptedException);
+        assertTrue("Interrupt flag must be preserved", interrupted.get());
+        assertArrayEquals(original, Files.readAllBytes(target));
+        api.verify(1, getRequestedFor(urlEqualTo(delayedPath)));
+        if (!delayedPath.equals("/binary")) {
+          api.verify(0, getRequestedFor(urlEqualTo("/binary")));
+        }
+      } finally {
+        worker.interrupt();
+        worker.join(5000);
+      }
     }
   }
 

@@ -16,7 +16,7 @@ import org.junit.Test;
 /**
  * Tests classification, bounds, and interruption of synchronous read retries.
  *
- * @since FIXME
+ * @since 1.7.0
  */
 public class ReadRetryTest {
   @Test

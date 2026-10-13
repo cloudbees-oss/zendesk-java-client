@@ -19,7 +19,7 @@ import org.zendesk.client.v2.model.TicketImport;
 /**
  * Tests retry behavior against local HTTP endpoints.
  *
- * @since FIXME
+ * @since 1.7.0
  */
 public class ReadRetryHttpTest {
   /** Local HTTP endpoint used by these tests. */
@@ -111,7 +111,21 @@ public class ReadRetryHttpTest {
         java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)
             .plusMinutes(5)
             .format(java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME);
-    for (String value : Arrays.asList(future, "invalid", "999999999999999999999999")) {
+    java.time.ZonedDateTime later =
+        java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC).plusMinutes(5);
+    for (String value :
+        Arrays.asList(
+            future,
+            later.format(
+                java.time.format.DateTimeFormatter.ofPattern(
+                    "EEEE, dd-MMM-yy HH:mm:ss 'GMT'", java.util.Locale.US)),
+            later.format(
+                java.time.format.DateTimeFormatter.ofPattern(
+                    "EEE MMM dd HH:mm:ss yyyy", java.util.Locale.US)),
+            "invalid",
+            "Sunday, 31-Feb-26 08:49:37 GMT",
+            "Sun Nov  6 08:49:37 1994 trailing",
+            "999999999999999999999999")) {
       api.resetRequests();
       api.stubFor(
           get(urlEqualTo("/api/v2/users/me.json"))
@@ -122,6 +136,82 @@ public class ReadRetryHttpTest {
             () -> ReadRetry.execute(zd::getCurrentUser, millis -> fail("Must not retry early")));
       }
       api.verify(1, getRequestedFor(urlEqualTo("/api/v2/users/me.json")));
+    }
+  }
+
+  @Test
+  /** Verifies every HTTP-date format is honored within the retry bound. */
+  public void acceptsAllRetryAfterHttpDateFormats() {
+    java.time.ZonedDateTime future =
+        java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC).plusSeconds(30).withNano(0);
+    for (String pattern :
+        new String[] {
+          "EEE, dd MMM yyyy HH:mm:ss 'GMT'",
+          "EEEE, dd-MMM-yy HH:mm:ss 'GMT'",
+          "EEE MMM dd HH:mm:ss yyyy"
+        }) {
+      String value =
+          future.format(java.time.format.DateTimeFormatter.ofPattern(pattern, java.util.Locale.US));
+      api.resetRequests();
+      api.stubFor(
+          get(urlEqualTo("/api/v2/users/me.json"))
+              .willReturn(aResponse().withStatus(429).withHeader("Retry-After", value)));
+      List<Long> waits = new ArrayList<>();
+      try (Zendesk zd = client()) {
+        ZendeskResponseRateLimitException error =
+            assertThrows(
+                ZendeskResponseRateLimitException.class,
+                () -> ReadRetry.execute(zd::getCurrentUser, waits::add));
+        long remaining = error.getRetryAfter();
+        assertTrue(value, remaining > 0 && remaining <= 30);
+        assertEquals(2, waits.size());
+        for (long wait : waits) assertTrue(value, wait >= remaining * 1000L && wait <= 30000L);
+      }
+      api.verify(3, getRequestedFor(urlEqualTo("/api/v2/users/me.json")));
+    }
+  }
+
+  @Test
+  /** Verifies expired dates, including space-padded asctime days, permit an immediate retry. */
+  public void expiredRetryAfterDatesPermitImmediateRetry() {
+    for (String value :
+        Arrays.asList(
+            "Sun, 06 Nov 1994 08:49:37 GMT",
+            "Sunday, 06-Nov-94 08:49:37 GMT",
+            "Sun Nov  6 08:49:37 1994")) {
+      api.stubFor(
+          get(urlEqualTo("/api/v2/users/me.json"))
+              .willReturn(aResponse().withStatus(429).withHeader("Retry-After", value)));
+      try (Zendesk zd = client()) {
+        ZendeskResponseRateLimitException error =
+            assertThrows(ZendeskResponseRateLimitException.class, zd::getCurrentUser);
+        assertEquals(value, Long.valueOf(0), error.getRetryAfter());
+      }
+    }
+  }
+
+  @Test
+  /** Verifies RFC 850 two-digit years use the HTTP fifty-year window. */
+  public void rfc850TwoDigitYearsUseTheHttpCenturyWindow() {
+    java.time.ZonedDateTime now = java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC);
+    for (java.time.ZonedDateTime date : Arrays.asList(now.plusYears(49), now.minusYears(49))) {
+      String value =
+          date.format(
+              java.time.format.DateTimeFormatter.ofPattern(
+                  "EEEE, dd-MMM-yy HH:mm:ss 'GMT'", java.util.Locale.US));
+      api.stubFor(
+          get(urlEqualTo("/api/v2/users/me.json"))
+              .willReturn(aResponse().withStatus(429).withHeader("Retry-After", value)));
+      try (Zendesk zd = client()) {
+        ZendeskResponseRateLimitException error =
+            assertThrows(ZendeskResponseRateLimitException.class, zd::getCurrentUser);
+        if (date.isAfter(now)) {
+          long expected = java.time.Duration.between(now, date).getSeconds();
+          assertTrue(value, Math.abs(expected - error.getRetryAfter()) <= 5);
+        } else {
+          assertEquals(value, Long.valueOf(0), error.getRetryAfter());
+        }
+      }
     }
   }
 

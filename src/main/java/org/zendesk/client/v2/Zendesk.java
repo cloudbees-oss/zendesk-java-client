@@ -1011,7 +1011,7 @@ public class Zendesk implements Closeable {
    * Downloads an attachment after refreshing its metadata by id. Creates parent directories and
    * overwrites an existing destination file. Uses this client's authentication and redirect policy.
    *
-   * @since FIXME
+   * @since 1.7.0
    * @param attachment attachment with a positive id; its cached content URL is not used
    * @param destination destination file, not null
    * @return the supplied destination
@@ -1031,7 +1031,7 @@ public class Zendesk implements Closeable {
    * Downloads an attachment using freshly retrieved metadata. Creates parent directories and
    * overwrites an existing destination file, but only after validating the HTTP response status.
    *
-   * @since FIXME
+   * @since 1.7.0
    * @param attachmentId positive attachment id
    * @param destination destination file, not null
    * @return the supplied destination
@@ -1044,19 +1044,20 @@ public class Zendesk implements Closeable {
     if (attachmentId <= 0) {
       throw new IllegalArgumentException("Attachment id must be positive");
     }
-Attachment attachment;
-try {
-  attachment = getAttachment(attachmentId);
-} catch (ZendeskException failure) {
-  for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
-    if (cause instanceof InterruptedException) throw (InterruptedException) cause;
-    if (cause instanceof IOException) throw (IOException) cause;
-  }
-  throw failure;
-}
-if (attachment == null) {
-  throw new ZendeskResponseException(404, "Not Found", "Attachment not found");
-}
+    Attachment attachment;
+    try {
+      attachment = getAttachment(attachmentId);
+    } catch (ZendeskException failure) {
+      for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
+        if (cause instanceof InterruptedException) throw (InterruptedException) cause;
+        if (cause instanceof IOException) throw (IOException) cause;
+      }
+      throw failure;
+    }
+    if (attachment == null) {
+      throw new ZendeskResponseException(404, "Not Found", "Attachment not found");
+    }
+    return downloadAttachmentContent(attachment, destination);
   }
 
   private Path downloadAttachmentContent(Attachment attachment, Path destination)
