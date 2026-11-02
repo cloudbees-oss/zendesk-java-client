@@ -30,8 +30,9 @@ final class ReadRetry {
       try {
         return operation.get();
       } catch (ZendeskException failure) {
+        if (attempt >= 3) throw failure;
         long delay = delayMillis(failure, attempt);
-        if (attempt >= 3 || delay < 0 || Thread.currentThread().isInterrupted()) throw failure;
+        if (delay < 0 || Thread.currentThread().isInterrupted()) throw failure;
         try {
           sleeper.sleep(delay);
         } catch (InterruptedException interrupted) {
