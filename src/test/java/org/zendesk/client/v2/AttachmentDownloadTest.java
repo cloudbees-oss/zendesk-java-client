@@ -7,8 +7,10 @@ import static org.junit.Assert.*;
 import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -133,6 +135,94 @@ public class AttachmentDownloadTest {
     api.verify(
         getRequestedFor(urlEqualTo("/binary"))
             .withHeader("Authorization", equalTo("Bearer renewed-test-token")));
+  }
+
+  @Test
+  /** Verifies content requests retain OAuth authentication without inheriting API headers. */
+  public void downloadsReuseAuthenticationWithoutApiHeaders() throws Exception {
+    metadata(base() + "/binary");
+    api.stubFor(
+        get(urlEqualTo("/binary"))
+            .withHeader("Accept", equalTo("*/*"))
+            .withHeader("Content-Type", absent())
+            .withHeader("X-API-Only", absent())
+            .willReturn(ok().withBody(BINARY)));
+    try (Zendesk zd =
+        new Zendesk.Builder(base())
+            .setOauthToken(TOKEN)
+            .addHeader("Accept", "application/json")
+            .addHeader("Content-Type", "application/json")
+            .addHeader("X-API-Only", "api-value")
+            .build()) {
+      Path target = files.getRoot().toPath().resolve("binary-without-api-headers");
+      zd.downloadAttachment(7L, target);
+      assertArrayEquals(BINARY, Files.readAllBytes(target));
+    }
+    api.verify(
+        getRequestedFor(urlEqualTo("/api/v2/attachments/7.json"))
+            .withHeader("Authorization", equalTo("Bearer " + TOKEN))
+            .withHeader("Accept", equalTo("application/json"))
+            .withHeader("Content-Type", equalTo("application/json"))
+            .withHeader("X-API-Only", equalTo("api-value")));
+    api.verify(
+        getRequestedFor(urlEqualTo("/binary"))
+            .withHeader("Authorization", equalTo("Bearer " + TOKEN))
+            .withHeader("Accept", equalTo("*/*"))
+            .withHeader("Content-Type", absent())
+            .withHeader("X-API-Only", absent()));
+  }
+
+  @Test
+  /** Verifies Basic and API-token downloads retain their configured authentication. */
+  public void basicAndApiTokenDownloadsKeepAuthentication() throws Exception {
+    metadata(base() + "/binary");
+    content(200);
+    for (boolean apiToken : new boolean[] {false, true}) {
+      api.resetRequests();
+      Zendesk.Builder builder =
+          new Zendesk.Builder(base())
+              .setUsername("attachment-user@example.test")
+              .addHeader("Accept", "application/json");
+      if (apiToken) builder.setToken("test-api-token");
+      else builder.setPassword("test-password");
+      String username = "attachment-user@example.test" + (apiToken ? "/token" : "");
+      String password = apiToken ? "test-api-token" : "test-password";
+      String authorization =
+          "Basic "
+              + Base64.getEncoder()
+                  .encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
+      try (Zendesk zd = builder.build()) {
+        Path target = files.getRoot().toPath().resolve("basic-or-api-token");
+        zd.downloadAttachment(7L, target);
+        assertArrayEquals(BINARY, Files.readAllBytes(target));
+      }
+      api.verify(
+          getRequestedFor(urlEqualTo("/api/v2/attachments/7.json"))
+              .withHeader("Authorization", equalTo(authorization))
+              .withHeader("Accept", equalTo("application/json")));
+      api.verify(
+          getRequestedFor(urlEqualTo("/binary"))
+              .withHeader("Authorization", equalTo(authorization))
+              .withHeader("Accept", equalTo("*/*")));
+    }
+  }
+
+  @Test
+  /** Verifies an explicitly configured Authorization header remains usable for content requests. */
+  public void downloadsKeepExplicitAuthorizationHeaders() throws Exception {
+    metadata(base() + "/binary");
+    content(200);
+    try (Zendesk zd =
+        new Zendesk.Builder(base())
+            .addHeader("authorization", "Bearer " + TOKEN)
+            .addHeader("Accept", "application/json")
+            .build()) {
+      zd.downloadAttachment(7L, files.getRoot().toPath().resolve("explicit-authorization"));
+    }
+    api.verify(
+        getRequestedFor(urlEqualTo("/binary"))
+            .withHeader("Authorization", equalTo("Bearer " + TOKEN))
+            .withHeader("Accept", equalTo("*/*")));
   }
 
   @Test
@@ -284,13 +374,24 @@ public class AttachmentDownloadTest {
     token(TOKEN, 3600);
     metadata("http://127.0.0.1:" + api.port() + "/binary");
     content(200);
-    try (Zendesk zd = oauth()) {
+    try (Zendesk zd =
+        new Zendesk.Builder(base())
+            .setOauthClientCredentials("test-client", "test-secret", "read")
+            .addHeader("Accept", "application/json")
+            .addHeader("X-API-Only", "api-value")
+            .build()) {
       zd.downloadAttachment(7L, files.getRoot().toPath().resolve("cdn"));
     }
-    api.verify(getRequestedFor(urlEqualTo("/binary")).withHeader("Authorization", absent()));
+    api.verify(
+        getRequestedFor(urlEqualTo("/binary"))
+            .withHeader("Authorization", absent())
+            .withHeader("Accept", equalTo("*/*"))
+            .withHeader("X-API-Only", absent()));
     api.verify(
         getRequestedFor(urlEqualTo("/api/v2/attachments/7.json"))
-            .withHeader("Authorization", equalTo("Bearer " + TOKEN)));
+            .withHeader("Authorization", equalTo("Bearer " + TOKEN))
+            .withHeader("Accept", equalTo("application/json"))
+            .withHeader("X-API-Only", equalTo("api-value")));
   }
 
   @Test
@@ -461,8 +562,8 @@ public class AttachmentDownloadTest {
   }
 
   @Test
-  /** Verifies injected client redirect settings and headers are respected. */
-  public void respectsInjectedClientRedirectPolicyAndConfiguredHeaders() throws Exception {
+  /** Verifies injected redirect settings are respected and API headers stay on metadata calls. */
+  public void respectsInjectedClientRedirectPolicyWithoutCopyingApiHeaders() throws Exception {
     metadata(base() + "/redirect");
     api.stubFor(
         get(urlEqualTo("/redirect"))
@@ -483,7 +584,10 @@ public class AttachmentDownloadTest {
               .getStatusCode());
       assertFalse(Files.exists(target));
     }
-    api.verify(getRequestedFor(urlEqualTo("/redirect")).withHeader("X-Test", equalTo("shared")));
+    api.verify(
+        getRequestedFor(urlEqualTo("/api/v2/attachments/7.json"))
+            .withHeader("X-Test", equalTo("shared")));
+    api.verify(getRequestedFor(urlEqualTo("/redirect")).withHeader("X-Test", absent()));
     api.verify(0, getRequestedFor(urlEqualTo("/binary")));
   }
 }

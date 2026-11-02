@@ -1076,7 +1076,7 @@ public class Zendesk implements Closeable {
                 RequestBuilder request = new RequestBuilder("GET").setUrl(contentUrl);
                 if (org.asynchttpclient.uri.Uri.create(url)
                     .isSameBase(org.asynchttpclient.uri.Uri.create(contentUrl))) {
-                  request = reqBuilder("GET", contentUrl);
+                  request = authenticatedReqBuilder("GET", contentUrl);
                 }
                 Response result = complete(client.executeRequest(request.build()));
                 checkStatusCode(result);
@@ -3693,6 +3693,12 @@ public class Zendesk implements Closeable {
   }
 
   private RequestBuilder reqBuilder(String method, String url) {
+    RequestBuilder builder = authenticatedReqBuilder(method, url);
+    headers.forEach(builder::setHeader);
+    return builder;
+  }
+
+  private RequestBuilder authenticatedReqBuilder(String method, String url) {
     RequestBuilder builder = new RequestBuilder(method);
     if (realm != null) {
       builder.setRealm(realm);
@@ -3701,7 +3707,11 @@ public class Zendesk implements Closeable {
     } else {
       builder.addHeader("Authorization", "Bearer " + oauthToken);
     }
-    headers.forEach(builder::setHeader);
+    // Explicit authentication headers are supported without copying API-specific headers.
+    headers.forEach(
+        (name, value) -> {
+          if ("Authorization".equalsIgnoreCase(name)) builder.setHeader(name, value);
+        });
     return builder.setUrl(url);
   }
 

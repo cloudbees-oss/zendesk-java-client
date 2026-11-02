@@ -46,7 +46,9 @@ Path destination = Paths.get("downloads", "attachment.bin");
 zendesk.downloadAttachment(attachmentId, destination);
 ```
 
-Downloads reuse the client's HTTP transport and authentication. Zendesk credentials are sent only
+Downloads reuse the client's HTTP transport and authentication. Content requests do not inherit
+other API headers configured through `addHeader`, such as `Accept: application/json` or `Content-Type`;
+those headers still apply to the metadata request. Zendesk credentials are sent only
 when the initial content URL has the same scheme, host and effective port as the Zendesk endpoint.
 AsyncHttpClient removes authorization when a redirect crosses that origin boundary. External CDN
 URLs are requested without Zendesk credentials. An injected client's redirect configuration is
