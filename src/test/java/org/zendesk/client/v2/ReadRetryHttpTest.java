@@ -84,7 +84,7 @@ public class ReadRetryHttpTest {
   @Test
   /** Verifies rate-limit delays are honored within the configured bound. */
   public void rateLimitBackoffUsesServerSecondsAndRefusesExcessiveWait() {
-    for (int seconds : new int[] {0, 2, 61}) {
+    for (int seconds : new int[] {0, 2, 60, 61}) {
       api.resetRequests();
       api.stubFor(
           get(urlEqualTo("/api/v2/users/me.json"))
@@ -105,8 +105,8 @@ public class ReadRetryHttpTest {
   }
 
   @Test
-  /** Verifies date and malformed Retry-After headers never cause an early retry. */
-  public void retryAfterDateOrMalformedHeaderDoesNotTriggerAnEarlyRetry() {
+  /** Verifies valid Retry-After dates beyond the wait bound are not replaced by the default. */
+  public void retryAfterDateBeyondWaitBoundDoesNotTriggerAnEarlyRetry() {
     String future =
         java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)
             .plusMinutes(5)
@@ -121,11 +121,7 @@ public class ReadRetryHttpTest {
                     "EEEE, dd-MMM-yy HH:mm:ss 'GMT'", java.util.Locale.US)),
             later.format(
                 java.time.format.DateTimeFormatter.ofPattern(
-                    "EEE MMM dd HH:mm:ss yyyy", java.util.Locale.US)),
-            "invalid",
-            "Sunday, 31-Feb-26 08:49:37 GMT",
-            "Sun Nov  6 08:49:37 1994 trailing",
-            "999999999999999999999999")) {
+                    "EEE MMM dd HH:mm:ss yyyy", java.util.Locale.US)))) {
       api.resetRequests();
       api.stubFor(
           get(urlEqualTo("/api/v2/users/me.json"))
@@ -136,6 +132,35 @@ public class ReadRetryHttpTest {
             () -> ReadRetry.execute(zd::getCurrentUser, millis -> fail("Must not retry early")));
       }
       api.verify(1, getRequestedFor(urlEqualTo("/api/v2/users/me.json")));
+    }
+  }
+
+  @Test
+  /** Verifies absent or malformed Retry-After headers retain the existing sixty-second fallback. */
+  public void missingOrMalformedRetryAfterUsesDefaultDelay() {
+    for (String value :
+        Arrays.asList(
+            null,
+            "",
+            "invalid",
+            "Sunday, 31-Feb-26 08:49:37 GMT",
+            "Sun Nov  6 08:49:37 1994 trailing",
+            "999999999999999999999999")) {
+      api.resetRequests();
+      com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder response =
+          aResponse().withStatus(429);
+      if (value != null) response.withHeader("Retry-After", value);
+      api.stubFor(get(urlEqualTo("/api/v2/users/me.json")).willReturn(response));
+      List<Long> waits = new ArrayList<>();
+      try (Zendesk zd = client()) {
+        ZendeskResponseRateLimitException error =
+            assertThrows(
+                ZendeskResponseRateLimitException.class,
+                () -> ReadRetry.execute(zd::getCurrentUser, waits::add));
+        assertEquals(value, Long.valueOf(60), error.getRetryAfter());
+      }
+      assertEquals(value, Arrays.asList(60000L, 60000L), waits);
+      api.verify(3, getRequestedFor(urlEqualTo("/api/v2/users/me.json")));
     }
   }
 

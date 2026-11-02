@@ -33,8 +33,7 @@ public class ZendeskResponseRateLimitException extends ZendeskResponseException 
               java.time.Duration.between(java.time.Instant.now(), parseHttpDate(value)).toMillis();
           this.retryAfter = millis <= 0 ? 0L : 1 + (millis - 1) / 1000;
         } catch (java.time.DateTimeException | ArithmeticException invalid) {
-          // An unusable header is not permission to retry earlier than requested.
-          this.retryAfter = Long.MAX_VALUE;
+          // Preserve the existing default when the header cannot be interpreted.
         }
       }
     }

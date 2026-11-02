@@ -60,8 +60,8 @@ The default transport disables method-agnostic connection replay so that imports
 and updates are not silently repeated after an ambiguous transport failure. Instead, synchronous
 job reads, attachment metadata/downloads and individual pages of lazy iterables use at most three
 attempts for transient connection failures, timeouts and HTTP 500/502/503/504 (1 and 2 seconds of
-backoff). HTTP 429 honors `Retry-After` in seconds or HTTP-date form, up to a 60-second wait; longer,
-negative or invalid values propagate the error without an early retry. An absent header retains
+backoff). HTTP 429 honors `Retry-After` in seconds or HTTP-date form, up to a 60-second wait; longer
+or negative values propagate the error without an early retry. An absent or invalid header retains
 the existing 60-second fallback. Authentication, parsing and permanent failures are not retried.
 
 Backoff waits on the synchronous caller, never a Netty event-loop thread. OAuth token minting keeps
